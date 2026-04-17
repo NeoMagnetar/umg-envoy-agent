@@ -1,0 +1,49 @@
+{
+  "stage": 4,
+  "status": "compiler-aligned-and-promotion-ready",
+  "notes": [
+    "Compiler source remains isolated in the sibling repository.",
+    "Wrapper and promotion scripts read this file for path contracts.",
+    "Updated for the current workspace-backed plugin vendor layout."
+  ],
+  "paths": {
+    "workspace_root": "C:\\.openclaw\\workspace",
+    "resleever_root": "C:\\.openclaw\\workspace\\artifacts\\umg-envoy-agent-plugin\\vendor\\UMG_Envoy_Resleever",
+    "compiler_root": "C:\\.openclaw\\workspace\\umg-plugin-work\\umg-compiler",
+    "compiler_adapter_root": "C:\\.openclaw\\workspace\\artifacts\\umg-envoy-agent-plugin\\vendor\\UMG_Envoy_Resleever\\compiler",
+    "sleeves_root": "C:\\.openclaw\\workspace\\artifacts\\umg-envoy-agent-plugin\\vendor\\UMG_Envoy_Resleever\\sleeves",
+    "blocks_root": "C:\\.openclaw\\workspace\\artifacts\\umg-envoy-agent-plugin\\vendor\\UMG_Envoy_Resleever\\blocks",
+    "runtime_root": "C:\\.openclaw\\workspace\\artifacts\\umg-envoy-agent-plugin\\vendor\\UMG_Envoy_Resleever\\runtime",
+    "compile_output_root": "C:\\.openclaw\\workspace\\artifacts\\umg-envoy-agent-plugin\\vendor\\UMG_Envoy_Resleever\\runtime\\compile-output",
+    "traces_root": "C:\\.openclaw\\workspace\\artifacts\\umg-envoy-agent-plugin\\vendor\\UMG_Envoy_Resleever\\runtime\\traces",
+    "staging_root": "C:\\.openclaw\\workspace\\artifacts\\umg-envoy-agent-plugin\\vendor\\UMG_Envoy_Resleever\\runtime\\staging",
+    "backups_root": "C:\\.openclaw\\workspace\\artifacts\\umg-envoy-agent-plugin\\vendor\\UMG_Envoy_Resleever\\runtime\\backups",
+    "active_sleeve_path": "C:\\.openclaw\\workspace\\artifacts\\umg-envoy-agent-plugin\\vendor\\UMG_Envoy_Resleever\\runtime\\active-sleeve.json",
+    "active_stack_path": "C:\\.openclaw\\workspace\\artifacts\\umg-envoy-agent-plugin\\vendor\\UMG_Envoy_Resleever\\runtime\\active-stack.json"
+  },
+  "invocation": {
+    "mode": "node_cli",
+    "requires_build": true,
+    "node_version": ">=20",
+    "setup_commands": [
+      "npm install --prefix ..\\..\\..\\..\\umg-plugin-work\\umg-compiler\\compiler-v0",
+      "npm run build --prefix ..\\..\\..\\..\\umg-plugin-work\\umg-compiler\\compiler-v0"
+    ],
+    "entrypoint": "..\\..\\..\\..\\umg-plugin-work\\umg-compiler\\compiler-v0\\dist\\cli.js",
+    "command_template": "node ..\\..\\..\\..\\umg-plugin-work\\umg-compiler\\compiler-v0\\dist\\cli.js compile --in <input> --out <output> [--pretty]",
+    "wrapper_script": ".\\compiler\\invoke-compiler.ps1",
+    "promotion_script": ".\\compiler\\promote-runtime.ps1"
+  },
+  "compiler_entry_candidate": {
+    "status": "verified",
+    "entrypoint": "..\\..\\..\\..\\umg-plugin-work\\umg-compiler\\compiler-v0\\dist\\cli.js",
+    "notes": [
+      "Entry file produced by TypeScript build in the live compiler repo.",
+      "Compile result contract remains top-level runtime + top-level trace."
+    ]
+  },
+  "relative_paths": {
+    "from_resleever_root_to_compiler_root": "..\\..\\..\\umg-plugin-work\\umg-compiler",
+    "from_compiler_adapter_root_to_compiler_root": "..\\..\\..\\..\\umg-plugin-work\\umg-compiler"
+  }
+}
