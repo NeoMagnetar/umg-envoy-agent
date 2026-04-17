@@ -90,6 +90,28 @@ For first install:
 Only then:
 - enable runtime writes if you want live promotion / rollback / generation testing
 
+## Compiler-alignment follow-up pass
+A post-RC alignment pass updated the plugin package and bundled compiler to match the newer trigger-gating runtime contract.
+
+Included in this follow-up:
+- vendored compiler synced from patched live `umg-compiler`
+- trigger handled as stack gating / routing rather than as a core MOLT type
+- `use`, `aim`, and `need` carried through runtime and prompt output
+- plugin compile summaries now surface:
+  - `matchedTriggerIds`
+  - `activeStackIds`
+  - `useIds`
+  - `aimIds`
+  - `needIds`
+  - `gateTriggerIds`
+- active runtime inspection now reports the newer gate/use/aim/need-aware runtime shape after promotion
+- merge-output duplication quirk tightened in the compiler runtime build path
+
+Validation completed in this pass:
+- fresh compile through updated vendored compiler succeeded
+- promotion through plugin runtime path succeeded with backup creation
+- `read-active-runtime` confirmed new active runtime shape
+
 ## Known follow-up work
 - optional package-size/vendor pruning pass
 - optional public-release polish pass
