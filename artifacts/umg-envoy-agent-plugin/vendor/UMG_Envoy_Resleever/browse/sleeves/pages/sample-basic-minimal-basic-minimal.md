@@ -1,27 +1,32 @@
 # Basic Minimal
 
-**Sleeve ID:** `sleeve_basic`
-**Catalog ID:** `sample-basic-minimal`
-**Status:** `archived`
-**Version:** `v0`
+## Short summary
+A compact sample sleeve used for baseline compiler and runtime validation.
 
-## What this sleeve does
-Upstream compiler sample copied locally for dry-run validation.
+## Identity
+- Sleeve ID: `sleeve_basic`
+- Catalog ID: `sample-basic-minimal`
+- Status: `archived`
+- Version: `v0`
 
-## Main expertise / domains
+## Expertise
 - support
 
-## Quick counts
+## Composition at a glance
 - Total blocks: 2
 - Total stacks: 1
 - Total triggers: 0
 - instruction: 1
 - primary: 1
 
-## Stack summaries
+## What the sleeve specializes in
+This sleeve routes into the following expertise areas depending on stack gating and trigger state:
+- support
+
+## Stack details
 ### stack_support
 - Stack ID: `stack_support`
-- Domain: `support`
-- Expertise / primary role: Handle support requests.
+- Expertise area: `support`
+- Primary expertise: Handle support requests.
 - Example instructions:
   - Be safe and honest.
