@@ -1,0 +1,48 @@
+{
+  "ingested_at": "2026-04-17T18:31:13Z",
+  "ingested_by": "OpenClaw",
+  "rule_overrides": {
+    "persona_blocks_mapped_to": "INSTRUCTION",
+    "strategic_frameworks_mapped_to": "PHILOSOPHY",
+    "duplicates": "ignored by id"
+  },
+  "added_counts": {
+    "instructions": 100,
+    "directives": 0,
+    "subjects": 0,
+    "philosophy": 70,
+    "primary": 0,
+    "blueprints": 0,
+    "triggers": 0
+  },
+  "summary": [
+    "instructions: +100",
+    "directives: +0",
+    "subjects: +0",
+    "philosophy: +70",
+    "primary: +0",
+    "blueprints: +0",
+    "triggers: +0"
+  ],
+  "source_downloads_considered": [
+    "instructions.json",
+    "instructions (1).json",
+    "directives.json",
+    "directives (1).json",
+    "subjects.json",
+    "philosophy.json",
+    "primary.json",
+    "blueprint.json",
+    "triggers.json",
+    "triggers (1).json",
+    "instructions_business_extension.json",
+    "directives_business_extension.json",
+    "subjects_business_extension.json",
+    "philosophy_business_extension.json",
+    "primary_business_extension.json",
+    "blueprint_business_extension.json",
+    "triggers_business_extension.json",
+    "personas.json",
+    "strategic_frameworks.json"
+  ]
+}

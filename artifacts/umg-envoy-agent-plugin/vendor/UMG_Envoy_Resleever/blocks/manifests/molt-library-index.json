@@ -1,0 +1,61 @@
+{
+  "generated_at": "2026-04-17T18:31:13Z",
+  "libraries": [
+    {
+      "block_type": "BLUEPRINT",
+      "name": "MOLT BLUEPRINT Library",
+      "version": "1.0.0",
+      "category": "general",
+      "entry_count": 200,
+      "path": "blocks\\molt\\blueprints\\library.v1.0.0.json"
+    },
+    {
+      "block_type": "DIRECTIVE",
+      "name": "MOLT DIRECTIVE Library",
+      "version": "1.0.0",
+      "category": "general",
+      "entry_count": 200,
+      "path": "blocks\\molt\\directives\\library.v1.0.0.json"
+    },
+    {
+      "block_type": "INSTRUCTION",
+      "name": "MOLT INSTRUCTION Library",
+      "version": "1.0.0",
+      "category": "general",
+      "entry_count": 300,
+      "path": "blocks\\molt\\instructions\\library.v1.0.0.json"
+    },
+    {
+      "block_type": "PHILOSOPHY",
+      "name": "MOLT PHILOSOPHY Library",
+      "version": "1.0.0",
+      "category": "general",
+      "entry_count": 270,
+      "path": "blocks\\molt\\philosophy\\library.v1.0.0.json"
+    },
+    {
+      "block_type": "PRIMARY",
+      "name": "MOLT PRIMARY Library",
+      "version": "1.0.0",
+      "category": "general",
+      "entry_count": 200,
+      "path": "blocks\\molt\\primary\\library.v1.0.0.json"
+    },
+    {
+      "block_type": "SUBJECT",
+      "name": "MOLT SUBJECT Library",
+      "version": "1.0.0",
+      "category": "general",
+      "entry_count": 200,
+      "path": "blocks\\molt\\subjects\\library.v1.0.0.json"
+    },
+    {
+      "block_type": "TRIGGER",
+      "name": "MOLT Trigger Library",
+      "version": "1.0.0",
+      "category": "general",
+      "entry_count": 200,
+      "path": "blocks\\molt\\triggers\\library.v1.0.0.json"
+    }
+  ]
+}
