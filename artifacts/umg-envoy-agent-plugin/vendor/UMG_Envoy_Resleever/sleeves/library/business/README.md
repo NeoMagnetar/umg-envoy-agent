@@ -3,12 +3,12 @@
 Sleeves focused on operations, automation, launch, management, and commercial execution.
 
 ## Sleeves in this category
-- No sleeves admitted here yet.
+- [slv-business-automation-consultant-v1-0](./slv-business-automation-consultant-v1-0/README.md)
 
 ## What each sleeve folder contains
-- `sleeve.json`
-- `README.md`
-- `STRUCTURE.md`
-- `NEOSTACKS.md`
-- `NEOBLOCKS.md`
-- `MOLT-BLOCKS.md`
+- preserved original source file
+- README.md
+- STRUCTURE.md
+- NEOSTACKS.md
+- NEOBLOCKS.md
+- MOLT-BLOCKS.md

@@ -6,9 +6,9 @@ Sleeves focused on compliance, policy, boundaries, audit, and operational oversi
 - No sleeves admitted here yet.
 
 ## What each sleeve folder contains
-- `sleeve.json`
-- `README.md`
-- `STRUCTURE.md`
-- `NEOSTACKS.md`
-- `NEOBLOCKS.md`
-- `MOLT-BLOCKS.md`
+- preserved original source file
+- README.md
+- STRUCTURE.md
+- NEOSTACKS.md
+- NEOBLOCKS.md
+- MOLT-BLOCKS.md

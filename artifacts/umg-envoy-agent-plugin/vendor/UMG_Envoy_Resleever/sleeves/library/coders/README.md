@@ -3,12 +3,14 @@
 Sleeves focused on coding, implementation, engineering, or technical build execution.
 
 ## Sleeves in this category
-- No sleeves admitted here yet.
+- [slv-super-emulator-dev-v1-0](./slv-super-emulator-dev-v1-0/README.md)
+- [slv-uo-server-developer-v1-0](./slv-uo-server-developer-v1-0/README.md)
+- [slv-vrchat-developer-v1-0](./slv-vrchat-developer-v1-0/README.md)
 
 ## What each sleeve folder contains
-- `sleeve.json`
-- `README.md`
-- `STRUCTURE.md`
-- `NEOSTACKS.md`
-- `NEOBLOCKS.md`
-- `MOLT-BLOCKS.md`
+- preserved original source file
+- README.md
+- STRUCTURE.md
+- NEOSTACKS.md
+- NEOBLOCKS.md
+- MOLT-BLOCKS.md
