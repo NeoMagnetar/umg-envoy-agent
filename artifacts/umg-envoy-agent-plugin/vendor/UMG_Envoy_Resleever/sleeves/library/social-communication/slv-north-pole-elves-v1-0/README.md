@@ -1,17 +1,16 @@
 # NORTH POLE ELF RESPONSE AGENT - COMPLETE SLEEVE
 
 ## What this sleeve is
-# NORTH POLE ELF RESPONSE AGENT - COMPLETE SLEEVE ## 20 Unique Elf Personalities for Email Responses ## Text-Based Hierarchy: NeoStacks → NeoBlocks → MOLT Blocks **Sleeve ID:** SLV.NORTH.POLE.ELVES.v1.0 **Total Components:** 6 NeoStacks | 36 NeoBlocks | 144+ MOLT Blocks | 20 Elf Personas ---
+Admitted sleeve in category `social-communication` with preserved source and extracted structure inventories.
 
-## Category
-social-communication
+## What is actually extracted here
+- NeoStacks extracted: 0
+- NeoBlocks extracted: 0
+- MOLT blocks extracted: 0
 
-## Source form currently available
-- Preserved source file: `source.md`
-- This sleeve has been admitted into the categorized library during Phase 2 intake.
-
-## What to open next
-- `source.md` or `source.txt` if present
-- `README.md` for the quick human summary
-- `STRUCTURE.md` for the high-level structure view
-- `NEOSTACKS.md`, `NEOBLOCKS.md`, and `MOLT-BLOCKS.md` for organized visibility
+## What to open
+- `source.md` or `source.txt` for the original sleeve source
+- `STRUCTURE.md` for the summary view
+- `NEOSTACKS.md` for extracted stack sections
+- `NEOBLOCKS.md` for extracted neoblock sections
+- `MOLT-BLOCKS.md` for extracted block inventory

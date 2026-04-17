@@ -1,3 +1,270 @@
 # MOLT Blocks - BANK ACCOUNT COMPLIANCE AUDITOR - COMPLETE SLEEVE STRUCTURE
 
-Best-effort intake placeholder. Open the preserved source file to inspect the stated MOLT block structure.
+Extracted block inventory from the preserved sleeve source.
+
+## blueprint
+- `BP.ACCT.001` - Account Opening Scorecard Template
+  - - Type: BLUEPRINT
+- `BP.TXN.001` - Volume Analysis Report Template
+  - - Type: BLUEPRINT
+- `BP.CTR.001` - CTR Compliance Report Template
+  - - Type: BLUEPRINT
+- `BP.RISK.001` - Risk Profile Report Template
+  - - Type: BLUEPRINT
+- `BP.SAR.001` - SAR Quality Report Template
+  - - Type: BLUEPRINT
+- `BP.AUDIT.002` - Evidence Log Template
+  - - Type: BLUEPRINT
+- `BP.REPORT.002` - Comprehensive Audit Report Template
+  - - Type: BLUEPRINT
+- `BP.TRAIL.001` - Audit Trail Log Format
+  - - Type: BLUEPRINT
+- `BP.COMM.001` - Critical Finding Alert Template
+  - - Type: BLUEPRINT
+- `BP.COMM.002` - Audit Completion Summary Template
+  - - Type: BLUEPRINT
+
+## directive
+- `DIR.AUDIT.001` - Verify Account Opening Compliance
+  - - Type: DIRECTIVE
+- `DIR.AUDIT.006` - Validate Beneficial Ownership Compliance
+  - - Type: DIRECTIVE
+- `DIR.AUDIT.014` - Verify Dormancy Procedures
+  - - Type: DIRECTIVE  
+- `DIR.AUDIT.015` - Validate CIP Procedures
+  - - Type: DIRECTIVE
+- `DIR.AUDIT.002` - Identify Transaction Anomalies
+  - - Type: DIRECTIVE
+- `DIR.AUDIT.003` - Validate CTR Compliance
+  - - Type: DIRECTIVE
+- `DIR.AUDIT.007` - Detect Structuring Activity
+  - - Type: DIRECTIVE
+- `DIR.AUDIT.009` - Review Wire Transfer Compliance
+  - - Type: DIRECTIVE
+- `DIR.AUDIT.014` - Review Program Structure
+  - - Type: DIRECTIVE
+- `DIR.AUDIT.011` - Verify Reg CC Compliance
+  - - Type: DIRECTIVE
+- `DIR.AUDIT.012` - Validate Reg E Compliance
+  - - Type: DIRECTIVE
+- `DIR.AUDIT.013` - Assess Privacy Compliance
+  - - Type: DIRECTIVE
+
+## instruction
+- `INST.ACCT.001` - Account Opening Documentation Review
+  - - Type: INSTRUCTION
+- `INST.BEN.001` - Beneficial Ownership Documentation Review
+  - - Type: INSTRUCTION
+- `INST.BEN.002` - Beneficial Ownership Update Monitoring
+  - - Type: INSTRUCTION
+- `INST.ACCT.002` - Account Status Validation Procedure
+  - - Type: INSTRUCTION
+- `INST.DORM.001` - Dormancy Compliance Review
+  - - Type: INSTRUCTION
+- `INST.CIP.001` - CIP Compliance Review
+  - - Type: INSTRUCTION
+- `INST.CIP.002` - CIP Verification Method Validation
+  - - Type: INSTRUCTION
+- `INST.AUTH.001` - Authorization Verification Procedure
+  - - Type: INSTRUCTION
+- `INST.TXN.001` - Transaction Volume Analysis
+  - - Type: INSTRUCTION
+- `INST.TXN.002` - Large Transaction Review Procedure
+  - - Type: INSTRUCTION
+- `INST.STRUCT.001` - Structuring Pattern Detection Procedure
+  - - Type: INSTRUCTION
+- `INST.STRUCT.002` - Structuring Investigation Procedure
+  - - Type: INSTRUCTION
+- `INST.WIRE.001` - Wire Transfer Compliance Review
+  - - Type: INSTRUCTION
+- `INST.WIRE.002` - High-Risk Wire Analysis
+  - - Type: INSTRUCTION
+- `INST.VELOC.001` - Velocity Analysis Procedure
+  - - Type: INSTRUCTION
+- `INST.TXNDOC.001` - Transaction Documentation Review
+  - - Type: INSTRUCTION
+- `INST.BSA.001` - BSA Program Review Procedure
+  - - Type: INSTRUCTION
+- `INST.REGCC.001` - Reg CC Compliance Review
+  - - Type: INSTRUCTION
+- `INST.REGE.001` - Reg E Error Resolution Review
+  - - Type: INSTRUCTION
+- `INST.PRIV.001` - Privacy Compliance Review
+  - - Type: INSTRUCTION
+- `INST.PRIV.002` - Data Security Assessment
+  - - Type: INSTRUCTION
+- `INST.TEST.001` - Independent Testing Review Procedure
+  - - Type: INSTRUCTION
+- `INST.RISK.002` - Risk Rating Validation
+  - - Type: INSTRUCTION
+- `INST.RISK.003` - Enhanced Due Diligence Review
+  - - Type: INSTRUCTION
+- `INST.TXNRISK.001` - Transaction Risk Scoring Procedure
+  - - Type: INSTRUCTION
+- `INST.GEORISK.001` - Geographic Risk Assessment
+  - - Type: INSTRUCTION
+- `INST.PRODRISK.001` - Product/Service Risk Assessment
+  - - Type: INSTRUCTION
+- `INST.MONITOR.001` - Monitoring Recommendation Procedure
+  - - Type: INSTRUCTION
+- `INST.MLIND.001` - Money Laundering Indicator Detection
+  - - Type: INSTRUCTION
+- `INST.TFIND.001` - Terrorist Financing Indicator Detection
+  - - Type: INSTRUCTION
+- `INST.ELDER.001` - Elder Exploitation Detection Procedure
+  - - Type: INSTRUCTION
+- `INST.ELDER.002` - Elder Protection Procedures Review
+  - - Type: INSTRUCTION
+- `INST.FRAUD.001` - Fraud Pattern Detection
+  - - Type: INSTRUCTION
+- `INST.SARINV.001` - SAR Investigation Quality Review
+  - - Type: INSTRUCTION
+- `INST.DOC.001` - Finding Documentation Procedure
+  - - Type: INSTRUCTION
+- `INST.DOC.002` - Evidence Collection and Retention
+  - - Type: INSTRUCTION
+- `INST.REPORT.001` - Audit Report Generation Procedure
+  - - Type: INSTRUCTION
+- `INST.TRAIL.001` - Audit Trail Logging Procedure
+  - - Type: INSTRUCTION
+- `INST.COMM.001` - Management Communication Procedure
+  - - Type: INSTRUCTION
+- `INST.SCOPE.001` - Scope Review Procedure
+  - - Type: INSTRUCTION
+- `INST.EVID.001` - Evidence Quality Review
+  - - Type: INSTRUCTION
+- `INST.FINDVER.001` - Finding Verification Procedure
+  - - Type: INSTRUCTION
+
+## philosophy
+- `PHIL.AUDIT.001` - Pattern Recognition Philosophy
+  - - Type: PHILOSOPHY
+- `PHIL.AUDIT.002` - Totality of Circumstances
+  - - Type: PHILOSOPHY
+
+## subject
+- `SUBJ.ACCT.001` - Account Opening Procedures
+  - - Type: SUBJECT
+- `SUBJ.BEN.001` - Beneficial Ownership Requirements
+  - - Type: SUBJECT
+- `SUBJ.ACCT.002` - Account Status Management
+  - - Type: SUBJECT
+- `SUBJ.ACCT.003` - Dormancy and Escheatment
+  - - Type: SUBJECT
+- `SUBJ.CIP.001` - Customer Identification Program Requirements
+  - - Type: SUBJECT
+- `SUBJ.AUTH.001` - Account Authorization Requirements
+  - - Type: SUBJECT
+- `SUBJ.TXN.001` - Transaction Patterns and Analysis
+  - - Type: SUBJECT
+- `SUBJ.TXN.002` - Large Transaction Requirements
+  - - Type: SUBJECT
+- `SUBJ.STRUCT.001` - Structuring Indicators and Detection
+  - - Type: SUBJECT
+- `SUBJ.WIRE.001` - Wire Transfer Requirements
+  - - Type: SUBJECT
+- `SUBJ.VELOC.001` - Transaction Velocity Indicators
+  - - Type: SUBJECT
+- `SUBJ.TXNDOC.001` - Transaction Documentation Standards
+  - - Type: SUBJECT
+- `SUBJ.BSA.001` - BSA Program Requirements
+  - - Type: SUBJECT
+- `SUBJ.CTR.001` - Currency Transaction Reporting
+  - - Type: SUBJECT
+- `SUBJ.OFAC.001` - OFAC Requirements and Procedures
+  - - Type: SUBJECT
+- `SUBJ.REGCC.001` - Regulation CC Requirements
+  - - Type: SUBJECT
+- `SUBJ.REGE.001` - Regulation E Requirements
+  - - Type: SUBJECT
+- `SUBJ.PRIV.001` - GLBA Privacy Requirements
+  - - Type: SUBJECT
+- `SUBJ.TEST.001` - Independent Testing Requirements
+  - - Type: SUBJECT
+- `SUBJ.RISK.001` - Customer Risk Assessment
+  - - Type: SUBJECT
+- `SUBJ.TXNRISK.001` - Transaction Risk Indicators
+  - - Type: SUBJECT
+- `SUBJ.GEORISK.001` - Geographic Risk Factors
+  - - Type: SUBJECT
+- `SUBJ.PRODRISK.001` - Product/Service Risk
+  - - Type: SUBJECT
+- `SUBJ.MONITOR.001` - Risk-Based Monitoring
+  - - Type: SUBJECT
+- `SUBJ.SAR.001` - Suspicious Activity Reporting
+  - - Type: SUBJECT
+- `SUBJ.MLIND.001` - Money Laundering Indicators
+  - - Type: SUBJECT
+- `SUBJ.TFIND.001` - Terrorist Financing Indicators
+  - - Type: SUBJECT
+- `SUBJ.ELDER.001` - Elder Financial Exploitation
+  - - Type: SUBJECT
+- `SUBJ.FRAUD.001` - Fraud Schemes and Patterns
+  - - Type: SUBJECT
+- `SUBJ.SARINV.001` - SAR Investigation Standards
+  - - Type: SUBJECT
+- `SUBJ.DOC.001` - Audit Documentation Standards
+  - - Type: SUBJECT
+- `SUBJ.REPORT.001` - Audit Report Standards
+  - - Type: SUBJECT
+- `SUBJ.TRAIL.001` - Audit Trail Requirements
+  - - Type: SUBJECT
+
+## trigger
+- `TRG.AUDIT.001` - New Account Audit Requested
+  - - Type: TRIGGER
+- `TRG.AUDIT.006` - Beneficial Ownership Verification
+  - - Type: TRIGGER
+- `TRG.AUDIT.014` - Account Dormancy Review
+  - - Type: TRIGGER
+- `TRG.AUDIT.015` - CIP Verification
+  - - Type: TRIGGER
+- `TRG.AUDIT.002` - Transaction Review Triggered
+  - - Type: TRIGGER
+- `TRG.AUDIT.007` - Structuring Pattern Detection
+  - - Type: TRIGGER
+- `TRG.AUDIT.009` - Wire Transfer Review
+  - - Type: TRIGGER
+- `TRG.AUDIT.016` - BSA Officer Review
+  - - Type: TRIGGER
+- `TRG.AUDIT.003` - CTR Filing Verification
+  - - Type: TRIGGER
+- `TRG.AUDIT.011` - Reg CC Compliance Check
+  - - Type: TRIGGER
+- `TRG.AUDIT.012` - Reg E Error Resolution Review
+  - - Type: TRIGGER
+- `TRG.AUDIT.013` - Privacy Notice Compliance
+  - - Type: TRIGGER
+- `TRG.AUDIT.017` - Independent Testing Review
+  - - Type: TRIGGER
+- `TRG.AUDIT.024` - Suspicious Activity Investigation
+  - - Type: TRIGGER
+
+## unknown
+- `VER.AUDIT.001` - Account Opening Completeness Check
+  - - Type: VERIFICATION
+- `VER.AUDIT.004` - Beneficial Ownership Completeness Check
+  - - Type: VERIFICATION
+- `VER.AUDIT.009` - CIP Completeness Check
+  - - Type: VERIFICATION
+- `VER.AUDIT.005` - Wire Transfer Completeness Check
+  - - Type: VERIFICATION
+- `VER.AUDIT.002` - CTR Compliance Verification
+  - - Type: VERIFICATION
+- `VER.AUDIT.003` - OFAC Screening Completeness
+  - - Type: VERIFICATION
+- `VER.AUDIT.006` - Reg CC Compliance Verification
+  - - Type: VERIFICATION
+- `VER.AUDIT.007` - Reg E Compliance Verification
+  - - Type: VERIFICATION
+- `VER.AUDIT.008` - Privacy Compliance Verification
+  - - Type: VERIFICATION
+- `VER.SAR.001` - SAR Decision Quality Check
+  - - Type: VERIFICATION
+- `VER.AUDIT.010` - Scope Completeness Verification
+  - - Type: VERIFICATION
+- `VER.EVID.001` - Evidence Quality Standards
+  - - Type: VERIFICATION
+- `VER.FINDING.001` - Finding Accuracy Standards
+  - - Type: VERIFICATION
+

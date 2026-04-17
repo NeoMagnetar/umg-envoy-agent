@@ -1,0 +1,47 @@
+{
+  "sleeve_folder": "slv-uo-server-developer-v1-0",
+  "title": "ULTIMA ONLINE SERVER DEVELOPER - COMPLETE SLEEVE STRUCTURE",
+  "category": "coders",
+  "blocks_by_type": {
+    "trigger": [
+      {
+        "id": "TRG.UO.013",
+        "name": "Item Creation Required",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      }
+    ],
+    "directive": [
+      {
+        "id": "DIR.UO.013",
+        "name": "Create Functional Custom Item",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      }
+    ],
+    "instruction": [
+      {
+        "id": "INST.ITEM.001",
+        "name": "Basic Item Creation Procedure",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      }
+    ],
+    "subject": [
+      {
+        "id": "SUBJ.ITEM.001",
+        "name": "UO Item System Fundamentals",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      }
+    ],
+    "blueprint": [
+      {
+        "id": "BP.ITEM.001",
+        "name": "Item Script Template",
+        "moltType": "blueprint",
+        "content": "- Type: BLUEPRINT"
+      }
+    ]
+  }
+}

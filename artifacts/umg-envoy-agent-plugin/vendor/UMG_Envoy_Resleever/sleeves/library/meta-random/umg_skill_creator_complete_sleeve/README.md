@@ -1,18 +1,16 @@
 # UMG.ENVOY.SKILL_CREATOR - Complete Specification
 
 ## What this sleeve is
-# UMG.ENVOY.SKILL_CREATOR - Complete Specification **Version:** 1.0.0 **Purpose:** Create high-quality skills for Claude Skill Hub using UMG governance **Status:** Production Ready --- ## 🎯 OVERVIEW
+Admitted sleeve in category `meta-random` with preserved source and extracted structure inventories.
 
-## Category
-meta-random
+## What is actually extracted here
+- NeoStacks extracted: 0
+- NeoBlocks extracted: 0
+- MOLT blocks extracted: 19
 
-## Source form currently available
-- Preserved source file: `source.md`
-- Preserved package: `files (7).zip`
-- This sleeve has been admitted into the categorized library during Phase 2 intake.
-
-## What to open next
-- `source.md` or `source.txt` if present
-- `README.md` for the quick human summary
-- `STRUCTURE.md` for the high-level structure view
-- `NEOSTACKS.md`, `NEOBLOCKS.md`, and `MOLT-BLOCKS.md` for organized visibility
+## What to open
+- `source.md` or `source.txt` for the original sleeve source
+- `STRUCTURE.md` for the summary view
+- `NEOSTACKS.md` for extracted stack sections
+- `NEOBLOCKS.md` for extracted neoblock sections
+- `MOLT-BLOCKS.md` for extracted block inventory

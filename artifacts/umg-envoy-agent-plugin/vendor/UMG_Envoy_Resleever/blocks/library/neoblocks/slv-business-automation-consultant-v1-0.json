@@ -1,0 +1,11 @@
+{
+  "sleeve_folder": "slv-business-automation-consultant-v1-0",
+  "title": "BUSINESS AUTOMATION CONSULTANT - COMPLETE SLEEVE STRUCTURE",
+  "category": "business",
+  "neoblocks": [
+    {
+      "id": "N.03.01",
+      "name": "Content Calendar Management"
+    }
+  ]
+}

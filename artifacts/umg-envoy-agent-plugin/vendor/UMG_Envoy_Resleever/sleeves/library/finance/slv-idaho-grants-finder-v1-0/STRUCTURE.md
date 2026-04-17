@@ -1,11 +1,16 @@
 # Structure - IDAHO GRANT FINDER - COMPLETE SLEEVE STRUCTURE
 
-- Sleeve ID: `SLV.IDAHO.GRANTS.FINDER.v1.0`
 - Category: `finance`
-- Source type: `markdown-structure`
+- Extracted NeoStacks: 8
+- Extracted NeoBlocks: 2
+- Extracted MOLT blocks: 10
 
-## Declared counts / structure notes
-- components: ** 8 NeoStacks | 48 NeoBlocks | 184 MOLT Blocks
-
-## Intake note
-This sleeve came from the Claude Downloads intake batch and is currently preserved in admitted form pending deeper block/neoblock/neostack extraction.
+## Stack names
+- S.01 - FEDERAL GRANT RESEARCH STACK
+- S.02 - IDAHO STATE GRANT RESEARCH STACK
+- S.03 - LOCAL GOVERNMENT GRANT RESEARCH STACK
+- S.04 - FOUNDATION & PRIVATE GRANT RESEARCH STACK
+- S.05 - GRANT ELIGIBILITY ASSESSMENT STACK
+- S.06 - APPLICATION STRATEGY & WRITING SUPPORT STACK
+- S.07 - DEADLINE & TRACKING MANAGEMENT STACK
+- S.08 - COMPLIANCE & REPORTING GUIDANCE STACK

@@ -1,0 +1,159 @@
+{
+  "sleeve_folder": "slv-bank_audit-compliance-v1-0",
+  "title": "BANK ACCOUNT COMPLIANCE AUDITOR - COMPLETE SLEEVE STRUCTURE",
+  "category": "finance",
+  "neoblocks": [
+    {
+      "id": "N.01.01",
+      "name": "KYC/CIP Documentation Verification"
+    },
+    {
+      "id": "N.01.02",
+      "name": "Beneficial Ownership Verification"
+    },
+    {
+      "id": "N.01.03",
+      "name": "Account Opening Procedures Review"
+    },
+    {
+      "id": "N.01.04",
+      "name": "Account Status Validation"
+    },
+    {
+      "id": "N.01.05",
+      "name": "Customer Information Accuracy Check"
+    },
+    {
+      "id": "N.01.06",
+      "name": "Authorization & Signatory Verification"
+    },
+    {
+      "id": "N.02.01",
+      "name": "Transaction Volume Analysis"
+    },
+    {
+      "id": "N.02.02",
+      "name": "Large Transaction Review"
+    },
+    {
+      "id": "N.02.03",
+      "name": "Structuring Pattern Detection"
+    },
+    {
+      "id": "N.02.04",
+      "name": "Wire Transfer Review"
+    },
+    {
+      "id": "N.02.05",
+      "name": "Velocity & Frequency Analysis"
+    },
+    {
+      "id": "N.02.06",
+      "name": "Transaction Documentation Review"
+    },
+    {
+      "id": "N.03.01",
+      "name": "BSA/AML Compliance Check"
+    },
+    {
+      "id": "N.03.02",
+      "name": "CTR Filing Verification"
+    },
+    {
+      "id": "N.03.03",
+      "name": "OFAC Screening Compliance"
+    },
+    {
+      "id": "N.03.04",
+      "name": "Reg CC (Funds Availability) Compliance"
+    },
+    {
+      "id": "N.03.05",
+      "name": "Reg E (Error Resolution) Compliance"
+    },
+    {
+      "id": "N.03.06",
+      "name": "Privacy (GLBA) Compliance"
+    },
+    {
+      "id": "N.03.07",
+      "name": "BSA Program Structure Review"
+    },
+    {
+      "id": "N.03.08",
+      "name": "Independent Testing Review"
+    },
+    {
+      "id": "N.04.01",
+      "name": "Customer Risk Profile Assessment"
+    },
+    {
+      "id": "N.04.02",
+      "name": "Transaction Risk Scoring"
+    },
+    {
+      "id": "N.04.03",
+      "name": "Geographic Risk Evaluation"
+    },
+    {
+      "id": "N.04.04",
+      "name": "Product/Service Risk Analysis"
+    },
+    {
+      "id": "N.04.05",
+      "name": "Risk-Based Monitoring Recommendations"
+    },
+    {
+      "id": "N.05.01",
+      "name": "SAR Decision Analysis"
+    },
+    {
+      "id": "N.05.02",
+      "name": "Money Laundering Indicator Detection"
+    },
+    {
+      "id": "N.05.03",
+      "name": "Terrorist Financing Red Flag Review"
+    },
+    {
+      "id": "N.05.04",
+      "name": "Elder Financial Exploitation Detection"
+    },
+    {
+      "id": "N.05.05",
+      "name": "Fraud Pattern Recognition"
+    },
+    {
+      "id": "N.05.06",
+      "name": "SAR Investigation Quality Review"
+    },
+    {
+      "id": "N.06.01",
+      "name": "Finding Documentation"
+    },
+    {
+      "id": "N.06.02",
+      "name": "Audit Report Generation"
+    },
+    {
+      "id": "N.06.03",
+      "name": "Audit Trail Maintenance"
+    },
+    {
+      "id": "N.06.04",
+      "name": "Management Communication"
+    },
+    {
+      "id": "N.07.01",
+      "name": "Audit Scope Completeness Check"
+    },
+    {
+      "id": "N.07.02",
+      "name": "Evidence Quality Validation"
+    },
+    {
+      "id": "N.07.03",
+      "name": "Finding Accuracy Verification"
+    }
+  ]
+}

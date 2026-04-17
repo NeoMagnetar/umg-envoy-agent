@@ -1,17 +1,16 @@
 # INVESTIGATIVE INTELLIGENCE AGENT - COMPLETE UMG SLEEVE
 
 ## What this sleeve is
-# INVESTIGATIVE INTELLIGENCE AGENT - COMPLETE UMG SLEEVE ## Location Intelligence, Travel Tracking & Movement Pattern Analysis ## Version 1.0.0 **Sleeve ID:** SLV.INVESTIGATIVE.INTELLIGENCE.v1.0 **Total Components:** 8 NeoStacks | 48 NeoBlocks | 192+ MOLT Blocks ---
+Admitted sleeve in category `research` with preserved source and extracted structure inventories.
 
-## Category
-research
+## What is actually extracted here
+- NeoStacks extracted: 0
+- NeoBlocks extracted: 11
+- MOLT blocks extracted: 34
 
-## Source form currently available
-- Preserved source file: `source.md`
-- This sleeve has been admitted into the categorized library during Phase 2 intake.
-
-## What to open next
-- `source.md` or `source.txt` if present
-- `README.md` for the quick human summary
-- `STRUCTURE.md` for the high-level structure view
-- `NEOSTACKS.md`, `NEOBLOCKS.md`, and `MOLT-BLOCKS.md` for organized visibility
+## What to open
+- `source.md` or `source.txt` for the original sleeve source
+- `STRUCTURE.md` for the summary view
+- `NEOSTACKS.md` for extracted stack sections
+- `NEOBLOCKS.md` for extracted neoblock sections
+- `MOLT-BLOCKS.md` for extracted block inventory

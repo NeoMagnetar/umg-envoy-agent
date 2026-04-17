@@ -1,0 +1,47 @@
+{
+  "sleeve_folder": "slv-nonprofit-financing-v1-0",
+  "title": "NONPROFIT FINANCING AGENT - COMPLETE UMG SLEEVE",
+  "category": "meta-random",
+  "neoblocks": [
+    {
+      "id": "N.01.01",
+      "name": "Organizational Assessment"
+    },
+    {
+      "id": "N.02.01",
+      "name": "Grant Discovery"
+    },
+    {
+      "id": "N.02.02",
+      "name": "Grant Application Strategy"
+    },
+    {
+      "id": "N.03.01",
+      "name": "Foundation Research"
+    },
+    {
+      "id": "N.03.02",
+      "name": "Corporate Giving"
+    },
+    {
+      "id": "N.04.01",
+      "name": "Donor Pipeline Development"
+    },
+    {
+      "id": "N.05.01",
+      "name": "Federal Grants"
+    },
+    {
+      "id": "N.06.01",
+      "name": "Earned Revenue Strategies"
+    },
+    {
+      "id": "N.06.02",
+      "name": "Crowdfunding & Online Giving"
+    },
+    {
+      "id": "N.08.01",
+      "name": "Diversification Strategy"
+    }
+  ]
+}

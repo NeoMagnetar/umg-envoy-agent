@@ -1,11 +1,16 @@
 # Structure - VRCHAT/BLENDER DEVELOPER - COMPLETE SLEEVE STRUCTURE
 
-- Sleeve ID: `SLV.VRCHAT.DEVELOPER.v1.0`
 - Category: `coders`
-- Source type: `markdown-structure`
+- Extracted NeoStacks: 8
+- Extracted NeoBlocks: 0
+- Extracted MOLT blocks: 0
 
-## Declared counts / structure notes
-- components: ** 8 NeoStacks | 48 NeoBlocks | 176 MOLT Blocks
-
-## Intake note
-This sleeve came from the Claude Downloads intake batch and is currently preserved in admitted form pending deeper block/neoblock/neostack extraction.
+## Stack names
+- S.01 - 3D MODELING & SCULPTING STACK
+- S.02 - CHARACTER & AVATAR DEVELOPMENT STACK
+- S.03 - WORLD & MAP CREATION STACK
+- S.04 - MATERIALS & SHADERS STACK
+- S.05 - ANIMATION STACK
+- S.06 - UNITY INTEGRATION STACK
+- S.07 - ADVANCED SCRIPTING STACK
+- S.08 - OPTIMIZATION & PUBLISHING STACK

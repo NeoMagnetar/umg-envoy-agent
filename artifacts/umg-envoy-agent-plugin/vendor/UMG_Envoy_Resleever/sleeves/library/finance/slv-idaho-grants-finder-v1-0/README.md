@@ -1,18 +1,16 @@
 # IDAHO GRANT FINDER - COMPLETE SLEEVE STRUCTURE
 
 ## What this sleeve is
-# IDAHO GRANT FINDER - COMPLETE SLEEVE STRUCTURE ## Comprehensive Grant Research and Application Support for Idaho ## Text-Based Hierarchy: NeoStacks → NeoBlocks → MOLT Blocks **Sleeve ID:** SLV.IDAHO.GRANTS.FINDER.v1.0 **Total Components:** 8 NeoStacks | 48 NeoBlocks | 184 MOLT Blocks ---
+Admitted sleeve in category `finance` with preserved source and extracted structure inventories.
 
-## Category
-finance
+## What is actually extracted here
+- NeoStacks extracted: 8
+- NeoBlocks extracted: 2
+- MOLT blocks extracted: 10
 
-## Source form currently available
-- Preserved source file: `source.md`
-- Preserved package: `idaho-grants-sleeve-v1.0.0.zip`
-- This sleeve has been admitted into the categorized library during Phase 2 intake.
-
-## What to open next
-- `source.md` or `source.txt` if present
-- `README.md` for the quick human summary
-- `STRUCTURE.md` for the high-level structure view
-- `NEOSTACKS.md`, `NEOBLOCKS.md`, and `MOLT-BLOCKS.md` for organized visibility
+## What to open
+- `source.md` or `source.txt` for the original sleeve source
+- `STRUCTURE.md` for the summary view
+- `NEOSTACKS.md` for extracted stack sections
+- `NEOBLOCKS.md` for extracted neoblock sections
+- `MOLT-BLOCKS.md` for extracted block inventory

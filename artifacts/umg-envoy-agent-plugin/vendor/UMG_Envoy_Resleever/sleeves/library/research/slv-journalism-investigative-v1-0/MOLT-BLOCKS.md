@@ -1,3 +1,338 @@
 # MOLT Blocks - INVESTIGATIVE JOURNALIST & REPORTER - COMPLETE SLEEVE STRUCTURE
 
-Best-effort intake placeholder. Open the preserved source file to inspect the stated MOLT block structure.
+Extracted block inventory from the preserved sleeve source.
+
+## blueprint
+- `BP.SOURCE.001` - Source Profile Template
+  - - Type: BLUEPRINT
+- `BP.TIMELINE.001` - Timeline Visualization Template
+  - - Type: BLUEPRINT
+- `BP.RELMAP.001` - Relationship Map Template
+  - - Type: BLUEPRINT
+- `BP.STORY.001` - Investigative Story Template
+  - - Type: BLUEPRINT
+
+## directive
+- `DIR.JOUR.001` - Assess Source Reliability
+  - - Type: DIRECTIVE
+- `DIR.JOUR.002` - Authenticate Document Evidence
+  - - Type: DIRECTIVE
+- `DIR.JOUR.003` - Validate Expert Credentials
+  - - Type: DIRECTIVE
+- `DIR.JOUR.004` - Assess Witness Reliability
+  - - Type: DIRECTIVE
+- `DIR.JOUR.005` - Protect Source Identity While Maintaining Credibility
+  - - Type: DIRECTIVE
+- `DIR.JOUR.006` - Identify Conflicts of Interest
+  - - Type: DIRECTIVE
+- `DIR.JOUR.007` - Verify All Factual Claims
+  - - Type: DIRECTIVE
+- `DIR.JOUR.008` - Verify Quote Accuracy and Context
+  - - Type: DIRECTIVE
+- `DIR.JOUR.009` - Detect Timeline Inconsistencies
+  - - Type: DIRECTIVE
+- `DIR.JOUR.010` - Identify and Resolve Contradictions
+  - - Type: DIRECTIVE
+- `DIR.JOUR.011` - Identify Misinformation and Manipulation
+  - - Type: DIRECTIVE
+- `DIR.JOUR.012` - Extract and Analyze Document Content
+  - - Type: DIRECTIVE
+- `DIR.JOUR.013` - Analyze Financial Records
+  - - Type: DIRECTIVE
+- `DIR.JOUR.014` - Analyze Legal Documents
+  - - Type: DIRECTIVE
+- `DIR.JOUR.015` - Analyze Email Communications
+  - - Type: DIRECTIVE  
+- `DIR.JOUR.016` - Prepare Comprehensive Interview Strategy
+  - - Type: DIRECTIVE
+- `DIR.JOUR.017` - Conduct Effective Adversarial Interview
+  - - Type: DIRECTIVE
+- `DIR.JOUR.018` - Develop Reliable Source Network
+  - - Type: DIRECTIVE
+- `DIR.JOUR.019` - Protect and Verify Whistleblower Information
+  - - Type: DIRECTIVE
+- `DIR.JOUR.020` - Build Comprehensive Timeline
+  - - Type: DIRECTIVE
+- `DIR.JOUR.021` - Map Relationship Networks
+  - - Type: DIRECTIVE
+- `DIR.JOUR.022` - Trace Financial Flows
+  - - Type: DIRECTIVE
+- `DIR.JOUR.023` - Identify Systemic Patterns
+  - - Type: DIRECTIVE
+- `DIR.JOUR.024` - Minimize Defamation Risk
+  - - Type: DIRECTIVE
+- `DIR.JOUR.025` - Balance Privacy and Public Interest
+  - - Type: DIRECTIVE
+- `DIR.JOUR.026` - Justify and Minimize Deception
+  - - Type: DIRECTIVE
+- `DIR.JOUR.027` - Minimize Harm While Pursuing Truth
+  - - Type: DIRECTIVE
+- `DIR.JOUR.028` - Develop Compelling Evidence-Based Narrative
+  - - Type: DIRECTIVE
+- `DIR.JOUR.029` - Select and Integrate Quotes Effectively
+  - - Type: DIRECTIVE
+- `DIR.JOUR.030` - Verify All Facts Before Publication
+  - - Type: DIRECTIVE
+- `DIR.JOUR.031` - Correct Errors Promptly and Transparently
+  - - Type: DIRECTIVE
+- `DIR.JOUR.032` - Maintain Evidence Integrity
+  - - Type: DIRECTIVE
+- `DIR.JOUR.033` - Document Interviews Comprehensively
+  - - Type: DIRECTIVE
+- `DIR.JOUR.034` - Log All Source Contacts
+  - - Type: DIRECTIVE
+- `DIR.JOUR.035` - Document All Verification Efforts
+  - - Type: DIRECTIVE
+
+## instruction
+- `INST.SOURCE.001` - Source Credibility Assessment Procedure
+  - - Type: INSTRUCTION
+- `INST.SOURCE.002` - Source Motivation Analysis
+  - - Type: INSTRUCTION
+- `INST.DOC.001` - Document Authentication Procedure
+  - - Type: INSTRUCTION
+- `INST.DOC.002` - Metadata Extraction and Analysis
+  - - Type: INSTRUCTION
+- `INST.EXPERT.001` - Expert Validation Procedure
+  - - Type: INSTRUCTION
+- `INST.WITNESS.001` - Witness Credibility Procedure
+  - - Type: INSTRUCTION
+- `INST.ANON.001` - Anonymous Source Protocol
+  - - Type: INSTRUCTION
+- `INST.ANON.002` - Source Protection Security
+  - - Type: INSTRUCTION
+- `INST.CONFLICT.001` - Conflict Detection Procedure
+  - - Type: INSTRUCTION
+- `INST.FACT.001` - Fact-Checking Procedure
+  - - Type: INSTRUCTION
+- `INST.FACT.002` - Statistical Verification
+  - - Type: INSTRUCTION  
+- `INST.QUOTE.001` - Quote Verification Procedure
+  - - Type: INSTRUCTION
+- `INST.TIMELINE.001` - Timeline Construction and Verification
+  - - Type: INSTRUCTION
+- `INST.CONTRA.001` - Contradiction Analysis Procedure
+  - - Type: INSTRUCTION
+- `INST.STAT.002` - Detect Statistical Manipulation
+  - - Type: INSTRUCTION
+- `INST.MISINFO.001` - Misinformation Detection Procedure
+  - - Type: INSTRUCTION
+- `INST.DOCANALYZE.001` - Document Analysis Procedure
+  - - Type: INSTRUCTION
+- `INST.DOCANALYZE.002` - Multi-Document Pattern Analysis
+  - - Type: INSTRUCTION
+- `INST.FINDOC.001` - Financial Document Analysis Procedure
+  - - Type: INSTRUCTION
+- `INST.FINDOC.002` - Red Flag Detection in Financial Documents
+  - - Type: INSTRUCTION
+- `INST.LEGAL.001` - Legal Document Analysis Procedure
+  - - Type: INSTRUCTION
+- `INST.EMAIL.001` - Email Analysis Procedure
+  - - Type: INSTRUCTION
+- `INST.INTERVIEW.001` - Interview Preparation Procedure
+  - - Type: INSTRUCTION
+- `INST.INTERVIEW.002` - Question Development
+  - - Type: INSTRUCTION
+- `INST.DIFFINT.001` - Adversarial Interview Procedure
+  - - Type: INSTRUCTION
+- `INST.SOURCEDEV.001` - Source Development Procedure
+  - - Type: INSTRUCTION
+- `INST.SOURCEDEV.002` - Source Protection Operational Security
+  - - Type: INSTRUCTION
+- `INST.WHISTLE.001` - Whistleblower Management Procedure
+  - - Type: INSTRUCTION
+- `INST.TIMEVIS.001` - Timeline Visualization
+  - - Type: INSTRUCTION
+- `INST.RELMAP.001` - Relationship Mapping Procedure
+  - - Type: INSTRUCTION
+- `INST.RELMAP.002` - Network Visualization
+  - - Type: INSTRUCTION
+- `INST.MONEY.001` - Money Trail Procedure
+  - - Type: INSTRUCTION
+- `INST.PATTERN.001` - Pattern Recognition Procedure
+  - - Type: INSTRUCTION
+- `INST.LIBEL.001` - Defamation Risk Assessment
+  - - Type: INSTRUCTION
+- `INST.LIBEL.002` - Truth Defense Preparation
+  - - Type: INSTRUCTION
+- `INST.PRIVACY.001` - Privacy Assessment Procedure
+  - - Type: INSTRUCTION
+- `INST.DECEPTION.001` - Deception Ethics Assessment
+  - - Type: INSTRUCTION
+- `INST.HARM.001` - Harm Assessment and Minimization
+  - - Type: INSTRUCTION
+- `INST.STORY.001` - Story Structure Development
+  - - Type: INSTRUCTION
+- `INST.STORY.002` - Lede and Nut Graf Development
+  - - Type: INSTRUCTION
+- `INST.QUOTESEL.001` - Quote Selection Procedure
+  - - Type: INSTRUCTION
+- `INST.FACTCHECK.001` - Pre-Publication Fact-Checking Procedure
+  - - Type: INSTRUCTION
+- `INST.CORRECT.001` - Correction Procedure
+  - - Type: INSTRUCTION
+- `INST.EVIDENCE.001` - Evidence Management Procedure
+  - - Type: INSTRUCTION
+- `INST.INTDOC.001` - Interview Documentation Procedure
+  - - Type: INSTRUCTION
+- `INST.SOURCELOG.001` - Source Contact Logging Procedure
+  - - Type: INSTRUCTION
+- `INST.FACTTRAIL.001` - Fact-Check Audit Trail Procedure
+  - - Type: INSTRUCTION
+
+## philosophy
+- `PHIL.JOUR.001` - Skeptical Trust
+  - - Type: PHILOSOPHY
+- `PHIL.JOUR.002` - Truth Over Tidiness
+  - - Type: PHILOSOPHY
+
+## subject
+- `SUBJ.SOURCE.001` - Source Types and Reliability
+  - - Type: SUBJECT
+- `SUBJ.DOC.001` - Document Authenticity Indicators
+  - - Type: SUBJECT
+- `SUBJ.EXPERT.001` - Expert Source Considerations
+  - - Type: SUBJECT
+- `SUBJ.WITNESS.001` - Eyewitness Reliability Factors
+  - - Type: SUBJECT
+- `SUBJ.ANON.001` - Anonymous Source Standards
+  - - Type: SUBJECT
+- `SUBJ.CONFLICT.001` - Conflict of Interest Types
+  - - Type: SUBJECT
+- `SUBJ.FACT.001` - Fact-Checking Standards
+  - - Type: SUBJECT
+- `SUBJ.QUOTE.001` - Quote Standards and Ethics
+  - - Type: SUBJECT
+- `SUBJ.TIMELINE.001` - Timeline Analysis
+  - - Type: SUBJECT
+- `SUBJ.STAT.001` - Statistical Manipulation Techniques
+  - - Type: SUBJECT
+- `SUBJ.MISINFO.001` - Misinformation and Disinformation
+  - - Type: SUBJECT
+- `SUBJ.DOCANALYZE.001` - Document Types and Analysis
+  - - Type: SUBJECT
+- `SUBJ.FINDOC.001` - Financial Document Analysis
+  - - Type: SUBJECT
+- `SUBJ.LEGAL.001` - Legal Document Types and Analysis
+  - - Type: SUBJECT
+- `SUBJ.EMAIL.001` - Email Analysis Techniques
+  - - Type: SUBJECT
+- `SUBJ.INTERVIEW.001` - Interview Techniques and Strategies
+  - - Type: SUBJECT
+- `SUBJ.DIFFINT.001` - Adversarial Interview Techniques
+  - - Type: SUBJECT
+- `SUBJ.WHISTLE.001` - Whistleblower Protection
+  - - Type: SUBJECT
+- `SUBJ.RELMAP.001` - Relationship Analysis
+  - - Type: SUBJECT
+- `SUBJ.MONEY.001` - Financial Flow Analysis
+  - - Type: SUBJECT
+- `SUBJ.PATTERN.001` - Pattern Analysis
+  - - Type: SUBJECT
+- `SUBJ.LIBEL.001` - Defamation Law Basics
+  - - Type: SUBJECT
+- `SUBJ.PRIVACY.001` - Privacy Rights and Ethics
+  - - Type: SUBJECT
+- `SUBJ.DECEPTION.001` - Undercover Ethics
+  - - Type: SUBJECT
+- `SUBJ.HARM.001` - Ethical Harm Minimization
+  - - Type: SUBJECT
+- `SUBJ.STORY.001` - Story Structure and Narrative
+  - - Type: SUBJECT
+- `SUBJ.QUOTESEL.001` - Effective Quote Usage
+  - - Type: SUBJECT
+- `SUBJ.CORRECT.001` - Corrections and Accountability
+  - - Type: SUBJECT
+- `SUBJ.EVIDENCE.001` - Evidence Custody and Security
+  - - Type: SUBJECT
+- `SUBJ.INTDOC.001` - Interview Documentation Standards
+  - - Type: SUBJECT
+- `SUBJ.SOURCELOG.001` - Source Contact Documentation
+  - - Type: SUBJECT
+- `SUBJ.FACTTRAIL.001` - Fact-Check Documentation
+  - - Type: SUBJECT
+
+## trigger
+- `TRG.JOUR.001` - Source Evaluation Requested
+  - - Type: TRIGGER
+- `TRG.JOUR.002` - Document Authentication Required
+  - - Type: TRIGGER
+- `TRG.JOUR.003` - Expert Validation Required
+  - - Type: TRIGGER
+- `TRG.JOUR.004` - Witness Assessment Needed
+  - - Type: TRIGGER
+- `TRG.JOUR.005` - Anonymous Source Handling
+  - - Type: TRIGGER
+- `TRG.JOUR.006` - Conflict Check Required
+  - - Type: TRIGGER
+- `TRG.JOUR.007` - Fact-Check Required
+  - - Type: TRIGGER
+- `TRG.JOUR.008` - Quote Verification Required
+  - - Type: TRIGGER
+- `TRG.JOUR.009` - Timeline Verification Needed
+  - - Type: TRIGGER
+- `TRG.JOUR.010` - Contradiction Detection Needed
+  - - Type: TRIGGER
+- `TRG.JOUR.011` - Statistical Claim Check
+  - - Type: TRIGGER
+- `TRG.JOUR.012` - Misinformation Check
+  - - Type: TRIGGER
+- `TRG.JOUR.013` - Document Analysis Required
+  - - Type: TRIGGER
+- `TRG.JOUR.014` - Financial Document Review
+  - - Type: TRIGGER
+- `TRG.JOUR.015` - Legal Document Review
+  - - Type: TRIGGER
+- `TRG.JOUR.016` - Email Analysis Required
+  - - Type: TRIGGER
+- `TRG.JOUR.017` - Interview Preparation Needed
+  - - Type: TRIGGER
+- `TRG.JOUR.018` - Difficult Interview Needed
+  - - Type: TRIGGER
+- `TRG.JOUR.019` - Source Development Required
+  - - Type: TRIGGER
+- `TRG.JOUR.020` - Whistleblower Contact
+  - - Type: TRIGGER
+- `TRG.JOUR.021` - Timeline Construction Required
+  - - Type: TRIGGER
+- `TRG.JOUR.022` - Relationship Mapping Needed
+  - - Type: TRIGGER
+- `TRG.JOUR.023` - Follow the Money
+  - - Type: TRIGGER
+- `TRG.JOUR.024` - Pattern Analysis Required
+  - - Type: TRIGGER
+- `TRG.JOUR.025` - Libel Risk Check
+  - - Type: TRIGGER
+- `TRG.JOUR.026` - Privacy Assessment Required
+  - - Type: TRIGGER
+- `TRG.JOUR.027` - Deception Assessment Required
+  - - Type: TRIGGER
+- `TRG.JOUR.028` - Harm Assessment Needed
+  - - Type: TRIGGER
+- `TRG.JOUR.029` - Story Development Needed
+  - - Type: TRIGGER
+- `TRG.JOUR.030` - Quote Integration Needed
+  - - Type: TRIGGER
+- `TRG.JOUR.031` - Pre-Publication Fact-Check
+  - - Type: TRIGGER
+- `TRG.JOUR.032` - Correction Required
+  - - Type: TRIGGER
+- `TRG.JOUR.033` - Evidence Custody Required
+  - - Type: TRIGGER
+- `TRG.JOUR.034` - Interview Documentation Required
+  - - Type: TRIGGER
+- `TRG.JOUR.035` - Source Contact Logging Required
+  - - Type: TRIGGER
+- `TRG.JOUR.036` - Fact-Check Trail Required
+  - - Type: TRIGGER
+
+## unknown
+- `VER.SOURCE.001` - Source Assessment Completeness
+  - - Type: VERIFICATION
+- `VER.DOC.001` - Document Authentication Verification
+  - - Type: VERIFICATION
+- `VER.FACT.001` - Fact-Check Verification
+  - - Type: VERIFICATION
+- `VER.FACTCHECK.001` - Pre-Publication Verification Checklist
+  - - Type: VERIFICATION
+

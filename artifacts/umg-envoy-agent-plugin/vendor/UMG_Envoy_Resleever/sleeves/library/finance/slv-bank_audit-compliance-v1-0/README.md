@@ -1,18 +1,16 @@
 # BANK ACCOUNT COMPLIANCE AUDITOR - COMPLETE SLEEVE STRUCTURE
 
 ## What this sleeve is
-# BANK ACCOUNT COMPLIANCE AUDITOR - COMPLETE SLEEVE STRUCTURE ## Text-Based Hierarchy: NeoStacks → NeoBlocks → MOLT Blocks **Sleeve ID:** SLV.BANK_AUDIT.COMPLIANCE.v1.0 **Total Components:** 7 NeoStacks | 38 NeoBlocks | 147 MOLT Blocks --- ## GOVERNANCE LAYER (PRIMARY VALUES)
+Admitted sleeve in category `finance` with preserved source and extracted structure inventories.
 
-## Category
-finance
+## What is actually extracted here
+- NeoStacks extracted: 0
+- NeoBlocks extracted: 38
+- MOLT blocks extracted: 126
 
-## Source form currently available
-- Preserved source file: `source.md`
-- Preserved package: `bank-audit-sleeve-v1.0.0.zip`
-- This sleeve has been admitted into the categorized library during Phase 2 intake.
-
-## What to open next
-- `source.md` or `source.txt` if present
-- `README.md` for the quick human summary
-- `STRUCTURE.md` for the high-level structure view
-- `NEOSTACKS.md`, `NEOBLOCKS.md`, and `MOLT-BLOCKS.md` for organized visibility
+## What to open
+- `source.md` or `source.txt` for the original sleeve source
+- `STRUCTURE.md` for the summary view
+- `NEOSTACKS.md` for extracted stack sections
+- `NEOBLOCKS.md` for extracted neoblock sections
+- `MOLT-BLOCKS.md` for extracted block inventory

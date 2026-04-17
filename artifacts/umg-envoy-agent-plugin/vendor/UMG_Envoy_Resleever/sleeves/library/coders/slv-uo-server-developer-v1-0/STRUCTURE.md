@@ -1,11 +1,16 @@
 # Structure - ULTIMA ONLINE SERVER DEVELOPER - COMPLETE SLEEVE STRUCTURE
 
-- Sleeve ID: `SLV.UO.SERVER.DEVELOPER.v1.0`
 - Category: `coders`
-- Source type: `markdown-structure`
+- Extracted NeoStacks: 8
+- Extracted NeoBlocks: 1
+- Extracted MOLT blocks: 5
 
-## Declared counts / structure notes
-- components: ** 8 NeoStacks | 48 NeoBlocks | 184 MOLT Blocks
-
-## Intake note
-This sleeve came from the Claude Downloads intake batch and is currently preserved in admitted form pending deeper block/neoblock/neostack extraction.
+## Stack names
+- S.01 - SERVER SETUP & CONFIGURATION STACK
+- S.02 - WORLD BUILDING & MAP DESIGN STACK
+- S.03 - ITEM & EQUIPMENT SCRIPTING STACK
+- S.04 - MOBILE (NPC/CREATURE) DEVELOPMENT STACK
+- S.05 - QUEST & STORY SYSTEMS STACK
+- S.06 - CUSTOM SYSTEMS & MECHANICS STACK
+- S.07 - SERVER ADMINISTRATION & MANAGEMENT STACK
+- S.08 - TESTING & DEPLOYMENT STACK

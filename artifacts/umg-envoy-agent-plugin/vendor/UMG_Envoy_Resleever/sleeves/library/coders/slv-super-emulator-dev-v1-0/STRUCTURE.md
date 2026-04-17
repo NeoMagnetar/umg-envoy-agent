@@ -1,11 +1,16 @@
 # Structure - SUPER EMULATOR DEVELOPMENT - COMPLETE SLEEVE STRUCTURE
 
-- Sleeve ID: `SLV.SUPER.EMULATOR.DEV.v1.0`
 - Category: `coders`
-- Source type: `markdown-structure`
+- Extracted NeoStacks: 8
+- Extracted NeoBlocks: 2
+- Extracted MOLT blocks: 10
 
-## Declared counts / structure notes
-- components: ** 8 NeoStacks | 48 NeoBlocks | 208 MOLT Blocks
-
-## Intake note
-This sleeve came from the Claude Downloads intake batch and is currently preserved in admitted form pending deeper block/neoblock/neostack extraction.
+## Stack names
+- S.01 - EMULATOR CORE ARCHITECTURE STACK
+- S.02 - GRAPHICS & RENDERING STACK
+- S.03 - AUDIO & SOUND PROCESSING STACK
+- S.04 - INPUT & CONTROLLER MANAGEMENT STACK
+- S.05 - ROM MANAGEMENT & UNIVERSAL FORMAT STACK
+- S.06 - SAVE STATE & PERSISTENCE STACK
+- S.07 - FRONTEND & USER INTERFACE STACK
+- S.08 - TESTING & ACCURACY VALIDATION STACK

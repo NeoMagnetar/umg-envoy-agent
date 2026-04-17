@@ -1,11 +1,16 @@
 # Structure - BUSINESS AUTOMATION CONSULTANT - COMPLETE SLEEVE STRUCTURE
 
-- Sleeve ID: `SLV.BUSINESS.AUTOMATION.CONSULTANT.v1.0`
 - Category: `business`
-- Source type: `markdown-structure`
+- Extracted NeoStacks: 8
+- Extracted NeoBlocks: 1
+- Extracted MOLT blocks: 6
 
-## Declared counts / structure notes
-- components: ** 8 NeoStacks | 48 NeoBlocks | 192 MOLT Blocks
-
-## Intake note
-This sleeve came from the Claude Downloads intake batch and is currently preserved in admitted form pending deeper block/neoblock/neostack extraction.
+## Stack names
+- S.01 - BUSINESS ASSESSMENT & DISCOVERY STACK
+- S.02 - AUTOMATION ARCHITECTURE DESIGN STACK
+- S.03 - SOCIAL MEDIA AUTOMATION STACK
+- S.04 - OPERATIONS & PROCESS AUTOMATION STACK
+- S.05 - SCHEDULING & CALENDAR AUTOMATION STACK
+- S.06 - FINANCIAL AUTOMATION STACK
+- S.07 - IMPLEMENTATION & TRAINING STACK
+- S.08 - MONITORING & OPTIMIZATION STACK

@@ -1,0 +1,981 @@
+{
+  "sleeve_folder": "slv-journalism-investigative-v1-0",
+  "title": "INVESTIGATIVE JOURNALIST & REPORTER - COMPLETE SLEEVE STRUCTURE",
+  "category": "research",
+  "blocks_by_type": {
+    "trigger": [
+      {
+        "id": "TRG.JOUR.001",
+        "name": "Source Evaluation Requested",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.002",
+        "name": "Document Authentication Required",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.003",
+        "name": "Expert Validation Required",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.004",
+        "name": "Witness Assessment Needed",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.005",
+        "name": "Anonymous Source Handling",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.006",
+        "name": "Conflict Check Required",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.007",
+        "name": "Fact-Check Required",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.008",
+        "name": "Quote Verification Required",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.009",
+        "name": "Timeline Verification Needed",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.010",
+        "name": "Contradiction Detection Needed",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.011",
+        "name": "Statistical Claim Check",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.012",
+        "name": "Misinformation Check",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.013",
+        "name": "Document Analysis Required",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.014",
+        "name": "Financial Document Review",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.015",
+        "name": "Legal Document Review",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.016",
+        "name": "Email Analysis Required",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.017",
+        "name": "Interview Preparation Needed",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.018",
+        "name": "Difficult Interview Needed",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.019",
+        "name": "Source Development Required",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.020",
+        "name": "Whistleblower Contact",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.021",
+        "name": "Timeline Construction Required",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.022",
+        "name": "Relationship Mapping Needed",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.023",
+        "name": "Follow the Money",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.024",
+        "name": "Pattern Analysis Required",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.025",
+        "name": "Libel Risk Check",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.026",
+        "name": "Privacy Assessment Required",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.027",
+        "name": "Deception Assessment Required",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.028",
+        "name": "Harm Assessment Needed",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.029",
+        "name": "Story Development Needed",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.030",
+        "name": "Quote Integration Needed",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.031",
+        "name": "Pre-Publication Fact-Check",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.032",
+        "name": "Correction Required",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.033",
+        "name": "Evidence Custody Required",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.034",
+        "name": "Interview Documentation Required",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.035",
+        "name": "Source Contact Logging Required",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.JOUR.036",
+        "name": "Fact-Check Trail Required",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      }
+    ],
+    "directive": [
+      {
+        "id": "DIR.JOUR.001",
+        "name": "Assess Source Reliability",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.002",
+        "name": "Authenticate Document Evidence",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.003",
+        "name": "Validate Expert Credentials",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.004",
+        "name": "Assess Witness Reliability",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.005",
+        "name": "Protect Source Identity While Maintaining Credibility",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.006",
+        "name": "Identify Conflicts of Interest",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.007",
+        "name": "Verify All Factual Claims",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.008",
+        "name": "Verify Quote Accuracy and Context",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.009",
+        "name": "Detect Timeline Inconsistencies",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.010",
+        "name": "Identify and Resolve Contradictions",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.011",
+        "name": "Identify Misinformation and Manipulation",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.012",
+        "name": "Extract and Analyze Document Content",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.013",
+        "name": "Analyze Financial Records",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.014",
+        "name": "Analyze Legal Documents",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.015",
+        "name": "Analyze Email Communications",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE  "
+      },
+      {
+        "id": "DIR.JOUR.016",
+        "name": "Prepare Comprehensive Interview Strategy",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.017",
+        "name": "Conduct Effective Adversarial Interview",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.018",
+        "name": "Develop Reliable Source Network",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.019",
+        "name": "Protect and Verify Whistleblower Information",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.020",
+        "name": "Build Comprehensive Timeline",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.021",
+        "name": "Map Relationship Networks",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.022",
+        "name": "Trace Financial Flows",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.023",
+        "name": "Identify Systemic Patterns",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.024",
+        "name": "Minimize Defamation Risk",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.025",
+        "name": "Balance Privacy and Public Interest",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.026",
+        "name": "Justify and Minimize Deception",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.027",
+        "name": "Minimize Harm While Pursuing Truth",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.028",
+        "name": "Develop Compelling Evidence-Based Narrative",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.029",
+        "name": "Select and Integrate Quotes Effectively",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.030",
+        "name": "Verify All Facts Before Publication",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.031",
+        "name": "Correct Errors Promptly and Transparently",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.032",
+        "name": "Maintain Evidence Integrity",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.033",
+        "name": "Document Interviews Comprehensively",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.034",
+        "name": "Log All Source Contacts",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.JOUR.035",
+        "name": "Document All Verification Efforts",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      }
+    ],
+    "instruction": [
+      {
+        "id": "INST.SOURCE.001",
+        "name": "Source Credibility Assessment Procedure",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.SOURCE.002",
+        "name": "Source Motivation Analysis",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.DOC.001",
+        "name": "Document Authentication Procedure",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.DOC.002",
+        "name": "Metadata Extraction and Analysis",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.EXPERT.001",
+        "name": "Expert Validation Procedure",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.WITNESS.001",
+        "name": "Witness Credibility Procedure",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.ANON.001",
+        "name": "Anonymous Source Protocol",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.ANON.002",
+        "name": "Source Protection Security",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.CONFLICT.001",
+        "name": "Conflict Detection Procedure",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.FACT.001",
+        "name": "Fact-Checking Procedure",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.FACT.002",
+        "name": "Statistical Verification",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION  "
+      },
+      {
+        "id": "INST.QUOTE.001",
+        "name": "Quote Verification Procedure",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.TIMELINE.001",
+        "name": "Timeline Construction and Verification",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.CONTRA.001",
+        "name": "Contradiction Analysis Procedure",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.STAT.002",
+        "name": "Detect Statistical Manipulation",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.MISINFO.001",
+        "name": "Misinformation Detection Procedure",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.DOCANALYZE.001",
+        "name": "Document Analysis Procedure",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.DOCANALYZE.002",
+        "name": "Multi-Document Pattern Analysis",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.FINDOC.001",
+        "name": "Financial Document Analysis Procedure",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.FINDOC.002",
+        "name": "Red Flag Detection in Financial Documents",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.LEGAL.001",
+        "name": "Legal Document Analysis Procedure",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.EMAIL.001",
+        "name": "Email Analysis Procedure",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.INTERVIEW.001",
+        "name": "Interview Preparation Procedure",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.INTERVIEW.002",
+        "name": "Question Development",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.DIFFINT.001",
+        "name": "Adversarial Interview Procedure",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.SOURCEDEV.001",
+        "name": "Source Development Procedure",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.SOURCEDEV.002",
+        "name": "Source Protection Operational Security",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.WHISTLE.001",
+        "name": "Whistleblower Management Procedure",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.TIMEVIS.001",
+        "name": "Timeline Visualization",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.RELMAP.001",
+        "name": "Relationship Mapping Procedure",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.RELMAP.002",
+        "name": "Network Visualization",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.MONEY.001",
+        "name": "Money Trail Procedure",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.PATTERN.001",
+        "name": "Pattern Recognition Procedure",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.LIBEL.001",
+        "name": "Defamation Risk Assessment",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.LIBEL.002",
+        "name": "Truth Defense Preparation",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.PRIVACY.001",
+        "name": "Privacy Assessment Procedure",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.DECEPTION.001",
+        "name": "Deception Ethics Assessment",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.HARM.001",
+        "name": "Harm Assessment and Minimization",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.STORY.001",
+        "name": "Story Structure Development",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.STORY.002",
+        "name": "Lede and Nut Graf Development",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.QUOTESEL.001",
+        "name": "Quote Selection Procedure",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.FACTCHECK.001",
+        "name": "Pre-Publication Fact-Checking Procedure",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.CORRECT.001",
+        "name": "Correction Procedure",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.EVIDENCE.001",
+        "name": "Evidence Management Procedure",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.INTDOC.001",
+        "name": "Interview Documentation Procedure",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.SOURCELOG.001",
+        "name": "Source Contact Logging Procedure",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.FACTTRAIL.001",
+        "name": "Fact-Check Audit Trail Procedure",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      }
+    ],
+    "subject": [
+      {
+        "id": "SUBJ.SOURCE.001",
+        "name": "Source Types and Reliability",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.DOC.001",
+        "name": "Document Authenticity Indicators",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.EXPERT.001",
+        "name": "Expert Source Considerations",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.WITNESS.001",
+        "name": "Eyewitness Reliability Factors",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.ANON.001",
+        "name": "Anonymous Source Standards",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.CONFLICT.001",
+        "name": "Conflict of Interest Types",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.FACT.001",
+        "name": "Fact-Checking Standards",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.QUOTE.001",
+        "name": "Quote Standards and Ethics",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.TIMELINE.001",
+        "name": "Timeline Analysis",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.STAT.001",
+        "name": "Statistical Manipulation Techniques",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.MISINFO.001",
+        "name": "Misinformation and Disinformation",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.DOCANALYZE.001",
+        "name": "Document Types and Analysis",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.FINDOC.001",
+        "name": "Financial Document Analysis",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.LEGAL.001",
+        "name": "Legal Document Types and Analysis",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.EMAIL.001",
+        "name": "Email Analysis Techniques",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.INTERVIEW.001",
+        "name": "Interview Techniques and Strategies",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.DIFFINT.001",
+        "name": "Adversarial Interview Techniques",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.WHISTLE.001",
+        "name": "Whistleblower Protection",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.RELMAP.001",
+        "name": "Relationship Analysis",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.MONEY.001",
+        "name": "Financial Flow Analysis",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.PATTERN.001",
+        "name": "Pattern Analysis",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.LIBEL.001",
+        "name": "Defamation Law Basics",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.PRIVACY.001",
+        "name": "Privacy Rights and Ethics",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.DECEPTION.001",
+        "name": "Undercover Ethics",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.HARM.001",
+        "name": "Ethical Harm Minimization",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.STORY.001",
+        "name": "Story Structure and Narrative",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.QUOTESEL.001",
+        "name": "Effective Quote Usage",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.CORRECT.001",
+        "name": "Corrections and Accountability",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.EVIDENCE.001",
+        "name": "Evidence Custody and Security",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.INTDOC.001",
+        "name": "Interview Documentation Standards",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.SOURCELOG.001",
+        "name": "Source Contact Documentation",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.FACTTRAIL.001",
+        "name": "Fact-Check Documentation",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      }
+    ],
+    "philosophy": [
+      {
+        "id": "PHIL.JOUR.001",
+        "name": "Skeptical Trust",
+        "moltType": "philosophy",
+        "content": "- Type: PHILOSOPHY"
+      },
+      {
+        "id": "PHIL.JOUR.002",
+        "name": "Truth Over Tidiness",
+        "moltType": "philosophy",
+        "content": "- Type: PHILOSOPHY"
+      }
+    ],
+    "unknown": [
+      {
+        "id": "VER.SOURCE.001",
+        "name": "Source Assessment Completeness",
+        "moltType": "unknown",
+        "content": "- Type: VERIFICATION"
+      },
+      {
+        "id": "VER.DOC.001",
+        "name": "Document Authentication Verification",
+        "moltType": "unknown",
+        "content": "- Type: VERIFICATION"
+      },
+      {
+        "id": "VER.FACT.001",
+        "name": "Fact-Check Verification",
+        "moltType": "unknown",
+        "content": "- Type: VERIFICATION"
+      },
+      {
+        "id": "VER.FACTCHECK.001",
+        "name": "Pre-Publication Verification Checklist",
+        "moltType": "unknown",
+        "content": "- Type: VERIFICATION"
+      }
+    ],
+    "blueprint": [
+      {
+        "id": "BP.SOURCE.001",
+        "name": "Source Profile Template",
+        "moltType": "blueprint",
+        "content": "- Type: BLUEPRINT"
+      },
+      {
+        "id": "BP.TIMELINE.001",
+        "name": "Timeline Visualization Template",
+        "moltType": "blueprint",
+        "content": "- Type: BLUEPRINT"
+      },
+      {
+        "id": "BP.RELMAP.001",
+        "name": "Relationship Map Template",
+        "moltType": "blueprint",
+        "content": "- Type: BLUEPRINT"
+      },
+      {
+        "id": "BP.STORY.001",
+        "name": "Investigative Story Template",
+        "moltType": "blueprint",
+        "content": "- Type: BLUEPRINT"
+      }
+    ]
+  }
+}
