@@ -1,0 +1,281 @@
+{
+  "generated_at": "2026-04-17T23:41:00Z",
+  "stores": {
+    "neostacks": {
+      "count": 5,
+      "path": "blocks\\library\\neostacks"
+    },
+    "neoblocks": {
+      "count": 8,
+      "path": "blocks\\library\\neoblocks"
+    },
+    "molt-extracted": {
+      "count": 10,
+      "path": "blocks\\library\\molt-extracted"
+    }
+  },
+  "entries": [
+    {
+      "store": "neostacks",
+      "id": "slv-business-automation-consultant-v1-0",
+      "title": "BUSINESS AUTOMATION CONSULTANT - COMPLETE SLEEVE STRUCTURE",
+      "category": "business",
+      "path": "blocks\\library\\neostacks\\slv-business-automation-consultant-v1-0.json",
+      "declared_count": 8
+    },
+    {
+      "store": "neostacks",
+      "id": "slv-idaho-grants-finder-v1-0",
+      "title": "IDAHO GRANT FINDER - COMPLETE SLEEVE STRUCTURE",
+      "category": "finance",
+      "path": "blocks\\library\\neostacks\\slv-idaho-grants-finder-v1-0.json",
+      "declared_count": 8
+    },
+    {
+      "store": "neostacks",
+      "id": "slv-super-emulator-dev-v1-0",
+      "title": "SUPER EMULATOR DEVELOPMENT - COMPLETE SLEEVE STRUCTURE",
+      "category": "coders",
+      "path": "blocks\\library\\neostacks\\slv-super-emulator-dev-v1-0.json",
+      "declared_count": 8
+    },
+    {
+      "store": "neostacks",
+      "id": "slv-uo-server-developer-v1-0",
+      "title": "ULTIMA ONLINE SERVER DEVELOPER - COMPLETE SLEEVE STRUCTURE",
+      "category": "coders",
+      "path": "blocks\\library\\neostacks\\slv-uo-server-developer-v1-0.json",
+      "declared_count": 8
+    },
+    {
+      "store": "neostacks",
+      "id": "slv-vrchat-developer-v1-0",
+      "title": "VRCHAT/BLENDER DEVELOPER - COMPLETE SLEEVE STRUCTURE",
+      "category": "coders",
+      "path": "blocks\\library\\neostacks\\slv-vrchat-developer-v1-0.json",
+      "declared_count": 8
+    },
+    {
+      "store": "neoblocks",
+      "id": "slv-bank_audit-compliance-v1-0",
+      "title": "BANK ACCOUNT COMPLIANCE AUDITOR - COMPLETE SLEEVE STRUCTURE",
+      "category": "finance",
+      "path": "blocks\\library\\neoblocks\\slv-bank_audit-compliance-v1-0.json",
+      "declared_count": 38
+    },
+    {
+      "store": "neoblocks",
+      "id": "slv-business-automation-consultant-v1-0",
+      "title": "BUSINESS AUTOMATION CONSULTANT - COMPLETE SLEEVE STRUCTURE",
+      "category": "business",
+      "path": "blocks\\library\\neoblocks\\slv-business-automation-consultant-v1-0.json",
+      "declared_count": 1
+    },
+    {
+      "store": "neoblocks",
+      "id": "slv-idaho-grants-finder-v1-0",
+      "title": "IDAHO GRANT FINDER - COMPLETE SLEEVE STRUCTURE",
+      "category": "finance",
+      "path": "blocks\\library\\neoblocks\\slv-idaho-grants-finder-v1-0.json",
+      "declared_count": 2
+    },
+    {
+      "store": "neoblocks",
+      "id": "slv-investigative-intelligence-v1-0",
+      "title": "INVESTIGATIVE INTELLIGENCE AGENT - COMPLETE UMG SLEEVE",
+      "category": "research",
+      "path": "blocks\\library\\neoblocks\\slv-investigative-intelligence-v1-0.json",
+      "declared_count": 11
+    },
+    {
+      "store": "neoblocks",
+      "id": "slv-journalism-investigative-v1-0",
+      "title": "INVESTIGATIVE JOURNALIST & REPORTER - COMPLETE SLEEVE STRUCTURE",
+      "category": "research",
+      "path": "blocks\\library\\neoblocks\\slv-journalism-investigative-v1-0.json",
+      "declared_count": 36
+    },
+    {
+      "store": "neoblocks",
+      "id": "slv-nonprofit-financing-v1-0",
+      "title": "NONPROFIT FINANCING AGENT - COMPLETE UMG SLEEVE",
+      "category": "meta-random",
+      "path": "blocks\\library\\neoblocks\\slv-nonprofit-financing-v1-0.json",
+      "declared_count": 10
+    },
+    {
+      "store": "neoblocks",
+      "id": "slv-super-emulator-dev-v1-0",
+      "title": "SUPER EMULATOR DEVELOPMENT - COMPLETE SLEEVE STRUCTURE",
+      "category": "coders",
+      "path": "blocks\\library\\neoblocks\\slv-super-emulator-dev-v1-0.json",
+      "declared_count": 2
+    },
+    {
+      "store": "neoblocks",
+      "id": "slv-uo-server-developer-v1-0",
+      "title": "ULTIMA ONLINE SERVER DEVELOPER - COMPLETE SLEEVE STRUCTURE",
+      "category": "coders",
+      "path": "blocks\\library\\neoblocks\\slv-uo-server-developer-v1-0.json",
+      "declared_count": 1
+    },
+    {
+      "store": "molt-extracted",
+      "id": "slv-bank_audit-compliance-v1-0",
+      "title": "BANK ACCOUNT COMPLIANCE AUDITOR - COMPLETE SLEEVE STRUCTURE",
+      "category": "finance",
+      "path": "blocks\\library\\molt-extracted\\slv-bank_audit-compliance-v1-0.json",
+      "declared_count": 126,
+      "types": [
+        "blueprint",
+        "directive",
+        "instruction",
+        "philosophy",
+        "subject",
+        "trigger",
+        "unknown"
+      ]
+    },
+    {
+      "store": "molt-extracted",
+      "id": "slv-business-automation-consultant-v1-0",
+      "title": "BUSINESS AUTOMATION CONSULTANT - COMPLETE SLEEVE STRUCTURE",
+      "category": "business",
+      "path": "blocks\\library\\molt-extracted\\slv-business-automation-consultant-v1-0.json",
+      "declared_count": 6,
+      "types": [
+        "blueprint",
+        "directive",
+        "instruction",
+        "philosophy",
+        "subject",
+        "trigger"
+      ]
+    },
+    {
+      "store": "molt-extracted",
+      "id": "slv-idaho-grants-finder-v1-0",
+      "title": "IDAHO GRANT FINDER - COMPLETE SLEEVE STRUCTURE",
+      "category": "finance",
+      "path": "blocks\\library\\molt-extracted\\slv-idaho-grants-finder-v1-0.json",
+      "declared_count": 10,
+      "types": [
+        "blueprint",
+        "directive",
+        "instruction",
+        "philosophy",
+        "subject",
+        "trigger"
+      ]
+    },
+    {
+      "store": "molt-extracted",
+      "id": "slv-investigative-intelligence-v1-0",
+      "title": "INVESTIGATIVE INTELLIGENCE AGENT - COMPLETE UMG SLEEVE",
+      "category": "research",
+      "path": "blocks\\library\\molt-extracted\\slv-investigative-intelligence-v1-0.json",
+      "declared_count": 34,
+      "types": [
+        "aim",
+        "blueprint",
+        "directive",
+        "instruction",
+        "need",
+        "philosophy",
+        "subject",
+        "trigger",
+        "unknown"
+      ]
+    },
+    {
+      "store": "molt-extracted",
+      "id": "slv-journalism-investigative-v1-0",
+      "title": "INVESTIGATIVE JOURNALIST & REPORTER - COMPLETE SLEEVE STRUCTURE",
+      "category": "research",
+      "path": "blocks\\library\\molt-extracted\\slv-journalism-investigative-v1-0.json",
+      "declared_count": 160,
+      "types": [
+        "blueprint",
+        "directive",
+        "instruction",
+        "philosophy",
+        "subject",
+        "trigger",
+        "unknown"
+      ]
+    },
+    {
+      "store": "molt-extracted",
+      "id": "slv-nonprofit-financing-v1-0",
+      "title": "NONPROFIT FINANCING AGENT - COMPLETE UMG SLEEVE",
+      "category": "meta-random",
+      "path": "blocks\\library\\molt-extracted\\slv-nonprofit-financing-v1-0.json",
+      "declared_count": 37,
+      "types": [
+        "aim",
+        "blueprint",
+        "directive",
+        "instruction",
+        "need",
+        "philosophy",
+        "subject",
+        "trigger",
+        "unknown",
+        "use"
+      ]
+    },
+    {
+      "store": "molt-extracted",
+      "id": "slv-super-emulator-dev-v1-0",
+      "title": "SUPER EMULATOR DEVELOPMENT - COMPLETE SLEEVE STRUCTURE",
+      "category": "coders",
+      "path": "blocks\\library\\molt-extracted\\slv-super-emulator-dev-v1-0.json",
+      "declared_count": 10,
+      "types": [
+        "blueprint",
+        "directive",
+        "instruction",
+        "philosophy",
+        "subject",
+        "trigger"
+      ]
+    },
+    {
+      "store": "molt-extracted",
+      "id": "slv-uo-server-developer-v1-0",
+      "title": "ULTIMA ONLINE SERVER DEVELOPER - COMPLETE SLEEVE STRUCTURE",
+      "category": "coders",
+      "path": "blocks\\library\\molt-extracted\\slv-uo-server-developer-v1-0.json",
+      "declared_count": 5,
+      "types": [
+        "blueprint",
+        "directive",
+        "instruction",
+        "subject",
+        "trigger"
+      ]
+    },
+    {
+      "store": "molt-extracted",
+      "id": "umg_envoy_project_launcher_complete_sleeve",
+      "title": "UMG.ENVOY.PROJECT_LAUNCHER - Complete Sleeve Specification",
+      "category": "meta-random",
+      "path": "blocks\\library\\molt-extracted\\umg_envoy_project_launcher_complete_sleeve.json",
+      "declared_count": 26,
+      "types": [
+        "unknown"
+      ]
+    },
+    {
+      "store": "molt-extracted",
+      "id": "umg_skill_creator_complete_sleeve",
+      "title": "UMG.ENVOY.SKILL_CREATOR - Complete Specification",
+      "category": "meta-random",
+      "path": "blocks\\library\\molt-extracted\\umg_skill_creator_complete_sleeve.json",
+      "declared_count": 19,
+      "types": [
+        "unknown"
+      ]
+    }
+  ]
+}

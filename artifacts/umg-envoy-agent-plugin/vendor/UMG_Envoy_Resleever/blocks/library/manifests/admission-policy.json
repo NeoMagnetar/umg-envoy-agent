@@ -1,0 +1,8 @@
+{
+  "generated_at": "2026-04-17T23:41:00Z",
+  "policy": {
+    "main_normalized_molt_libraries": "not automatically mutated in phase 4",
+    "extracted_library_layer": "used as canonical structured intake for admitted sleeve artifacts",
+    "dedupe": "performed at sleeve artifact store level by sleeve folder id; deeper semantic block dedupe remains future work"
+  }
+}

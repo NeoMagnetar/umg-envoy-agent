@@ -1,0 +1,171 @@
+{
+  "generated_at": "2026-04-17T23:41:00Z",
+  "categories": [
+    {
+      "category": "business",
+      "stores": {
+        "neostacks": [
+          {
+            "id": "slv-business-automation-consultant-v1-0",
+            "title": "BUSINESS AUTOMATION CONSULTANT - COMPLETE SLEEVE STRUCTURE",
+            "path": "blocks\\library\\neostacks\\slv-business-automation-consultant-v1-0.json"
+          }
+        ],
+        "neoblocks": [
+          {
+            "id": "slv-business-automation-consultant-v1-0",
+            "title": "BUSINESS AUTOMATION CONSULTANT - COMPLETE SLEEVE STRUCTURE",
+            "path": "blocks\\library\\neoblocks\\slv-business-automation-consultant-v1-0.json"
+          }
+        ],
+        "molt-extracted": [
+          {
+            "id": "slv-business-automation-consultant-v1-0",
+            "title": "BUSINESS AUTOMATION CONSULTANT - COMPLETE SLEEVE STRUCTURE",
+            "path": "blocks\\library\\molt-extracted\\slv-business-automation-consultant-v1-0.json"
+          }
+        ]
+      }
+    },
+    {
+      "category": "coders",
+      "stores": {
+        "neostacks": [
+          {
+            "id": "slv-super-emulator-dev-v1-0",
+            "title": "SUPER EMULATOR DEVELOPMENT - COMPLETE SLEEVE STRUCTURE",
+            "path": "blocks\\library\\neostacks\\slv-super-emulator-dev-v1-0.json"
+          },
+          {
+            "id": "slv-uo-server-developer-v1-0",
+            "title": "ULTIMA ONLINE SERVER DEVELOPER - COMPLETE SLEEVE STRUCTURE",
+            "path": "blocks\\library\\neostacks\\slv-uo-server-developer-v1-0.json"
+          },
+          {
+            "id": "slv-vrchat-developer-v1-0",
+            "title": "VRCHAT/BLENDER DEVELOPER - COMPLETE SLEEVE STRUCTURE",
+            "path": "blocks\\library\\neostacks\\slv-vrchat-developer-v1-0.json"
+          }
+        ],
+        "neoblocks": [
+          {
+            "id": "slv-super-emulator-dev-v1-0",
+            "title": "SUPER EMULATOR DEVELOPMENT - COMPLETE SLEEVE STRUCTURE",
+            "path": "blocks\\library\\neoblocks\\slv-super-emulator-dev-v1-0.json"
+          },
+          {
+            "id": "slv-uo-server-developer-v1-0",
+            "title": "ULTIMA ONLINE SERVER DEVELOPER - COMPLETE SLEEVE STRUCTURE",
+            "path": "blocks\\library\\neoblocks\\slv-uo-server-developer-v1-0.json"
+          }
+        ],
+        "molt-extracted": [
+          {
+            "id": "slv-super-emulator-dev-v1-0",
+            "title": "SUPER EMULATOR DEVELOPMENT - COMPLETE SLEEVE STRUCTURE",
+            "path": "blocks\\library\\molt-extracted\\slv-super-emulator-dev-v1-0.json"
+          },
+          {
+            "id": "slv-uo-server-developer-v1-0",
+            "title": "ULTIMA ONLINE SERVER DEVELOPER - COMPLETE SLEEVE STRUCTURE",
+            "path": "blocks\\library\\molt-extracted\\slv-uo-server-developer-v1-0.json"
+          }
+        ]
+      }
+    },
+    {
+      "category": "finance",
+      "stores": {
+        "neostacks": [
+          {
+            "id": "slv-idaho-grants-finder-v1-0",
+            "title": "IDAHO GRANT FINDER - COMPLETE SLEEVE STRUCTURE",
+            "path": "blocks\\library\\neostacks\\slv-idaho-grants-finder-v1-0.json"
+          }
+        ],
+        "neoblocks": [
+          {
+            "id": "slv-bank_audit-compliance-v1-0",
+            "title": "BANK ACCOUNT COMPLIANCE AUDITOR - COMPLETE SLEEVE STRUCTURE",
+            "path": "blocks\\library\\neoblocks\\slv-bank_audit-compliance-v1-0.json"
+          },
+          {
+            "id": "slv-idaho-grants-finder-v1-0",
+            "title": "IDAHO GRANT FINDER - COMPLETE SLEEVE STRUCTURE",
+            "path": "blocks\\library\\neoblocks\\slv-idaho-grants-finder-v1-0.json"
+          }
+        ],
+        "molt-extracted": [
+          {
+            "id": "slv-bank_audit-compliance-v1-0",
+            "title": "BANK ACCOUNT COMPLIANCE AUDITOR - COMPLETE SLEEVE STRUCTURE",
+            "path": "blocks\\library\\molt-extracted\\slv-bank_audit-compliance-v1-0.json"
+          },
+          {
+            "id": "slv-idaho-grants-finder-v1-0",
+            "title": "IDAHO GRANT FINDER - COMPLETE SLEEVE STRUCTURE",
+            "path": "blocks\\library\\molt-extracted\\slv-idaho-grants-finder-v1-0.json"
+          }
+        ]
+      }
+    },
+    {
+      "category": "meta-random",
+      "stores": {
+        "neoblocks": [
+          {
+            "id": "slv-nonprofit-financing-v1-0",
+            "title": "NONPROFIT FINANCING AGENT - COMPLETE UMG SLEEVE",
+            "path": "blocks\\library\\neoblocks\\slv-nonprofit-financing-v1-0.json"
+          }
+        ],
+        "molt-extracted": [
+          {
+            "id": "slv-nonprofit-financing-v1-0",
+            "title": "NONPROFIT FINANCING AGENT - COMPLETE UMG SLEEVE",
+            "path": "blocks\\library\\molt-extracted\\slv-nonprofit-financing-v1-0.json"
+          },
+          {
+            "id": "umg_envoy_project_launcher_complete_sleeve",
+            "title": "UMG.ENVOY.PROJECT_LAUNCHER - Complete Sleeve Specification",
+            "path": "blocks\\library\\molt-extracted\\umg_envoy_project_launcher_complete_sleeve.json"
+          },
+          {
+            "id": "umg_skill_creator_complete_sleeve",
+            "title": "UMG.ENVOY.SKILL_CREATOR - Complete Specification",
+            "path": "blocks\\library\\molt-extracted\\umg_skill_creator_complete_sleeve.json"
+          }
+        ]
+      }
+    },
+    {
+      "category": "research",
+      "stores": {
+        "neoblocks": [
+          {
+            "id": "slv-investigative-intelligence-v1-0",
+            "title": "INVESTIGATIVE INTELLIGENCE AGENT - COMPLETE UMG SLEEVE",
+            "path": "blocks\\library\\neoblocks\\slv-investigative-intelligence-v1-0.json"
+          },
+          {
+            "id": "slv-journalism-investigative-v1-0",
+            "title": "INVESTIGATIVE JOURNALIST & REPORTER - COMPLETE SLEEVE STRUCTURE",
+            "path": "blocks\\library\\neoblocks\\slv-journalism-investigative-v1-0.json"
+          }
+        ],
+        "molt-extracted": [
+          {
+            "id": "slv-investigative-intelligence-v1-0",
+            "title": "INVESTIGATIVE INTELLIGENCE AGENT - COMPLETE UMG SLEEVE",
+            "path": "blocks\\library\\molt-extracted\\slv-investigative-intelligence-v1-0.json"
+          },
+          {
+            "id": "slv-journalism-investigative-v1-0",
+            "title": "INVESTIGATIVE JOURNALIST & REPORTER - COMPLETE SLEEVE STRUCTURE",
+            "path": "blocks\\library\\molt-extracted\\slv-journalism-investigative-v1-0.json"
+          }
+        ]
+      }
+    }
+  ]
+}
