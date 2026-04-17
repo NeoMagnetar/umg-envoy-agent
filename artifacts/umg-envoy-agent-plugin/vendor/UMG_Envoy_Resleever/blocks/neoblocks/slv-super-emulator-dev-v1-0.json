@@ -1,0 +1,15 @@
+{
+  "sleeve_folder": "slv-super-emulator-dev-v1-0",
+  "title": "SUPER EMULATOR DEVELOPMENT - COMPLETE SLEEVE STRUCTURE",
+  "category": "coders",
+  "neoblocks": [
+    {
+      "id": "N.01.01",
+      "name": "CPU Emulation Framework"
+    },
+    {
+      "id": "N.01.02",
+      "name": "Memory Management and Mapping"
+    }
+  ]
+}

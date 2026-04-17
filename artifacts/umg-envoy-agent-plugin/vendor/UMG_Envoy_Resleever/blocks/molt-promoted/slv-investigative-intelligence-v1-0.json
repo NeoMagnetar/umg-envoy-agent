@@ -1,0 +1,230 @@
+{
+  "sleeve_folder": "slv-investigative-intelligence-v1-0",
+  "title": "INVESTIGATIVE INTELLIGENCE AGENT - COMPLETE UMG SLEEVE",
+  "category": "research",
+  "promoted_blocks_by_type": {
+    "trigger": [
+      {
+        "id": "TRG.INV.001",
+        "name": "New Investigation Request",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.INV.002",
+        "name": "Location Research Required",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.INV.003",
+        "name": "Flight/Travel Research Needed",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      }
+    ],
+    "unknown": [
+      {
+        "id": "STRAT.INV.001",
+        "name": "Systematic Investigation Planning",
+        "moltType": "unknown",
+        "content": "- Type: STRATEGY"
+      },
+      {
+        "id": "STRAT.INV.002",
+        "name": "Multi-Source Location Verification",
+        "moltType": "unknown",
+        "content": "- Type: STRATEGY"
+      },
+      {
+        "id": "STRAT.INV.003",
+        "name": "Multi-Modal Travel Verification",
+        "moltType": "unknown",
+        "content": "- Type: STRATEGY"
+      },
+      {
+        "id": "STRAT.INV.004",
+        "name": "Systematic Social Media Monitoring",
+        "moltType": "unknown",
+        "content": "- Type: STRATEGY"
+      },
+      {
+        "id": "STRAT.INV.005",
+        "name": "Evidence-Based Timeline Construction",
+        "moltType": "unknown",
+        "content": "- Type: STRATEGY"
+      },
+      {
+        "id": "STRAT.INV.006",
+        "name": "Defensible Documentation",
+        "moltType": "unknown",
+        "content": "- Type: STRATEGY"
+      }
+    ],
+    "aim": [
+      {
+        "id": "AIM.INV.001",
+        "name": "Define Investigation Objectives",
+        "moltType": "aim",
+        "content": "- Type: AIM"
+      }
+    ],
+    "need": [
+      {
+        "id": "NEED.INV.001",
+        "name": "Investigation Prerequisites",
+        "moltType": "need",
+        "content": "- Type: NEED"
+      }
+    ],
+    "directive": [
+      {
+        "id": "DIR.INV.001",
+        "name": "Establish Investigation Framework",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      }
+    ],
+    "instruction": [
+      {
+        "id": "INST.INV.001",
+        "name": "Investigation Planning Process",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.LOC.001",
+        "name": "Comprehensive Location Research",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.FLIGHT.001",
+        "name": "Flight Research Process",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.GROUND.001",
+        "name": "Ground Travel Research",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.SOCMINT.001",
+        "name": "Social Media Research Process",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.PROPERTY.001",
+        "name": "Property Record Research",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.COURT.001",
+        "name": "Court Record Research",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.BUSINESS.001",
+        "name": "Business Entity Research",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.TIMELINE.001",
+        "name": "Timeline Construction Process",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.PATTERN.001",
+        "name": "Location Pattern Recognition",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.NETWORK.001",
+        "name": "Network Mapping Process",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.REPORT.001",
+        "name": "Comprehensive Report Structure",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      }
+    ],
+    "subject": [
+      {
+        "id": "SUBJ.INV.001",
+        "name": "Investigation Types & Methods",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.VENUE.001",
+        "name": "Venue Categories & Research Methods",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      }
+    ],
+    "philosophy": [
+      {
+        "id": "PHIL.INV.001",
+        "name": "Investigation Philosophy",
+        "moltType": "philosophy",
+        "content": "- Type: PHILOSOPHY"
+      }
+    ],
+    "blueprint": [
+      {
+        "id": "BP.INV.001",
+        "name": "Investigation Plan Template",
+        "moltType": "blueprint",
+        "content": "- Type: BLUEPRINT"
+      },
+      {
+        "id": "BP.LOC.001",
+        "name": "Location Intelligence Profile",
+        "moltType": "blueprint",
+        "content": "- Type: BLUEPRINT"
+      },
+      {
+        "id": "BP.FLIGHT.001",
+        "name": "Flight Intelligence Record",
+        "moltType": "blueprint",
+        "content": "- Type: BLUEPRINT"
+      },
+      {
+        "id": "BP.SOCMINT.001",
+        "name": "Social Media Intelligence Report",
+        "moltType": "blueprint",
+        "content": "- Type: BLUEPRINT"
+      },
+      {
+        "id": "BP.TIMELINE.001",
+        "name": "Investigation Timeline",
+        "moltType": "blueprint",
+        "content": "- Type: BLUEPRINT"
+      },
+      {
+        "id": "BP.NETWORK.001",
+        "name": "Relationship Network Map",
+        "moltType": "blueprint",
+        "content": "- Type: BLUEPRINT"
+      },
+      {
+        "id": "BP.REPORT.001",
+        "name": "Final Investigation Report Template",
+        "moltType": "blueprint",
+        "content": "- Type: BLUEPRINT"
+      }
+    ]
+  },
+  "existing_ids_skipped": []
+}

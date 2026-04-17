@@ -1,0 +1,75 @@
+{
+  "generated_at": "2026-04-17T23:42:00Z",
+  "top_level_promoted_stores": {
+    "neoblocks": {
+      "path": "blocks\\neoblocks",
+      "count": 8
+    },
+    "neostacks": {
+      "path": "blocks\\neostacks",
+      "count": 5
+    },
+    "molt_promoted": {
+      "path": "blocks\\molt-promoted",
+      "count": 10
+    }
+  },
+  "policy": {
+    "main_normalized_molt_libraries_mutated": false,
+    "reason": "phase 5 uses a conservative promoted store pending deeper semantic dedupe and normalization",
+    "neoblocks_promoted_to_top_level": true,
+    "neostacks_promoted_to_top_level": true
+  },
+  "molt_promotion_summary": [
+    {
+      "id": "slv-bank_audit-compliance-v1-0",
+      "promoted_count": 126,
+      "skipped_existing": 0
+    },
+    {
+      "id": "slv-business-automation-consultant-v1-0",
+      "promoted_count": 6,
+      "skipped_existing": 0
+    },
+    {
+      "id": "slv-idaho-grants-finder-v1-0",
+      "promoted_count": 10,
+      "skipped_existing": 0
+    },
+    {
+      "id": "slv-investigative-intelligence-v1-0",
+      "promoted_count": 34,
+      "skipped_existing": 0
+    },
+    {
+      "id": "slv-journalism-investigative-v1-0",
+      "promoted_count": 160,
+      "skipped_existing": 0
+    },
+    {
+      "id": "slv-nonprofit-financing-v1-0",
+      "promoted_count": 37,
+      "skipped_existing": 0
+    },
+    {
+      "id": "slv-super-emulator-dev-v1-0",
+      "promoted_count": 10,
+      "skipped_existing": 0
+    },
+    {
+      "id": "slv-uo-server-developer-v1-0",
+      "promoted_count": 5,
+      "skipped_existing": 0
+    },
+    {
+      "id": "umg_envoy_project_launcher_complete_sleeve",
+      "promoted_count": 26,
+      "skipped_existing": 0
+    },
+    {
+      "id": "umg_skill_creator_complete_sleeve",
+      "promoted_count": 19,
+      "skipped_existing": 0
+    }
+  ]
+}

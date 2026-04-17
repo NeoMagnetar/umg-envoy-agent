@@ -1,0 +1,250 @@
+{
+  "sleeve_folder": "slv-nonprofit-financing-v1-0",
+  "title": "NONPROFIT FINANCING AGENT - COMPLETE UMG SLEEVE",
+  "category": "meta-random",
+  "promoted_blocks_by_type": {
+    "trigger": [
+      {
+        "id": "TRG.NPF.001",
+        "name": "New Nonprofit Seeking Funding Strategy",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.NPF.002",
+        "name": "Grant Research Request",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      }
+    ],
+    "unknown": [
+      {
+        "id": "STRAT.NPF.001",
+        "name": "Funding Readiness Assessment Strategy",
+        "moltType": "unknown",
+        "content": "- Type: STRATEGY"
+      },
+      {
+        "id": "STRAT.NPF.002",
+        "name": "Strategic Grant Matching",
+        "moltType": "unknown",
+        "content": "- Type: STRATEGY"
+      },
+      {
+        "id": "STRAT.NPF.003",
+        "name": "Foundation Relationship Building",
+        "moltType": "unknown",
+        "content": "- Type: STRATEGY"
+      },
+      {
+        "id": "STRAT.NPF.004",
+        "name": "Moves Management Approach",
+        "moltType": "unknown",
+        "content": "- Type: STRATEGY"
+      },
+      {
+        "id": "STRAT.NPF.005",
+        "name": "Federal Grant Navigation",
+        "moltType": "unknown",
+        "content": "- Type: STRATEGY"
+      },
+      {
+        "id": "STRAT.NPF.006",
+        "name": "Mission-Aligned Earned Revenue",
+        "moltType": "unknown",
+        "content": "- Type: STRATEGY"
+      },
+      {
+        "id": "STRAT.NPF.007",
+        "name": "Balanced Funding Portfolio",
+        "moltType": "unknown",
+        "content": "- Type: STRATEGY"
+      }
+    ],
+    "aim": [
+      {
+        "id": "AIM.NPF.001",
+        "name": "Complete Organizational Profile",
+        "moltType": "aim",
+        "content": "- Type: AIM"
+      }
+    ],
+    "need": [
+      {
+        "id": "NEED.NPF.001",
+        "name": "Nonprofit Assessment Prerequisites",
+        "moltType": "need",
+        "content": "- Type: NEED"
+      }
+    ],
+    "directive": [
+      {
+        "id": "DIR.NPF.001",
+        "name": "Conduct Comprehensive Needs Assessment",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.NPF.002",
+        "name": "Identify Top Grant Opportunities",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      }
+    ],
+    "instruction": [
+      {
+        "id": "INST.NPF.001",
+        "name": "Organizational Assessment Process",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.GRANT.001",
+        "name": "Comprehensive Grant Research Process",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.GRANT.002",
+        "name": "Winning Grant Proposal Development",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.FOUND.001",
+        "name": "Foundation Prospect Research",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.CORP.001",
+        "name": "Corporate Partnership Development",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.DONOR.001",
+        "name": "Major Donor Cultivation Process",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.FED.001",
+        "name": "Grants.gov Search and Application",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.CROWD.001",
+        "name": "Successful Crowdfunding Campaign",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.PORT.001",
+        "name": "Funding Portfolio Analysis",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      }
+    ],
+    "subject": [
+      {
+        "id": "SUBJ.NPF.001",
+        "name": "Nonprofit Funding Landscape",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.FOUND.001",
+        "name": "Foundation Types & Strategies",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.CORP.001",
+        "name": "Corporate Philanthropy Landscape",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.DONOR.001",
+        "name": "Individual Giving Fundamentals",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.FED.001",
+        "name": "Major Federal Funding Agencies",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.EARNED.001",
+        "name": "Earned Revenue Models",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      }
+    ],
+    "philosophy": [
+      {
+        "id": "PHIL.NPF.001",
+        "name": "Funding Philosophy",
+        "moltType": "philosophy",
+        "content": "- Type: PHILOSOPHY"
+      }
+    ],
+    "blueprint": [
+      {
+        "id": "BP.NPF.001",
+        "name": "Funding Assessment Template",
+        "moltType": "blueprint",
+        "content": "- Type: BLUEPRINT"
+      },
+      {
+        "id": "BP.GRANT.001",
+        "name": "Grant Opportunity Profile",
+        "moltType": "blueprint",
+        "content": "- Type: BLUEPRINT"
+      },
+      {
+        "id": "BP.GRANT.002",
+        "name": "Grant Proposal Template",
+        "moltType": "blueprint",
+        "content": "- Type: BLUEPRINT"
+      },
+      {
+        "id": "BP.FOUND.001",
+        "name": "Foundation Prospect Profile",
+        "moltType": "blueprint",
+        "content": "- Type: BLUEPRINT"
+      },
+      {
+        "id": "BP.DONOR.001",
+        "name": "Donor Cultivation Tracker",
+        "moltType": "blueprint",
+        "content": "- Type: BLUEPRINT"
+      },
+      {
+        "id": "BP.PORT.001",
+        "name": "Funding Portfolio Dashboard",
+        "moltType": "blueprint",
+        "content": "- Type: BLUEPRINT"
+      }
+    ],
+    "use": [
+      {
+        "id": "USE.NPF.001",
+        "name": "Grant Research Scenarios",
+        "moltType": "use",
+        "content": "- Type: USE"
+      },
+      {
+        "id": "USE.NPF.002",
+        "name": "When to Use Crowdfunding",
+        "moltType": "use",
+        "content": "- Type: USE"
+      }
+    ]
+  },
+  "existing_ids_skipped": []
+}

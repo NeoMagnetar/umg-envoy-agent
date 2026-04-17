@@ -1,0 +1,166 @@
+{
+  "sleeve_folder": "umg_envoy_project_launcher_complete_sleeve",
+  "title": "UMG.ENVOY.PROJECT_LAUNCHER - Complete Sleeve Specification",
+  "category": "meta-random",
+  "promoted_blocks_by_type": {
+    "unknown": [
+      {
+        "id": "PL.NB.001",
+        "name": "File Reader",
+        "moltType": "unknown",
+        "content": "- Capability: Read files from disk"
+      },
+      {
+        "id": "PL.NB.002",
+        "name": "File Writer",
+        "moltType": "unknown",
+        "content": "- Capability: Create and write files"
+      },
+      {
+        "id": "PL.NB.003",
+        "name": "Directory Navigator",
+        "moltType": "unknown",
+        "content": "- Capability: List, search, traverse directories"
+      },
+      {
+        "id": "PL.NB.004",
+        "name": "File Organizer",
+        "moltType": "unknown",
+        "content": "- Capability: Move, rename, restructure files"
+      },
+      {
+        "id": "PL.NB.005",
+        "name": "Backup Creator",
+        "moltType": "unknown",
+        "content": "- Capability: Create timestamped backups"
+      },
+      {
+        "id": "PL.NB.006",
+        "name": "Git Initializer",
+        "moltType": "unknown",
+        "content": "- Capability: Initialize repos, create .gitignore"
+      },
+      {
+        "id": "PL.NB.007",
+        "name": "Commit Manager",
+        "moltType": "unknown",
+        "content": "- Capability: Stage, commit, manage history"
+      },
+      {
+        "id": "PL.NB.008",
+        "name": "Remote Sync",
+        "moltType": "unknown",
+        "content": "- Capability: Push, pull, sync with remote"
+      },
+      {
+        "id": "PL.NB.009",
+        "name": "Repository Setup",
+        "moltType": "unknown",
+        "content": "- Capability: Create GitHub repos, configure"
+      },
+      {
+        "id": "PL.NB.010",
+        "name": "Dependency Manager",
+        "moltType": "unknown",
+        "content": "- Capability: Install npm/pip/etc packages"
+      },
+      {
+        "id": "PL.NB.011",
+        "name": "Config Generator",
+        "moltType": "unknown",
+        "content": "- Capability: Create package.json, tsconfig, etc."
+      },
+      {
+        "id": "PL.NB.012",
+        "name": "Environment Validator",
+        "moltType": "unknown",
+        "content": "- Capability: Check if environment works"
+      },
+      {
+        "id": "PL.NB.013",
+        "name": "README Generator",
+        "moltType": "unknown",
+        "content": "- Capability: Create comprehensive READMEs"
+      },
+      {
+        "id": "PL.NB.014",
+        "name": "API Documenter",
+        "moltType": "unknown",
+        "content": "- Capability: Generate API docs from code"
+      },
+      {
+        "id": "PL.NB.015",
+        "name": "Example Creator",
+        "moltType": "unknown",
+        "content": "- Capability: Write working usage examples"
+      },
+      {
+        "id": "PL.NB.016",
+        "name": "Guide Writer",
+        "moltType": "unknown",
+        "content": "- Capability: Write tutorials, how-tos"
+      },
+      {
+        "id": "PL.NB.017",
+        "name": "Project Structurer",
+        "moltType": "unknown",
+        "content": "- Capability: Create standard directory layouts"
+      },
+      {
+        "id": "PL.NB.018",
+        "name": "Import Fixer",
+        "moltType": "unknown",
+        "content": "- Capability: Update import paths after moves"
+      },
+      {
+        "id": "PL.NB.019",
+        "name": "Code Cleaner",
+        "moltType": "unknown",
+        "content": "- Capability: Remove unused code, format"
+      },
+      {
+        "id": "PL.NB.020",
+        "name": "Block Browser",
+        "moltType": "unknown",
+        "content": "- Capability: List available MOLT blocks"
+      },
+      {
+        "id": "PL.NB.021",
+        "name": "Sleeve Modifier",
+        "moltType": "unknown",
+        "content": "- Capability: Add/remove blocks from active sleeve"
+      },
+      {
+        "id": "PL.NB.022",
+        "name": "Sleeve Builder",
+        "moltType": "unknown",
+        "content": "- Capability: Create new sleeve specs"
+      },
+      {
+        "id": "PL.NB.023",
+        "name": "Capability Analyzer",
+        "moltType": "unknown",
+        "content": "- Capability: Assess if current blocks sufficient"
+      },
+      {
+        "id": "PL.NB.024",
+        "name": "Task Planner",
+        "moltType": "unknown",
+        "content": "- Capability: Break projects into steps"
+      },
+      {
+        "id": "PL.NB.025",
+        "name": "Progress Tracker",
+        "moltType": "unknown",
+        "content": "- Capability: Track completed/pending tasks"
+      },
+      {
+        "id": "PL.NB.026",
+        "name": "Next Step Suggester",
+        "moltType": "unknown",
+        "content": "- Capability: Recommend next action"
+      }
+    ]
+  },
+  "existing_ids_skipped": []
+}

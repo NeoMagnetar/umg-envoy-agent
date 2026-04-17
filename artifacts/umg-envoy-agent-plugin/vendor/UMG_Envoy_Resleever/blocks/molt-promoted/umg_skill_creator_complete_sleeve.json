@@ -1,0 +1,124 @@
+{
+  "sleeve_folder": "umg_skill_creator_complete_sleeve",
+  "title": "UMG.ENVOY.SKILL_CREATOR - Complete Specification",
+  "category": "meta-random",
+  "promoted_blocks_by_type": {
+    "unknown": [
+      {
+        "id": "SC.NB.001",
+        "name": "Requirements Interviewer",
+        "moltType": "unknown",
+        "content": "- Capability: Ask structured questions about skill purpose"
+      },
+      {
+        "id": "SC.NB.002",
+        "name": "Trigger Analyzer",
+        "moltType": "unknown",
+        "content": "- Capability: Identify when skill should activate"
+      },
+      {
+        "id": "SC.NB.003",
+        "name": "Edge Case Explorer",
+        "moltType": "unknown",
+        "content": "- Capability: Identify corner cases and variations"
+      },
+      {
+        "id": "SC.NB.004",
+        "name": "Resource Identifier",
+        "moltType": "unknown",
+        "content": "- Capability: Determine what files/scripts/references needed"
+      },
+      {
+        "id": "SC.NB.005",
+        "name": "YAML Frontmatter Generator",
+        "moltType": "unknown",
+        "content": "- Capability: Create proper YAML header"
+      },
+      {
+        "id": "SC.NB.006",
+        "name": "Description Optimizer",
+        "moltType": "unknown",
+        "content": "- Capability: Write \"pushy\" trigger descriptions"
+      },
+      {
+        "id": "SC.NB.007",
+        "name": "Instruction Writer",
+        "moltType": "unknown",
+        "content": "- Capability: Write clear, actionable skill body"
+      },
+      {
+        "id": "SC.NB.008",
+        "name": "Example Generator",
+        "moltType": "unknown",
+        "content": "- Capability: Create concrete usage examples"
+      },
+      {
+        "id": "SC.NB.009",
+        "name": "Resource Bundler",
+        "moltType": "unknown",
+        "content": "- Capability: Create scripts/, references/, assets/"
+      },
+      {
+        "id": "SC.NB.010",
+        "name": "Test Case Generator",
+        "moltType": "unknown",
+        "content": "- Capability: Create test prompts for skill"
+      },
+      {
+        "id": "SC.NB.011",
+        "name": "Skill Validator",
+        "moltType": "unknown",
+        "content": "- Capability: Check SKILL.md format and completeness"
+      },
+      {
+        "id": "SC.NB.012",
+        "name": "Trigger Tester",
+        "moltType": "unknown",
+        "content": "- Capability: Test if skill activates correctly"
+      },
+      {
+        "id": "SC.NB.013",
+        "name": "Output Analyzer",
+        "moltType": "unknown",
+        "content": "- Capability: Evaluate skill outputs"
+      },
+      {
+        "id": "SC.NB.014",
+        "name": "Description Improver",
+        "moltType": "unknown",
+        "content": "- Capability: Optimize description for better triggering"
+      },
+      {
+        "id": "SC.NB.015",
+        "name": "Instruction Refiner",
+        "moltType": "unknown",
+        "content": "- Capability: Clarify and improve skill body"
+      },
+      {
+        "id": "SC.NB.016",
+        "name": "Performance Analyzer",
+        "moltType": "unknown",
+        "content": "- Capability: Identify skill weaknesses"
+      },
+      {
+        "id": "SC.NB.017",
+        "name": "File Organizer",
+        "moltType": "unknown",
+        "content": "- Capability: Create proper directory structure"
+      },
+      {
+        "id": "SC.NB.018",
+        "name": "Documentation Generator",
+        "moltType": "unknown",
+        "content": "- Capability: Create README, usage guides"
+      },
+      {
+        "id": "SC.NB.019",
+        "name": "Deployment Checker",
+        "moltType": "unknown",
+        "content": "- Capability: Final validation before deployment"
+      }
+    ]
+  },
+  "existing_ids_skipped": []
+}
