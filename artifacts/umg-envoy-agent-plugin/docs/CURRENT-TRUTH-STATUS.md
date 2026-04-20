@@ -20,13 +20,13 @@ It is not the public Block Library distribution package.
 - supports promotion with backup creation
 - supports rollback
 
-## What remains imperfect
-- persisted `allowRuntimeWrites` is visible in status/effective config, but mutation commands may still require `--allow-runtime-writes` to proceed reliably
-- this is a config-propagation issue, not a broken mutation implementation
+## Current caveats
+- some authored sleeves are still invalid compiler-v0 inputs and should be treated as failure-path validation targets rather than success-path smoke targets
 
 ## Operational guidance
-For now, when testing promotion/rollback directly from CLI:
-- pass `--allow-runtime-writes`
+Promotion/rollback now work through persisted config when `allowRuntimeWrites: true` is set.
+The explicit CLI override remains available if you want an extra-visible local guardrail during manual testing:
+- `--allow-runtime-writes`
 
 Use a valid sleeve such as:
 - `sample-basic-minimal`

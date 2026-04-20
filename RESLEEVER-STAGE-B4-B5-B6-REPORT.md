@@ -126,11 +126,11 @@ Observed:
 - CLI returns restored paths and timestamp
 
 ## B4 conclusion
-Core runtime pipeline is working on the canonical internal lane with one caveat:
-- persisted config does not yet unlock mutation paths consistently without the explicit CLI override flag
+Core runtime pipeline is working on the canonical internal lane.
 
-Otherwise:
-- read/list/compare/compile/preview/promote/rollback all work in the internal lane
+Observed working paths now include:
+- read/list/compare/compile/preview/promote/rollback in the internal lane
+- persisted `allowRuntimeWrites` config gating for mutation commands
 
 ---
 
@@ -154,13 +154,6 @@ Otherwise:
 - outputs are rich enough to inspect runtime state and mutation effects
 - compile failure handling is now honest and actionable
 
-### Remaining issue affecting tool/command consistency
-There is still a config-consumption inconsistency:
-- persisted `allowRuntimeWrites: true` is visible via status/config
-- but mutation commands still require explicit CLI override flag to proceed reliably
-
-This does not block the underlying mutation machinery; it does block “no-hacks” completion of the write gate path
-
 ---
 
 ## B6 — Safety and write-boundary validation
@@ -168,12 +161,12 @@ This does not block the underlying mutation machinery; it does block “no-hacks
 ### `allowRuntimeWrites` behavior
 Observed:
 - plugin config contains `allowRuntimeWrites: true`
-- CLI mutation succeeds when `--allow-runtime-writes` is passed
-- without the override, mutation still hits the disabled-write branch
+- mutation commands succeed from persisted config alone
+- CLI mutation also succeeds when `--allow-runtime-writes` is passed explicitly
 
 Interpretation:
 - write gate exists and works
-- persisted config propagation for mutation commands is still inconsistent
+- persisted config propagation for mutation commands is functioning correctly
 
 ### Preview is non-mutating
 Result: PASS
@@ -214,8 +207,7 @@ Write semantics are mostly sound and bounded:
 - rollback works
 - failed compile paths do not silently corrupt active runtime
 
-Remaining caveat:
-- persisted config should unlock mutation without requiring CLI override; until fixed, this remains a configuration propagation bug rather than a mutation safety bug
+No write-gate propagation issue remained after the final canonical fix pass.
 
 ---
 
@@ -230,11 +222,14 @@ Remaining caveat:
 - promotion with backup creation
 - rollback restoration
 
-### Remaining issue
-- persisted `allowRuntimeWrites` is not yet consistently honored by mutation command execution without explicit `--allow-runtime-writes`
-
 ## Overall judgment
-The canonical Resleever plugin is now substantially functional.
+The canonical Resleever plugin is now functionally working as an internal first version.
 
-It is much closer to a real first working internal version than the public derivative ever was.
-The main remaining blocker is a narrower config-propagation bug on mutation command gating, not a failure of the core runtime pipeline itself.
+It has:
+- working read/list/compare surfaces
+- working valid compile path
+- honest invalid compile diagnostics
+- working preview
+- working promotion with backup creation
+- working rollback
+- functioning persisted write-gate config propagation

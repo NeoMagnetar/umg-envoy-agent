@@ -139,12 +139,12 @@ For cautious use:
 - leave override roots unset unless you intentionally want live external repos
 - treat mutation as opt-in
 
-### Actual current caveat
+### Current write-gate status
 As of the latest internal-lane validation:
-- persisted `allowRuntimeWrites: true` is visible in status/effective config
-- but mutation commands may still require explicit CLI override `--allow-runtime-writes` to proceed reliably
+- persisted `allowRuntimeWrites: true` is honored by mutation commands
+- explicit CLI override `--allow-runtime-writes` remains available, but is no longer required when config is set correctly
 
-So mutation support is **functionally working**, but the config-propagation path is not yet fully clean.
+So mutation support is functioning through both persisted config and explicit CLI override paths.
 
 ## Runtime modes
 
@@ -194,10 +194,7 @@ Working in the canonical internal lane:
 
 ## Known caveats
 
-### 1. Mutation config propagation still needs cleanup
-The remaining known bug is that mutation commands do not always honor persisted `allowRuntimeWrites` without explicit CLI override.
-
-### 2. Some authored sleeves may be historically invalid for compiler-v0
+### 1. Some authored sleeves may be historically invalid for compiler-v0
 Example:
 - `stage5-sleeve`
 

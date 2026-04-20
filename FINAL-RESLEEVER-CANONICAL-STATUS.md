@@ -21,9 +21,8 @@ The canonical internal Resleever plugin is now substantially functional and is t
 - rollback validated
 - README truth-passed to current reality
 
-## What remains as the main known issue
-- persisted `allowRuntimeWrites` is still not consistently honored by mutation commands without explicit CLI override `--allow-runtime-writes`
-- this is the main remaining narrow stabilization issue
+## Remaining caveats
+- some authored sleeves remain historically invalid for compiler-v0 and should be treated as intentional failure-path diagnostics rather than success-path smoke targets
 
 ## Workspace authority rule
 From this point:
