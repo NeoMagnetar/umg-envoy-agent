@@ -1,35 +1,53 @@
 # UMG Envoy Agent
 
-UMG Envoy Agent is a native OpenClaw tool plugin that bridges three layers of the current UMG ecosystem:
+UMG Envoy Agent is a native OpenClaw plugin for the **internal Resleever lane**.
 
-1. the **UMG revamp doctrine / synthesis layer**
-2. the **canonical `umg-compiler`**
-3. the **`UMG_Envoy_Resleever` runtime homebase**
+It bridges three layers of the current UMG stack:
 
-Its purpose is to make UMG sleeves, blocks, NeoBlocks, NeoStacks, compilation, and runtime resleeving available as explicit OpenClaw tools rather than as scattered manual repository operations.
+1. the doctrine / synthesis anchor
+2. the canonical `umg-compiler`
+3. the local `UMG_Envoy_Resleever` runtime homebase
 
-## Release status
+Its purpose is to expose sleeves, blocks, compilation, runtime inspection, promotion, rollback, and related authoring utilities as explicit OpenClaw tools and CLI surfaces instead of scattered manual repo operations.
 
-**Version:** `0.1.0`  
-**Release posture:** private RC / packaged workspace release
+## Canonical role
 
-This package is past the sketch phase.
+This package is the **canonical internal plugin**.
 
-Current validated status:
-- native OpenClaw plugin manifest present
-- TypeScript build output present in `dist/`
-- plugin install/load validated in local OpenClaw host flow
-- tool surface registered successfully
-- safe-order and mutation-side validation passes recorded
-- bundled compiler + resleever assets included for portable first install
+- Plugin id: `umg-envoy-agent`
+- Canonical source-of-record:
+  - `C:\.openclaw\workspace\artifacts\umg-envoy-agent-plugin`
+- Default content root:
+  - `vendor\UMG_Envoy_Resleever`
 
-Primary validation report:
-- `validation/STAGE5-VALIDATION-REPORT.md`
+This plugin is **not** the public UMG Block Library package.
+That public-facing package is a later derivative product and should not be treated as the design authority for this internal lane.
+
+## Current status
+
+**Version:** `0.1.0`
+**Posture:** private internal RC / workspace canonical lane
+
+What is currently proven in the canonical internal lane:
+- TypeScript check passes
+- build passes
+- plugin loads in OpenClaw
+- CLI surface `umg-envoy` loads and works
+- path resolution points at the real bundled Resleever lane
+- read/list/compare flows work
+- valid sample compilation works
+- invalid sleeve compilation now fails with an honest compiler-facing error
+- promotion works with backup creation
+- rollback works
+
+Primary current evidence:
+- `C:\.openclaw\workspace\RESLEEVER-STAGE-B4-B5-B6-REPORT.md`
+- `validation/` artifacts in this plugin folder
 
 ## What it does
 
 The plugin exposes OpenClaw-facing tooling for:
-- inspecting doctrine anchor information
+- inspecting doctrine anchor / runtime path status
 - listing sleeves
 - reading active runtime state
 - comparing sleeves
@@ -44,6 +62,8 @@ The plugin exposes OpenClaw-facing tooling for:
 ## Registered tool surface
 
 Current registered tools:
+- `umg_envoy_activation_trace`
+- `umg_envoy_compiler_smoke_test`
 - `umg_envoy_status`
 - `umg_envoy_list_sleeves`
 - `umg_envoy_read_active_runtime`
@@ -62,31 +82,34 @@ Current registered tools:
 - `umg_envoy_validate_artifact`
 - `umg_envoy_scaffold_micro_agent`
 
+CLI root:
+- `umg-envoy`
+
 See also:
 - `docs/TOOL-SURFACE.md`
 
 ## Included package contents
 
-This release intentionally bundles the first working portable asset set:
+This internal plugin intentionally bundles:
 - `dist/` compiled plugin runtime
 - `docs/` install and operational docs
 - `spec/ANALYTICAL_REPORT_ON_UMG_REVAMP_WORKSPACE.md` doctrine anchor
 - vendored `umg-compiler` surfaces
-- vendored `UMG_Envoy_Resleever` runtime surfaces relevant to sleeves, blocks, compiler/runtime state, and docs
+- vendored `UMG_Envoy_Resleever` runtime/content surfaces relevant to sleeves, blocks, compiler/runtime state, and docs
 
 See:
 - `docs/BUNDLED-ASSETS.md`
 
-## Install
+## Install / local working mode
 
-### Option A - local path install in OpenClaw
-Use the plugin folder directly:
-
+Canonical working folder:
 - `C:\.openclaw\workspace\artifacts\umg-envoy-agent-plugin`
 
-This was the validation install mode used during the Stage 5 pass.
+This plugin is currently used directly from that folder as both:
+- source-of-record
+- installed artifact path in OpenClaw
 
-### Package prerequisites
+### Prerequisites
 - Node.js `>=22`
 - OpenClaw plugin runtime compatible with plugin API `1`
 
@@ -98,96 +121,112 @@ npm install
 npm run build
 ```
 
-If you are using the already-prepared packaged release, `dist/` is already included.
-
 ## Configuration
 
 Config schema lives in:
 - `openclaw.plugin.json`
 
-Important fields:
+Primary config fields:
 - `workspaceRoot`
 - `compilerRoot`
 - `resleeverRoot`
 - `allowRuntimeWrites`
 - `defaultSleeveId`
+- `debugDirectReplyBehavior`
 
-### Recommended first config posture
-For a cautious first install:
-- leave override roots unset unless you specifically want live external repos
-- keep `allowRuntimeWrites = false`
+### Recommended default posture
+For cautious use:
+- leave override roots unset unless you intentionally want live external repos
+- treat mutation as opt-in
 
-Enable runtime writes only when you intentionally want mutation-capable promotion / scaffold behavior.
+### Actual current caveat
+As of the latest internal-lane validation:
+- persisted `allowRuntimeWrites: true` is visible in status/effective config
+- but mutation commands may still require explicit CLI override `--allow-runtime-writes` to proceed reliably
+
+So mutation support is **functionally working**, but the config-propagation path is not yet fully clean.
 
 ## Runtime modes
 
-### Bundled default mode
+### Bundled internal mode
 Uses bundled doctrine/compiler/resleever assets from inside the package.
 
 Recommended when:
-- you want a portable first install
-- you want validation without relying on external repo checkouts
+- you want the canonical internal working lane
+- you want reproducible workspace testing
 
 ### External override mode
-Use plugin config to point at newer or live working trees:
+Use plugin config to point at live working trees:
 - `compilerRoot`
 - `resleeverRoot`
 
 Recommended when:
-- you are actively developing against live repos
-- bundled vendor state is no longer the desired source of truth
+- you are actively developing against external repos
+- bundled vendor state is not the desired source of truth
 
-## Recommended smoke-test order
+## Recommended validation order
 
-Suggested safe first-pass validation sequence:
-1. `umg_envoy_status`
-2. `umg_envoy_list_sleeves`
-3. `umg_envoy_read_active_runtime`
-4. `umg_envoy_list_block_libraries`
-5. `umg_envoy_compile_sleeve`
-6. `umg_envoy_validate_runtime_output`
-7. `umg_envoy_preview_promotion`
-8. only then enable runtime writes if you want promotion / generation tests
+Suggested internal-lane validation sequence:
+1. `openclaw umg-envoy status`
+2. `openclaw umg-envoy list-sleeves`
+3. `openclaw umg-envoy read-active-runtime`
+4. `openclaw umg-envoy list-block-libraries`
+5. `openclaw umg-envoy compare-sleeves --left <id> --right <id>`
+6. `openclaw umg-envoy compile-sleeve --sleeve sample-basic-minimal`
+7. `openclaw umg-envoy preview-promotion --path <compiled-runtime> --sleeve sample-basic-minimal`
+8. `openclaw umg-envoy promote-runtime --allow-runtime-writes --path <compiled-runtime> --sleeve sample-basic-minimal`
+9. `openclaw umg-envoy list-runtime-backups`
+10. `openclaw umg-envoy rollback-runtime --allow-runtime-writes --backup <backup-dir>`
 
-## Validation summary
+## What is honestly working now
 
-Documented successful validation includes:
-- plugin recognized by host
-- plugin enabled and loaded
-- full tool surface registered
-- direct compile validation pass
-- direct promotion validation pass with backup creation
-- direct rollback validation pass
-- generated artifact validation pass for stage-5 test artifacts
+Working in the canonical internal lane:
+- plugin load
+- status/path resolution
+- sleeve listing
+- active runtime reading
+- block library listing
+- sleeve comparison
+- valid compile path
+- preview path
+- promotion with backup creation
+- rollback
 
-Primary evidence artifacts:
-- `validation/STAGE5-VALIDATION-REPORT.md`
+## Known caveats
+
+### 1. Mutation config propagation still needs cleanup
+The remaining known bug is that mutation commands do not always honor persisted `allowRuntimeWrites` without explicit CLI override.
+
+### 2. Some authored sleeves may be historically invalid for compiler-v0
+Example:
+- `stage5-sleeve`
+
+This now fails honestly with a compiler-facing error rather than a misleading runtime-validation error.
+
+### 3. Experimental hooks remain experimental
+The plugin still registers:
+- `umg-experimental-before-prompt-build-triggers`
+- `umg-experimental-message-sending-exact-response`
+
+These are part of the internal lane and should be treated as experimental surfaces until later cleanup says otherwise.
+
+## Validation references
+
+Current high-value references:
+- `C:\.openclaw\workspace\RESLEEVER-SOURCE-OF-RECORD-DECLARATION.md`
+- `C:\.openclaw\workspace\RESLEEVER-PLUGIN-BASELINE-AUDIT.md`
+- `C:\.openclaw\workspace\RESLEEVER-STAGE-B4-B5-B6-REPORT.md`
 - `validation/host-plugin-inspect.json`
-- `docs/install-inspect-after-restart.json`
-
-## Release notes
-
-This packaged release includes documentation and install-positioning for the first private RC line.
-
-Highlights:
-- plugin identity normalized as `umg-envoy-agent`
-- runtime import/load defect fixed
-- validation contract patched to match real compiler output shape
-- promotion logic aligned to real compiled runtime payloads
-- direct mutation bridge validation completed
-- install docs and release notes added for handoff/package use
-
-Detailed notes:
-- `docs/RELEASE-NOTES-0.1.0.md`
-
-## Known limits
-
-This is a real working release candidate, not a fully polished public package.
-
-Remaining caveats:
-- package size/vendor pruning may still be worth a later cleanup pass
-- mutation tools are intentionally gated behind config
-- long-term SDK/runtime compatibility should still be checked against future OpenClaw plugin API movement
+- `validation/01-status.txt`
+- `validation/02-list-sleeves.txt`
+- `validation/03-read-active-runtime.txt`
+- `validation/04-list-block-libraries.txt`
+- `validation/05-compare-sleeves.txt`
+- `validation/06-compile-sleeve.txt`
+- `validation/08-preview-promotion.txt`
+- `validation/09-promote-runtime.txt`
+- `validation/10-list-runtime-backups.txt`
+- `validation/11-rollback-runtime.txt`
 
 ## Doctrine anchor
 
@@ -196,9 +235,9 @@ Primary unified-analysis source currently used to anchor the plugin design:
 
 ## Runtime relationship
 
-This plugin should not pretend to be the compiler itself.
+This plugin is not the compiler itself.
 
 Instead:
 - the canonical compiler remains an embedded/vendor or externally overridden dependency
 - the resleever remains the runtime/homebase layer
-- the plugin exposes OpenClaw-facing tools that orchestrate those surfaces cleanly
+- the plugin exposes OpenClaw-facing tools that orchestrate those surfaces for the internal Resleever lane

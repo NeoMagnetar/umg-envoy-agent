@@ -270,6 +270,19 @@ export async function compileSleeveById(
 
   const rawOutput = [stdout, stderr].filter(Boolean).join("\n").trim();
   const parsedRuntime = readJsonFile<any>(outputPath);
+
+  if (parsedRuntime?.hasErrors && !parsedRuntime?.runtime) {
+    const traceEvents = Array.isArray(parsedRuntime?.trace?.events) ? parsedRuntime.trace.events : [];
+    const errorMessages = traceEvents
+      .filter((event: any) => event?.severity === "error" || String(event?.code ?? "").startsWith("ERR_"))
+      .map((event: any) => event?.message)
+      .filter((message: unknown): message is string => typeof message === "string" && message.trim().length > 0);
+
+    throw new Error(
+      `Compiler reported an invalid sleeve payload for '${sleeveId}': ${errorMessages.join(" | ") || "unknown compiler validation failure"}`
+    );
+  }
+
   const validation = validateCompiledRuntime(parsedRuntime);
 
   if (!validation.ok) {
