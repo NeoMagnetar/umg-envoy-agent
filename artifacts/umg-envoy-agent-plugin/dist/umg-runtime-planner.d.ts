@@ -41,6 +41,7 @@ export interface RuntimePlannerBuildResult {
         alignedStacks: string[];
         alignedBlocks: string[];
         manyToOneWarnings: string[];
+        triggerState: "matched" | "neutral" | "omitted";
     };
 }
 export declare function buildPlannerFromRuntimeContext(params: {

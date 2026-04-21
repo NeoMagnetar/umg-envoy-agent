@@ -28,7 +28,7 @@ function inferRole(id) {
         return "B";
     return "I";
 }
-function stateForId(id, payload) {
+function stateForEmittedId(id, payload) {
     if (payload.activeForTurn.activeBlockIds.includes(id))
         return "active";
     if (payload.activeForTurn.suppressedBlockIds.includes(id))
@@ -37,70 +37,98 @@ function stateForId(id, payload) {
         return "latent";
     return "off";
 }
-function buildAlignedPlannerDoc(payload, input, alignmentTrace) {
-    const stackGroups = new Map();
-    const candidateBlockIds = Array.from(new Set([
-        ...payload.activeForTurn.activeBlockIds,
-        ...payload.activeForTurn.suppressedBlockIds,
-        ...payload.activeForTurn.latentBlockIds
-    ]));
-    for (const entry of alignmentTrace.filter((item) => item.kind === "stack")) {
-        if (!stackGroups.has(entry.resolvedId)) {
-            stackGroups.set(entry.resolvedId, []);
-        }
+function dedupeAlignment(entries) {
+    const seen = new Set();
+    const out = [];
+    for (const entry of entries) {
+        const key = `${entry.kind}:${entry.emittedId}:${entry.resolvedId}`;
+        if (seen.has(key))
+            continue;
+        seen.add(key);
+        out.push(entry);
     }
-    const blockAlignments = alignmentTrace.filter((item) => item.kind === "block");
-    const moltAlignments = alignmentTrace.filter((item) => item.kind === "molt");
-    const resolvedStackIds = alignmentTrace.filter((item) => item.kind === "stack").map((item) => item.resolvedId);
-    const fallbackStackId = resolvedStackIds[0] ?? "S.01";
-    for (const blockId of candidateBlockIds) {
-        const blockEntry = blockAlignments.find((item) => item.emittedId === blockId) ?? {
-            kind: "block",
-            emittedId: blockId,
-            resolvedId: blockId,
-            status: "unresolved",
-            source: "implicit-fallback"
-        };
-        const current = stackGroups.get(fallbackStackId) ?? [];
-        current.push(blockEntry.resolvedId);
-        stackGroups.set(fallbackStackId, current);
+    return out;
+}
+function buildAlignedPlannerDoc(payload, input, alignmentTrace) {
+    const stackEntries = dedupeAlignment(alignmentTrace.filter((item) => item.kind === "stack"));
+    const blockEntries = dedupeAlignment(alignmentTrace.filter((item) => item.kind === "block"));
+    const moltEntries = dedupeAlignment(alignmentTrace.filter((item) => item.kind === "molt"));
+    const blockByResolved = new Map();
+    for (const entry of blockEntries) {
+        const current = blockByResolved.get(entry.resolvedId) ?? [];
+        current.push(entry);
+        blockByResolved.set(entry.resolvedId, current);
+    }
+    const moltByEmitted = new Map();
+    for (const entry of moltEntries) {
+        if (!moltByEmitted.has(entry.emittedId)) {
+            moltByEmitted.set(entry.emittedId, entry);
+        }
     }
     const stacks = [];
-    for (const [stackId, blockIds] of stackGroups.entries()) {
+    for (const stackEntry of stackEntries) {
+        const relevantBlocks = blockEntries.filter((entry) => {
+            if (stackEntry.resolvedId === "S.MOD.01")
+                return entry.emittedId.startsWith("block.persona.");
+            if (stackEntry.resolvedId === "S.MOD.02")
+                return entry.emittedId.startsWith("block.posture.");
+            if (stackEntry.resolvedId === "S.MOD.03")
+                return entry.emittedId.startsWith("block.format.");
+            return false;
+        });
         const blocks = [];
-        const uniqueBlockIds = Array.from(new Set(blockIds));
-        for (const blockId of uniqueBlockIds) {
-            const memberIds = moltAlignments
-                .filter((item) => candidateBlockIds.includes(item.emittedId))
-                .map((item) => item.resolvedId);
-            const moltId = memberIds[0] ?? "INST.061";
-            blocks.push({
-                id: blockId,
-                molts: [{
-                        state: stateForId(candidateBlockIds[0] ?? blockId, payload),
-                        role: inferRole(moltId),
-                        id: moltId
-                    }]
-            });
+        const seenBlocks = new Set();
+        for (const blockEntry of relevantBlocks) {
+            if (seenBlocks.has(blockEntry.resolvedId))
+                continue;
+            seenBlocks.add(blockEntry.resolvedId);
+            const contributing = blockByResolved.get(blockEntry.resolvedId) ?? [blockEntry];
+            const molts = [];
+            for (const contributor of contributing) {
+                const molt = moltByEmitted.get(contributor.emittedId);
+                if (!molt)
+                    continue;
+                if (molts.some((item) => item.id === molt.resolvedId))
+                    continue;
+                molts.push({
+                    state: stateForEmittedId(contributor.emittedId, payload),
+                    role: inferRole(molt.resolvedId),
+                    id: molt.resolvedId
+                });
+            }
+            if (molts.length > 0) {
+                blocks.push({ id: blockEntry.resolvedId, molts });
+            }
         }
-        stacks.push({ id: stackId, blocks });
+        if (blocks.length > 0) {
+            stacks.push({ id: stackEntry.resolvedId, blocks });
+        }
     }
+    const triggerState = payload.triggerIds.length > 0
+        ? "matched"
+        : input.message.trim().length > 0
+            ? "neutral"
+            : "omitted";
+    const winnerBlock = blockEntries.find((entry) => entry.intent === "canon_candidate") ?? blockEntries[0];
+    const winnerMolt = winnerBlock ? moltByEmitted.get(winnerBlock.emittedId) : undefined;
     return {
         use: input.use ?? "build_live_runtime_path",
         aim: input.aim ?? "deterministic_runtime_planner_route",
-        need: input.need ?? ["structural_validity", "semantic_resolution", "traceable_handoff"],
+        need: [
+            ...(input.need ?? ["structural_validity", "semantic_resolution", "traceable_handoff"]),
+            `trigger_state:${triggerState}`
+        ],
         sleeveId: input.sleeveId ?? payload.sleeveId ?? "sample-basic-minimal",
         triggers: [...payload.triggerIds],
         gates: [],
-        loadedStacks: resolvedStackIds,
+        loadedStacks: stackEntries.map((item) => item.resolvedId),
         stacks,
         relationships: [],
         bundles: [],
         merges: [],
-        winners: alignmentTrace
-            .filter((item) => item.kind === "block" && item.status !== "unresolved")
-            .slice(0, 1)
-            .map((item) => ({ key: "chain", value: `${item.resolvedId}>INST.061` })),
+        winners: winnerBlock && winnerMolt
+            ? [{ key: "chain", value: `${winnerBlock.resolvedId}>${winnerMolt.resolvedId}` }]
+            : [],
         compiler: { stages: ["validate", "normalize", "merge", "bundle", "govern", "compile", "emit"] }
     };
 }
@@ -138,6 +166,11 @@ export function buildPlannerFromRuntimeContext(params) {
     const issues = [...structuralIssues, ...semanticResult.issues];
     const manyToOneWarnings = collectManyToOneMappings(alignmentTrace)
         .map((item) => `${item.kind}:${item.emittedId}->${item.resolvedId} mode=${item.mode} targetKind=${item.targetKind} intent=${item.intent} sources=${item.cardinality.emittedSourceCount}`);
+    const triggerState = payload.triggerIds.length > 0
+        ? "matched"
+        : input.message.trim().length > 0
+            ? "neutral"
+            : "omitted";
     return {
         doc,
         trace,
@@ -158,7 +191,8 @@ export function buildPlannerFromRuntimeContext(params) {
             winnerKeys: doc.winners.map((winner) => winner.key),
             alignedStacks: alignmentTrace.filter((item) => item.kind === "stack").map((item) => `${item.emittedId}->${item.resolvedId}[${item.status}|${item.mode}|${item.targetKind}|${item.intent}]`),
             alignedBlocks: alignmentTrace.filter((item) => item.kind === "block").map((item) => `${item.emittedId}->${item.resolvedId}[${item.status}|${item.mode}|${item.targetKind}|${item.intent}]`),
-            manyToOneWarnings
+            manyToOneWarnings,
+            triggerState
         }
     };
 }
