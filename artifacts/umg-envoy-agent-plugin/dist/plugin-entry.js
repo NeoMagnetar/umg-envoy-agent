@@ -2,10 +2,10 @@ import fs from "node:fs";
 import { Type } from "@sinclair/typebox";
 import { createMoltBlock, createNeoBlock, createNeoStack, createSleeve, validateArtifact } from "./authoring.js";
 import { buildActivationTraceView, buildRuntimeActivationPayload, deriveCompilerV0TriggerState } from "./activation-runtime.js";
-import { buildUMGPathDocumentFromRuntime } from "./umg-path-builder.js";
 import { parseUMGPath } from "./umg-path-parser.js";
 import { renderUMGPath } from "./umg-path-renderer.js";
-import { validateUMGPath } from "./umg-path-validator.js";
+import { validateUMGPath, validateUMGPathSemantically } from "./umg-path-validator.js";
+import { buildPlannerFromRuntimeMessage } from "./umg-runtime-planner.js";
 import { runCompilerSmokeTest } from "./compiler-smoke.js";
 import { readBlockCategoryIndex, readBlockLibraryIndex } from "./blocks.js";
 import { resolvePaths } from "./paths.js";
@@ -85,11 +85,14 @@ function registerCliBridge(api, config) {
         });
         root.command("validate-path")
             .requiredOption("--file <path>")
+            .option("--semantic")
             .action(async (opts) => {
             const fs = await import("node:fs");
             const raw = fs.readFileSync(opts.file, "utf8");
             const parsed = parseUMGPath(raw);
-            const issues = validateUMGPath(parsed);
+            const cfg = effectiveConfig(config);
+            const paths = resolvePaths(cfg);
+            const issues = opts.semantic ? validateUMGPathSemantically(parsed, paths) : validateUMGPath(parsed);
             console.log(JSON.stringify({ ok: issues.every((issue) => issue.severity !== "error"), issues }, null, 2));
             if (issues.some((issue) => issue.severity === "error")) {
                 process.exitCode = 1;
@@ -107,33 +110,31 @@ function registerCliBridge(api, config) {
             .requiredOption("--message <text>")
             .option("--sleeve <id>")
             .action(async (opts) => {
-            const cfg = effectiveConfig(config);
-            const paths = resolvePaths(cfg);
-            const trace = buildActivationTraceView({
-                paths,
-                messages: [{ role: "user", content: opts.message }],
+            const result = buildPlannerFromRuntimeMessage({
+                message: opts.message,
                 sleeveId: opts.sleeve,
                 provenance: ["cli:umg-envoy build-path"],
-                notes: ["planner-layer shorthand builder from live activation trace"]
-            });
-            const payload = buildRuntimeActivationPayload({
-                paths,
-                latestUserText: opts.message,
+                notes: ["stage-4 deterministic runtime planner build"],
+                use: "build_live_runtime_path",
+                aim: "human_inspectable_planner_route",
+                need: ["validated_route", "planner_visibility", "compiler_handoff_ready"]
+            }, effectiveConfig(config));
+            console.log(renderUMGPath(result.doc));
+        });
+        root.command("path-trace")
+            .requiredOption("--message <text>")
+            .option("--sleeve <id>")
+            .action(async (opts) => {
+            const result = buildPlannerFromRuntimeMessage({
+                message: opts.message,
                 sleeveId: opts.sleeve,
-                provenance: ["cli:umg-envoy build-path"],
-                notes: ["planner-layer shorthand builder from live activation payload"]
-            });
-            const doc = buildUMGPathDocumentFromRuntime({
-                trace,
-                payload,
-                options: {
-                    use: "build_live_runtime_path",
-                    aim: "human_inspectable_planner_route",
-                    need: ["validated_route", "planner_visibility", "compiler_handoff_ready"],
-                    sleeveId: opts.sleeve
-                }
-            });
-            console.log(renderUMGPath(doc));
+                provenance: ["cli:umg-envoy path-trace"],
+                notes: ["stage-4 runtime planner trace"],
+                use: "build_live_runtime_path",
+                aim: "inspectable_runtime_planner_trace",
+                need: ["traceability", "structural_validity", "semantic_resolution"]
+            }, effectiveConfig(config));
+            console.log(JSON.stringify(result, null, 2));
         });
         root.command("list-sleeves").action(async () => {
             const cfg = effectiveConfig(config);

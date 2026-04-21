@@ -12,6 +12,11 @@ import {
   buildRuntimeActivationPayload,
   deriveCompilerV0TriggerState
 } from "./activation-runtime.js";
+import { buildUMGPathDocumentFromRuntime } from "./umg-path-builder.js";
+import { parseUMGPath } from "./umg-path-parser.js";
+import { renderUMGPath } from "./umg-path-renderer.js";
+import { validateUMGPath, validateUMGPathSemantically } from "./umg-path-validator.js";
+import { buildPlannerFromRuntimeMessage } from "./umg-runtime-planner.js";
 import { runCompilerSmokeTest } from "./compiler-smoke.js";
 import { readBlockCategoryIndex, readBlockLibraryIndex } from "./blocks.js";
 import { resolvePaths } from "./paths.js";
@@ -34,7 +39,7 @@ function loadHostPluginConfigFallback(): PluginConfig {
     const configPath = "C:\\Users\\Magne\\.openclaw\\openclaw.json";
     const raw = fs.readFileSync(configPath, "utf8");
     const parsed = JSON.parse(raw);
-    return parsed?.plugins?.entries?.["umg-envoy-agent"]?.config ?? {};
+    return parsed?.plugins?.entries?.["openclaw-umg-envoy-agent"]?.config ?? {};
   } catch {
     return {};
   }
@@ -96,6 +101,71 @@ function registerCliBridge(api: any, config?: PluginConfig) {
             message: opts.message,
             sleeveId: opts.sleeve
           });
+          console.log(JSON.stringify(result, null, 2));
+        });
+
+      root.command("parse-path")
+        .requiredOption("--file <path>")
+        .action(async (opts: { file: string }) => {
+          const fs = await import("node:fs");
+          const raw = fs.readFileSync(opts.file, "utf8");
+          console.log(JSON.stringify(parseUMGPath(raw), null, 2));
+        });
+
+      root.command("validate-path")
+        .requiredOption("--file <path>")
+        .option("--semantic")
+        .action(async (opts: { file: string; semantic?: boolean }) => {
+          const fs = await import("node:fs");
+          const raw = fs.readFileSync(opts.file, "utf8");
+          const parsed = parseUMGPath(raw);
+          const cfg = effectiveConfig(config);
+          const paths = resolvePaths(cfg);
+          const issues = opts.semantic ? validateUMGPathSemantically(parsed, paths) : validateUMGPath(parsed);
+          console.log(JSON.stringify({ ok: issues.every((issue) => issue.severity !== "error"), issues }, null, 2));
+          if (issues.some((issue) => issue.severity === "error")) {
+            process.exitCode = 1;
+          }
+        });
+
+      root.command("render-path")
+        .requiredOption("--file <path>")
+        .action(async (opts: { file: string }) => {
+          const fs = await import("node:fs");
+          const raw = fs.readFileSync(opts.file, "utf8");
+          const parsed = opts.file.toLowerCase().endsWith('.json') ? JSON.parse(raw) : parseUMGPath(raw);
+          console.log(renderUMGPath(parsed));
+        });
+
+      root.command("build-path")
+        .requiredOption("--message <text>")
+        .option("--sleeve <id>")
+        .action(async (opts: { message: string; sleeve?: string }) => {
+          const result = buildPlannerFromRuntimeMessage({
+            message: opts.message,
+            sleeveId: opts.sleeve,
+            provenance: ["cli:umg-envoy build-path"],
+            notes: ["stage-4 deterministic runtime planner build"],
+            use: "build_live_runtime_path",
+            aim: "human_inspectable_planner_route",
+            need: ["validated_route", "planner_visibility", "compiler_handoff_ready"]
+          }, effectiveConfig(config));
+          console.log(renderUMGPath(result.doc));
+        });
+
+      root.command("path-trace")
+        .requiredOption("--message <text>")
+        .option("--sleeve <id>")
+        .action(async (opts: { message: string; sleeve?: string }) => {
+          const result = buildPlannerFromRuntimeMessage({
+            message: opts.message,
+            sleeveId: opts.sleeve,
+            provenance: ["cli:umg-envoy path-trace"],
+            notes: ["stage-4 runtime planner trace"],
+            use: "build_live_runtime_path",
+            aim: "inspectable_runtime_planner_trace",
+            need: ["traceability", "structural_validity", "semantic_resolution"]
+          }, effectiveConfig(config));
           console.log(JSON.stringify(result, null, 2));
         });
 
@@ -359,8 +429,8 @@ function registerExperimentalReplyTriggerHooks(api: any, config?: PluginConfig) 
 }
 
 const entry = {
-  id: "umg-envoy-agent",
-  name: "UMG Envoy Agent",
+  id: "openclaw-umg-envoy-agent",
+  name: "OpenClaw UMG Envoy Agent",
   description:
     "UMG cognitive runtime plugin that bridges doctrine, canonical compiler, and resleever operations.",
   register(api: { registerTool: (definition: any, options?: { optional?: boolean }) => void; registerCli?: (register: any, options?: { commands?: string[] }) => void; registerHook?: (hookName: string, handler: any, options?: { priority?: number }) => void }, config?: PluginConfig) {
