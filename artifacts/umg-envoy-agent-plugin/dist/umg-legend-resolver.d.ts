@@ -1,5 +1,6 @@
 import type { ResolvedPaths } from "./types.js";
 import type { UMGPathDocument, ValidationIssue } from "./umg-path-types.js";
+export type LegendSourceClass = "catalog_backed" | "generated_recovery" | "discovered_fallback";
 export interface LegendResolverIndex {
     sleeveIds: Set<string>;
     stackIds: Set<string>;
@@ -7,6 +8,8 @@ export interface LegendResolverIndex {
     moltIds: Set<string>;
     libraryEntryIds: Set<string>;
     triggerIds: Set<string>;
+    sourceClassById: Record<string, LegendSourceClass>;
+    sourcePathById: Record<string, string>;
 }
 export interface LegendResolutionSummary {
     sleevesCataloged: number;

@@ -44,57 +44,84 @@ function collectStringIds(value, sink) {
         collectStringIds(child, sink);
     }
 }
+function registerId(ids, sourceClassById, sourcePathById, id, sourceClass, sourcePath) {
+    ids.add(id);
+    const existing = sourceClassById[id];
+    const precedence = {
+        catalog_backed: 3,
+        generated_recovery: 2,
+        discovered_fallback: 1
+    };
+    if (!existing || precedence[sourceClass] >= precedence[existing]) {
+        sourceClassById[id] = sourceClass;
+        sourcePathById[id] = sourcePath;
+    }
+}
 function loadSleeveIds(paths) {
     const ids = new Set();
+    const sourceClassById = {};
+    const sourcePathById = {};
     const catalog = readJsonIfExists(paths.sleeveCatalogPath);
     for (const sleeve of catalog?.sleeves ?? []) {
         if (sleeve.id)
-            ids.add(sleeve.id);
+            registerId(ids, sourceClassById, sourcePathById, sleeve.id, "catalog_backed", paths.sleeveCatalogPath);
     }
     for (const filePath of walkJsonFiles(paths.resleeverSleevesDir)) {
         const json = readJsonIfExists(filePath);
         const directId = json?.sleeve?.id ?? json?.id ?? json?.sleeve_id;
         if (typeof directId === "string" && directId.trim()) {
-            ids.add(directId.trim());
-        }
-        const folderName = path.basename(path.dirname(filePath));
-        if (folderName && folderName !== "." && folderName !== "..") {
-            ids.add(folderName);
+            registerId(ids, sourceClassById, sourcePathById, directId.trim(), "discovered_fallback", filePath);
         }
     }
-    return ids;
+    return { ids, sourceClassById, sourcePathById };
 }
-function loadStackIds(paths) {
+function loadStackIds(paths, sourceClassById, sourcePathById) {
     const ids = new Set();
-    for (const filePath of [
+    const catalogFiles = [
         ...walkJsonFiles(path.join(paths.resleeverBlocksDir, "neostacks")),
         ...walkJsonFiles(path.join(paths.resleeverBlocksDir, "library", "neostacks"))
-    ]) {
+    ];
+    const generatedFiles = walkJsonFiles(path.join(paths.resleeverBlocksDir, "generated", "neostacks"));
+    for (const filePath of catalogFiles) {
         const json = readJsonIfExists(filePath);
         const stacks = Array.isArray(json?.stacks) ? json.stacks : [];
         for (const stack of stacks) {
             if (typeof stack?.id === "string" && stack.id.trim())
-                ids.add(stack.id.trim());
+                registerId(ids, sourceClassById, sourcePathById, stack.id.trim(), "catalog_backed", filePath);
         }
+    }
+    for (const filePath of generatedFiles) {
+        const json = readJsonIfExists(filePath);
+        const directId = json?.id;
+        if (typeof directId === "string" && directId.trim())
+            registerId(ids, sourceClassById, sourcePathById, directId.trim(), "generated_recovery", filePath);
     }
     return ids;
 }
-function loadBlockIds(paths) {
+function loadBlockIds(paths, sourceClassById, sourcePathById) {
     const ids = new Set();
-    for (const filePath of [
+    const catalogFiles = [
         ...walkJsonFiles(path.join(paths.resleeverBlocksDir, "neoblocks")),
         ...walkJsonFiles(path.join(paths.resleeverBlocksDir, "library", "neoblocks"))
-    ]) {
+    ];
+    const generatedFiles = walkJsonFiles(path.join(paths.resleeverBlocksDir, "generated", "neoblocks"));
+    for (const filePath of catalogFiles) {
         const json = readJsonIfExists(filePath);
         const neoblocks = Array.isArray(json?.neoblocks) ? json.neoblocks : [];
         for (const block of neoblocks) {
             if (typeof block?.id === "string" && block.id.trim())
-                ids.add(block.id.trim());
+                registerId(ids, sourceClassById, sourcePathById, block.id.trim(), "catalog_backed", filePath);
         }
+    }
+    for (const filePath of generatedFiles) {
+        const json = readJsonIfExists(filePath);
+        const directId = json?.id;
+        if (typeof directId === "string" && directId.trim())
+            registerId(ids, sourceClassById, sourcePathById, directId.trim(), "generated_recovery", filePath);
     }
     return ids;
 }
-function loadMoltAndLibraryIds(paths) {
+function loadMoltAndLibraryIds(paths, sourceClassById, sourcePathById) {
     const moltIds = new Set();
     const libraryEntryIds = new Set();
     const triggerIds = new Set();
@@ -103,27 +130,39 @@ function loadMoltAndLibraryIds(paths) {
         const collected = new Set();
         collectStringIds(json, collected);
         for (const id of collected) {
-            libraryEntryIds.add(id);
+            registerId(libraryEntryIds, sourceClassById, sourcePathById, id, "discovered_fallback", filePath);
             if (/^(TRG|trigger)/i.test(id))
-                triggerIds.add(id);
+                registerId(triggerIds, sourceClassById, sourcePathById, id, "discovered_fallback", filePath);
             if (/^(DIR|INST|PRIM|PHI|BP|SUB|USE|AIM|NEED|block\.)/i.test(id))
-                moltIds.add(id);
+                registerId(moltIds, sourceClassById, sourcePathById, id, "discovered_fallback", filePath);
+        }
+    }
+    for (const filePath of walkJsonFiles(path.join(paths.resleeverBlocksDir, "generated", "molt"))) {
+        const json = readJsonIfExists(filePath);
+        const directId = json?.id;
+        if (typeof directId === "string" && directId.trim()) {
+            registerId(moltIds, sourceClassById, sourcePathById, directId.trim(), "generated_recovery", filePath);
+            registerId(libraryEntryIds, sourceClassById, sourcePathById, directId.trim(), "generated_recovery", filePath);
         }
     }
     return { moltIds, libraryEntryIds, triggerIds };
 }
 export function buildLegendResolverIndex(paths) {
-    const sleeveIds = loadSleeveIds(paths);
-    const stackIds = loadStackIds(paths);
-    const blockIds = loadBlockIds(paths);
-    const { moltIds, libraryEntryIds, triggerIds } = loadMoltAndLibraryIds(paths);
+    const sleeve = loadSleeveIds(paths);
+    const sourceClassById = { ...sleeve.sourceClassById };
+    const sourcePathById = { ...sleeve.sourcePathById };
+    const stackIds = loadStackIds(paths, sourceClassById, sourcePathById);
+    const blockIds = loadBlockIds(paths, sourceClassById, sourcePathById);
+    const { moltIds, libraryEntryIds, triggerIds } = loadMoltAndLibraryIds(paths, sourceClassById, sourcePathById);
     return {
-        sleeveIds,
+        sleeveIds: sleeve.ids,
         stackIds,
         blockIds,
         moltIds,
         libraryEntryIds,
-        triggerIds
+        triggerIds,
+        sourceClassById,
+        sourcePathById
     };
 }
 export function summarizeLegendResolverIndex(index) {
