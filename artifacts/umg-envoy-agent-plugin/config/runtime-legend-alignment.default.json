@@ -10,101 +10,139 @@
     "stack.persona.core": {
       "resolvedId": "S.01",
       "status": "authoritative",
-      "source": "manual-stage4b-alignment"
+      "source": "manual-stage4b-alignment",
+      "intent": "bridge_only",
+      "targetKind": "catalog_backed"
     },
     "stack.response.posture": {
       "resolvedId": "S.01",
       "status": "authoritative",
-      "source": "manual-stage4b-alignment"
+      "source": "manual-stage4b-alignment",
+      "intent": "bridge_only",
+      "targetKind": "catalog_backed"
     },
     "stack.response.format": {
       "resolvedId": "S.01",
       "status": "authoritative",
-      "source": "manual-stage4b-alignment"
+      "source": "manual-stage4b-alignment",
+      "intent": "bridge_only",
+      "targetKind": "catalog_backed"
     }
   },
   "blockIdMap": {
     "block.persona.base": {
       "resolvedId": "N.03.01",
       "status": "authoritative",
-      "source": "manual-stage4b-alignment"
+      "source": "manual-stage4b-alignment",
+      "intent": "bridge_only",
+      "targetKind": "catalog_backed"
     },
     "block.persona.playful": {
       "resolvedId": "N.03.01",
       "status": "authoritative",
-      "source": "manual-stage4b-alignment"
+      "source": "manual-stage4b-alignment",
+      "intent": "bridge_only",
+      "targetKind": "catalog_backed"
     },
     "block.persona.analytical": {
       "resolvedId": "N.03.01",
       "status": "authoritative",
-      "source": "manual-stage4b-alignment"
+      "source": "manual-stage4b-alignment",
+      "intent": "bridge_only",
+      "targetKind": "catalog_backed"
     },
     "block.persona.formal": {
       "resolvedId": "N.03.01",
       "status": "authoritative",
-      "source": "manual-stage4b-alignment"
+      "source": "manual-stage4b-alignment",
+      "intent": "bridge_only",
+      "targetKind": "catalog_backed"
     },
     "block.posture.direct": {
       "resolvedId": "N.03.01",
       "status": "authoritative",
-      "source": "manual-stage4b-alignment"
+      "source": "manual-stage4b-alignment",
+      "intent": "bridge_only",
+      "targetKind": "catalog_backed"
     },
     "block.posture.expansive": {
       "resolvedId": "N.03.01",
       "status": "authoritative",
-      "source": "manual-stage4b-alignment"
+      "source": "manual-stage4b-alignment",
+      "intent": "bridge_only",
+      "targetKind": "catalog_backed"
     },
     "block.format.list": {
       "resolvedId": "N.03.01",
       "status": "authoritative",
-      "source": "manual-stage4b-alignment"
+      "source": "manual-stage4b-alignment",
+      "intent": "bridge_only",
+      "targetKind": "catalog_backed"
     },
     "block.format.narrative": {
       "resolvedId": "N.03.01",
       "status": "authoritative",
-      "source": "manual-stage4b-alignment"
+      "source": "manual-stage4b-alignment",
+      "intent": "bridge_only",
+      "targetKind": "catalog_backed"
     }
   },
   "moltIdMap": {
     "block.persona.base": {
       "resolvedId": "INST.061",
       "status": "discovered",
-      "source": "manual-stage4b-alignment"
+      "source": "manual-stage4b-alignment",
+      "intent": "bridge_only",
+      "targetKind": "discovered_fallback"
     },
     "block.persona.playful": {
       "resolvedId": "INST.061",
       "status": "discovered",
-      "source": "manual-stage4b-alignment"
+      "source": "manual-stage4b-alignment",
+      "intent": "bridge_only",
+      "targetKind": "discovered_fallback"
     },
     "block.persona.analytical": {
       "resolvedId": "INST.061",
       "status": "discovered",
-      "source": "manual-stage4b-alignment"
+      "source": "manual-stage4b-alignment",
+      "intent": "bridge_only",
+      "targetKind": "discovered_fallback"
     },
     "block.persona.formal": {
       "resolvedId": "INST.061",
       "status": "discovered",
-      "source": "manual-stage4b-alignment"
+      "source": "manual-stage4b-alignment",
+      "intent": "bridge_only",
+      "targetKind": "discovered_fallback"
     },
     "block.posture.direct": {
       "resolvedId": "INST.061",
       "status": "discovered",
-      "source": "manual-stage4b-alignment"
+      "source": "manual-stage4b-alignment",
+      "intent": "bridge_only",
+      "targetKind": "discovered_fallback"
     },
     "block.posture.expansive": {
       "resolvedId": "INST.061",
       "status": "discovered",
-      "source": "manual-stage4b-alignment"
+      "source": "manual-stage4b-alignment",
+      "intent": "bridge_only",
+      "targetKind": "discovered_fallback"
     },
     "block.format.list": {
       "resolvedId": "INST.061",
       "status": "discovered",
-      "source": "manual-stage4b-alignment"
+      "source": "manual-stage4b-alignment",
+      "intent": "bridge_only",
+      "targetKind": "discovered_fallback"
     },
     "block.format.narrative": {
       "resolvedId": "INST.061",
       "status": "discovered",
-      "source": "manual-stage4b-alignment"
+      "source": "manual-stage4b-alignment",
+      "intent": "bridge_only",
+      "targetKind": "discovered_fallback"
     }
   }
 }

@@ -40,6 +40,7 @@ export interface RuntimePlannerBuildResult {
         winnerKeys: string[];
         alignedStacks: string[];
         alignedBlocks: string[];
+        manyToOneWarnings: string[];
     };
 }
 export declare function buildPlannerFromRuntimeContext(params: {

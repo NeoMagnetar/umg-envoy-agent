@@ -10,6 +10,7 @@ export function runRuntimePlannerSmoke() {
         structural: result.structural,
         semantic: result.semantic,
         plannerTrace: result.plannerTrace,
+        alignmentTrace: result.alignmentTrace,
         issueCodes: result.issues.map((issue) => issue.code),
         doc: {
             use: result.doc.use,

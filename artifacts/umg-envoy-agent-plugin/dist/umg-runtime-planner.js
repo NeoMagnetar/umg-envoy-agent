@@ -2,7 +2,7 @@ import { buildActivationTraceView, buildRuntimeActivationPayload } from "./activ
 import { resolvePaths } from "./paths.js";
 import { resolveUMGPathAgainstLegend } from "./umg-legend-resolver.js";
 import { summarizeValidationIssues, validateUMGPath } from "./umg-path-validator.js";
-import { alignRuntimeId, loadRuntimeLegendAlignment } from "./umg-runtime-legend-alignment.js";
+import { alignRuntimeId, collectManyToOneMappings, loadRuntimeLegendAlignment } from "./umg-runtime-legend-alignment.js";
 function summarizeIssues(issues) {
     return summarizeValidationIssues(issues);
 }
@@ -136,6 +136,8 @@ export function buildPlannerFromRuntimeContext(params) {
     const structuralIssues = validateUMGPath(doc);
     const semanticResult = resolveUMGPathAgainstLegend(paths, doc);
     const issues = [...structuralIssues, ...semanticResult.issues];
+    const manyToOneWarnings = collectManyToOneMappings(alignmentTrace)
+        .map((item) => `${item.kind}:${item.emittedId}->${item.resolvedId} mode=${item.mode} targetKind=${item.targetKind} intent=${item.intent} sources=${item.cardinality.emittedSourceCount}`);
     return {
         doc,
         trace,
@@ -154,8 +156,9 @@ export function buildPlannerFromRuntimeContext(params) {
             triggerIds: [...payload.triggerIds],
             cueKinds: trace.detectedCues.map((cue) => cue.kind),
             winnerKeys: doc.winners.map((winner) => winner.key),
-            alignedStacks: alignmentTrace.filter((item) => item.kind === "stack").map((item) => `${item.emittedId}->${item.resolvedId}[${item.status}]`),
-            alignedBlocks: alignmentTrace.filter((item) => item.kind === "block").map((item) => `${item.emittedId}->${item.resolvedId}[${item.status}]`)
+            alignedStacks: alignmentTrace.filter((item) => item.kind === "stack").map((item) => `${item.emittedId}->${item.resolvedId}[${item.status}|${item.mode}|${item.targetKind}|${item.intent}]`),
+            alignedBlocks: alignmentTrace.filter((item) => item.kind === "block").map((item) => `${item.emittedId}->${item.resolvedId}[${item.status}|${item.mode}|${item.targetKind}|${item.intent}]`),
+            manyToOneWarnings
         }
     };
 }

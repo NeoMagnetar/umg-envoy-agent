@@ -7,6 +7,12 @@ function normalizeStatus(value) {
         ? value
         : "unresolved";
 }
+function normalizeIntent(value) {
+    return value === "bridge_only" || value === "canon_candidate" ? value : "unknown";
+}
+function normalizeTargetKind(value) {
+    return value === "catalog_backed" || value === "discovered_fallback" ? value : "unknown";
+}
 function parseMap(value) {
     if (!isRecord(value))
         return {};
@@ -20,7 +26,9 @@ function parseMap(value) {
         out[key] = {
             resolvedId: resolvedId || key,
             status,
-            source
+            source,
+            intent: normalizeIntent(raw.intent),
+            targetKind: normalizeTargetKind(raw.targetKind)
         };
     }
     return out;
@@ -37,12 +45,23 @@ export function loadRuntimeLegendAlignment(paths) {
         moltIdMap: parseMap(parsed.moltIdMap)
     };
 }
-export function alignRuntimeId(kind, emittedId, alignment) {
-    const map = kind === "stack"
+function mapForKind(kind, alignment) {
+    return kind === "stack"
         ? alignment.stackIdMap
         : kind === "block"
             ? alignment.blockIdMap
             : alignment.moltIdMap;
+}
+function reverseCounts(map) {
+    const counts = new Map();
+    for (const entry of Object.values(map)) {
+        counts.set(entry.resolvedId, (counts.get(entry.resolvedId) ?? 0) + 1);
+    }
+    return counts;
+}
+export function alignRuntimeId(kind, emittedId, alignment) {
+    const map = mapForKind(kind, alignment);
+    const reverse = reverseCounts(map);
     const entry = map[emittedId];
     if (!entry) {
         return {
@@ -50,14 +69,33 @@ export function alignRuntimeId(kind, emittedId, alignment) {
             emittedId,
             resolvedId: emittedId,
             status: "unresolved",
-            source: "no-alignment-entry"
+            source: "no-alignment-entry",
+            mode: "unresolved",
+            targetKind: "unknown",
+            intent: "unknown",
+            cardinality: {
+                resolvedTargetCount: 0,
+                emittedSourceCount: 1
+            }
         };
     }
+    const emittedSourceCount = reverse.get(entry.resolvedId) ?? 1;
+    const mode = emittedSourceCount > 1 ? "bridge_only_many_to_one" : "exact";
     return {
         kind,
         emittedId,
         resolvedId: entry.resolvedId,
         status: entry.status,
-        source: entry.source
+        source: entry.source,
+        mode,
+        targetKind: entry.targetKind ?? "unknown",
+        intent: entry.intent ?? "unknown",
+        cardinality: {
+            resolvedTargetCount: 1,
+            emittedSourceCount
+        }
     };
+}
+export function collectManyToOneMappings(entries) {
+    return entries.filter((entry) => entry.mode === "bridge_only_many_to_one");
 }

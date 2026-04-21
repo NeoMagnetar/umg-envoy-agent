@@ -2,11 +2,14 @@ import fs from "node:fs";
 import type { ResolvedPaths } from "./types.js";
 
 export type AlignmentStatus = "authoritative" | "discovered" | "unresolved";
+export type AlignmentMode = "exact" | "bridge_only_many_to_one" | "unresolved";
 
 export interface AlignmentEntry {
   resolvedId: string;
   status: AlignmentStatus;
   source: string;
+  intent?: "bridge_only" | "canon_candidate" | "unknown";
+  targetKind?: "catalog_backed" | "discovered_fallback" | "unknown";
 }
 
 export interface AlignmentMapSet {
@@ -21,6 +24,13 @@ export interface RuntimeAlignmentTraceEntry {
   resolvedId: string;
   status: AlignmentStatus;
   source: string;
+  mode: AlignmentMode;
+  targetKind: "catalog_backed" | "discovered_fallback" | "unknown";
+  intent: "bridge_only" | "canon_candidate" | "unknown";
+  cardinality: {
+    resolvedTargetCount: number;
+    emittedSourceCount: number;
+  };
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -31,6 +41,14 @@ function normalizeStatus(value: unknown): AlignmentStatus {
   return value === "authoritative" || value === "discovered" || value === "unresolved"
     ? value
     : "unresolved";
+}
+
+function normalizeIntent(value: unknown): AlignmentEntry["intent"] {
+  return value === "bridge_only" || value === "canon_candidate" ? value : "unknown";
+}
+
+function normalizeTargetKind(value: unknown): AlignmentEntry["targetKind"] {
+  return value === "catalog_backed" || value === "discovered_fallback" ? value : "unknown";
 }
 
 function parseMap(value: unknown): Record<string, AlignmentEntry> {
@@ -45,7 +63,9 @@ function parseMap(value: unknown): Record<string, AlignmentEntry> {
     out[key] = {
       resolvedId: resolvedId || key,
       status,
-      source
+      source,
+      intent: normalizeIntent(raw.intent),
+      targetKind: normalizeTargetKind(raw.targetKind)
     };
   }
 
@@ -66,33 +86,67 @@ export function loadRuntimeLegendAlignment(paths: ResolvedPaths): AlignmentMapSe
   };
 }
 
+function mapForKind(kind: "stack" | "block" | "molt", alignment: AlignmentMapSet): Record<string, AlignmentEntry> {
+  return kind === "stack"
+    ? alignment.stackIdMap
+    : kind === "block"
+      ? alignment.blockIdMap
+      : alignment.moltIdMap;
+}
+
+function reverseCounts(map: Record<string, AlignmentEntry>): Map<string, number> {
+  const counts = new Map<string, number>();
+  for (const entry of Object.values(map)) {
+    counts.set(entry.resolvedId, (counts.get(entry.resolvedId) ?? 0) + 1);
+  }
+  return counts;
+}
+
 export function alignRuntimeId(
   kind: "stack" | "block" | "molt",
   emittedId: string,
   alignment: AlignmentMapSet
 ): RuntimeAlignmentTraceEntry {
-  const map = kind === "stack"
-    ? alignment.stackIdMap
-    : kind === "block"
-      ? alignment.blockIdMap
-      : alignment.moltIdMap;
-
+  const map = mapForKind(kind, alignment);
+  const reverse = reverseCounts(map);
   const entry = map[emittedId];
+
   if (!entry) {
     return {
       kind,
       emittedId,
       resolvedId: emittedId,
       status: "unresolved",
-      source: "no-alignment-entry"
+      source: "no-alignment-entry",
+      mode: "unresolved",
+      targetKind: "unknown",
+      intent: "unknown",
+      cardinality: {
+        resolvedTargetCount: 0,
+        emittedSourceCount: 1
+      }
     };
   }
+
+  const emittedSourceCount = reverse.get(entry.resolvedId) ?? 1;
+  const mode: AlignmentMode = emittedSourceCount > 1 ? "bridge_only_many_to_one" : "exact";
 
   return {
     kind,
     emittedId,
     resolvedId: entry.resolvedId,
     status: entry.status,
-    source: entry.source
+    source: entry.source,
+    mode,
+    targetKind: entry.targetKind ?? "unknown",
+    intent: entry.intent ?? "unknown",
+    cardinality: {
+      resolvedTargetCount: 1,
+      emittedSourceCount
+    }
   };
+}
+
+export function collectManyToOneMappings(entries: RuntimeAlignmentTraceEntry[]): RuntimeAlignmentTraceEntry[] {
+  return entries.filter((entry) => entry.mode === "bridge_only_many_to_one");
 }
