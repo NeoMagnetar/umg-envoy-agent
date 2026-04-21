@@ -40,32 +40,75 @@ export function adaptPlannerToCompilerInput(doc) {
     if (doc.merges.length > 0) {
         push(issues, "error", "ADAPTER_UNSUPPORTED_MERGES", "Planner merges are not yet representable in current compiler-v0 adapter", "merges");
     }
-    const blocks = doc.stacks.flatMap((stack) => stack.blocks.flatMap((block) => block.molts.map((molt, index) => ({
-        id: `${block.id}::${molt.id}`,
-        moltType: mapRoleToMoltType(molt.role),
-        content: `${molt.state.toUpperCase()} ${molt.id}`,
-        priorityOrder: index + 1,
-        plannerSource: {
-            stackId: stack.id,
-            blockId: block.id,
-            moltId: molt.id,
-            state: molt.state,
-            role: molt.role
+    const blocks = [];
+    const stacks = [];
+    const bundleIds = [];
+    const primaryIds = [];
+    for (const stack of doc.stacks) {
+        const primaryId = `${stack.id}::PRIMARY`;
+        primaryIds.push(primaryId);
+        blocks.push({
+            id: primaryId,
+            moltType: "primary",
+            content: `PRIMARY ${stack.id}`,
+            priorityOrder: 0,
+            plannerSource: {
+                stackId: stack.id,
+                kind: "derived_primary"
+            }
+        });
+        const stackBlockIds = [primaryId];
+        const segments = [];
+        for (const block of stack.blocks) {
+            const instructionBlockIds = [];
+            for (const [index, molt] of block.molts.entries()) {
+                const blockId = `${block.id}::${molt.id}`;
+                const moltType = mapRoleToMoltType(molt.role);
+                blocks.push({
+                    id: blockId,
+                    moltType,
+                    content: `${molt.state.toUpperCase()} ${molt.id}`,
+                    priorityOrder: index + 1,
+                    plannerSource: {
+                        stackId: stack.id,
+                        blockId: block.id,
+                        moltId: molt.id,
+                        state: molt.state,
+                        role: molt.role
+                    }
+                });
+                stackBlockIds.push(blockId);
+                if (moltType === "instruction") {
+                    instructionBlockIds.push(blockId);
+                }
+            }
+            if (instructionBlockIds.length > 1) {
+                const bundleId = `bundle.${stack.id}.${block.id}.alternates`;
+                bundleIds.push(bundleId);
+                segments.push({
+                    id: bundleId,
+                    kind: "bundle",
+                    blockIds: instructionBlockIds,
+                    intent: "alternates",
+                    axis: "stacked"
+                });
+            }
         }
-    }))));
-    const stacks = doc.stacks.map((stack) => ({
-        id: stack.id,
-        name: stack.id,
-        domainKey: stack.id,
-        gate: {
-            triggerIdsAny: doc.triggers
-        },
-        blockIds: stack.blocks.flatMap((block) => block.molts.map((molt) => `${block.id}::${molt.id}`)),
-        plannerSource: {
-            stackId: stack.id,
-            blockIds: stack.blocks.map((block) => block.id)
-        }
-    }));
+        stacks.push({
+            id: stack.id,
+            name: stack.id,
+            domainKey: stack.id,
+            gate: {
+                triggerIdsAny: doc.triggers
+            },
+            blockIds: stackBlockIds,
+            segments,
+            plannerSource: {
+                stackId: stack.id,
+                blockIds: stack.blocks.map((block) => block.id)
+            }
+        });
+    }
     const triggers = doc.triggers.map((id) => ({ id, name: id }));
     const triggerState = { activeTriggerIds: [...doc.triggers] };
     const sleeve = {
@@ -79,7 +122,7 @@ export function adaptPlannerToCompilerInput(doc) {
             sourceSleeveId: doc.sleeveId,
             winnerPath: doc.winners,
             compilerStages: doc.compiler.stages,
-            provenance: ["planner-adapter", "compiler-v0-compatible"]
+            provenance: ["planner-adapter", "compiler-v0-compatible", "stage11-shape-aligned"]
         }
     };
     return {
@@ -101,7 +144,9 @@ export function adaptPlannerToCompilerInput(doc) {
                 stackIds: stacks.map((stack) => stack.id),
                 blockIds: blocks.map((block) => block.id),
                 activeTriggerIds: triggerState.activeTriggerIds,
-                provenance: ["planner-adapter", "compiler-v0-compatible"]
+                provenance: ["planner-adapter", "compiler-v0-compatible", "stage11-shape-aligned"],
+                bundleIds,
+                primaryIds
             }
         }
     };

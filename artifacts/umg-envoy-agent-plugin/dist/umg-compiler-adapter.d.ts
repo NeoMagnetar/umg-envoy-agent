@@ -25,6 +25,8 @@ export interface CompilerAdapterResult {
             blockIds: string[];
             activeTriggerIds: string[];
             provenance: string[];
+            bundleIds: string[];
+            primaryIds: string[];
         };
     };
     compileResult?: unknown;
