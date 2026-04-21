@@ -1,4 +1,5 @@
 import type { ActivationTraceView, RuntimeActivationPayload } from "./activation-runtime.js";
+import { type RuntimeAlignmentTraceEntry } from "./umg-runtime-legend-alignment.js";
 import type { PluginConfig, ResolvedPaths } from "./types.js";
 import type { UMGPathDocument, ValidationIssue } from "./umg-path-types.js";
 export interface RuntimePlannerBuildInput {
@@ -16,6 +17,7 @@ export interface RuntimePlannerBuildResult {
     trace: ActivationTraceView;
     payload: RuntimeActivationPayload;
     issues: ValidationIssue[];
+    alignmentTrace: RuntimeAlignmentTraceEntry[];
     structural: {
         ok: boolean;
         errors: number;
@@ -36,6 +38,8 @@ export interface RuntimePlannerBuildResult {
         triggerIds: string[];
         cueKinds: string[];
         winnerKeys: string[];
+        alignedStacks: string[];
+        alignedBlocks: string[];
     };
 }
 export declare function buildPlannerFromRuntimeContext(params: {

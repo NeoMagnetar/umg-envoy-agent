@@ -5,6 +5,7 @@ export interface PluginConfig {
     allowRuntimeWrites?: boolean;
     defaultSleeveId?: string;
     debugDirectReplyBehavior?: boolean;
+    runtimeLegendAlignmentPath?: string;
 }
 export interface ResolvedPaths {
     pluginRoot: string;
@@ -25,4 +26,5 @@ export interface ResolvedPaths {
     blockCategoryIndexPath: string;
     blockLibraryIndexPath: string;
     resolverRulesPath: string;
+    runtimeLegendAlignmentPath: string;
 }

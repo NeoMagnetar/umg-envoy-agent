@@ -1,0 +1,110 @@
+{
+  "$schema": "umg.runtime-legend-alignment.v1",
+  "kind": "runtime_legend_alignment",
+  "notes": [
+    "Explicit bridge between runtime modulation ids and current legend-backed ids.",
+    "Use this as a traceable alignment layer before any mass id migration.",
+    "authoritative means catalog/index-backed; discovered means file-surface fallback; unresolved means no current target."
+  ],
+  "stackIdMap": {
+    "stack.persona.core": {
+      "resolvedId": "S.01",
+      "status": "authoritative",
+      "source": "manual-stage4b-alignment"
+    },
+    "stack.response.posture": {
+      "resolvedId": "S.01",
+      "status": "authoritative",
+      "source": "manual-stage4b-alignment"
+    },
+    "stack.response.format": {
+      "resolvedId": "S.01",
+      "status": "authoritative",
+      "source": "manual-stage4b-alignment"
+    }
+  },
+  "blockIdMap": {
+    "block.persona.base": {
+      "resolvedId": "N.03.01",
+      "status": "authoritative",
+      "source": "manual-stage4b-alignment"
+    },
+    "block.persona.playful": {
+      "resolvedId": "N.03.01",
+      "status": "authoritative",
+      "source": "manual-stage4b-alignment"
+    },
+    "block.persona.analytical": {
+      "resolvedId": "N.03.01",
+      "status": "authoritative",
+      "source": "manual-stage4b-alignment"
+    },
+    "block.persona.formal": {
+      "resolvedId": "N.03.01",
+      "status": "authoritative",
+      "source": "manual-stage4b-alignment"
+    },
+    "block.posture.direct": {
+      "resolvedId": "N.03.01",
+      "status": "authoritative",
+      "source": "manual-stage4b-alignment"
+    },
+    "block.posture.expansive": {
+      "resolvedId": "N.03.01",
+      "status": "authoritative",
+      "source": "manual-stage4b-alignment"
+    },
+    "block.format.list": {
+      "resolvedId": "N.03.01",
+      "status": "authoritative",
+      "source": "manual-stage4b-alignment"
+    },
+    "block.format.narrative": {
+      "resolvedId": "N.03.01",
+      "status": "authoritative",
+      "source": "manual-stage4b-alignment"
+    }
+  },
+  "moltIdMap": {
+    "block.persona.base": {
+      "resolvedId": "INST.061",
+      "status": "discovered",
+      "source": "manual-stage4b-alignment"
+    },
+    "block.persona.playful": {
+      "resolvedId": "INST.061",
+      "status": "discovered",
+      "source": "manual-stage4b-alignment"
+    },
+    "block.persona.analytical": {
+      "resolvedId": "INST.061",
+      "status": "discovered",
+      "source": "manual-stage4b-alignment"
+    },
+    "block.persona.formal": {
+      "resolvedId": "INST.061",
+      "status": "discovered",
+      "source": "manual-stage4b-alignment"
+    },
+    "block.posture.direct": {
+      "resolvedId": "INST.061",
+      "status": "discovered",
+      "source": "manual-stage4b-alignment"
+    },
+    "block.posture.expansive": {
+      "resolvedId": "INST.061",
+      "status": "discovered",
+      "source": "manual-stage4b-alignment"
+    },
+    "block.format.list": {
+      "resolvedId": "INST.061",
+      "status": "discovered",
+      "source": "manual-stage4b-alignment"
+    },
+    "block.format.narrative": {
+      "resolvedId": "INST.061",
+      "status": "discovered",
+      "source": "manual-stage4b-alignment"
+    }
+  }
+}

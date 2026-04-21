@@ -88,6 +88,10 @@ export function resolvePaths(config = {}) {
     const resolverRulesPath = requirePath("Resolver rules path", [
         path.join(pluginRoot, "config", "resolver-rules.default.json")
     ]);
+    const runtimeLegendAlignmentPath = requirePath("Runtime legend alignment path", [
+        ...(config.runtimeLegendAlignmentPath ? [config.runtimeLegendAlignmentPath] : []),
+        path.join(pluginRoot, "config", "runtime-legend-alignment.default.json")
+    ]);
     return {
         pluginRoot,
         workspaceRoot,
@@ -106,6 +110,7 @@ export function resolvePaths(config = {}) {
         sleeveCatalogPath,
         blockCategoryIndexPath,
         blockLibraryIndexPath,
-        resolverRulesPath
+        resolverRulesPath,
+        runtimeLegendAlignmentPath
     };
 }

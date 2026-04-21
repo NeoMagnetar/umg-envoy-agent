@@ -1,10 +1,108 @@
 import { buildActivationTraceView, buildRuntimeActivationPayload } from "./activation-runtime.js";
 import { resolvePaths } from "./paths.js";
-import { buildLegendResolverIndex, resolveUMGPathAgainstLegend } from "./umg-legend-resolver.js";
-import { buildUMGPathDocumentFromRuntime } from "./umg-path-builder.js";
+import { resolveUMGPathAgainstLegend } from "./umg-legend-resolver.js";
 import { summarizeValidationIssues, validateUMGPath } from "./umg-path-validator.js";
+import { alignRuntimeId, loadRuntimeLegendAlignment } from "./umg-runtime-legend-alignment.js";
 function summarizeIssues(issues) {
     return summarizeValidationIssues(issues);
+}
+function inferRole(id) {
+    const normalized = id.toLowerCase();
+    if (normalized.startsWith("dir"))
+        return "D";
+    if (normalized.startsWith("inst"))
+        return "I";
+    if (normalized.startsWith("trg"))
+        return "T";
+    if (normalized.startsWith("aim"))
+        return "S";
+    if (normalized.startsWith("need"))
+        return "S";
+    if (normalized.startsWith("use"))
+        return "S";
+    if (normalized.startsWith("prim"))
+        return "P";
+    if (normalized.startsWith("phi"))
+        return "H";
+    if (normalized.startsWith("bp"))
+        return "B";
+    return "I";
+}
+function stateForId(id, payload) {
+    if (payload.activeForTurn.activeBlockIds.includes(id))
+        return "active";
+    if (payload.activeForTurn.suppressedBlockIds.includes(id))
+        return "suppressed";
+    if (payload.activeForTurn.latentBlockIds.includes(id))
+        return "latent";
+    return "off";
+}
+function buildAlignedPlannerDoc(payload, input, alignmentTrace) {
+    const stackGroups = new Map();
+    const candidateBlockIds = Array.from(new Set([
+        ...payload.activeForTurn.activeBlockIds,
+        ...payload.activeForTurn.suppressedBlockIds,
+        ...payload.activeForTurn.latentBlockIds
+    ]));
+    for (const entry of alignmentTrace.filter((item) => item.kind === "stack")) {
+        if (!stackGroups.has(entry.resolvedId)) {
+            stackGroups.set(entry.resolvedId, []);
+        }
+    }
+    const blockAlignments = alignmentTrace.filter((item) => item.kind === "block");
+    const moltAlignments = alignmentTrace.filter((item) => item.kind === "molt");
+    const resolvedStackIds = alignmentTrace.filter((item) => item.kind === "stack").map((item) => item.resolvedId);
+    const fallbackStackId = resolvedStackIds[0] ?? "S.01";
+    for (const blockId of candidateBlockIds) {
+        const blockEntry = blockAlignments.find((item) => item.emittedId === blockId) ?? {
+            kind: "block",
+            emittedId: blockId,
+            resolvedId: blockId,
+            status: "unresolved",
+            source: "implicit-fallback"
+        };
+        const current = stackGroups.get(fallbackStackId) ?? [];
+        current.push(blockEntry.resolvedId);
+        stackGroups.set(fallbackStackId, current);
+    }
+    const stacks = [];
+    for (const [stackId, blockIds] of stackGroups.entries()) {
+        const blocks = [];
+        const uniqueBlockIds = Array.from(new Set(blockIds));
+        for (const blockId of uniqueBlockIds) {
+            const memberIds = moltAlignments
+                .filter((item) => candidateBlockIds.includes(item.emittedId))
+                .map((item) => item.resolvedId);
+            const moltId = memberIds[0] ?? "INST.061";
+            blocks.push({
+                id: blockId,
+                molts: [{
+                        state: stateForId(candidateBlockIds[0] ?? blockId, payload),
+                        role: inferRole(moltId),
+                        id: moltId
+                    }]
+            });
+        }
+        stacks.push({ id: stackId, blocks });
+    }
+    return {
+        use: input.use ?? "build_live_runtime_path",
+        aim: input.aim ?? "deterministic_runtime_planner_route",
+        need: input.need ?? ["structural_validity", "semantic_resolution", "traceable_handoff"],
+        sleeveId: input.sleeveId ?? payload.sleeveId ?? "sample-basic-minimal",
+        triggers: [...payload.triggerIds],
+        gates: [],
+        loadedStacks: resolvedStackIds,
+        stacks,
+        relationships: [],
+        bundles: [],
+        merges: [],
+        winners: alignmentTrace
+            .filter((item) => item.kind === "block" && item.status !== "unresolved")
+            .slice(0, 1)
+            .map((item) => ({ key: "chain", value: `${item.resolvedId}>INST.061` })),
+        compiler: { stages: ["validate", "normalize", "merge", "bundle", "govern", "compile", "emit"] }
+    };
 }
 export function buildPlannerFromRuntimeContext(params) {
     const { paths, input } = params;
@@ -24,23 +122,17 @@ export function buildPlannerFromRuntimeContext(params) {
         provenance: input.provenance ?? ["runtime-planner"],
         notes: input.notes ?? ["stage-4 deterministic runtime planner build"]
     });
-    const legendIndex = buildLegendResolverIndex(paths);
-    const doc = buildUMGPathDocumentFromRuntime({
-        trace,
-        payload,
-        options: {
-            use: input.use ?? "build_live_runtime_path",
-            aim: input.aim ?? "deterministic_runtime_planner_route",
-            need: input.need ?? ["structural_validity", "semantic_resolution", "traceable_handoff"],
-            sleeveId: input.sleeveId ?? payload.sleeveId,
-            legend: {
-                stackDisplayOrder: Array.from(legendIndex.stackIds),
-                blockToNeoBlock: {},
-                neoBlockToStack: {},
-                blockRoleMap: {}
-            }
-        }
-    });
+    const alignment = loadRuntimeLegendAlignment(paths);
+    const alignmentTrace = [
+        ...payload.activeForTurn.loadedStackIds.map((id) => alignRuntimeId("stack", id, alignment)),
+        ...payload.activeForTurn.activeBlockIds.map((id) => alignRuntimeId("block", id, alignment)),
+        ...payload.activeForTurn.latentBlockIds.map((id) => alignRuntimeId("block", id, alignment)),
+        ...payload.activeForTurn.suppressedBlockIds.map((id) => alignRuntimeId("block", id, alignment)),
+        ...payload.activeForTurn.activeBlockIds.map((id) => alignRuntimeId("molt", id, alignment)),
+        ...payload.activeForTurn.latentBlockIds.map((id) => alignRuntimeId("molt", id, alignment)),
+        ...payload.activeForTurn.suppressedBlockIds.map((id) => alignRuntimeId("molt", id, alignment))
+    ];
+    const doc = buildAlignedPlannerDoc(payload, input, alignmentTrace);
     const structuralIssues = validateUMGPath(doc);
     const semanticResult = resolveUMGPathAgainstLegend(paths, doc);
     const issues = [...structuralIssues, ...semanticResult.issues];
@@ -49,18 +141,21 @@ export function buildPlannerFromRuntimeContext(params) {
         trace,
         payload,
         issues,
+        alignmentTrace,
         structural: summarizeIssues(structuralIssues),
         semantic: summarizeIssues(semanticResult.issues),
         plannerTrace: {
             sourceMessage: input.message,
             resolvedSleeveId: doc.sleeveId,
-            loadedStacks: [...doc.loadedStacks],
+            loadedStacks: [...payload.activeForTurn.loadedStackIds],
             activeBlocks: [...payload.activeForTurn.activeBlockIds],
             latentBlocks: [...payload.activeForTurn.latentBlockIds],
             suppressedBlocks: [...payload.activeForTurn.suppressedBlockIds],
             triggerIds: [...payload.triggerIds],
             cueKinds: trace.detectedCues.map((cue) => cue.kind),
-            winnerKeys: doc.winners.map((winner) => winner.key)
+            winnerKeys: doc.winners.map((winner) => winner.key),
+            alignedStacks: alignmentTrace.filter((item) => item.kind === "stack").map((item) => `${item.emittedId}->${item.resolvedId}[${item.status}]`),
+            alignedBlocks: alignmentTrace.filter((item) => item.kind === "block").map((item) => `${item.emittedId}->${item.resolvedId}[${item.status}]`)
         }
     };
 }
