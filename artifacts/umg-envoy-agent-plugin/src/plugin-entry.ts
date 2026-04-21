@@ -18,6 +18,9 @@ import { renderUMGPath } from "./umg-path-renderer.js";
 import { validateUMGPath, validateUMGPathSemantically } from "./umg-path-validator.js";
 import { buildPlannerFromRuntimeMessage } from "./umg-runtime-planner.js";
 import { runCompilerSmokeTest } from "./compiler-smoke.js";
+import { compilePlannerWithAdapter } from "./umg-compiler-adapter.js";
+import { runRuntimeSmokeMatrix } from "./umg-runtime-smoke-matrix.js";
+import { runCompilerAdapterMatrix } from "./umg-compiler-adapter-matrix.js";
 import { readBlockCategoryIndex, readBlockLibraryIndex } from "./blocks.js";
 import { resolvePaths } from "./paths.js";
 import { listRuntimeBackups, rollbackRuntimeFromBackup } from "./rollback.js";
@@ -166,6 +169,51 @@ function registerCliBridge(api: any, config?: PluginConfig) {
             aim: "inspectable_runtime_planner_trace",
             need: ["traceability", "structural_validity", "semantic_resolution"]
           }, effectiveConfig(config));
+          console.log(JSON.stringify(result, null, 2));
+        });
+
+      root.command("adapter-trace")
+        .requiredOption("--message <text>")
+        .option("--sleeve <id>")
+        .action(async (opts: { message: string; sleeve?: string }) => {
+          const planner = buildPlannerFromRuntimeMessage({
+            message: opts.message,
+            sleeveId: opts.sleeve,
+            provenance: ["cli:umg-envoy adapter-trace"],
+            notes: ["stage-13 adapter trace"]
+          }, effectiveConfig(config));
+          if (!planner.structural.ok || !planner.semantic.ok) {
+            console.log(JSON.stringify({ blocked: true, planner }, null, 2));
+            process.exitCode = 1;
+            return;
+          }
+          const adapted = await compilePlannerWithAdapter(planner.doc, effectiveConfig(config));
+          console.log(JSON.stringify({ planner, adapted }, null, 2));
+        });
+
+      root.command("compiler-trace")
+        .requiredOption("--message <text>")
+        .option("--sleeve <id>")
+        .action(async (opts: { message: string; sleeve?: string }) => {
+          const planner = buildPlannerFromRuntimeMessage({
+            message: opts.message,
+            sleeveId: opts.sleeve,
+            provenance: ["cli:umg-envoy compiler-trace"],
+            notes: ["stage-13 compiler trace"]
+          }, effectiveConfig(config));
+          if (!planner.structural.ok || !planner.semantic.ok) {
+            console.log(JSON.stringify({ blocked: true, planner }, null, 2));
+            process.exitCode = 1;
+            return;
+          }
+          const adapted = await compilePlannerWithAdapter(planner.doc, effectiveConfig(config));
+          console.log(JSON.stringify(adapted.compileResult ?? adapted, null, 2));
+        });
+
+      root.command("matrix-status")
+        .option("--compiler")
+        .action(async (opts: { compiler?: boolean }) => {
+          const result = opts.compiler ? await runCompilerAdapterMatrix() : runRuntimeSmokeMatrix();
           console.log(JSON.stringify(result, null, 2));
         });
 
