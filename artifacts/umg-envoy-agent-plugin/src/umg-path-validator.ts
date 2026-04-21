@@ -3,6 +3,8 @@ import type {
   UMGPathDocument,
   ValidationIssue
 } from "./umg-path-types.js";
+import { buildLegendResolverIndex, validateUMGPathAgainstLegend } from "./umg-legend-resolver.js";
+import type { ResolvedPaths } from "./types.js";
 
 function push(
   issues: ValidationIssue[],
@@ -430,8 +432,16 @@ export function plannerValidatorCapabilities(): string[] {
     "merge-legality-checks",
     "winner-legality-checks",
     "compiler-stage-checks",
-    "cross-declaration-overlap-checks"
+    "cross-declaration-overlap-checks",
+    "legend-resolution-checks"
   ];
+}
+
+export function validateUMGPathSemantically(doc: UMGPathDocument, paths: ResolvedPaths): ValidationIssue[] {
+  const structural = validateUMGPath(doc);
+  const legendIndex = buildLegendResolverIndex(paths);
+  const semantic = validateUMGPathAgainstLegend(doc, legendIndex);
+  return [...structural, ...semantic];
 }
 
 export default validateUMGPath;

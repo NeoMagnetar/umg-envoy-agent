@@ -1,3 +1,4 @@
+import { buildLegendResolverIndex, validateUMGPathAgainstLegend } from "./umg-legend-resolver.js";
 function push(issues, severity, code, message, path) {
     issues.push({ severity, code, message, path });
 }
@@ -373,7 +374,14 @@ export function plannerValidatorCapabilities() {
         "merge-legality-checks",
         "winner-legality-checks",
         "compiler-stage-checks",
-        "cross-declaration-overlap-checks"
+        "cross-declaration-overlap-checks",
+        "legend-resolution-checks"
     ];
+}
+export function validateUMGPathSemantically(doc, paths) {
+    const structural = validateUMGPath(doc);
+    const legendIndex = buildLegendResolverIndex(paths);
+    const semantic = validateUMGPathAgainstLegend(doc, legendIndex);
+    return [...structural, ...semantic];
 }
 export default validateUMGPath;
