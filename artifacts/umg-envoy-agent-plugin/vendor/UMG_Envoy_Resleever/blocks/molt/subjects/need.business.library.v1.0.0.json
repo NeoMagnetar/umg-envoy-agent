@@ -1,0 +1,1111 @@
+{
+  "library_name": "MOLT Need Library \u2014 Business Edition",
+  "version": "1.0.0",
+  "created": "2026-04-20",
+  "created_by": "Claude UMG Envoy",
+  "supervised_by": "NeoMAG",
+  "description": "Business-domain MOLT Need blocks. Need answers: 'What must be true first?' Each block describes a business prerequisite, enabling condition, or required state that must exist before the commercial Aim can be achieved.",
+  "usage": "Select the Need block that describes what must already be in place for the business Aim to succeed. If the Need is absent, the Aim cannot be reached regardless of effort.",
+  "needs": {
+    "MARKET_CONDITIONS": {
+      "description": "What must be true about the market before a commercial strategy can succeed",
+      "blocks": [
+        {
+          "id": "BIZ.NEED.001",
+          "need": "Addressable market exists",
+          "condition": "A viable population of buyers with the problem and budget must exist before a GTM motion is launched",
+          "examples": [
+            "ICP segment must be large enough to support revenue targets",
+            "market must have budget allocated to the problem category",
+            "buyer must experience the pain the product solves"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.002",
+          "need": "Market timing is right",
+          "condition": "External conditions must be sufficiently favorable for the offering to gain traction",
+          "examples": [
+            "regulatory change must have created urgency before entering a compliance market",
+            "buyer maturity must be high enough to purchase without extensive education",
+            "economic conditions must not be actively contracting the target segment"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.003",
+          "need": "Competitive landscape understood",
+          "condition": "Direct and indirect alternatives must be mapped before GTM positioning and differentiation can be defined",
+          "examples": [
+            "battle cards must be built before sales launch",
+            "competitive pricing must be researched before proposal is submitted",
+            "alternatives must be inventoried before product roadmap is set"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.004",
+          "need": "Buyer persona validated",
+          "condition": "Who the buyer is, what they care about, and how they buy must be confirmed with research before marketing or sales begins",
+          "examples": [
+            "discovery interviews with 10 ICPs must be complete before content is built",
+            "decision-making process must be mapped before sales motion is designed",
+            "key objections must be known before sales scripts are written"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.005",
+          "need": "Category awareness sufficient",
+          "condition": "The target buyer must have enough awareness of the problem category for a solution-focused message to land",
+          "examples": [
+            "buyers must know they have a data governance problem before a governance tool is pitched",
+            "market must understand AI risk before an AI safety offering gains traction",
+            "CFOs must be tracking the cost category before a cost-reduction play is credible"
+          ]
+        }
+      ]
+    },
+    "PRODUCT_READINESS": {
+      "description": "What must be true about the product before GTM or commercial activities begin",
+      "blocks": [
+        {
+          "id": "BIZ.NEED.006",
+          "need": "Product available to sell",
+          "condition": "A working, deliverable product must exist before sales commits to customers",
+          "examples": [
+            "MVP must be complete before sales begins outreach",
+            "feature must be shipped before it is included in a proposal",
+            "integration must be built before it is promised in a contract"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.007",
+          "need": "Product delivers promised value",
+          "condition": "The product must reliably produce the outcome that is being sold before customer acquisition scales",
+          "examples": [
+            "the ROI claim must be validated with design partners before broad launch",
+            "the time-saving claim must be measurable before it is used in marketing",
+            "the outcome must be replicable across customer types before scaling customer success"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.008",
+          "need": "Product is stable enough to support customers",
+          "condition": "The product must meet a minimum bar of reliability and performance before customers depend on it",
+          "examples": [
+            "P1 bug rate must be below threshold before enterprise launch",
+            "uptime must meet committed SLA before the SLA is sold",
+            "data handling must pass security review before enterprise contracts are signed"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.009",
+          "need": "Onboarding process exists",
+          "condition": "A repeatable process for getting customers live must be in place before revenue is closed at scale",
+          "examples": [
+            "implementation playbook must be written before CS team is hired",
+            "onboarding milestone framework must exist before customers are committed to go-live dates",
+            "training materials must be ready before first customer is handed off from sales"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.010",
+          "need": "Pricing and packaging defined",
+          "condition": "Clear, approved pricing must exist before sales closes deals or marketing runs campaigns",
+          "examples": [
+            "price list must be approved before proposals are sent",
+            "packaging must be defined before marketing communicates plans",
+            "discount authority levels must be set before reps begin negotiating"
+          ]
+        }
+      ]
+    },
+    "SALES_PREREQUISITES": {
+      "description": "What must be true before a sales team can effectively sell",
+      "blocks": [
+        {
+          "id": "BIZ.NEED.011",
+          "need": "Sales team hired and ramped",
+          "condition": "Enough salespeople must be in role and productive before a revenue plan is achievable",
+          "examples": [
+            "AEs must be 90 days into ramp before they carry full quota",
+            "SDR team must be staffed before outbound targets are set",
+            "SE team must be hired before technical evaluations can be run in parallel"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.012",
+          "need": "Sales enablement complete",
+          "condition": "Reps must have the knowledge, tools, and materials to sell effectively before they engage prospects",
+          "examples": [
+            "demo environment must be configured before first customer meeting",
+            "sales deck must be approved before reps use it",
+            "competitive objection guide must exist before reps face bake-offs"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.013",
+          "need": "Pipeline exists",
+          "condition": "A sufficient volume of qualified opportunities must exist before a revenue forecast is credible",
+          "examples": [
+            "3x pipeline coverage must be present before quarterly forecast is trusted",
+            "SDR-generated pipeline must exist before AEs can hit their number",
+            "enough late-stage deals must be present before end-of-quarter close is achievable"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.014",
+          "need": "CRM is accurate and current",
+          "condition": "Pipeline data in the CRM must reflect reality before it can be used for forecasting or coaching",
+          "examples": [
+            "all active deals must be logged before a pipeline review",
+            "stage definitions must be agreed before stage-based forecasting is trusted",
+            "contact records must be current before outreach sequences are run"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.015",
+          "need": "Decision maker engaged",
+          "condition": "The person with authority to approve the purchase must be involved before a deal can be closed",
+          "examples": [
+            "economic buyer must be identified before a commercial conversation is started",
+            "champion must confirm executive sponsorship before a proposal is submitted",
+            "procurement must be engaged before legal and finance review begins"
+          ]
+        }
+      ]
+    },
+    "FINANCIAL_PREREQUISITES": {
+      "description": "What must be true about financial resources and approvals before spending or committing",
+      "blocks": [
+        {
+          "id": "BIZ.NEED.016",
+          "need": "Budget approved",
+          "condition": "Financial authorization must be in place before committing spend or resources",
+          "examples": [
+            "headcount budget must be approved before a role is opened",
+            "project budget must be signed off before vendors are engaged",
+            "marketing spend must be authorized before a campaign is launched"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.017",
+          "need": "Financial model validated",
+          "condition": "Unit economics and return projections must be tested and credible before an investment is committed",
+          "examples": [
+            "LTV/CAC model must be validated before scaling paid acquisition",
+            "gross margin assumptions must be confirmed before pricing is set",
+            "payback period must be acceptable before a large tool purchase is approved"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.018",
+          "need": "Cash available",
+          "condition": "Sufficient liquidity must exist to cover the commitment before it is made",
+          "examples": [
+            "payroll for new hires must be fundable before offers are extended",
+            "vendor payments must be serviceable before a contract is signed",
+            "marketing budget must be available before a campaign is booked"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.019",
+          "need": "Revenue recognized correctly",
+          "condition": "Revenue must be booked under the correct accounting treatment before financials are reported",
+          "examples": [
+            "ASC 606 milestones must be met before revenue is recognized",
+            "ratable recognition rules must be applied before board financials are presented",
+            "deferred revenue must be correctly scheduled before investor reporting"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.020",
+          "need": "Financial controls in place",
+          "condition": "Approval and oversight mechanisms must be operating before significant financial commitments are made",
+          "examples": [
+            "expense policy must be enforced before company cards are issued",
+            "procurement approval workflow must be active before purchasing begins",
+            "dual sign-off must be required before large vendor contracts are executed"
+          ]
+        }
+      ]
+    },
+    "CUSTOMER_PREREQUISITES": {
+      "description": "What must be true about a customer or account before engagement can proceed",
+      "blocks": [
+        {
+          "id": "BIZ.NEED.021",
+          "need": "Customer ICP fit confirmed",
+          "condition": "The prospect must be verified as a genuine fit for the product before significant sales resource is invested",
+          "examples": [
+            "company size and tech stack must be confirmed before a demo is booked",
+            "use case must be validated as in-scope before a POC is agreed",
+            "budget must be confirmed before multi-stakeholder sales process begins"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.022",
+          "need": "Business case agreed",
+          "condition": "The customer must have a clear sense of why this investment makes sense before they will approve it",
+          "examples": [
+            "ROI must be quantified with the customer before a proposal is submitted",
+            "success criteria must be agreed before a trial begins",
+            "pain must be acknowledged at the executive level before final approval"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.023",
+          "need": "Legal and security review complete",
+          "condition": "All compliance, legal, and security requirements must be satisfied before a customer contract is signed",
+          "examples": [
+            "security review must be passed before an enterprise contract is executed",
+            "MSA must be negotiated before an SOW is signed",
+            "data processing agreement must be in place before customer data is processed"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.024",
+          "need": "Internal champion identified",
+          "condition": "A person inside the buyer organization who advocates for the purchase must exist before the deal can advance",
+          "examples": [
+            "champion must be identified and tested before a proposal is sent",
+            "champion must have access to the economic buyer before final approval is sought",
+            "champion must understand and be able to articulate the value before being relied on internally"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.025",
+          "need": "Customer success capacity available",
+          "condition": "The CS team must have bandwidth to onboard and serve a new customer before the deal is closed",
+          "examples": [
+            "a CS manager must be available before a committed go-live date is given",
+            "implementation slots must be confirmed before contracts are signed",
+            "customer support capacity must be available before volume is committed"
+          ]
+        }
+      ]
+    },
+    "HIRING_TALENT": {
+      "description": "What must be true about people and roles before a hire can be made or a team can perform",
+      "blocks": [
+        {
+          "id": "BIZ.NEED.026",
+          "need": "Role defined clearly",
+          "condition": "The job description, responsibilities, and success criteria must be documented before recruiting begins",
+          "examples": [
+            "JD must be written and approved before posting",
+            "level and compensation band must be set before candidates are evaluated",
+            "hiring manager must agree on must-have vs. nice-to-have criteria before interviews begin"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.027",
+          "need": "Headcount approved",
+          "condition": "Organizational and financial approval must be in place before a search is opened",
+          "examples": [
+            "HC plan must be approved by finance before recruiter is assigned",
+            "backfill must be authorized before the role is posted",
+            "new role must be included in the board-approved operating plan before hiring begins"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.028",
+          "need": "Interview process designed",
+          "condition": "A structured, consistent evaluation process must exist before candidates are assessed",
+          "examples": [
+            "interview panel and scorecard must be defined before first candidate is screened",
+            "take-home exercise must be ready before the technical round",
+            "reference check process must be documented before offers are extended"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.029",
+          "need": "Compensation benchmarked",
+          "condition": "Market data on compensation must be researched before an offer is built",
+          "examples": [
+            "salary range must be confirmed against market data before an offer letter is drafted",
+            "equity benchmarks must be reviewed before a senior hire is offered",
+            "total comp must be competitive before an offer is extended to a top candidate"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.030",
+          "need": "Manager capacity available",
+          "condition": "The manager who will onboard and support the new hire must have bandwidth before the hire is made",
+          "examples": [
+            "hiring manager must not be overloaded before adding a direct report",
+            "manager must be able to provide a 30/60/90 plan before candidate accepts",
+            "team must have capacity to integrate a new member before close of search"
+          ]
+        }
+      ]
+    },
+    "LEGAL_CONTRACT": {
+      "description": "What must be true about legal and contractual conditions before a commitment is made",
+      "blocks": [
+        {
+          "id": "BIZ.NEED.031",
+          "need": "Contract template approved",
+          "condition": "A legally reviewed master agreement must be in place before deal terms are negotiated",
+          "examples": [
+            "MSA must be approved by legal before sales uses it",
+            "standard SOW template must be ready before services deals are proposed",
+            "partner agreement must be finalized before partner program is launched"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.032",
+          "need": "Legal review complete",
+          "condition": "In-house or external counsel must have reviewed the terms before signature",
+          "examples": [
+            "non-standard terms must be reviewed before AE redlines are accepted",
+            "enterprise contract must be legal-reviewed before execution",
+            "acquisition agreement must be reviewed before signing"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.033",
+          "need": "Compliance requirements met",
+          "condition": "All regulatory and policy obligations must be confirmed as satisfied before the contract is executed",
+          "examples": [
+            "data protection requirements must be met before a DPA is signed",
+            "export control check must be complete before contract with international entity",
+            "required certifications must be in place before regulated industry contract is signed"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.034",
+          "need": "Approval authority confirmed",
+          "condition": "The right person must have authority to sign before a contract is executed",
+          "examples": [
+            "signatory limit must be confirmed before routing for signature",
+            "board approval must be obtained before a major acquisition agreement is signed",
+            "dual-authorizer policy must be satisfied before a high-value vendor contract is executed"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.035",
+          "need": "IP ownership clear",
+          "condition": "Ownership of relevant intellectual property must be established before it can be licensed, transferred, or sold",
+          "examples": [
+            "patent must be filed before IP is disclosed to a potential acquirer",
+            "work-for-hire agreements must be in place before contractor deliverables are used commercially",
+            "IP ownership must be confirmed before an investor due diligence process begins"
+          ]
+        }
+      ]
+    },
+    "OPERATIONAL_READINESS": {
+      "description": "What must be true about operations before a business unit or function can execute",
+      "blocks": [
+        {
+          "id": "BIZ.NEED.036",
+          "need": "Process documented",
+          "condition": "The steps to execute a business function must be written down before the function scales or changes hands",
+          "examples": [
+            "billing process must be documented before it is transitioned to a new owner",
+            "onboarding playbook must exist before the first CS hire",
+            "procurement workflow must be documented before it is automated"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.037",
+          "need": "Systems configured",
+          "condition": "Required business tools and platforms must be set up before work can begin in them",
+          "examples": [
+            "CRM must be configured before reps start logging activity",
+            "HRIS must be live before payroll is run",
+            "project management tool must be set up before a team is onboarded to it"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.038",
+          "need": "Escalation paths defined",
+          "condition": "Clear decision-making and escalation routes must be established before complex or risky situations arise",
+          "examples": [
+            "escalation tier for P1 customer incidents must be defined before go-live",
+            "discount approval chain must be set before sales launches",
+            "HR escalation path must be published before new managers are promoted"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.039",
+          "need": "KPIs and reporting agreed",
+          "condition": "What will be measured and how often must be agreed before a team or initiative is running",
+          "examples": [
+            "success metrics must be defined before a new program launches",
+            "weekly reporting cadence must be established before a quarter begins",
+            "dashboards must be live before a team holds its first performance review"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.040",
+          "need": "Handoff process defined",
+          "condition": "How work passes between teams or stages must be clear before interdependent functions operate together",
+          "examples": [
+            "sales-to-CS handoff must be documented before first customer is closed",
+            "marketing-to-sales lead handoff must be defined before campaigns launch",
+            "product-to-support handoff must exist before a new feature ships"
+          ]
+        }
+      ]
+    },
+    "STRATEGY_ALIGNMENT": {
+      "description": "What must be true about strategic clarity before execution begins",
+      "blocks": [
+        {
+          "id": "BIZ.NEED.041",
+          "need": "Strategy agreed by leadership",
+          "condition": "Senior leaders must be aligned on direction before the organization executes against it",
+          "examples": [
+            "C-suite must agree on the annual priorities before they are cascaded to teams",
+            "board must approve the three-year plan before headcount is built",
+            "exec team must agree on the ICP before GTM is designed"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.042",
+          "need": "OKRs set and cascaded",
+          "condition": "Objectives and measurable key results must be defined and communicated before a team executes a plan",
+          "examples": [
+            "company OKRs must be set before department OKRs are written",
+            "team OKRs must be agreed before individual goals are set",
+            "Q1 OKRs must be cascaded before the quarter begins"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.043",
+          "need": "Priorities sequenced",
+          "condition": "The order of initiatives must be agreed before resources are allocated and work begins",
+          "examples": [
+            "product priorities must be ranked before engineering capacity is assigned",
+            "market entry priorities must be sequenced before regional teams are built",
+            "investment priorities must be ordered before budget is allocated"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.044",
+          "need": "Trade-offs acknowledged",
+          "condition": "What will not be done must be explicitly accepted by decision-makers before a focused strategy is executed",
+          "examples": [
+            "SMB deprioritization must be agreed before enterprise-only motion begins",
+            "international pause must be accepted before domestic focus is funded",
+            "product scope reduction must be acknowledged before an accelerated timeline is committed"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.045",
+          "need": "Risk accepted by owner",
+          "condition": "The relevant authority must explicitly acknowledge and accept a risk before a risky course of action proceeds",
+          "examples": [
+            "exec must accept the downside scenario before a large bet is funded",
+            "legal must accept the regulatory risk before entering a gray area market",
+            "board must accept the burn rate before a growth investment is approved"
+          ]
+        }
+      ]
+    },
+    "PARTNERSHIP_PREREQUISITES": {
+      "description": "What must be true before a partnership can be productive",
+      "blocks": [
+        {
+          "id": "BIZ.NEED.046",
+          "need": "Mutual value proposition defined",
+          "condition": "Both parties must understand and agree on what each gains from the partnership before it is activated",
+          "examples": [
+            "partner must see a clear financial incentive before signing",
+            "both parties must agree on the co-sell motion before joint customers are approached",
+            "integration value must be demonstrable to both sides before co-marketing begins"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.047",
+          "need": "Partner agreement executed",
+          "condition": "A formal agreement governing the relationship must be signed before commercial activity starts",
+          "examples": [
+            "reseller agreement must be signed before partner can sell",
+            "technology partner agreement must be executed before co-marketing is published",
+            "referral agreement must be in place before commissions are owed"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.048",
+          "need": "Partner enabled",
+          "condition": "The partner must have the knowledge and tools to sell or deliver effectively before they engage customers",
+          "examples": [
+            "partner must complete certification before running demos",
+            "reseller must have access to pricing and proposals before selling",
+            "SI must be trained on the product before running an implementation"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.049",
+          "need": "Integration built and tested",
+          "condition": "A technical connection between partners must be functional before joint customers are promised it",
+          "examples": [
+            "API integration must be live before co-sell motion promotes it",
+            "marketplace listing must be tested before it is published",
+            "connector must pass QA before it is documented as supported"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.050",
+          "need": "Executive sponsorship confirmed",
+          "condition": "A senior sponsor on both sides must be committed before a strategic partnership is launched",
+          "examples": [
+            "VP-level sponsor must be identified before a strategic alliance is signed",
+            "exec alignment must be confirmed before joint pipeline targets are set",
+            "CEO-level sponsorship must exist before a co-development agreement is signed"
+          ]
+        }
+      ]
+    },
+    "INVESTOR_READINESS": {
+      "description": "What must be true about the business before engaging investors",
+      "blocks": [
+        {
+          "id": "BIZ.NEED.051",
+          "need": "Investment thesis clear",
+          "condition": "The company must be able to articulate a compelling reason to invest before investor conversations begin",
+          "examples": [
+            "growth story must be coherent before a roadshow",
+            "market size and differentiation must be clear before an investor pitch",
+            "path to profitability must be articulable before a late-stage raise"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.052",
+          "need": "Financials clean and current",
+          "condition": "Accurate, up-to-date financial statements must exist before investor due diligence can begin",
+          "examples": [
+            "audited financials must be available before a Series B",
+            "monthly board reports must be current before an M&A data room is opened",
+            "revenue recognition must be correct before financial due diligence"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.053",
+          "need": "Cap table clean",
+          "condition": "Share ownership must be accurately recorded and free of complications before fundraising",
+          "examples": [
+            "option plan must be fully documented before a financing round",
+            "any informal agreements must be formalized before investor review",
+            "pro-rata rights must be mapped before a new round term sheet is circulated"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.054",
+          "need": "Metrics tell a compelling story",
+          "condition": "Key performance indicators must demonstrate traction and trajectory before investors will commit",
+          "examples": [
+            "ARR growth rate must show acceleration before a Series B is credible",
+            "NRR must show expansion potential before investors are excited about retention",
+            "CAC/LTV must be on a positive trend before growth investment is justified"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.055",
+          "need": "Reference customers available",
+          "condition": "Customers who will speak positively about the product must exist before investor due diligence calls",
+          "examples": [
+            "referenceable enterprise accounts must be secured before investor customer calls",
+            "case studies must be published before a funding announcement",
+            "design partner references must be available before seed due diligence"
+          ]
+        }
+      ]
+    },
+    "TEAM_PERFORMANCE": {
+      "description": "What must be true about team dynamics and structure before high performance is possible",
+      "blocks": [
+        {
+          "id": "BIZ.NEED.056",
+          "need": "Roles and responsibilities clear",
+          "condition": "Each team member must know exactly what they own before the team can execute without confusion",
+          "examples": [
+            "RACI must be agreed before a cross-functional project begins",
+            "territory and account assignments must be published before reps prospect",
+            "ownership of each OKR must be assigned before the quarter starts"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.057",
+          "need": "Manager-team trust established",
+          "condition": "A baseline of trust between manager and team must exist before direct feedback and performance coaching can be effective",
+          "examples": [
+            "1:1 cadence must be established before performance conversations happen",
+            "new manager must demonstrate intent before the team will surface problems",
+            "trust must be rebuilt before a performance improvement conversation lands well"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.058",
+          "need": "Communication norms set",
+          "condition": "How the team communicates \u2014 cadence, channels, decision rights \u2014 must be agreed before coordination can happen efficiently",
+          "examples": [
+            "communication channels must be defined before a remote team starts work",
+            "meeting cadence must be set before a new quarter begins",
+            "how decisions are made and communicated must be clear before a project kicks off"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.059",
+          "need": "Performance expectations set",
+          "condition": "Clear, agreed standards of performance must be defined before anyone is evaluated against them",
+          "examples": [
+            "quota must be set and acknowledged before the quarter begins",
+            "OKRs must be agreed before a performance review references them",
+            "promotion criteria must be published before anyone is assessed against them"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.060",
+          "need": "Conflict resolution process known",
+          "condition": "A clear and trusted path for resolving disagreements must exist before conflict arises",
+          "examples": [
+            "escalation path must be documented before a cross-functional team is formed",
+            "how prioritization conflicts are resolved must be clear before roadmap debates",
+            "HR must be a known resource before a team-level conflict emerges"
+          ]
+        }
+      ]
+    },
+    "MARKETING_PREREQUISITES": {
+      "description": "What must be true before marketing can generate effective demand",
+      "blocks": [
+        {
+          "id": "BIZ.NEED.061",
+          "need": "Target audience defined",
+          "condition": "The specific profile of the buyer to be reached must be documented before campaigns are designed",
+          "examples": [
+            "ICP personas must be written before content is produced",
+            "target account list must be built before ABM campaigns launch",
+            "segment definition must be agreed before paid media is configured"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.062",
+          "need": "Messaging and positioning agreed",
+          "condition": "The core message the company wants to communicate must be approved before external campaigns run",
+          "examples": [
+            "positioning statement must be finalized before a product launch",
+            "value proposition must be signed off before sales materials are written",
+            "differentiation narrative must be agreed before competitive messaging is used"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.063",
+          "need": "Content assets ready",
+          "condition": "Marketing materials must be produced and approved before a campaign goes live",
+          "examples": [
+            "ad creative must be ready before a paid campaign launches",
+            "case study must be published before it is used in sales outreach",
+            "demo video must be complete before it is embedded in a nurture sequence"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.064",
+          "need": "Lead routing and follow-up defined",
+          "condition": "How marketing-generated leads are handled after capture must be set before demand generation begins",
+          "examples": [
+            "SLA for lead follow-up must be agreed before campaign generates leads",
+            "routing rules in CRM must be configured before leads start flowing",
+            "SDR handoff process must exist before inbound campaigns are running"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.065",
+          "need": "Attribution model agreed",
+          "condition": "How marketing contribution to revenue is measured must be defined before ROI can be evaluated",
+          "examples": [
+            "multi-touch attribution model must be agreed before campaign ROI is reported",
+            "UTM parameters must be implemented before source tracking is reliable",
+            "marketing influence definition must be documented before pipeline attribution is calculated"
+          ]
+        }
+      ]
+    },
+    "DATA_QUALITY": {
+      "description": "What must be true about business data quality before it can be used for decisions",
+      "blocks": [
+        {
+          "id": "BIZ.NEED.066",
+          "need": "Data definitions standardized",
+          "condition": "Key business metrics must have agreed, documented definitions before they are used across teams",
+          "examples": [
+            "ARR definition must be agreed before it is reported across finance and sales",
+            "churn definition must be standardized before retention targets are set",
+            "active user definition must be locked before product metrics are used for decisions"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.067",
+          "need": "Data source verified",
+          "condition": "The origin and accuracy of the data being used must be confirmed before it informs a decision",
+          "examples": [
+            "CRM data must be audited before forecast is submitted",
+            "financial data must be reconciled before board reporting",
+            "survey data must be statistically valid before conclusions are drawn"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.068",
+          "need": "Reporting consistent across teams",
+          "condition": "The same numbers must appear in all reports before cross-functional discussions can be productive",
+          "examples": [
+            "finance and sales must use the same revenue figure before a QBR",
+            "product and CS must use the same retention metric before a customer health discussion",
+            "marketing and sales must agree on pipeline numbers before GTM planning"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.069",
+          "need": "Historical baseline available",
+          "condition": "Prior period data must be accessible before trend analysis or year-over-year comparison is possible",
+          "examples": [
+            "12 months of revenue history must be available before forecasting growth rate",
+            "prior year employee data must exist before attrition trends are analyzed",
+            "historical pipeline data must be clean before sales velocity is calculated"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.070",
+          "need": "Customer data compliant",
+          "condition": "Customer data must be handled in compliance with privacy law and consent requirements before it is used",
+          "examples": [
+            "GDPR consent must be obtained before marketing emails are sent",
+            "data residency requirements must be met before customer data is stored",
+            "data retention policy must be implemented before customer records are processed at scale"
+          ]
+        }
+      ]
+    },
+    "CHANGE_READINESS": {
+      "description": "What must be true before an organizational change can be successfully executed",
+      "blocks": [
+        {
+          "id": "BIZ.NEED.071",
+          "need": "Change rationale communicated",
+          "condition": "People must understand why the change is happening before they can commit to it",
+          "examples": [
+            "the case for a reorg must be articulated before the restructure is announced",
+            "the reasons for a tool migration must be clear before training begins",
+            "the strategic rationale for a pivot must be shared before teams redirect their work"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.072",
+          "need": "Leadership aligned and visible",
+          "condition": "Senior leaders must be unified and actively supporting the change before it is cascaded",
+          "examples": [
+            "exec team must agree on the reorg before it is announced",
+            "all VPs must support the new strategy before it is communicated to their teams",
+            "leadership must model the new behavior before employees are expected to adopt it"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.073",
+          "need": "Impacted parties identified",
+          "condition": "Everyone who will be affected by the change must be mapped before the communication plan is built",
+          "examples": [
+            "all teams affected by a reorg must be identified before communications are drafted",
+            "all users of a system being replaced must be listed before migration planning begins",
+            "all customers affected by a product change must be identified before outreach"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.074",
+          "need": "Support resources ready",
+          "condition": "Help for those going through the change must be available before the change goes live",
+          "examples": [
+            "HR must be ready to answer questions before a reorg announcement",
+            "help desk must be staffed before a system migration goes live",
+            "manager training must be complete before performance management changes are rolled out"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.075",
+          "need": "Success metrics defined",
+          "condition": "How the success of the change will be measured must be agreed before it begins",
+          "examples": [
+            "adoption rate targets must be set before a tool migration",
+            "post-reorg performance metrics must be agreed before the restructure",
+            "change ROI criteria must be defined before a transformation program is approved"
+          ]
+        }
+      ]
+    },
+    "REGULATORY_COMPLIANCE": {
+      "description": "What must be true about compliance posture before regulated activities begin",
+      "blocks": [
+        {
+          "id": "BIZ.NEED.076",
+          "need": "Required licenses obtained",
+          "condition": "Any legally required permits, licenses, or registrations must be in place before regulated activity begins",
+          "examples": [
+            "financial services license must be secured before offering regulated products",
+            "data broker registration must be complete before data resale begins",
+            "healthcare certification must be obtained before processing PHI"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.077",
+          "need": "Compliance controls implemented",
+          "condition": "Policies, processes, and technical controls must be operational before compliance is claimed or audited",
+          "examples": [
+            "access control policies must be live before SOC 2 audit begins",
+            "data encryption must be implemented before claiming HIPAA compliance",
+            "consent management must be deployed before GDPR audit"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.078",
+          "need": "Privacy policy published",
+          "condition": "A current, accurate privacy policy must be live before customer data is collected",
+          "examples": [
+            "privacy policy must be published before a website collects contact details",
+            "data processing terms must be available before a B2B product goes live",
+            "cookie consent policy must be implemented before tracking is activated"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.079",
+          "need": "Employee compliance training complete",
+          "condition": "Staff must have completed required training before they handle sensitive data or regulated processes",
+          "examples": [
+            "GDPR training must be completed before staff access customer data",
+            "anti-bribery training must be done before employees work with third parties in high-risk markets",
+            "security awareness training must be complete before remote access is granted"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.080",
+          "need": "Audit trail operational",
+          "condition": "Systems for capturing and retaining evidence of compliance must be running before regulated activities begin",
+          "examples": [
+            "transaction logging must be live before financial activity is processed",
+            "communication archiving must be active before regulated correspondence begins",
+            "access logs must be captured before sensitive data is accessible to staff"
+          ]
+        }
+      ]
+    },
+    "ACQUISITION_INTEGRATION": {
+      "description": "What must be true before an acquisition or integration can succeed",
+      "blocks": [
+        {
+          "id": "BIZ.NEED.081",
+          "need": "Due diligence complete",
+          "condition": "A thorough investigation of the target must be finished before a definitive acquisition agreement is signed",
+          "examples": [
+            "financial due diligence must clear before a binding offer is made",
+            "legal and IP review must be complete before deal closes",
+            "technical and product due diligence must be done before integration planning begins"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.082",
+          "need": "Integration plan agreed",
+          "condition": "A clear plan for combining the businesses must exist before close so Day 1 is stable",
+          "examples": [
+            "Day 1 communications plan must be ready before deal closes",
+            "system integration roadmap must be agreed before close",
+            "org structure for the combined entity must be decided before announcement"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.083",
+          "need": "Cultural assessment done",
+          "condition": "The cultural compatibility of the two organizations must be understood before integration design is finalized",
+          "examples": [
+            "culture gap analysis must be done before team integration planning",
+            "values alignment must be assessed before merged leadership team is announced",
+            "people risks must be identified before retention plans are built"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.084",
+          "need": "Retention packages agreed",
+          "condition": "Plans to retain key people through the transition must be finalized before deal close",
+          "examples": [
+            "key employee retention packages must be agreed before close",
+            "founders must have clear post-close roles before signing",
+            "critical technical staff must have retention agreements before product integration begins"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.085",
+          "need": "Regulatory approvals obtained",
+          "condition": "All required government or regulatory approvals must be in place before a transaction can close",
+          "examples": [
+            "antitrust clearance must be obtained before deal close",
+            "foreign investment approval must be secured before international acquisition completes",
+            "sector-specific regulatory approval must be granted before close"
+          ]
+        }
+      ]
+    },
+    "CUSTOMER_HEALTH": {
+      "description": "What must be true about a customer relationship before it can be managed proactively",
+      "blocks": [
+        {
+          "id": "BIZ.NEED.086",
+          "need": "Success plan documented",
+          "condition": "A clear plan linking the customer's goals to product outcomes must exist before the relationship can be managed",
+          "examples": [
+            "90-day success plan must be written during onboarding",
+            "renewal success metrics must be agreed before the first QBR",
+            "expansion targets must be documented before an account is designated for growth"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.087",
+          "need": "Health data collected",
+          "condition": "Sufficient engagement and usage signals must be captured before account health can be accurately assessed",
+          "examples": [
+            "product usage data must be flowing before health score is meaningful",
+            "support ticket data must be available before risk is assessed",
+            "QBR completion rate must be tracked before engagement is evaluated"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.088",
+          "need": "Stakeholder map current",
+          "condition": "The full set of contacts and their roles at the customer must be documented before relationship risk can be managed",
+          "examples": [
+            "champion must be identified before an account is considered stable",
+            "economic buyer contact must be held before renewal begins",
+            "all relevant stakeholders must be mapped before a QBR is planned"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.089",
+          "need": "Executive sponsor engaged",
+          "condition": "A senior relationship at the customer must be established before strategic expansion is possible",
+          "examples": [
+            "exec sponsor must be identified before a multi-year renewal is pursued",
+            "C-level relationship must exist before an enterprise expansion motion begins",
+            "executive alignment call must happen before a cross-sell conversation is appropriate"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.090",
+          "need": "Outstanding issues resolved",
+          "condition": "Open customer concerns, bugs, or commitments must be addressed before the relationship can progress positively",
+          "examples": [
+            "blocking product issue must be resolved before renewal conversation begins",
+            "outstanding support commitments must be cleared before a QBR",
+            "contractual obligations must be met before expansion is proposed"
+          ]
+        }
+      ]
+    },
+    "LAUNCH_READINESS": {
+      "description": "What must be true before a business initiative, product, or market can launch",
+      "blocks": [
+        {
+          "id": "BIZ.NEED.091",
+          "need": "GTM aligned across functions",
+          "condition": "Sales, marketing, product, and CS must be coordinated on the launch plan before go-live",
+          "examples": [
+            "all functions must be briefed before a product launch",
+            "launch messaging must be consistent across all channels before announcement",
+            "sales enablement must be complete before reps are expected to sell a new product"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.092",
+          "need": "Launch criteria met",
+          "condition": "All defined pre-launch requirements must be satisfied before the launch proceeds",
+          "examples": [
+            "all P0 bugs must be resolved before GA",
+            "minimum customer count for a logo must be secured before an announcement",
+            "required certifications must be obtained before a regulated product launches"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.093",
+          "need": "Support team trained",
+          "condition": "The support and success teams must be prepared to handle customer questions before launch",
+          "examples": [
+            "support team must be trained on new product before launch",
+            "common objections must be addressed in a CS FAQ before go-live",
+            "escalation paths must be communicated before new customer volume begins"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.094",
+          "need": "Customer communications ready",
+          "condition": "All external-facing materials for the launch must be approved before they are delivered to customers or prospects",
+          "examples": [
+            "launch email must be approved before it is sent",
+            "press release must be cleared by legal before it is distributed",
+            "in-product launch announcement must be reviewed before it goes live"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.095",
+          "need": "Rollback plan defined",
+          "condition": "A way to reverse or pause a launch must exist before going live, in case of unexpected issues",
+          "examples": [
+            "feature flag must be in place before a product launch",
+            "revert plan must be documented before a pricing change goes live",
+            "communication plan for a pause must be ready before launch"
+          ]
+        }
+      ]
+    },
+    "UMG_BUSINESS_NEEDS": {
+      "description": "Prerequisites for deploying UMG in commercial and organizational contexts",
+      "blocks": [
+        {
+          "id": "BIZ.NEED.096",
+          "need": "Business governance rules authored",
+          "condition": "The constraints that define what an AI business agent is and is not permitted to do must be written before deployment",
+          "examples": [
+            "discount authority rules must be in governance before a sales AI agent is deployed",
+            "escalation triggers must be defined before a support AI is activated",
+            "communication policy must be encoded before an outbound AI agent runs"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.097",
+          "need": "Business domain sleeve designed",
+          "condition": "The full sleeve \u2014 stacks, blocks, NeoBlocks \u2014 for the business agent must be architected before compilation",
+          "examples": [
+            "sales agent sleeve must be complete before it is compiled for deployment",
+            "customer success agent blocks must be authored before the Envoy is activated",
+            "BI agent sleeve must cover the required analytical scope before use"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.098",
+          "need": "Commercial policy constraints approved",
+          "condition": "Business stakeholders must sign off on the governance rules before an AI agent operates under them commercially",
+          "examples": [
+            "legal and compliance must approve AI communication policy before deployment",
+            "sales leadership must approve discount authority limits in governance before agent launches",
+            "finance must review pricing constraint blocks before a commercial AI is activated"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.099",
+          "need": "Business outcomes defined",
+          "condition": "The success metrics for the AI agent deployment must be agreed before it goes live",
+          "examples": [
+            "target metrics for AI-assisted deals must be set before a sales agent is deployed",
+            "support resolution rate targets must be agreed before an AI support agent is activated",
+            "BI agent accuracy benchmarks must be defined before it produces board-level outputs"
+          ]
+        },
+        {
+          "id": "BIZ.NEED.100",
+          "need": "Human escalation paths designed",
+          "condition": "The conditions under which the AI agent hands off to a human must be defined and tested before deployment",
+          "examples": [
+            "escalation triggers from AI to human AE must be tested before a sales agent goes live",
+            "support escalation criteria must be defined before an AI agent handles customer tickets",
+            "compliance exception handling must be routed to human review before a regulated AI agent is deployed"
+          ]
+        }
+      ]
+    }
+  }
+}

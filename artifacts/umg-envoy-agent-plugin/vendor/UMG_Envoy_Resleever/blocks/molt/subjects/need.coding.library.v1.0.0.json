@@ -1,0 +1,1111 @@
+{
+  "library_name": "MOLT Need Library \u2014 Coding Edition",
+  "version": "1.0.0",
+  "created": "2026-04-21",
+  "created_by": "Claude UMG Envoy",
+  "supervised_by": "NeoMAG",
+  "description": "Coding-domain MOLT Need blocks. Need answers: 'What must be true first?' Each block describes a software engineering prerequisite, enabling condition, or required state that must exist before the coding Aim can be achieved.",
+  "usage": "Select the Need block that describes what must already be in place before the coding Aim can succeed. If the Need is absent, the Aim cannot be reached regardless of effort.",
+  "needs": {
+    "ENVIRONMENT_SETUP": {
+      "description": "What must be true about the development environment before work can begin",
+      "blocks": [
+        {
+          "id": "CODE.NEED.001",
+          "need": "Runtime installed",
+          "condition": "The required language runtime or interpreter must be present and at the correct version before code can run",
+          "examples": [
+            "Node.js must be installed at the required version before npm scripts run",
+            "Python must be present in the virtual environment before the app starts",
+            "the JVM must be installed before a Java build runs"
+          ]
+        },
+        {
+          "id": "CODE.NEED.002",
+          "need": "Dependencies installed",
+          "condition": "All packages listed in the project manifest must be installed before code can import them",
+          "examples": [
+            "npm install must complete before a Node app starts",
+            "pip install -r requirements.txt must succeed before running tests",
+            "cargo build must resolve all crates before compilation"
+          ]
+        },
+        {
+          "id": "CODE.NEED.003",
+          "need": "Environment variables set",
+          "condition": "All required runtime configuration values must be present in the environment before the application starts",
+          "examples": [
+            "DATABASE_URL must be set before the app can connect to a database",
+            "API_SECRET must be injected before auth middleware works",
+            "PORT must be defined before the server binds"
+          ]
+        },
+        {
+          "id": "CODE.NEED.004",
+          "need": "Local services running",
+          "condition": "Any local dependencies the application requires \u2014 databases, message brokers, mock services \u2014 must be up before the app starts",
+          "examples": [
+            "a local Postgres instance must be running before the ORM connects",
+            "a local Redis must be up before the session store initialises",
+            "a mock API server must be running before integration tests use it"
+          ]
+        },
+        {
+          "id": "CODE.NEED.005",
+          "need": "Repository cloned and branch checked out",
+          "condition": "The source code must be available locally on the correct branch before any development work begins",
+          "examples": [
+            "the repo must be cloned before running the project locally",
+            "the feature branch must be checked out before implementing a ticket",
+            "the correct tag must be checked out before a hotfix is applied"
+          ]
+        }
+      ]
+    },
+    "CODE_AVAILABILITY": {
+      "description": "What must be true about the codebase before it can be worked on",
+      "blocks": [
+        {
+          "id": "CODE.NEED.006",
+          "need": "Code compiles without errors",
+          "condition": "The existing codebase must compile or type-check cleanly before new work is layered on top",
+          "examples": [
+            "the TypeScript project must compile before new code is added",
+            "the Rust project must build before a new module is introduced",
+            "the existing test suite must be in a passing state before a refactor begins"
+          ]
+        },
+        {
+          "id": "CODE.NEED.007",
+          "need": "Test suite passing",
+          "condition": "All existing tests must be green before new changes are introduced, so regressions can be detected",
+          "examples": [
+            "the full test suite must pass before a PR is opened",
+            "no failing tests must exist before a refactor begins",
+            "the regression suite must be green before a release is cut"
+          ]
+        },
+        {
+          "id": "CODE.NEED.008",
+          "need": "Target code identified",
+          "condition": "The specific file, function, or module to be changed must be located before work begins",
+          "examples": [
+            "the function with the bug must be found before a fix is written",
+            "the module to be refactored must be identified before restructuring begins",
+            "the endpoint to be optimised must be located before profiling"
+          ]
+        },
+        {
+          "id": "CODE.NEED.009",
+          "need": "Codebase context understood",
+          "condition": "The developer must understand how the target code fits into the larger system before making changes",
+          "examples": [
+            "the dependencies of a module must be understood before it is extracted",
+            "the callers of a function must be identified before its signature is changed",
+            "the data flow through a component must be understood before state is modified"
+          ]
+        },
+        {
+          "id": "CODE.NEED.010",
+          "need": "Version control history accessible",
+          "condition": "The git history must be available so regressions can be traced and changes can be understood in context",
+          "examples": [
+            "git log must be available to bisect a regression",
+            "blame history must be accessible to understand why a line was written",
+            "the full commit history must be present before an ADR references prior decisions"
+          ]
+        }
+      ]
+    },
+    "SPECIFICATION_CLARITY": {
+      "description": "What must be true about requirements before implementation begins",
+      "blocks": [
+        {
+          "id": "CODE.NEED.011",
+          "need": "Acceptance criteria defined",
+          "condition": "The conditions that determine whether an implementation is correct must be stated before coding begins",
+          "examples": [
+            "user story acceptance criteria must be written before a feature is implemented",
+            "the expected return values of a function must be specified before it is written",
+            "the API contract must be agreed before the handler is implemented"
+          ]
+        },
+        {
+          "id": "CODE.NEED.012",
+          "need": "Scope bounded",
+          "condition": "What is in and out of scope for the current task must be clear before work starts",
+          "examples": [
+            "the boundary of a refactor must be agreed before touching code",
+            "which edge cases are in scope must be clear before writing tests",
+            "whether backwards compatibility is required must be decided before changing an API"
+          ]
+        },
+        {
+          "id": "CODE.NEED.013",
+          "need": "Interface agreed",
+          "condition": "The API, function signature, or data contract must be specified before implementation begins",
+          "examples": [
+            "the REST endpoint shape must be agreed before the handler is written",
+            "the function signature must be decided before the body is implemented",
+            "the event schema must be finalised before the producer and consumer are coded"
+          ]
+        },
+        {
+          "id": "CODE.NEED.014",
+          "need": "Edge cases documented",
+          "condition": "Known boundary conditions and unexpected inputs must be listed before implementation begins so they are addressed",
+          "examples": [
+            "null input handling must be specified before the function is written",
+            "empty array behaviour must be defined before a list-processing function is coded",
+            "overflow handling must be decided before arithmetic code is written"
+          ]
+        },
+        {
+          "id": "CODE.NEED.015",
+          "need": "Error behaviour specified",
+          "condition": "How the code should behave when things go wrong must be defined before happy-path implementation begins",
+          "examples": [
+            "what to return on a database connection failure must be specified before a repository is written",
+            "whether to throw or return an error must be decided before a parser is coded",
+            "which HTTP status codes map to which failure modes must be agreed before a controller is implemented"
+          ]
+        }
+      ]
+    },
+    "TEST_INFRASTRUCTURE": {
+      "description": "What must be true before tests can be written or run",
+      "blocks": [
+        {
+          "id": "CODE.NEED.016",
+          "need": "Test framework installed",
+          "condition": "The testing library and runner must be present and configured before tests can be authored or executed",
+          "examples": [
+            "Jest must be installed and configured before unit tests are written",
+            "pytest must be present before Python tests run",
+            "the test runner must be wired into the CI pipeline before tests are required to pass"
+          ]
+        },
+        {
+          "id": "CODE.NEED.017",
+          "need": "Test environment isolated",
+          "condition": "Tests must run in an environment that does not affect or depend on production state",
+          "examples": [
+            "tests must use a separate test database before they mutate data",
+            "tests must mock external APIs before they run in CI without network access",
+            "test fixtures must be isolated before tests run in parallel safely"
+          ]
+        },
+        {
+          "id": "CODE.NEED.018",
+          "need": "Mocks and fixtures ready",
+          "condition": "Test doubles for external dependencies must exist before tests that rely on them can be written",
+          "examples": [
+            "a mock for the payment gateway must be created before checkout tests can run",
+            "database fixtures must be seeded before integration tests can run",
+            "a fake file system must be set up before file-handling tests can be written"
+          ]
+        },
+        {
+          "id": "CODE.NEED.019",
+          "need": "A failing test exists",
+          "condition": "For TDD and bug fixes, a test that demonstrates the current failure must exist before the fix or feature is implemented",
+          "examples": [
+            "a failing test that reproduces the bug must be written before the patch",
+            "a failing acceptance test must exist before the feature is built",
+            "a failing property test must be present before the algorithm is corrected"
+          ]
+        },
+        {
+          "id": "CODE.NEED.020",
+          "need": "Baseline coverage established",
+          "condition": "The current test coverage level must be measured and recorded before it is used as a comparison point",
+          "examples": [
+            "current coverage percentage must be recorded before a coverage improvement sprint",
+            "a coverage report must exist before CI enforces a minimum threshold",
+            "coverage baseline must be stored before a refactor claims it did not reduce coverage"
+          ]
+        }
+      ]
+    },
+    "BUILD_PIPELINE": {
+      "description": "What must be true about the build system before code can be compiled or packaged",
+      "blocks": [
+        {
+          "id": "CODE.NEED.021",
+          "need": "Build tool configured",
+          "condition": "The build system must be set up and producing a correct output before development relies on it",
+          "examples": [
+            "Webpack config must be correct before the bundle is trusted",
+            "the Makefile must be present and correct before make commands are used",
+            "the Gradle build must be configured before the project compiles"
+          ]
+        },
+        {
+          "id": "CODE.NEED.022",
+          "need": "Build succeeds cleanly",
+          "condition": "The project must build without warnings or errors before the output is deployed or used",
+          "examples": [
+            "TypeScript must compile with zero errors before a release is cut",
+            "the Docker image must build successfully before it is pushed to a registry",
+            "the binary must link without warnings before it is used in a test"
+          ]
+        },
+        {
+          "id": "CODE.NEED.023",
+          "need": "Build is reproducible",
+          "condition": "The same source code must always produce the same artifact regardless of when or where it is built",
+          "examples": [
+            "lockfile must be committed before reproducible installs are guaranteed",
+            "base Docker image must be pinned before builds are reproducible",
+            "build timestamps must be excluded before binary reproducibility is verified"
+          ]
+        },
+        {
+          "id": "CODE.NEED.024",
+          "need": "Build cache warm",
+          "condition": "For performance-sensitive workflows, the cache must be populated before build times are acceptable",
+          "examples": [
+            "Docker layer cache must be primed before CI build times are reasonable",
+            "npm cache must be populated before a fast install is expected",
+            "Gradle build cache must be warm before incremental builds are fast"
+          ]
+        },
+        {
+          "id": "CODE.NEED.025",
+          "need": "Artifact registry accessible",
+          "condition": "The registry where build outputs are pushed must be reachable before a build can publish its artifact",
+          "examples": [
+            "Docker Hub must be reachable before an image is pushed",
+            "npm registry must be accessible before a package is published",
+            "the internal artifact repository must be reachable before a CI deploy pushes a build"
+          ]
+        }
+      ]
+    },
+    "DEBUGGING_PREREQUISITES": {
+      "description": "What must be true before a bug can be diagnosed and fixed",
+      "blocks": [
+        {
+          "id": "CODE.NEED.026",
+          "need": "Bug reproduced",
+          "condition": "The failure must be triggerable reliably before a fix can be written",
+          "examples": [
+            "a minimal reproduction case must exist before debugging begins",
+            "the exact input that causes the crash must be known before tracing",
+            "the sequence of steps that triggers the bug must be documented before fixing"
+          ]
+        },
+        {
+          "id": "CODE.NEED.027",
+          "need": "Logs or error message available",
+          "condition": "Observable evidence of the failure must be present before root cause analysis begins",
+          "examples": [
+            "the stack trace must be available before the crash is diagnosed",
+            "the error log must be captured before the failure location is determined",
+            "the failing request payload must be recorded before the input is examined"
+          ]
+        },
+        {
+          "id": "CODE.NEED.028",
+          "need": "Debug build or symbols available",
+          "condition": "The build must include debug information before a debugger can be attached or symbols resolved",
+          "examples": [
+            "the binary must be built with debug symbols before gdb can show line numbers",
+            "source maps must be generated before a browser debugger shows TypeScript lines",
+            "the app must be running in debug mode before a breakpoint can be set"
+          ]
+        },
+        {
+          "id": "CODE.NEED.029",
+          "need": "Scope of impact known",
+          "condition": "Which users, data, or systems are affected must be established before the severity and fix priority are determined",
+          "examples": [
+            "the number of affected requests must be known before escalation level is set",
+            "the affected data range must be understood before a remediation plan is written",
+            "the affected services must be identified before the fix is scoped"
+          ]
+        },
+        {
+          "id": "CODE.NEED.030",
+          "need": "Regression test written",
+          "condition": "A test that captures the bug must exist before the fix is applied, so it can be verified as resolved and guarded against return",
+          "examples": [
+            "a failing unit test must be written before the bug is patched",
+            "a failing integration test must exist before the service interaction is fixed",
+            "a property test that exposes the edge case must be authored before the algorithm is corrected"
+          ]
+        }
+      ]
+    },
+    "DEPENDENCY_STATE": {
+      "description": "What must be true about third-party code before it can be used",
+      "blocks": [
+        {
+          "id": "CODE.NEED.031",
+          "need": "Package version compatible",
+          "condition": "The version of a dependency being used must be compatible with the project's runtime and other packages",
+          "examples": [
+            "peer dependency requirements must be met before a package is installed",
+            "the library version must support the Node.js version in use",
+            "the package must be compatible with the framework version before it is added"
+          ]
+        },
+        {
+          "id": "CODE.NEED.032",
+          "need": "No critical CVEs in dependency",
+          "condition": "A dependency must be free of known critical security vulnerabilities before it is used in production",
+          "examples": [
+            "a CVE audit must pass before a package is added to a production build",
+            "a vulnerable transitive dependency must be resolved before a release is cut",
+            "npm audit must report no critical issues before deployment"
+          ]
+        },
+        {
+          "id": "CODE.NEED.033",
+          "need": "Licence acceptable",
+          "condition": "The licence of a dependency must be compatible with the project's distribution model before it is added",
+          "examples": [
+            "a GPL licence must be confirmed as acceptable before adding it to a proprietary project",
+            "all licences must be reviewed before open-sourcing an internal tool",
+            "licence approval must be obtained before a package is added to a commercial product"
+          ]
+        },
+        {
+          "id": "CODE.NEED.034",
+          "need": "Lockfile committed",
+          "condition": "The dependency lockfile must be checked into version control before builds are reproducible across environments",
+          "examples": [
+            "package-lock.json must be committed before CI installs match local",
+            "Cargo.lock must be in the repo before build outputs are consistent",
+            "poetry.lock must be committed before the Python environment is reproducible"
+          ]
+        },
+        {
+          "id": "CODE.NEED.035",
+          "need": "API contract understood",
+          "condition": "The interface and behaviour of the dependency must be understood before it is used, to avoid misuse or surprise",
+          "examples": [
+            "the library's error throwing behaviour must be understood before it is wrapped",
+            "pagination semantics of an SDK must be read before a list API is called",
+            "the rate limits of a client library must be known before it is used in a high-volume context"
+          ]
+        }
+      ]
+    },
+    "SCHEMA_DATA_MODEL": {
+      "description": "What must be true about data structures before code operates on them",
+      "blocks": [
+        {
+          "id": "CODE.NEED.036",
+          "need": "Schema defined and stable",
+          "condition": "The data structure must be specified and not subject to imminent change before code is written against it",
+          "examples": [
+            "the database schema must be agreed before ORM models are written",
+            "the API response schema must be finalised before a client is coded",
+            "the event format must be stable before consumer code is written"
+          ]
+        },
+        {
+          "id": "CODE.NEED.037",
+          "need": "Migration applied",
+          "condition": "All pending database migrations must be run before the application code that depends on the new schema is executed",
+          "examples": [
+            "the column must be added before the ORM field can be used",
+            "the table rename migration must be applied before queries using the new name are run",
+            "the index must be created before the query that relies on it is expected to be fast"
+          ]
+        },
+        {
+          "id": "CODE.NEED.038",
+          "need": "Test data seeded",
+          "condition": "Representative data must exist in the test database before tests that query or modify it can run",
+          "examples": [
+            "user fixtures must be seeded before authentication tests run",
+            "product records must exist before cart tests can add items",
+            "baseline data must be present before a migration test verifies transformation"
+          ]
+        },
+        {
+          "id": "CODE.NEED.039",
+          "need": "Data types agreed",
+          "condition": "The types and nullability of all fields must be decided before code that reads or writes them is authored",
+          "examples": [
+            "whether a timestamp is nullable must be agreed before the ORM field is defined",
+            "whether an ID is a string or integer must be decided before it is used in a route",
+            "the precision of a monetary amount must be specified before arithmetic on it is implemented"
+          ]
+        },
+        {
+          "id": "CODE.NEED.040",
+          "need": "Validation rules specified",
+          "condition": "The rules that determine whether input data is acceptable must be defined before the validation layer is coded",
+          "examples": [
+            "email format requirements must be specified before a validator is written",
+            "password strength rules must be agreed before a password input is validated",
+            "required vs. optional fields must be listed before a schema validator is configured"
+          ]
+        }
+      ]
+    },
+    "ACCESS_AND_PERMISSIONS": {
+      "description": "What must be true about access control before protected resources can be used",
+      "blocks": [
+        {
+          "id": "CODE.NEED.041",
+          "need": "API key or token provisioned",
+          "condition": "Credentials for external services must exist and be injected before any code that calls those services can run",
+          "examples": [
+            "an API key for a mapping service must be issued before the integration is testable",
+            "an OAuth token must be generated before authenticated API calls succeed",
+            "a service account credential must be provisioned before a cloud SDK authenticates"
+          ]
+        },
+        {
+          "id": "CODE.NEED.042",
+          "need": "Repository access granted",
+          "condition": "The developer must have read and write access to the relevant repository before contributing",
+          "examples": [
+            "push access to the repo must be granted before a PR can be opened",
+            "read access must exist before the codebase can be cloned",
+            "the developer must be added to the GitHub org before CI secrets are accessible"
+          ]
+        },
+        {
+          "id": "CODE.NEED.043",
+          "need": "Environment access granted",
+          "condition": "The developer must have access to the required environment before they can test, debug, or deploy",
+          "examples": [
+            "SSH access to a staging server must be granted before remote debugging",
+            "AWS IAM permissions must be in place before Terraform applies",
+            "Kubernetes RBAC must allow the developer to read pod logs before debugging a deployment"
+          ]
+        },
+        {
+          "id": "CODE.NEED.044",
+          "need": "Database access available",
+          "condition": "A connection to the required database must be possible before any code that reads or writes data can run",
+          "examples": [
+            "database credentials must be correct before ORM queries succeed",
+            "network access to the DB must be open before a connection can be established",
+            "the database must be reachable from the test environment before integration tests pass"
+          ]
+        },
+        {
+          "id": "CODE.NEED.045",
+          "need": "Secret rotation not in progress",
+          "condition": "Credentials must be stable and not mid-rotation before code that depends on them is run or deployed",
+          "examples": [
+            "a key rotation must be complete before dependent services are restarted",
+            "a cert renewal must be done before the old cert expires and services break",
+            "API key rotation must be complete and propagated before CI runs that use the new key"
+          ]
+        }
+      ]
+    },
+    "CI_CD_STATE": {
+      "description": "What must be true about the CI/CD pipeline before code can be merged or deployed",
+      "blocks": [
+        {
+          "id": "CODE.NEED.046",
+          "need": "CI pipeline passing",
+          "condition": "All automated checks in the CI pipeline must be green before a PR can be merged",
+          "examples": [
+            "tests must pass before a PR is mergeable",
+            "lint and type checks must be clean before merge is allowed",
+            "security scan must report no critical issues before CI approves the build"
+          ]
+        },
+        {
+          "id": "CODE.NEED.047",
+          "need": "Code review approved",
+          "condition": "At least one qualified reviewer must have approved the changes before they are merged",
+          "examples": [
+            "a required reviewer must approve before the merge button is enabled",
+            "a security-sensitive change must have a security team approval",
+            "an architectural change must be approved by a tech lead"
+          ]
+        },
+        {
+          "id": "CODE.NEED.048",
+          "need": "Deploy target healthy",
+          "condition": "The environment being deployed to must be in a stable, healthy state before a new release is pushed",
+          "examples": [
+            "staging must not be in a failed state before a new build is deployed to it",
+            "the Kubernetes cluster must be healthy before a rollout is triggered",
+            "no active incident must be occurring in production before a routine deploy proceeds"
+          ]
+        },
+        {
+          "id": "CODE.NEED.049",
+          "need": "No deployment in progress",
+          "condition": "No other deployment must be running before a new one is started, to avoid conflicts",
+          "examples": [
+            "a previous rollout must complete or be rolled back before a new one starts",
+            "a database migration must finish before an application deploy begins",
+            "a colleague's deployment must succeed or fail before the next deploy proceeds"
+          ]
+        },
+        {
+          "id": "CODE.NEED.050",
+          "need": "Rollback tested",
+          "condition": "The rollback procedure must be verified in a non-production environment before a risky deploy proceeds",
+          "examples": [
+            "a database migration rollback must be tested in staging before applying to prod",
+            "the previous Docker tag must be confirmed as runnable before a risky deploy",
+            "the feature flag off-switch must be tested before a complex feature is released"
+          ]
+        }
+      ]
+    },
+    "ARCHITECTURE_PREREQUISITES": {
+      "description": "What must be true about the system design before implementation proceeds",
+      "blocks": [
+        {
+          "id": "CODE.NEED.051",
+          "need": "Design document agreed",
+          "condition": "The technical approach must be documented and reviewed before implementation begins",
+          "examples": [
+            "an ADR must be written and approved before a new architectural pattern is adopted",
+            "a design doc must be reviewed before a new service is built",
+            "an RFC must be accepted before a breaking API change is implemented"
+          ]
+        },
+        {
+          "id": "CODE.NEED.052",
+          "need": "Service boundaries defined",
+          "condition": "The responsibilities and interfaces of each component must be agreed before individual services are coded",
+          "examples": [
+            "which service owns user data must be decided before the user service is built",
+            "the boundary between two services must be agreed before either is implemented",
+            "the shared library API must be defined before the library is coded"
+          ]
+        },
+        {
+          "id": "CODE.NEED.053",
+          "need": "Data ownership clear",
+          "condition": "Which service or module is the system of record for each piece of data must be agreed before multi-service code is written",
+          "examples": [
+            "the service that owns the user profile must be identified before others read from it",
+            "the system of record for an order must be decided before order events are emitted",
+            "which database owns a shared entity must be resolved before foreign keys or API calls are coded"
+          ]
+        },
+        {
+          "id": "CODE.NEED.054",
+          "need": "Backwards compatibility strategy agreed",
+          "condition": "How to avoid breaking existing consumers when changing an interface must be decided before the change is coded",
+          "examples": [
+            "the deprecation strategy for an old field must be agreed before a schema change",
+            "the versioning strategy must be chosen before a new API version is built",
+            "the migration path for existing data must be planned before a format change is implemented"
+          ]
+        },
+        {
+          "id": "CODE.NEED.055",
+          "need": "Non-functional requirements defined",
+          "condition": "Performance, reliability, and scalability targets must be stated before an implementation that must meet them is designed",
+          "examples": [
+            "the target p99 latency must be set before performance-sensitive code is architected",
+            "the availability SLA must be agreed before fault tolerance patterns are chosen",
+            "the expected peak load must be known before the scaling strategy is designed"
+          ]
+        }
+      ]
+    },
+    "SECURITY_PREREQUISITES": {
+      "description": "What must be true about security posture before code touches sensitive data or systems",
+      "blocks": [
+        {
+          "id": "CODE.NEED.056",
+          "need": "Threat model reviewed",
+          "condition": "The security risks relevant to the change must be understood before security controls are designed or implemented",
+          "examples": [
+            "the attack surface must be documented before auth code is written",
+            "the trust boundaries must be identified before input validation is designed",
+            "the sensitive data flows must be mapped before encryption is applied"
+          ]
+        },
+        {
+          "id": "CODE.NEED.057",
+          "need": "Auth and authz pattern decided",
+          "condition": "How users will authenticate and how permissions will be checked must be agreed before protected endpoints are coded",
+          "examples": [
+            "the token format must be decided before auth middleware is written",
+            "the permission model must be agreed before access control checks are implemented",
+            "the session management strategy must be chosen before login code is written"
+          ]
+        },
+        {
+          "id": "CODE.NEED.058",
+          "need": "Sensitive fields identified",
+          "condition": "All data fields that require encryption, masking, or special handling must be identified before the data layer is coded",
+          "examples": [
+            "PII fields must be listed before encryption-at-rest is applied",
+            "payment card fields must be identified before PCI scope is defined",
+            "password fields must be identified before hashing strategy is applied"
+          ]
+        },
+        {
+          "id": "CODE.NEED.059",
+          "need": "SAST baseline run",
+          "condition": "A static analysis scan must have been run and its findings understood before new security-sensitive code is added",
+          "examples": [
+            "an initial SAST scan must run before security improvements are measured",
+            "the existing findings must be triaged before new ones are introduced",
+            "a clean SAST baseline must exist before security gate enforcement begins"
+          ]
+        },
+        {
+          "id": "CODE.NEED.060",
+          "need": "Dependency audit passed",
+          "condition": "A vulnerability scan of all dependencies must return no critical or high findings before production code is shipped",
+          "examples": [
+            "npm audit must show no critical issues before a release",
+            "OWASP dependency check must pass before a Java release",
+            "safety check on Python packages must be clean before deployment"
+          ]
+        }
+      ]
+    },
+    "OBSERVABILITY_PREREQUISITES": {
+      "description": "What must be true about instrumentation before a system can be understood in production",
+      "blocks": [
+        {
+          "id": "CODE.NEED.061",
+          "need": "Logging framework configured",
+          "condition": "A logging library and output format must be set up before meaningful logs are emitted",
+          "examples": [
+            "a structured logging library must be initialised before log fields are added",
+            "log level configuration must be in place before verbosity is controllable",
+            "log output must be routed to the expected destination before logs appear in dashboards"
+          ]
+        },
+        {
+          "id": "CODE.NEED.062",
+          "need": "Metrics endpoint live",
+          "condition": "A metrics scrape endpoint or push mechanism must be active before a monitoring system can collect data",
+          "examples": [
+            "a /metrics endpoint must be exposed before Prometheus can scrape",
+            "a StatsD emitter must be configured before metrics reach Datadog",
+            "OpenTelemetry instrumentation must be initialised before traces are collected"
+          ]
+        },
+        {
+          "id": "CODE.NEED.063",
+          "need": "Alerting rules defined",
+          "condition": "Alert conditions and notification routes must be configured before an on-call engineer can be paged",
+          "examples": [
+            "a Prometheus alert rule must exist before PagerDuty receives an incident",
+            "a threshold must be defined before an anomaly can trigger a notification",
+            "an alert routing policy must be set before alerts reach the right team"
+          ]
+        },
+        {
+          "id": "CODE.NEED.064",
+          "need": "Trace context propagated",
+          "condition": "Trace IDs must be passed across service boundaries before distributed traces can be correlated",
+          "examples": [
+            "a trace context header must be forwarded before a full request trace is visible",
+            "W3C trace context must be injected before Jaeger spans link correctly",
+            "correlation IDs must be carried in log fields before cross-service log correlation works"
+          ]
+        },
+        {
+          "id": "CODE.NEED.065",
+          "need": "SLO defined",
+          "condition": "A service level objective must be documented before compliance with it can be measured or reported",
+          "examples": [
+            "the error rate SLO must be stated before an error budget is calculated",
+            "the latency SLO must be published before a burn rate alert is configured",
+            "the availability SLO must be agreed before an SLA is signed with a customer"
+          ]
+        }
+      ]
+    },
+    "CONCURRENCY_SAFETY": {
+      "description": "What must be true about shared state and synchronisation before concurrent code is safe",
+      "blocks": [
+        {
+          "id": "CODE.NEED.066",
+          "need": "Shared state identified",
+          "condition": "All data that will be accessed by multiple goroutines, threads, or async tasks must be identified before concurrent access patterns are designed",
+          "examples": [
+            "the shared cache must be identified before a mutex is applied",
+            "global counters must be listed before atomic operations are introduced",
+            "shared request context must be identified before it is made thread-safe"
+          ]
+        },
+        {
+          "id": "CODE.NEED.067",
+          "need": "Synchronisation strategy chosen",
+          "condition": "The approach to protecting shared state must be decided before concurrent code is written",
+          "examples": [
+            "whether to use a mutex or a channel must be decided before goroutine logic is coded",
+            "optimistic vs. pessimistic locking must be chosen before the database transaction is written",
+            "actor vs. shared memory must be decided before a concurrent data structure is implemented"
+          ]
+        },
+        {
+          "id": "CODE.NEED.068",
+          "need": "Race condition tests written",
+          "condition": "Tests that expose unsafe concurrent access must exist before concurrent code is considered correct",
+          "examples": [
+            "a test with -race flag enabled must exist before a concurrent Go function is shipped",
+            "a stress test with many parallel requests must run before a concurrent cache is trusted",
+            "a concurrent write test must pass before a shared data structure is used in production"
+          ]
+        },
+        {
+          "id": "CODE.NEED.069",
+          "need": "Deadlock analysis done",
+          "condition": "The lock acquisition order must be reviewed for potential deadlocks before multi-lock code is written",
+          "examples": [
+            "the lock order must be documented before two mutexes are acquired together",
+            "the cycle analysis must show no circular waits before a lock hierarchy is deployed",
+            "a deadlock detector must have run without findings before multi-threaded code ships"
+          ]
+        },
+        {
+          "id": "CODE.NEED.070",
+          "need": "Idempotency ensured",
+          "condition": "Operations that may be retried must be verified as safe to run multiple times before they are used in retry-capable systems",
+          "examples": [
+            "a payment handler must be idempotent before it is used with a retry queue",
+            "a database write must be idempotent before at-least-once message delivery is used",
+            "an event handler must be idempotent before it processes from a replayable log"
+          ]
+        }
+      ]
+    },
+    "REFACTORING_PREREQUISITES": {
+      "description": "What must be true before code can be safely restructured",
+      "blocks": [
+        {
+          "id": "CODE.NEED.071",
+          "need": "Test coverage sufficient",
+          "condition": "The code to be refactored must have enough tests to verify that behavior is preserved throughout the change",
+          "examples": [
+            "unit test coverage must be adequate before a function is extracted",
+            "integration tests must cover the module before it is restructured",
+            "the critical path must be covered by tests before a refactor begins"
+          ]
+        },
+        {
+          "id": "CODE.NEED.072",
+          "need": "Behavior documented",
+          "condition": "What the code is supposed to do must be captured before it is restructured, so correctness can be verified after",
+          "examples": [
+            "a docstring or comment describing the intended behavior must exist before refactoring",
+            "acceptance tests that define the expected outputs must pass before the refactor begins",
+            "the existing behavior must be characterised with golden tests before it is changed"
+          ]
+        },
+        {
+          "id": "CODE.NEED.073",
+          "need": "All callers identified",
+          "condition": "Every place that calls the function or module being changed must be located before the refactor begins",
+          "examples": [
+            "all usages of a function must be found before its signature is changed",
+            "all importers of a module must be identified before it is renamed or moved",
+            "all callers of an API must be mapped before a breaking change is introduced"
+          ]
+        },
+        {
+          "id": "CODE.NEED.074",
+          "need": "Refactoring scope agreed",
+          "condition": "The boundaries of the change must be defined so the refactor does not grow uncontrollably",
+          "examples": [
+            "the set of files to be changed must be agreed before work begins",
+            "whether to rename across the repo or just within a package must be decided upfront",
+            "the depth of restructuring must be bounded before a long refactor session starts"
+          ]
+        },
+        {
+          "id": "CODE.NEED.075",
+          "need": "No in-progress work depends on target code",
+          "condition": "No other work-in-progress branch should be actively modifying the code being refactored, to avoid expensive merge conflicts",
+          "examples": [
+            "all feature branches touching the target module must be merged or coordinated before the refactor",
+            "the team must be aware of the refactor before starting work on related code",
+            "no other PR must have an open change to the file being restructured"
+          ]
+        }
+      ]
+    },
+    "MIGRATION_PREREQUISITES": {
+      "description": "What must be true before a migration can be applied safely",
+      "blocks": [
+        {
+          "id": "CODE.NEED.076",
+          "need": "Migration tested in staging",
+          "condition": "A migration must have run successfully in a non-production environment before it is applied to production",
+          "examples": [
+            "a database migration must succeed in staging before running in prod",
+            "an infrastructure change must be validated in a test environment first",
+            "a data transformation migration must be verified on a copy of production data"
+          ]
+        },
+        {
+          "id": "CODE.NEED.077",
+          "need": "Rollback script prepared",
+          "condition": "A script or procedure to reverse the migration must exist and be tested before the forward migration runs",
+          "examples": [
+            "a down migration must exist before the up migration is applied to production",
+            "a Terraform destroy plan must be reviewed before apply",
+            "a data restoration procedure must be tested before a destructive migration"
+          ]
+        },
+        {
+          "id": "CODE.NEED.078",
+          "need": "Backup taken",
+          "condition": "A current backup of the data or system being migrated must exist before the migration begins",
+          "examples": [
+            "a database backup must be taken before a schema migration runs",
+            "a snapshot must exist before an infrastructure migration",
+            "a data export must be saved before a destructive backfill is applied"
+          ]
+        },
+        {
+          "id": "CODE.NEED.079",
+          "need": "Zero-downtime path confirmed",
+          "condition": "The approach for applying the migration without service interruption must be validated before the migration runs on a live system",
+          "examples": [
+            "the online schema change tool must be verified before a large table migration",
+            "the expand-contract pattern must be confirmed before a field rename",
+            "a canary deploy path must be tested before a breaking API migration"
+          ]
+        },
+        {
+          "id": "CODE.NEED.080",
+          "need": "Consumer compatibility verified",
+          "condition": "All downstream consumers of the data or API being migrated must be confirmed as compatible with the new format before migration",
+          "examples": [
+            "all consumers of an event schema must handle the new format before the producer changes",
+            "all API clients must support the new response shape before v1 is deprecated",
+            "all downstream services must be deployed with compatibility code before a database type change"
+          ]
+        }
+      ]
+    },
+    "PERFORMANCE_PREREQUISITES": {
+      "description": "What must be true before performance work can be meaningfully attempted",
+      "blocks": [
+        {
+          "id": "CODE.NEED.081",
+          "need": "Performance target defined",
+          "condition": "A specific, measurable goal must exist before optimisation work can be scoped or evaluated",
+          "examples": [
+            "a p99 latency target must be set before profiling begins",
+            "a throughput target must be agreed before a concurrency change is designed",
+            "a memory budget must be defined before a memory optimisation is measured"
+          ]
+        },
+        {
+          "id": "CODE.NEED.082",
+          "need": "Baseline measured",
+          "condition": "Current performance must be measured under representative conditions before any changes are made",
+          "examples": [
+            "a load test baseline must be captured before optimisation work starts",
+            "current query execution times must be recorded before indexes are added",
+            "current memory usage under load must be measured before a memory fix is evaluated"
+          ]
+        },
+        {
+          "id": "CODE.NEED.083",
+          "need": "Profiling data collected",
+          "condition": "A profile of where time or memory is spent must be collected before the correct optimisation is chosen",
+          "examples": [
+            "a CPU profile must be taken before a hotspot is identified",
+            "a heap dump must be captured before a memory leak is traced",
+            "a query plan must be examined before an index is added"
+          ]
+        },
+        {
+          "id": "CODE.NEED.084",
+          "need": "Production-representative data available",
+          "condition": "Performance testing must use data and load patterns similar to production before results are trusted",
+          "examples": [
+            "a copy of production data must be used before a query optimisation is validated",
+            "a representative request distribution must be simulated before a load test is meaningful",
+            "production-scale row counts must exist before index selectivity is evaluated"
+          ]
+        },
+        {
+          "id": "CODE.NEED.085",
+          "need": "No other changes in flight",
+          "condition": "The system must be stable with no simultaneous changes before performance measurements are attributed to a specific change",
+          "examples": [
+            "no other deploys must be in progress before a before-and-after performance comparison",
+            "the environment must be stable before a benchmark is run",
+            "no unrelated feature flags must be toggled before a performance regression is confirmed"
+          ]
+        }
+      ]
+    },
+    "REVIEW_APPROVAL": {
+      "description": "What must be true before code can be accepted, merged, or released",
+      "blocks": [
+        {
+          "id": "CODE.NEED.086",
+          "need": "Self-review complete",
+          "condition": "The author must have reviewed their own changes for obvious issues before requesting peer review",
+          "examples": [
+            "the developer must have read the diff before opening a PR",
+            "the author must have run the tests locally before requesting review",
+            "the author must have removed debug output before requesting review"
+          ]
+        },
+        {
+          "id": "CODE.NEED.087",
+          "need": "PR description complete",
+          "condition": "A clear explanation of what changed and why must be present before reviewers are asked to review",
+          "examples": [
+            "a PR description explaining the approach must exist before review is requested",
+            "links to the relevant ticket must be included before review",
+            "testing instructions must be written before a reviewer approves the PR"
+          ]
+        },
+        {
+          "id": "CODE.NEED.088",
+          "need": "Requested changes addressed",
+          "condition": "All blocking review comments must be resolved before a PR is merged",
+          "examples": [
+            "all reviewer comments marked as blocking must be replied to before merge",
+            "change requests must be resolved and re-requested for review before merge",
+            "unresolved discussions must be explicitly closed or deferred before merge"
+          ]
+        },
+        {
+          "id": "CODE.NEED.089",
+          "need": "Required reviewers approved",
+          "condition": "All required code owners and stakeholders must have given approval before the merge is permitted",
+          "examples": [
+            "the CODEOWNERS-designated reviewer must approve before merge",
+            "security-sensitive files must have a security review approval",
+            "the tech lead must approve an architectural change before it merges"
+          ]
+        },
+        {
+          "id": "CODE.NEED.090",
+          "need": "All checks passed",
+          "condition": "Every automated check registered as required on the branch must be passing before the merge button is enabled",
+          "examples": [
+            "all CI checks must be green before merge is allowed",
+            "the required status check must be satisfied before the branch protection allows merge",
+            "code coverage threshold must be met before merge is permitted"
+          ]
+        }
+      ]
+    },
+    "RELEASE_READINESS": {
+      "description": "What must be true before a version of software is released",
+      "blocks": [
+        {
+          "id": "CODE.NEED.091",
+          "need": "Changelog updated",
+          "condition": "A record of what changed must be written before a release is cut and announced",
+          "examples": [
+            "CHANGELOG.md must be updated before a release tag is created",
+            "breaking changes must be documented before a major version is published",
+            "a release summary must be written before the GitHub release is created"
+          ]
+        },
+        {
+          "id": "CODE.NEED.092",
+          "need": "Version bumped correctly",
+          "condition": "The version number must be incremented according to semantic versioning rules before publishing",
+          "examples": [
+            "the patch version must be bumped for a bug fix release",
+            "the minor version must be bumped before a backwards-compatible feature release",
+            "the major version must be bumped before a breaking change is shipped"
+          ]
+        },
+        {
+          "id": "CODE.NEED.093",
+          "need": "Smoke tests passed",
+          "condition": "A minimal set of critical-path tests must pass in the release environment before traffic is shifted",
+          "examples": [
+            "a smoke test checking the health endpoint must pass before a prod deploy proceeds",
+            "critical user flows must be verified before a canary deploy is widened",
+            "a post-deploy check must succeed before old instances are terminated"
+          ]
+        },
+        {
+          "id": "CODE.NEED.094",
+          "need": "On-call briefed",
+          "condition": "The engineer on call must know about a significant release before it goes live so they can monitor and respond",
+          "examples": [
+            "the on-call engineer must be notified before a large deploy",
+            "a brief on expected behavioural changes must be shared before a release",
+            "runbook updates must be shared before a deploy that changes system behaviour"
+          ]
+        },
+        {
+          "id": "CODE.NEED.095",
+          "need": "Stakeholders notified",
+          "condition": "Relevant internal and external parties must be informed before a release that affects them",
+          "examples": [
+            "customers must be notified of breaking changes before they are deployed",
+            "the support team must be briefed before a UI change goes live",
+            "downstream API consumers must be warned before a schema change"
+          ]
+        }
+      ]
+    },
+    "UMG_CODING_NEEDS": {
+      "description": "Prerequisites specific to implementing UMG framework constructs in code",
+      "blocks": [
+        {
+          "id": "CODE.NEED.096",
+          "need": "MOLT block schema implemented",
+          "condition": "A code representation of the MOLT block structure must exist before a compiler can ingest or process blocks",
+          "examples": [
+            "a Block struct or class with id, type, content, and state fields must exist before ingestion is coded",
+            "a MOLT type enum must be defined before type-based authority sorting is implemented",
+            "a NeoBlock structure must be defined before the merge stage can produce one"
+          ]
+        },
+        {
+          "id": "CODE.NEED.097",
+          "need": "Sleeve parser complete",
+          "condition": "Code that can read a sleeve definition and expand it into stacks and blocks must exist before the compiler pipeline runs",
+          "examples": [
+            "a JSON sleeve parser must be written before the ingestion stage is tested",
+            "module expansion logic must be implemented before the normalization stage runs",
+            "sleeve validation must be coded before an invalid sleeve can be rejected with a clear error"
+          ]
+        },
+        {
+          "id": "CODE.NEED.098",
+          "need": "Authority ordering implemented",
+          "condition": "The MOLT type authority hierarchy must be encoded in the compiler before conflict resolution can work correctly",
+          "examples": [
+            "the MOLT type ordering array must be defined before blocks are sorted by authority",
+            "the comparison function for MOLT types must be written before the resolution stage",
+            "governance block priority must be hardcoded above all other types before the governance pass is trusted"
+          ]
+        },
+        {
+          "id": "CODE.NEED.099",
+          "need": "Trace writer implemented",
+          "condition": "Code that records decisions to the Decision Trace must exist before the compiler is considered audit-compliant",
+          "examples": [
+            "a TraceEvent struct must be defined before any stage can emit a trace entry",
+            "the trace writer must be wired into the governance pass before governance compliance is verified",
+            "the full trace must be serialisable before it is passed to an auditor or test"
+          ]
+        },
+        {
+          "id": "CODE.NEED.100",
+          "need": "Conformance tests available",
+          "condition": "A test suite that validates compiler behaviour against the UMG canon must exist before a compiler implementation is considered correct",
+          "examples": [
+            "determinism tests must be available before a compiler claims canon compliance",
+            "governance supremacy tests must exist before the governance pass is considered correct",
+            "trace completeness tests must be defined before a trace implementation is verified as audit-grade"
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,1111 @@
+{
+  "library_name": "MOLT Aim Library \u2014 Coding Edition",
+  "version": "1.0.0",
+  "created": "2026-04-21",
+  "created_by": "Claude UMG Envoy",
+  "supervised_by": "NeoMAG",
+  "description": "Coding-domain MOLT Aim blocks. Aim answers: 'What are we trying to achieve?' Each block describes the desired real-world software engineering outcome \u2014 what success looks like when this coding reasoning path completes.",
+  "usage": "Select the Aim block that best describes the intended engineering outcome. Aim governs what the response is ultimately trying to accomplish in a software development context.",
+  "aims": {
+    "CORRECTNESS": {
+      "description": "Aims oriented toward making code do the right thing",
+      "blocks": [
+        {
+          "id": "CODE.AIM.001",
+          "aim": "Fix the bug",
+          "outcome": "To eliminate a specific defect so the code behaves as intended",
+          "examples": [
+            "patching the function that returns the wrong value",
+            "resolving a race condition in concurrent code",
+            "correcting the logic error in a conditional branch"
+          ]
+        },
+        {
+          "id": "CODE.AIM.002",
+          "aim": "Pass all tests",
+          "outcome": "To bring the test suite to a fully green state with no failures or skips",
+          "examples": [
+            "fixing failing unit tests after a refactor",
+            "making an integration test pass against a real service",
+            "resolving flaky tests so CI is reliable"
+          ]
+        },
+        {
+          "id": "CODE.AIM.003",
+          "aim": "Handle all edge cases",
+          "outcome": "To ensure the code behaves correctly for boundary inputs, empty inputs, and unexpected values",
+          "examples": [
+            "handling a null input without crashing",
+            "correctly processing an empty list",
+            "handling integer overflow without silent truncation"
+          ]
+        },
+        {
+          "id": "CODE.AIM.004",
+          "aim": "Implement the spec exactly",
+          "outcome": "To produce code that matches every stated requirement in the specification",
+          "examples": [
+            "implementing every field in an OpenAPI response schema",
+            "building every acceptance criterion in a user story",
+            "matching every constraint in a formal protocol spec"
+          ]
+        },
+        {
+          "id": "CODE.AIM.005",
+          "aim": "Achieve deterministic output",
+          "outcome": "To ensure the code produces the same result for the same inputs every time",
+          "examples": [
+            "removing non-deterministic map iteration from an output",
+            "fixing a test that passes or fails depending on timing",
+            "eliminating a dependency on unordered set output"
+          ]
+        }
+      ]
+    },
+    "CODE_QUALITY": {
+      "description": "Aims oriented toward producing clean, maintainable code",
+      "blocks": [
+        {
+          "id": "CODE.AIM.006",
+          "aim": "Improve readability",
+          "outcome": "To make code easier for the next developer to understand without documentation",
+          "examples": [
+            "renaming variables to express intent clearly",
+            "extracting a complex expression into a named function",
+            "replacing a magic number with a named constant"
+          ]
+        },
+        {
+          "id": "CODE.AIM.007",
+          "aim": "Reduce duplication",
+          "outcome": "To eliminate repeated logic by expressing it once in a reusable form",
+          "examples": [
+            "extracting a shared validation into a helper",
+            "replacing copy-pasted code with a parameterised function",
+            "centralising a repeated database query pattern"
+          ]
+        },
+        {
+          "id": "CODE.AIM.008",
+          "aim": "Lower complexity",
+          "outcome": "To reduce the cognitive load required to understand or modify a function or module",
+          "examples": [
+            "decomposing a 200-line function into smaller ones",
+            "flattening deeply nested conditional logic",
+            "reducing cyclomatic complexity below the team threshold"
+          ]
+        },
+        {
+          "id": "CODE.AIM.009",
+          "aim": "Pass linting and type checks",
+          "outcome": "To produce code that satisfies all automated style, type, and quality gates",
+          "examples": [
+            "resolving all ESLint errors and warnings",
+            "fixing all mypy type errors",
+            "passing a strict TypeScript compile with no errors"
+          ]
+        },
+        {
+          "id": "CODE.AIM.010",
+          "aim": "Meet code review standards",
+          "outcome": "To produce code that passes peer review without requiring significant changes",
+          "examples": [
+            "writing code that reviewers approve on first pass",
+            "matching the team's established patterns and conventions",
+            "producing a PR that generates no blocking comments"
+          ]
+        }
+      ]
+    },
+    "PERFORMANCE": {
+      "description": "Aims oriented toward making code faster or more efficient",
+      "blocks": [
+        {
+          "id": "CODE.AIM.011",
+          "aim": "Meet latency target",
+          "outcome": "To ensure requests or operations complete within the required time",
+          "examples": [
+            "reducing a slow endpoint below 200ms p99",
+            "making a background job complete within its time window",
+            "bringing a render time under the user-perceivable threshold"
+          ]
+        },
+        {
+          "id": "CODE.AIM.012",
+          "aim": "Reduce memory usage",
+          "outcome": "To lower the amount of RAM the program consumes during execution",
+          "examples": [
+            "fixing a memory leak in a long-running service",
+            "reducing the heap footprint of a large data structure",
+            "streaming data instead of loading it all into memory"
+          ]
+        },
+        {
+          "id": "CODE.AIM.013",
+          "aim": "Improve throughput",
+          "outcome": "To increase the volume of work the system can process per unit of time",
+          "examples": [
+            "doubling the number of requests per second a service handles",
+            "processing a data pipeline twice as fast",
+            "increasing message consumption rate for a queue consumer"
+          ]
+        },
+        {
+          "id": "CODE.AIM.014",
+          "aim": "Reduce CPU utilisation",
+          "outcome": "To lower the processor time consumed by the program",
+          "examples": [
+            "replacing an expensive algorithm with a more efficient one",
+            "reducing redundant computation in a hot loop",
+            "caching a result that was being recalculated on every call"
+          ]
+        },
+        {
+          "id": "CODE.AIM.015",
+          "aim": "Optimise database query performance",
+          "outcome": "To make database operations faster by improving query design or indexes",
+          "examples": [
+            "reducing a slow query from 2s to 20ms with an index",
+            "eliminating an N+1 with a join",
+            "rewriting a correlated subquery as a lateral join"
+          ]
+        }
+      ]
+    },
+    "SECURITY": {
+      "description": "Aims oriented toward making code safe from attack and misuse",
+      "blocks": [
+        {
+          "id": "CODE.AIM.016",
+          "aim": "Eliminate a vulnerability",
+          "outcome": "To remove a specific security flaw that could be exploited",
+          "examples": [
+            "patching an SQL injection vector",
+            "fixing a reflected XSS in a template",
+            "removing a path traversal in a file handler"
+          ]
+        },
+        {
+          "id": "CODE.AIM.017",
+          "aim": "Achieve zero critical CVEs in dependencies",
+          "outcome": "To have no known critical vulnerabilities in any dependency at time of deployment",
+          "examples": [
+            "upgrading all packages with critical CVEs",
+            "replacing a vulnerable library with a safe alternative",
+            "pinning a patched version of a transitive dependency"
+          ]
+        },
+        {
+          "id": "CODE.AIM.018",
+          "aim": "Enforce least-privilege access",
+          "outcome": "To ensure code and systems request and use only the minimum permissions needed",
+          "examples": [
+            "scoping an API token to read-only",
+            "removing an overly broad IAM role",
+            "limiting a service account to the resources it actually uses"
+          ]
+        },
+        {
+          "id": "CODE.AIM.019",
+          "aim": "Pass a security audit",
+          "outcome": "To satisfy a formal review of code or system security with no critical findings",
+          "examples": [
+            "clearing all critical and high findings from a penetration test",
+            "resolving all issues flagged by a SAST tool",
+            "passing an external code security review"
+          ]
+        },
+        {
+          "id": "CODE.AIM.020",
+          "aim": "Prevent secret leakage",
+          "outcome": "To ensure credentials, keys, and tokens never appear in code, logs, or responses",
+          "examples": [
+            "removing a hardcoded API key from source code",
+            "preventing a token from appearing in an error response",
+            "scanning commit history and rotating any exposed secrets"
+          ]
+        }
+      ]
+    },
+    "RELIABILITY": {
+      "description": "Aims oriented toward keeping code running correctly under adverse conditions",
+      "blocks": [
+        {
+          "id": "CODE.AIM.021",
+          "aim": "Achieve uptime target",
+          "outcome": "To maintain service availability at or above the committed SLA",
+          "examples": [
+            "reaching 99.9% uptime for a critical service",
+            "eliminating a class of crashes that was causing downtime",
+            "making a service resilient to a dependency failure"
+          ]
+        },
+        {
+          "id": "CODE.AIM.022",
+          "aim": "Eliminate crash under load",
+          "outcome": "To prevent a service from failing when request volume or data size increases",
+          "examples": [
+            "fixing an out-of-memory crash at high concurrency",
+            "resolving a stack overflow on large inputs",
+            "preventing a connection pool exhaustion under load"
+          ]
+        },
+        {
+          "id": "CODE.AIM.023",
+          "aim": "Achieve graceful degradation",
+          "outcome": "To ensure the system continues to provide partial functionality when a dependency is unavailable",
+          "examples": [
+            "returning a cached result when the database is slow",
+            "disabling a non-critical feature when an external API is down",
+            "falling back to a default when a config service is unavailable"
+          ]
+        },
+        {
+          "id": "CODE.AIM.024",
+          "aim": "Make the system idempotent",
+          "outcome": "To ensure that repeating an operation produces the same result as running it once",
+          "examples": [
+            "making a payment handler idempotent with a deduplication key",
+            "ensuring a migration can be run twice without harm",
+            "making a message consumer safe to retry"
+          ]
+        },
+        {
+          "id": "CODE.AIM.025",
+          "aim": "Achieve fast recovery",
+          "outcome": "To minimise the time to restore normal operation after a failure",
+          "examples": [
+            "implementing automatic restart on crash",
+            "adding a circuit breaker to cut off a failing dependency",
+            "enabling zero-downtime deploys to remove recovery time on release"
+          ]
+        }
+      ]
+    },
+    "TESTABILITY": {
+      "description": "Aims oriented toward making code easy to verify",
+      "blocks": [
+        {
+          "id": "CODE.AIM.026",
+          "aim": "Reach coverage target",
+          "outcome": "To ensure a specified percentage of code is exercised by tests",
+          "examples": [
+            "reaching 80% line coverage on a module",
+            "achieving full branch coverage on a critical path",
+            "covering every public API method with at least one test"
+          ]
+        },
+        {
+          "id": "CODE.AIM.027",
+          "aim": "Make a module unit-testable",
+          "outcome": "To restructure code so that its units can be tested in isolation without external dependencies",
+          "examples": [
+            "introducing dependency injection to allow mocking",
+            "separating I/O from pure logic",
+            "extracting a side-effect-free function from a coupled block"
+          ]
+        },
+        {
+          "id": "CODE.AIM.028",
+          "aim": "Eliminate flaky tests",
+          "outcome": "To make every test produce a consistent result regardless of timing, order, or environment",
+          "examples": [
+            "fixing a test that depends on wall clock time",
+            "removing a test that relies on network access",
+            "resolving a test that fails when run in a different order"
+          ]
+        },
+        {
+          "id": "CODE.AIM.029",
+          "aim": "Achieve a fast test suite",
+          "outcome": "To ensure developers can run tests quickly enough not to avoid them",
+          "examples": [
+            "bringing a full test run under 60 seconds",
+            "parallelising a slow test suite",
+            "mocking slow I/O to make unit tests near-instant"
+          ]
+        },
+        {
+          "id": "CODE.AIM.030",
+          "aim": "Write a failing test first",
+          "outcome": "To demonstrate a bug or new requirement with a test before writing the fix or feature",
+          "examples": [
+            "writing a test that reproduces a reported bug",
+            "writing a test for an acceptance criterion before implementation",
+            "producing a minimal failing example that proves the issue"
+          ]
+        }
+      ]
+    },
+    "MAINTAINABILITY": {
+      "description": "Aims oriented toward making code easy to change over time",
+      "blocks": [
+        {
+          "id": "CODE.AIM.031",
+          "aim": "Reduce coupling",
+          "outcome": "To lower the degree to which components depend on the internal details of each other",
+          "examples": [
+            "introducing an interface between two tightly coupled modules",
+            "removing a direct import of an implementation detail",
+            "replacing a shared global with a passed dependency"
+          ]
+        },
+        {
+          "id": "CODE.AIM.032",
+          "aim": "Increase cohesion",
+          "outcome": "To ensure each module or function has a single, well-defined responsibility",
+          "examples": [
+            "splitting a class that does both data access and business logic",
+            "separating formatting from computation in a function",
+            "grouping related functions into a dedicated module"
+          ]
+        },
+        {
+          "id": "CODE.AIM.033",
+          "aim": "Make change safe",
+          "outcome": "To ensure that modifying one part of the codebase does not unexpectedly break another",
+          "examples": [
+            "adding tests to cover a module before refactoring it",
+            "introducing a typed interface before changing an implementation",
+            "running a full regression suite after a structural change"
+          ]
+        },
+        {
+          "id": "CODE.AIM.034",
+          "aim": "Reduce time to onboard a new developer",
+          "outcome": "To make the codebase understandable quickly to someone who is new to it",
+          "examples": [
+            "improving naming so the purpose of each module is clear",
+            "documenting the setup steps in a README",
+            "adding architecture diagrams that show component relationships"
+          ]
+        },
+        {
+          "id": "CODE.AIM.035",
+          "aim": "Eliminate tech debt",
+          "outcome": "To remove workarounds, outdated patterns, and known problems from the codebase",
+          "examples": [
+            "replacing a deprecated library with a current alternative",
+            "removing a TODO that has sat unaddressed for months",
+            "deleting dead code that was never removed"
+          ]
+        }
+      ]
+    },
+    "SCALABILITY": {
+      "description": "Aims oriented toward making systems handle more load or data",
+      "blocks": [
+        {
+          "id": "CODE.AIM.036",
+          "aim": "Support 10x traffic",
+          "outcome": "To architect and implement changes that allow the system to handle an order of magnitude more requests",
+          "examples": [
+            "moving from a single-instance to a horizontally scaled service",
+            "introducing a cache layer before a bottleneck database",
+            "migrating to a distributed queue for processing spikes"
+          ]
+        },
+        {
+          "id": "CODE.AIM.037",
+          "aim": "Shard a bottleneck",
+          "outcome": "To split a single overloaded resource across multiple units to distribute load",
+          "examples": [
+            "sharding a high-write table across multiple databases",
+            "partitioning a Kafka topic for parallel consumption",
+            "splitting a large in-memory cache across Redis nodes"
+          ]
+        },
+        {
+          "id": "CODE.AIM.038",
+          "aim": "Remove a single point of failure",
+          "outcome": "To eliminate any component whose failure would bring down the entire system",
+          "examples": [
+            "adding a replica to a single-instance database",
+            "deploying an application across multiple availability zones",
+            "replacing a single queue broker with a replicated cluster"
+          ]
+        },
+        {
+          "id": "CODE.AIM.039",
+          "aim": "Enable autoscaling",
+          "outcome": "To make the system capable of automatically adding or removing resources based on demand",
+          "examples": [
+            "making application instances stateless so they can scale horizontally",
+            "configuring a Kubernetes HPA on a CPU metric",
+            "designing a Lambda-based handler to scale to zero and back"
+          ]
+        },
+        {
+          "id": "CODE.AIM.040",
+          "aim": "Reduce database write contention",
+          "outcome": "To lower the rate at which concurrent writes block each other",
+          "examples": [
+            "using optimistic locking instead of pessimistic locks",
+            "batching writes to reduce transaction frequency",
+            "introducing an append-only log to avoid row-level lock contention"
+          ]
+        }
+      ]
+    },
+    "DELIVERY": {
+      "description": "Aims oriented toward shipping code to users safely and quickly",
+      "blocks": [
+        {
+          "id": "CODE.AIM.041",
+          "aim": "Ship a feature to production",
+          "outcome": "To deliver working code to real users through the full release process",
+          "examples": [
+            "merging a feature PR, passing CI, and deploying to prod",
+            "completing a feature flag rollout to 100% of users",
+            "delivering a hotfix to production within an SLA"
+          ]
+        },
+        {
+          "id": "CODE.AIM.042",
+          "aim": "Achieve zero-downtime deployment",
+          "outcome": "To release a new version without any interruption to users",
+          "examples": [
+            "using a rolling deploy with health checks",
+            "implementing blue-green deployment",
+            "using a feature flag to decouple deploy from release"
+          ]
+        },
+        {
+          "id": "CODE.AIM.043",
+          "aim": "Reduce deployment time",
+          "outcome": "To shorten the time from code merge to production availability",
+          "examples": [
+            "parallelising CI pipeline steps",
+            "caching build dependencies",
+            "optimising a Docker build with layer caching"
+          ]
+        },
+        {
+          "id": "CODE.AIM.044",
+          "aim": "Enable safe rollback",
+          "outcome": "To ensure that a problematic release can be quickly reversed to a known-good state",
+          "examples": [
+            "keeping the previous image tag in registry before a deploy",
+            "using a feature flag to disable a new code path instantly",
+            "maintaining a database migration that can be reversed"
+          ]
+        },
+        {
+          "id": "CODE.AIM.045",
+          "aim": "Pass all pre-release gates",
+          "outcome": "To satisfy every required check before code is allowed to deploy to production",
+          "examples": [
+            "passing all CI tests before merge",
+            "clearing a security scan before release",
+            "satisfying a required code review approval"
+          ]
+        }
+      ]
+    },
+    "OBSERVABILITY": {
+      "description": "Aims oriented toward understanding system behavior in production",
+      "blocks": [
+        {
+          "id": "CODE.AIM.046",
+          "aim": "Make the system debuggable",
+          "outcome": "To ensure that when something goes wrong in production, it can be diagnosed quickly",
+          "examples": [
+            "adding structured logs to every error path",
+            "instrumenting requests with trace IDs",
+            "ensuring every exception reaches the error tracker with full context"
+          ]
+        },
+        {
+          "id": "CODE.AIM.047",
+          "aim": "Achieve full request traceability",
+          "outcome": "To follow any request from entry to completion across all services it touches",
+          "examples": [
+            "propagating trace context across service boundaries",
+            "correlating logs with a shared trace ID",
+            "visualising the full span tree of a slow request"
+          ]
+        },
+        {
+          "id": "CODE.AIM.048",
+          "aim": "Alert on the right signals",
+          "outcome": "To configure alerting that fires on genuine user-impacting conditions without false positives",
+          "examples": [
+            "alerting on p99 latency rather than average",
+            "alerting on error rate rather than total error count",
+            "reducing alert noise so on-call engineers trust alerts"
+          ]
+        },
+        {
+          "id": "CODE.AIM.049",
+          "aim": "Produce useful dashboards",
+          "outcome": "To build visualisations that let engineers understand system health at a glance",
+          "examples": [
+            "building a golden signals dashboard for a service",
+            "visualising queue depth alongside consumer lag",
+            "showing request volume, error rate, and latency side by side"
+          ]
+        },
+        {
+          "id": "CODE.AIM.050",
+          "aim": "Meet an SLO",
+          "outcome": "To ensure a service consistently performs within its service level objective",
+          "examples": [
+            "keeping error rate below 0.1% of requests",
+            "maintaining p99 latency under 500ms for 30 days",
+            "achieving 99.95% availability over a rolling month"
+          ]
+        }
+      ]
+    },
+    "ARCHITECTURE": {
+      "description": "Aims oriented toward achieving sound structural design",
+      "blocks": [
+        {
+          "id": "CODE.AIM.051",
+          "aim": "Enforce layer boundaries",
+          "outcome": "To ensure each architectural layer only depends on the layers it is permitted to know about",
+          "examples": [
+            "preventing a controller from containing business logic",
+            "stopping a domain model from importing from a persistence layer",
+            "ensuring an API handler does not call a third-party library directly"
+          ]
+        },
+        {
+          "id": "CODE.AIM.052",
+          "aim": "Extract a reusable library",
+          "outcome": "To move a piece of logic out of an application into a shared package usable by multiple consumers",
+          "examples": [
+            "extracting a shared utility into an internal library",
+            "packaging a UMG block serialiser as a standalone module",
+            "moving shared validation logic into a published package"
+          ]
+        },
+        {
+          "id": "CODE.AIM.053",
+          "aim": "Complete a monolith decomposition",
+          "outcome": "To extract a self-contained domain from a monolith into an independently deployable service",
+          "examples": [
+            "extracting user management into a separate service",
+            "separating billing from the core application",
+            "moving notification logic into a dedicated service"
+          ]
+        },
+        {
+          "id": "CODE.AIM.054",
+          "aim": "Standardise a cross-cutting concern",
+          "outcome": "To handle a recurring concern \u2014 logging, auth, rate limiting \u2014 consistently across all services",
+          "examples": [
+            "centralising auth enforcement in a gateway",
+            "standardising logging format across all services",
+            "moving rate limiting out of individual services into infrastructure"
+          ]
+        },
+        {
+          "id": "CODE.AIM.055",
+          "aim": "Achieve backwards compatibility",
+          "outcome": "To evolve an interface or data format without breaking existing consumers",
+          "examples": [
+            "adding a new field without removing old ones",
+            "releasing a new API version while keeping v1 working",
+            "maintaining a data migration that supports both old and new formats"
+          ]
+        }
+      ]
+    },
+    "DEVELOPER_EXPERIENCE": {
+      "description": "Aims oriented toward making the development process faster and less painful",
+      "blocks": [
+        {
+          "id": "CODE.AIM.056",
+          "aim": "Reduce local setup time",
+          "outcome": "To enable a new developer to run the project locally in minutes rather than hours",
+          "examples": [
+            "automating dev environment setup with a script",
+            "using Docker Compose to remove manual service setup",
+            "providing a one-command dev bootstrap"
+          ]
+        },
+        {
+          "id": "CODE.AIM.057",
+          "aim": "Shorten the feedback loop",
+          "outcome": "To reduce the time between making a change and seeing its effect",
+          "examples": [
+            "enabling hot module replacement in the dev server",
+            "making unit tests run in under 5 seconds",
+            "adding a watch mode to the build tool"
+          ]
+        },
+        {
+          "id": "CODE.AIM.058",
+          "aim": "Improve error messages",
+          "outcome": "To make error output clear enough that developers understand what went wrong and how to fix it",
+          "examples": [
+            "adding context to a generic exception message",
+            "improving a compiler error to suggest the fix",
+            "making a validation error name the field and the constraint that failed"
+          ]
+        },
+        {
+          "id": "CODE.AIM.059",
+          "aim": "Standardise tooling across the team",
+          "outcome": "To ensure all developers use the same editors, linters, formatters, and build tools",
+          "examples": [
+            "committing an .editorconfig to the repo",
+            "enforcing formatter settings in CI",
+            "providing a recommended VS Code extensions file"
+          ]
+        },
+        {
+          "id": "CODE.AIM.060",
+          "aim": "Automate a repetitive manual step",
+          "outcome": "To replace a task developers repeat constantly with a reliable automated equivalent",
+          "examples": [
+            "scripting a release process that was done manually",
+            "automating test data seeding",
+            "generating a changelog entry from conventional commits"
+          ]
+        }
+      ]
+    },
+    "MIGRATION": {
+      "description": "Aims oriented toward safely moving code, data, or infrastructure from one state to another",
+      "blocks": [
+        {
+          "id": "CODE.AIM.061",
+          "aim": "Complete a database migration safely",
+          "outcome": "To evolve the database schema without data loss or production downtime",
+          "examples": [
+            "adding a column to a large table without locking",
+            "renaming a column across multiple deploys",
+            "backfilling a new field from existing data safely"
+          ]
+        },
+        {
+          "id": "CODE.AIM.062",
+          "aim": "Migrate a deprecated dependency",
+          "outcome": "To replace an outdated library with a current alternative without breaking behavior",
+          "examples": [
+            "migrating from Moment.js to date-fns",
+            "replacing a deprecated ORM with a current version",
+            "switching from an EOL runtime version to a supported one"
+          ]
+        },
+        {
+          "id": "CODE.AIM.063",
+          "aim": "Upgrade a language or framework version",
+          "outcome": "To move the project to a newer runtime or framework version successfully",
+          "examples": [
+            "migrating from Python 3.9 to 3.12",
+            "upgrading from React 17 to React 19",
+            "migrating from Rails 6 to Rails 7"
+          ]
+        },
+        {
+          "id": "CODE.AIM.064",
+          "aim": "Complete an API migration",
+          "outcome": "To move all consumers from an old API version to a new one and decommission the old",
+          "examples": [
+            "migrating clients from v1 to v2 of an internal API",
+            "moving external partners to a new endpoint version",
+            "deprecating and removing a legacy endpoint"
+          ]
+        },
+        {
+          "id": "CODE.AIM.065",
+          "aim": "Move infrastructure to code",
+          "outcome": "To replace manually managed infrastructure with version-controlled declarative definitions",
+          "examples": [
+            "converting manually provisioned AWS resources to Terraform",
+            "migrating Kubernetes manifests into Helm charts",
+            "replacing a hand-configured server with an Ansible playbook"
+          ]
+        }
+      ]
+    },
+    "INTEGRATION": {
+      "description": "Aims oriented toward connecting systems or components correctly",
+      "blocks": [
+        {
+          "id": "CODE.AIM.066",
+          "aim": "Integrate a third-party API",
+          "outcome": "To connect the application to an external service so data flows correctly between them",
+          "examples": [
+            "integrating a payment gateway",
+            "connecting to a mapping API",
+            "adding OAuth2 login via an identity provider"
+          ]
+        },
+        {
+          "id": "CODE.AIM.067",
+          "aim": "Produce a working webhook",
+          "outcome": "To expose an endpoint that correctly receives, validates, and processes events from an external system",
+          "examples": [
+            "building a Stripe webhook handler",
+            "receiving and verifying GitHub webhook payloads",
+            "processing Slack event callbacks correctly"
+          ]
+        },
+        {
+          "id": "CODE.AIM.068",
+          "aim": "Achieve reliable message delivery",
+          "outcome": "To ensure messages between producers and consumers are delivered exactly once or at least once with correct handling",
+          "examples": [
+            "implementing idempotent consumer logic",
+            "configuring dead letter queue handling",
+            "ensuring messages are not lost during a consumer restart"
+          ]
+        },
+        {
+          "id": "CODE.AIM.069",
+          "aim": "Connect a new data source",
+          "outcome": "To ingest data from a previously untapped source into the system",
+          "examples": [
+            "connecting a Postgres replica for analytics",
+            "integrating a third-party data feed via API",
+            "ingesting events from a Kafka topic into a data warehouse"
+          ]
+        },
+        {
+          "id": "CODE.AIM.070",
+          "aim": "Pass a contract test",
+          "outcome": "To verify that a service fulfils the expectations of its consumers at an API boundary",
+          "examples": [
+            "publishing and passing a Pact consumer-driven contract test",
+            "verifying a GraphQL schema against a consumer query",
+            "confirming an event payload matches the consumer's expected schema"
+          ]
+        }
+      ]
+    },
+    "DISCOVERY": {
+      "description": "Aims oriented toward understanding unfamiliar code or systems",
+      "blocks": [
+        {
+          "id": "CODE.AIM.071",
+          "aim": "Understand an unfamiliar codebase",
+          "outcome": "To build a working mental model of how a codebase is structured and how its parts relate",
+          "examples": [
+            "mapping the entry points and main flows of a new service",
+            "identifying where a domain concept is represented in the code",
+            "understanding the dependency graph of a module"
+          ]
+        },
+        {
+          "id": "CODE.AIM.072",
+          "aim": "Identify the source of a regression",
+          "outcome": "To find the commit or change that introduced a broken behavior",
+          "examples": [
+            "bisecting the git history to find a regression commit",
+            "diffing two versions of a function to spot the change",
+            "correlating a deployment time with a metric degradation"
+          ]
+        },
+        {
+          "id": "CODE.AIM.073",
+          "aim": "Map system dependencies",
+          "outcome": "To document what a service depends on and what depends on it",
+          "examples": [
+            "tracing all downstream consumers of an API",
+            "mapping all upstream dependencies of a service",
+            "identifying which services would be affected by a schema change"
+          ]
+        },
+        {
+          "id": "CODE.AIM.074",
+          "aim": "Understand a performance problem",
+          "outcome": "To identify where time or resources are being consumed and why",
+          "examples": [
+            "using a profiler to find the hot function in a slow endpoint",
+            "tracing a slow database query back to its ORM call",
+            "identifying which dependency is adding the most latency to a request"
+          ]
+        },
+        {
+          "id": "CODE.AIM.075",
+          "aim": "Reproduce a production issue locally",
+          "outcome": "To trigger the same failure in a development environment to enable safe debugging",
+          "examples": [
+            "reconstructing a failing request from production logs",
+            "seeding test data that matches a production state",
+            "replicating production environment variables locally to reproduce a config-dependent bug"
+          ]
+        }
+      ]
+    },
+    "COMPLIANCE_STANDARDS": {
+      "description": "Aims oriented toward meeting coding and regulatory standards",
+      "blocks": [
+        {
+          "id": "CODE.AIM.076",
+          "aim": "Meet accessibility standards",
+          "outcome": "To ensure UI code is usable by people with disabilities as required by accessibility guidelines",
+          "examples": [
+            "passing WCAG 2.1 AA for a web interface",
+            "ensuring all interactive elements are keyboard-navigable",
+            "adding ARIA labels to all form controls"
+          ]
+        },
+        {
+          "id": "CODE.AIM.077",
+          "aim": "Achieve licence compliance",
+          "outcome": "To ensure all dependencies are used under licences that are compatible with the project's distribution model",
+          "examples": [
+            "replacing a GPL dependency in a proprietary project",
+            "documenting all open source licences in a NOTICE file",
+            "resolving a licence conflict in the dependency tree"
+          ]
+        },
+        {
+          "id": "CODE.AIM.078",
+          "aim": "Pass a compliance scan",
+          "outcome": "To have automated compliance checking tools report zero critical findings",
+          "examples": [
+            "clearing all critical findings from a DAST scan",
+            "resolving all issues from a SAST pipeline run",
+            "passing a dependency scan with no high-severity vulnerabilities"
+          ]
+        },
+        {
+          "id": "CODE.AIM.079",
+          "aim": "Meet data privacy requirements in code",
+          "outcome": "To implement data handling in code that satisfies privacy law requirements",
+          "examples": [
+            "implementing right-to-erasure in the user data layer",
+            "anonymising PII before writing to analytics storage",
+            "adding consent checks before activating tracking code"
+          ]
+        },
+        {
+          "id": "CODE.AIM.080",
+          "aim": "Satisfy a coding standard",
+          "outcome": "To produce code that conforms to a mandated standard or style guide",
+          "examples": [
+            "meeting a client's internal coding standards for a delivery",
+            "conforming to MISRA C for embedded code",
+            "following Google's Java style guide across the codebase"
+          ]
+        }
+      ]
+    },
+    "KNOWLEDGE_TRANSFER": {
+      "description": "Aims oriented toward sharing understanding of code effectively",
+      "blocks": [
+        {
+          "id": "CODE.AIM.081",
+          "aim": "Document an undocumented module",
+          "outcome": "To produce clear, accurate documentation for code that currently has none",
+          "examples": [
+            "writing docstrings for every public function in a module",
+            "adding a README to an undocumented internal library",
+            "documenting a complex algorithm with inline explanation"
+          ]
+        },
+        {
+          "id": "CODE.AIM.082",
+          "aim": "Explain code to a non-expert",
+          "outcome": "To describe what code does in terms that someone without deep technical knowledge can understand",
+          "examples": [
+            "explaining what an API endpoint does to a product manager",
+            "describing a data pipeline to a business stakeholder",
+            "walking a junior developer through a complex algorithm"
+          ]
+        },
+        {
+          "id": "CODE.AIM.083",
+          "aim": "Produce a technical design document",
+          "outcome": "To write a structured proposal explaining how a feature or change will be implemented before coding begins",
+          "examples": [
+            "writing a design doc for a new service",
+            "producing an RFC for a breaking API change",
+            "writing a technical spec for a database schema change"
+          ]
+        },
+        {
+          "id": "CODE.AIM.084",
+          "aim": "Enable a handover",
+          "outcome": "To transfer ownership of a codebase or system to another team with enough context for them to operate it",
+          "examples": [
+            "producing a runbook for a service being handed to a different team",
+            "writing an onboarding guide for a module being transferred",
+            "documenting all known issues and in-progress work before a team change"
+          ]
+        },
+        {
+          "id": "CODE.AIM.085",
+          "aim": "Write a post-mortem",
+          "outcome": "To produce a clear, blameless account of an incident that captures what happened and what will change",
+          "examples": [
+            "writing an incident report after a production outage",
+            "documenting a data loss incident timeline and remediation",
+            "producing an RCA after a security incident"
+          ]
+        }
+      ]
+    },
+    "INNOVATION": {
+      "description": "Aims oriented toward exploring and introducing new technical approaches",
+      "blocks": [
+        {
+          "id": "CODE.AIM.086",
+          "aim": "Prove a technical concept",
+          "outcome": "To demonstrate that a proposed approach is feasible before committing to full implementation",
+          "examples": [
+            "building a spike to validate a new framework choice",
+            "prototyping an algorithm before writing production code",
+            "running a proof of concept for a new infrastructure pattern"
+          ]
+        },
+        {
+          "id": "CODE.AIM.087",
+          "aim": "Evaluate a new technology",
+          "outcome": "To assess whether a tool, library, or platform is suitable for adoption in the project",
+          "examples": [
+            "benchmarking two database options for a workload",
+            "comparing two state management libraries for a frontend",
+            "running a structured evaluation of two container orchestration platforms"
+          ]
+        },
+        {
+          "id": "CODE.AIM.088",
+          "aim": "Introduce a new pattern",
+          "outcome": "To adopt a design pattern or coding practice that improves the codebase going forward",
+          "examples": [
+            "introducing repository pattern for data access",
+            "adopting event sourcing for a domain",
+            "migrating to a command-query separation pattern"
+          ]
+        },
+        {
+          "id": "CODE.AIM.089",
+          "aim": "Build a developer tool",
+          "outcome": "To create internal tooling that improves the productivity or quality of the engineering team",
+          "examples": [
+            "building a CLI for a common developer task",
+            "creating a code generation tool for repetitive patterns",
+            "building a local development helper that mocks external services"
+          ]
+        },
+        {
+          "id": "CODE.AIM.090",
+          "aim": "Publish an open source contribution",
+          "outcome": "To release code, a fix, or documentation to an open source project",
+          "examples": [
+            "submitting a bug fix PR to an upstream library",
+            "publishing a useful internal tool as an open source package",
+            "contributing documentation to an open source project the team depends on"
+          ]
+        }
+      ]
+    },
+    "REFACTORING": {
+      "description": "Aims oriented toward improving structure without changing behavior",
+      "blocks": [
+        {
+          "id": "CODE.AIM.091",
+          "aim": "Extract a clean abstraction",
+          "outcome": "To create a reusable, well-named layer that hides implementation details from callers",
+          "examples": [
+            "introducing a repository interface over direct database calls",
+            "extracting a service class from a fat controller",
+            "wrapping a third-party API behind an internal adapter"
+          ]
+        },
+        {
+          "id": "CODE.AIM.092",
+          "aim": "Delete dead code",
+          "outcome": "To remove code that is no longer executed or used, reducing confusion and maintenance surface",
+          "examples": [
+            "removing an old feature flag branch that is permanently enabled",
+            "deleting commented-out code that is no longer relevant",
+            "removing an unused exported function from a module"
+          ]
+        },
+        {
+          "id": "CODE.AIM.093",
+          "aim": "Standardise error handling",
+          "outcome": "To apply a consistent approach to error propagation and reporting across the codebase",
+          "examples": [
+            "replacing mixed exception styles with a unified error type",
+            "standardising how errors are logged and returned from service methods",
+            "aligning all API endpoints to a common error response shape"
+          ]
+        },
+        {
+          "id": "CODE.AIM.094",
+          "aim": "Improve naming throughout a module",
+          "outcome": "To rename variables, functions, and classes so that purpose is immediately clear",
+          "examples": [
+            "renaming a function called 'process' to 'validateAndNormaliseAddress'",
+            "renaming a boolean flag called 'flag' to 'isEmailVerified'",
+            "renaming a class called 'Manager' to 'OrderFulfillmentCoordinator'"
+          ]
+        },
+        {
+          "id": "CODE.AIM.095",
+          "aim": "Consolidate configuration",
+          "outcome": "To centralise scattered configuration values so they are defined once and used consistently",
+          "examples": [
+            "moving hardcoded values into a single config file",
+            "replacing duplicated timeout values with a shared constant",
+            "consolidating feature flag definitions into one registry"
+          ]
+        }
+      ]
+    },
+    "UMG_CODING_AIMS": {
+      "description": "Aims specific to implementing UMG constructs in code",
+      "blocks": [
+        {
+          "id": "CODE.AIM.096",
+          "aim": "Implement a correct compiler pass",
+          "outcome": "To write a compiler stage \u2014 governance, trigger, resolution, synthesis \u2014 that produces exactly the right output for all inputs",
+          "examples": [
+            "implementing the governance pass that correctly disables OFF'd blocks",
+            "coding the priority resolution that deterministically selects a winner",
+            "writing the synthesis stage that produces a valid RuntimeSpec"
+          ]
+        },
+        {
+          "id": "CODE.AIM.097",
+          "aim": "Produce a valid Decision Trace",
+          "outcome": "To generate a trace that fully documents every decision made during a compilation pass",
+          "examples": [
+            "recording every governance action with the rule that caused it",
+            "logging every conflict winner and loser with the priority that resolved it",
+            "capturing every merge event with source block references"
+          ]
+        },
+        {
+          "id": "CODE.AIM.098",
+          "aim": "Pass the UMG conformance test suite",
+          "outcome": "To satisfy every test in the compliance test suite for UMG implementors",
+          "examples": [
+            "passing the determinism test with identical outputs for identical inputs",
+            "passing the governance supremacy test that verifies OFF cannot be bypassed",
+            "passing the trace completeness test that verifies every decision is recorded"
+          ]
+        },
+        {
+          "id": "CODE.AIM.099",
+          "aim": "Achieve deterministic compilation",
+          "outcome": "To verify that the compiler produces identical output every time for the same sleeve, governance, and priority inputs",
+          "examples": [
+            "writing a property test that runs the compiler twice and asserts output equality",
+            "removing any randomness from the resolution algorithm",
+            "ensuring that compiler output is stable across environments"
+          ]
+        },
+        {
+          "id": "CODE.AIM.100",
+          "aim": "Ship a working Envoy integration",
+          "outcome": "To successfully connect a UMG compiler to a model or agent runtime so that compiled cognition governs execution",
+          "examples": [
+            "wiring a RuntimeSpec into a Claude system prompt correctly",
+            "validating that governance OFF states are respected by the model",
+            "confirming the Decision Trace is generated and stored after each compilation"
+          ]
+        }
+      ]
+    }
+  }
+}

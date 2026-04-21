@@ -1,0 +1,1111 @@
+{
+  "library_name": "MOLT Use Library \u2014 Business Edition",
+  "version": "1.0.0",
+  "created": "2026-04-20",
+  "created_by": "Claude UMG Envoy",
+  "supervised_by": "NeoMAG",
+  "description": "Business-domain MOLT Use blocks. Use answers: 'What is this for?' Each block describes the business function or purpose of the Subject \u2014 what that thing does or enables in a commercial context.",
+  "usage": "Select the Use block that best describes what the business Subject is being used for. Use anchors the reasoning chain between Subject and Aim in business contexts.",
+  "uses": {
+    "SALES_REVENUE": {
+      "description": "Uses related to generating and closing revenue",
+      "blocks": [
+        {
+          "id": "BIZ.USE.001",
+          "use": "Lead generation",
+          "function": "To identify and attract potential buyers into the sales funnel",
+          "examples": [
+            "cold outreach campaign",
+            "inbound content lead capture",
+            "trade show contact collection"
+          ]
+        },
+        {
+          "id": "BIZ.USE.002",
+          "use": "Prospect qualification",
+          "function": "To determine which leads have genuine buying potential and fit",
+          "examples": [
+            "BANT assessment",
+            "discovery call scoring",
+            "ICP matching"
+          ]
+        },
+        {
+          "id": "BIZ.USE.003",
+          "use": "Deal progression",
+          "function": "To advance an opportunity through defined pipeline stages toward close",
+          "examples": [
+            "moving a deal from proposal to negotiation",
+            "advancing a prospect past security review",
+            "progressing a multi-stakeholder deal"
+          ]
+        },
+        {
+          "id": "BIZ.USE.004",
+          "use": "Closing",
+          "function": "To obtain a formal commitment and signed agreement from the buyer",
+          "examples": [
+            "presenting final commercial terms",
+            "executing a contract",
+            "securing a purchase order"
+          ]
+        },
+        {
+          "id": "BIZ.USE.005",
+          "use": "Upsell and expansion",
+          "function": "To increase revenue from existing customers by expanding scope, seats, or tiers",
+          "examples": [
+            "offering a premium tier upgrade",
+            "adding additional user licenses",
+            "expanding a contract to new business units"
+          ]
+        }
+      ]
+    },
+    "MARKETING_DEMAND": {
+      "description": "Uses related to building awareness, demand, and brand",
+      "blocks": [
+        {
+          "id": "BIZ.USE.006",
+          "use": "Brand building",
+          "function": "To create and reinforce a consistent identity and reputation in the market",
+          "examples": [
+            "brand campaign execution",
+            "thought leadership publishing",
+            "sponsorship and event presence"
+          ]
+        },
+        {
+          "id": "BIZ.USE.007",
+          "use": "Demand generation",
+          "function": "To create market interest that produces a pipeline of qualified opportunities",
+          "examples": [
+            "running a paid media campaign",
+            "hosting a webinar series",
+            "publishing high-intent SEO content"
+          ]
+        },
+        {
+          "id": "BIZ.USE.008",
+          "use": "Product marketing",
+          "function": "To position an offering against alternatives and communicate its value to target buyers",
+          "examples": [
+            "writing a competitive battle card",
+            "creating a product one-pager",
+            "developing pricing and packaging messaging"
+          ]
+        },
+        {
+          "id": "BIZ.USE.009",
+          "use": "Campaign execution",
+          "function": "To deploy coordinated marketing activities across channels to a defined audience",
+          "examples": [
+            "running an email nurture sequence",
+            "executing a multi-channel product launch",
+            "managing a retargeting campaign"
+          ]
+        },
+        {
+          "id": "BIZ.USE.010",
+          "use": "Customer retention marketing",
+          "function": "To keep existing customers engaged and reduce churn through ongoing communication",
+          "examples": [
+            "sending a customer success newsletter",
+            "running a loyalty rewards program",
+            "providing early renewal incentives"
+          ]
+        }
+      ]
+    },
+    "CUSTOMER_SUCCESS": {
+      "description": "Uses related to onboarding, retaining, and growing customers",
+      "blocks": [
+        {
+          "id": "BIZ.USE.011",
+          "use": "Customer onboarding",
+          "function": "To bring a new customer to first value quickly and correctly",
+          "examples": [
+            "running a structured implementation program",
+            "delivering onboarding training sessions",
+            "configuring a customer's initial environment"
+          ]
+        },
+        {
+          "id": "BIZ.USE.012",
+          "use": "Account health monitoring",
+          "function": "To track customer engagement and risk signals to guide proactive intervention",
+          "examples": [
+            "reviewing product usage dashboards",
+            "tracking NPS trends by account",
+            "monitoring support ticket volume per customer"
+          ]
+        },
+        {
+          "id": "BIZ.USE.013",
+          "use": "Renewal management",
+          "function": "To secure contract renewal before expiry through proactive engagement",
+          "examples": [
+            "initiating a renewal conversation 90 days out",
+            "presenting a renewal ROI summary",
+            "negotiating multi-year terms at renewal"
+          ]
+        },
+        {
+          "id": "BIZ.USE.014",
+          "use": "Escalation management",
+          "function": "To resolve critical customer issues with urgency and accountability",
+          "examples": [
+            "activating an executive escalation",
+            "convening an emergency response team for a churning account",
+            "delivering a formal remediation plan"
+          ]
+        },
+        {
+          "id": "BIZ.USE.015",
+          "use": "Voice of customer capture",
+          "function": "To collect systematic feedback that informs product and service improvement",
+          "examples": [
+            "conducting post-onboarding surveys",
+            "running quarterly business reviews",
+            "facilitating a customer advisory board session"
+          ]
+        }
+      ]
+    },
+    "FINANCIAL_MANAGEMENT": {
+      "description": "Uses related to managing, reporting, and controlling financial performance",
+      "blocks": [
+        {
+          "id": "BIZ.USE.016",
+          "use": "Budgeting",
+          "function": "To allocate available financial resources across departments and initiatives",
+          "examples": [
+            "annual operating budget process",
+            "departmental headcount budget",
+            "capital expenditure planning"
+          ]
+        },
+        {
+          "id": "BIZ.USE.017",
+          "use": "Revenue reporting",
+          "function": "To track, reconcile, and communicate revenue performance against plan",
+          "examples": [
+            "monthly revenue close report",
+            "ARR waterfall tracking",
+            "bookings vs. revenue recognition report"
+          ]
+        },
+        {
+          "id": "BIZ.USE.018",
+          "use": "Cost control",
+          "function": "To monitor and reduce expenditures to protect margin and efficiency",
+          "examples": [
+            "vendor spend review",
+            "headcount cost optimization analysis",
+            "discretionary spend freeze process"
+          ]
+        },
+        {
+          "id": "BIZ.USE.019",
+          "use": "Cash flow management",
+          "function": "To ensure the business has sufficient liquidity to meet its obligations",
+          "examples": [
+            "13-week cash flow forecast",
+            "accounts receivable collection process",
+            "payroll and vendor payment scheduling"
+          ]
+        },
+        {
+          "id": "BIZ.USE.020",
+          "use": "Financial forecasting",
+          "function": "To project future revenue, costs, and profitability based on current trends and plans",
+          "examples": [
+            "quarterly revenue reforecast",
+            "three-year financial model",
+            "scenario planning for a board presentation"
+          ]
+        }
+      ]
+    },
+    "OPERATIONS_EXECUTION": {
+      "description": "Uses related to running day-to-day business operations efficiently",
+      "blocks": [
+        {
+          "id": "BIZ.USE.021",
+          "use": "Process execution",
+          "function": "To run established business processes consistently to deliver repeatable outcomes",
+          "examples": [
+            "running the weekly billing cycle",
+            "executing the employee offboarding checklist",
+            "processing a standard purchase order"
+          ]
+        },
+        {
+          "id": "BIZ.USE.022",
+          "use": "Resource scheduling",
+          "function": "To assign people, equipment, and time to activities to maximize utilization",
+          "examples": [
+            "scheduling field technicians to service calls",
+            "allocating consulting hours to client projects",
+            "planning production machine time"
+          ]
+        },
+        {
+          "id": "BIZ.USE.023",
+          "use": "Capacity planning",
+          "function": "To ensure the organization has the right resources to meet anticipated demand",
+          "examples": [
+            "headcount plan for a new product launch",
+            "support team capacity for a seasonal peak",
+            "warehouse space for inventory growth"
+          ]
+        },
+        {
+          "id": "BIZ.USE.024",
+          "use": "Vendor management",
+          "function": "To govern relationships with external suppliers to ensure quality and compliance",
+          "examples": [
+            "running a quarterly vendor business review",
+            "managing an outsourced service contract",
+            "evaluating a supplier against SLA commitments"
+          ]
+        },
+        {
+          "id": "BIZ.USE.025",
+          "use": "Quality assurance",
+          "function": "To verify that products and services meet defined standards before delivery",
+          "examples": [
+            "production quality inspection",
+            "customer deliverable review before handoff",
+            "service delivery audit against SOW"
+          ]
+        }
+      ]
+    },
+    "HUMAN_RESOURCES": {
+      "description": "Uses related to attracting, developing, and retaining people",
+      "blocks": [
+        {
+          "id": "BIZ.USE.026",
+          "use": "Talent acquisition",
+          "function": "To identify, attract, and hire the right people for open roles",
+          "examples": [
+            "posting a job and managing applications",
+            "conducting a structured interview process",
+            "extending and closing an offer"
+          ]
+        },
+        {
+          "id": "BIZ.USE.027",
+          "use": "Employee onboarding",
+          "function": "To integrate new hires into the organization so they can contribute quickly",
+          "examples": [
+            "running a new hire orientation program",
+            "assigning a buddy and 30/60/90 day plan",
+            "completing payroll and benefits enrollment"
+          ]
+        },
+        {
+          "id": "BIZ.USE.028",
+          "use": "Performance management",
+          "function": "To set expectations, provide feedback, and evaluate employee contributions",
+          "examples": [
+            "conducting a mid-year performance review",
+            "calibrating ratings across a team",
+            "managing a performance improvement plan"
+          ]
+        },
+        {
+          "id": "BIZ.USE.029",
+          "use": "Learning and development",
+          "function": "To build employee skills and knowledge to support growth and retention",
+          "examples": [
+            "running a leadership development program",
+            "delivering compliance training",
+            "providing access to an online learning library"
+          ]
+        },
+        {
+          "id": "BIZ.USE.030",
+          "use": "Compensation and benefits",
+          "function": "To design and administer pay structures and benefits that attract and retain talent",
+          "examples": [
+            "running the annual compensation review cycle",
+            "benchmarking salaries against market data",
+            "managing open enrollment for benefits"
+          ]
+        }
+      ]
+    },
+    "STRATEGY_PLANNING": {
+      "description": "Uses related to setting direction and making high-level decisions",
+      "blocks": [
+        {
+          "id": "BIZ.USE.031",
+          "use": "Strategic planning",
+          "function": "To define multi-year direction, priorities, and resource allocation for the business",
+          "examples": [
+            "running the annual strategic planning process",
+            "developing a three-year growth roadmap",
+            "setting OKRs for the business unit"
+          ]
+        },
+        {
+          "id": "BIZ.USE.032",
+          "use": "Competitive analysis",
+          "function": "To understand the competitive landscape and position the business advantageously",
+          "examples": [
+            "building a competitor feature matrix",
+            "running a SWOT analysis",
+            "tracking competitor pricing and GTM moves"
+          ]
+        },
+        {
+          "id": "BIZ.USE.033",
+          "use": "Market research",
+          "function": "To gather intelligence about customer needs, market trends, and opportunity size",
+          "examples": [
+            "running a buyer persona research study",
+            "sizing a new market segment",
+            "surveying customers on unmet needs"
+          ]
+        },
+        {
+          "id": "BIZ.USE.034",
+          "use": "Business case development",
+          "function": "To build the financial and strategic rationale for a proposed investment or initiative",
+          "examples": [
+            "developing a make-vs-buy analysis",
+            "writing an investment memo for a new product",
+            "presenting the ROI case for a technology purchase"
+          ]
+        },
+        {
+          "id": "BIZ.USE.035",
+          "use": "Portfolio management",
+          "function": "To evaluate and prioritize initiatives across the business to maximize return on investment",
+          "examples": [
+            "scoring and ranking the product roadmap",
+            "allocating R&D budget across bets",
+            "retiring underperforming programs"
+          ]
+        }
+      ]
+    },
+    "PRODUCT_MANAGEMENT": {
+      "description": "Uses related to defining, building, and evolving products",
+      "blocks": [
+        {
+          "id": "BIZ.USE.036",
+          "use": "Roadmap planning",
+          "function": "To sequence and communicate what will be built and when based on strategy and capacity",
+          "examples": [
+            "quarterly roadmap review with engineering",
+            "publishing an external roadmap to customers",
+            "reprioritizing the roadmap after a market shift"
+          ]
+        },
+        {
+          "id": "BIZ.USE.037",
+          "use": "Feature definition",
+          "function": "To translate customer needs and business goals into specific product requirements",
+          "examples": [
+            "writing a product requirements document",
+            "defining user stories for a sprint",
+            "specifying acceptance criteria for a feature"
+          ]
+        },
+        {
+          "id": "BIZ.USE.038",
+          "use": "Discovery and validation",
+          "function": "To test product ideas with users before committing to full development",
+          "examples": [
+            "running a customer interview series",
+            "releasing a beta to early adopters",
+            "A/B testing a new onboarding flow"
+          ]
+        },
+        {
+          "id": "BIZ.USE.039",
+          "use": "Product launch",
+          "function": "To bring a new product or feature to market in a coordinated, effective way",
+          "examples": [
+            "coordinating a GA launch across product, marketing, and sales",
+            "staging a beta to GA rollout",
+            "preparing launch enablement materials for sales"
+          ]
+        },
+        {
+          "id": "BIZ.USE.040",
+          "use": "Product performance tracking",
+          "function": "To measure how a product is performing against goals and user expectations",
+          "examples": [
+            "reviewing weekly feature adoption metrics",
+            "tracking retention by cohort",
+            "analyzing support tickets for product pain points"
+          ]
+        }
+      ]
+    },
+    "LEGAL_COMPLIANCE": {
+      "description": "Uses related to managing legal obligations, risk, and regulatory compliance",
+      "blocks": [
+        {
+          "id": "BIZ.USE.041",
+          "use": "Contract management",
+          "function": "To draft, review, execute, and maintain commercial agreements",
+          "examples": [
+            "negotiating and signing a customer MSA",
+            "managing vendor contract renewals",
+            "tracking contract obligations and expiry dates"
+          ]
+        },
+        {
+          "id": "BIZ.USE.042",
+          "use": "Regulatory compliance",
+          "function": "To ensure the business meets its legal and regulatory obligations",
+          "examples": [
+            "maintaining GDPR compliance for customer data",
+            "filing required regulatory reports",
+            "managing export control compliance"
+          ]
+        },
+        {
+          "id": "BIZ.USE.043",
+          "use": "Intellectual property protection",
+          "function": "To secure and defend the business's proprietary assets",
+          "examples": [
+            "filing a patent application",
+            "registering trademarks",
+            "enforcing IP rights against infringement"
+          ]
+        },
+        {
+          "id": "BIZ.USE.044",
+          "use": "Risk management",
+          "function": "To identify, assess, and mitigate legal and operational risks",
+          "examples": [
+            "running an enterprise risk assessment",
+            "managing litigation risk with outside counsel",
+            "implementing a data breach response plan"
+          ]
+        },
+        {
+          "id": "BIZ.USE.045",
+          "use": "Policy enforcement",
+          "function": "To ensure internal policies are understood, applied, and monitored consistently",
+          "examples": [
+            "running an annual policy acknowledgment process",
+            "investigating a code-of-conduct complaint",
+            "auditing compliance with an expense policy"
+          ]
+        }
+      ]
+    },
+    "PARTNERSHIP_ALLIANCES": {
+      "description": "Uses related to building and operating strategic business relationships",
+      "blocks": [
+        {
+          "id": "BIZ.USE.046",
+          "use": "Partner recruitment",
+          "function": "To identify, attract, and sign new business partners into a partner program",
+          "examples": [
+            "reaching out to a target reseller",
+            "presenting a channel partner value proposition",
+            "executing a partner agreement"
+          ]
+        },
+        {
+          "id": "BIZ.USE.047",
+          "use": "Partner enablement",
+          "function": "To equip partners with the knowledge, tools, and support to sell and deliver effectively",
+          "examples": [
+            "running a partner certification program",
+            "delivering technical enablement to a SI partner",
+            "providing co-marketing materials to a reseller"
+          ]
+        },
+        {
+          "id": "BIZ.USE.048",
+          "use": "Co-selling",
+          "function": "To work jointly with a partner on shared opportunities to increase win rates",
+          "examples": [
+            "teaming on a joint prospect call",
+            "registering a deal for partner co-sell",
+            "running a partner-sourced joint proposal"
+          ]
+        },
+        {
+          "id": "BIZ.USE.049",
+          "use": "Alliance governance",
+          "function": "To manage the health, obligations, and evolution of strategic partnerships over time",
+          "examples": [
+            "running a quarterly partner business review",
+            "managing a joint go-to-market agreement",
+            "tracking mutual commitments in a strategic alliance"
+          ]
+        },
+        {
+          "id": "BIZ.USE.050",
+          "use": "Ecosystem development",
+          "function": "To grow the network of integrated and complementary offerings around a platform",
+          "examples": [
+            "building a marketplace of partner integrations",
+            "running a developer program",
+            "enabling ISVs to build on a platform"
+          ]
+        }
+      ]
+    },
+    "REPORTING_ANALYTICS": {
+      "description": "Uses related to measuring, reporting, and deriving business insight",
+      "blocks": [
+        {
+          "id": "BIZ.USE.051",
+          "use": "Executive reporting",
+          "function": "To deliver accurate, timely performance summaries to leadership and the board",
+          "examples": [
+            "board deck preparation",
+            "monthly business review package",
+            "investor update materials"
+          ]
+        },
+        {
+          "id": "BIZ.USE.052",
+          "use": "KPI tracking",
+          "function": "To monitor key performance indicators against targets on a regular cadence",
+          "examples": [
+            "weekly revenue dashboard review",
+            "daily active user tracking",
+            "monthly NPS trend analysis"
+          ]
+        },
+        {
+          "id": "BIZ.USE.053",
+          "use": "Business intelligence",
+          "function": "To transform business data into actionable insight through analysis and visualization",
+          "examples": [
+            "cohort retention analysis",
+            "sales pipeline velocity report",
+            "CAC/LTV analysis by segment"
+          ]
+        },
+        {
+          "id": "BIZ.USE.054",
+          "use": "Forecasting",
+          "function": "To project future business outcomes based on current data and trends",
+          "examples": [
+            "sales forecast for the current quarter",
+            "cash runway projection",
+            "headcount growth forecast"
+          ]
+        },
+        {
+          "id": "BIZ.USE.055",
+          "use": "Post-mortem analysis",
+          "function": "To review what happened after an outcome to learn and improve",
+          "examples": [
+            "win/loss analysis after a competitive deal",
+            "churn analysis after a customer departure",
+            "retrospective after a missed quarterly target"
+          ]
+        }
+      ]
+    },
+    "CHANGE_MANAGEMENT": {
+      "description": "Uses related to managing organizational transitions and adoption",
+      "blocks": [
+        {
+          "id": "BIZ.USE.056",
+          "use": "Organizational redesign",
+          "function": "To restructure teams, roles, and reporting lines to better fit strategy",
+          "examples": [
+            "restructuring a go-to-market organization",
+            "merging two business units post-acquisition",
+            "shifting from functional to product-led teams"
+          ]
+        },
+        {
+          "id": "BIZ.USE.057",
+          "use": "Change communication",
+          "function": "To inform stakeholders about changes in a way that builds understanding and reduces resistance",
+          "examples": [
+            "announcing a reorg via all-hands",
+            "communicating a policy change to employees",
+            "managing external messaging around a pivot"
+          ]
+        },
+        {
+          "id": "BIZ.USE.058",
+          "use": "Adoption management",
+          "function": "To drive uptake of new tools, processes, or behaviors across the organization",
+          "examples": [
+            "rolling out a new CRM to the sales team",
+            "driving adoption of a new performance management process",
+            "migrating an organization to a new communication platform"
+          ]
+        },
+        {
+          "id": "BIZ.USE.059",
+          "use": "Stakeholder alignment",
+          "function": "To bring all relevant parties to shared understanding and commitment to a change",
+          "examples": [
+            "running a pre-reorg alignment series with leaders",
+            "engaging key influencers before a process change",
+            "running a change readiness assessment"
+          ]
+        },
+        {
+          "id": "BIZ.USE.060",
+          "use": "Training delivery",
+          "function": "To build the skills and knowledge employees need to operate effectively after a change",
+          "examples": [
+            "delivering new tool training to all users",
+            "running role-specific change workshops",
+            "creating a self-serve learning path for a new process"
+          ]
+        }
+      ]
+    },
+    "PROCUREMENT_SUPPLY": {
+      "description": "Uses related to sourcing, acquiring, and managing goods and services",
+      "blocks": [
+        {
+          "id": "BIZ.USE.061",
+          "use": "Vendor sourcing",
+          "function": "To identify and evaluate potential suppliers for a required good or service",
+          "examples": [
+            "running an RFP for a new software platform",
+            "shortlisting vendors for a consulting engagement",
+            "evaluating managed service providers"
+          ]
+        },
+        {
+          "id": "BIZ.USE.062",
+          "use": "Procurement execution",
+          "function": "To complete the purchasing process from approval to receipt",
+          "examples": [
+            "raising and approving a purchase order",
+            "executing a software license agreement",
+            "completing a procurement intake for a new tool"
+          ]
+        },
+        {
+          "id": "BIZ.USE.063",
+          "use": "Spend management",
+          "function": "To track, analyze, and optimize expenditure across categories",
+          "examples": [
+            "running a SaaS spend audit",
+            "analyzing indirect spend by category",
+            "identifying consolidation opportunities across vendors"
+          ]
+        },
+        {
+          "id": "BIZ.USE.064",
+          "use": "Supplier performance management",
+          "function": "To measure and manage vendor delivery against contractual commitments",
+          "examples": [
+            "conducting a quarterly SLA review with a supplier",
+            "escalating a vendor performance issue",
+            "scoring a supplier on a performance scorecard"
+          ]
+        },
+        {
+          "id": "BIZ.USE.065",
+          "use": "Supply chain management",
+          "function": "To oversee the flow of goods and materials from source to delivery",
+          "examples": [
+            "managing inventory levels and reorder points",
+            "coordinating a multi-tier supplier network",
+            "tracking inbound shipments against delivery commitments"
+          ]
+        }
+      ]
+    },
+    "CUSTOMER_ACQUISITION": {
+      "description": "Uses related to the full motion of bringing new customers into the business",
+      "blocks": [
+        {
+          "id": "BIZ.USE.066",
+          "use": "Market segmentation",
+          "function": "To divide a market into distinct groups that can be targeted with tailored approaches",
+          "examples": [
+            "defining ICP segments by industry and size",
+            "segmenting leads by buying stage",
+            "identifying underserved niches in an addressable market"
+          ]
+        },
+        {
+          "id": "BIZ.USE.067",
+          "use": "Outbound prospecting",
+          "function": "To initiate contact with potential customers who have not yet expressed interest",
+          "examples": [
+            "running a cold email sequence to a target list",
+            "making outbound calls to a prospect list",
+            "using LinkedIn for direct outreach to decision-makers"
+          ]
+        },
+        {
+          "id": "BIZ.USE.068",
+          "use": "Inbound conversion",
+          "function": "To convert website visitors or content consumers into identified leads",
+          "examples": [
+            "gating a whitepaper to capture contact info",
+            "converting a free trial signup to a discovery call",
+            "following up with a webinar attendee"
+          ]
+        },
+        {
+          "id": "BIZ.USE.069",
+          "use": "Proposal development",
+          "function": "To build a commercial offer that demonstrates fit and value for a specific prospect",
+          "examples": [
+            "writing a custom SOW for a services deal",
+            "preparing a product demo with tailored ROI analysis",
+            "developing a multi-product solution proposal"
+          ]
+        },
+        {
+          "id": "BIZ.USE.070",
+          "use": "Trial and proof of concept",
+          "function": "To let a prospect validate the product in their environment before committing",
+          "examples": [
+            "managing a structured free trial",
+            "running a paid pilot with evaluation criteria",
+            "executing a POC with defined success metrics"
+          ]
+        }
+      ]
+    },
+    "BRAND_COMMUNICATIONS": {
+      "description": "Uses related to external and internal communications that shape perception",
+      "blocks": [
+        {
+          "id": "BIZ.USE.071",
+          "use": "Public relations",
+          "function": "To manage the organization's reputation and media presence",
+          "examples": [
+            "pitching a product launch story to press",
+            "managing a crisis communications response",
+            "building relationships with key industry analysts"
+          ]
+        },
+        {
+          "id": "BIZ.USE.072",
+          "use": "Content marketing",
+          "function": "To produce and distribute valuable content that attracts and educates target buyers",
+          "examples": [
+            "publishing a thought leadership blog series",
+            "producing a customer case study",
+            "creating a technical buyers guide"
+          ]
+        },
+        {
+          "id": "BIZ.USE.073",
+          "use": "Social media management",
+          "function": "To maintain and grow the brand's presence and engagement on social platforms",
+          "examples": [
+            "managing a LinkedIn company page",
+            "running a Twitter/X content calendar",
+            "responding to customer mentions on social"
+          ]
+        },
+        {
+          "id": "BIZ.USE.074",
+          "use": "Internal communications",
+          "function": "To keep employees informed and engaged with organizational news and direction",
+          "examples": [
+            "writing a CEO all-staff email",
+            "managing an internal intranet news section",
+            "running a company-wide all-hands meeting"
+          ]
+        },
+        {
+          "id": "BIZ.USE.075",
+          "use": "Event marketing",
+          "function": "To build brand, generate pipeline, and engage customers through live and virtual events",
+          "examples": [
+            "hosting a user conference",
+            "sponsoring and staffing an industry trade show",
+            "running a virtual product summit"
+          ]
+        }
+      ]
+    },
+    "RISK_GOVERNANCE": {
+      "description": "Uses related to identifying, managing, and reporting on business risk",
+      "blocks": [
+        {
+          "id": "BIZ.USE.076",
+          "use": "Risk identification",
+          "function": "To surface and catalogue threats to business objectives before they materialize",
+          "examples": [
+            "running an enterprise risk workshop",
+            "reviewing a project risk register",
+            "stress-testing a financial forecast for downside scenarios"
+          ]
+        },
+        {
+          "id": "BIZ.USE.077",
+          "use": "Risk mitigation",
+          "function": "To reduce the likelihood or impact of identified risks through proactive action",
+          "examples": [
+            "adding a contractual indemnity clause",
+            "purchasing business interruption insurance",
+            "diversifying a supplier base to reduce concentration risk"
+          ]
+        },
+        {
+          "id": "BIZ.USE.078",
+          "use": "Audit management",
+          "function": "To plan, execute, and respond to internal or external audits of the business",
+          "examples": [
+            "managing a SOX audit process",
+            "responding to a regulatory examination",
+            "running an internal controls audit"
+          ]
+        },
+        {
+          "id": "BIZ.USE.079",
+          "use": "Business continuity planning",
+          "function": "To ensure the business can operate through and recover from disruption",
+          "examples": [
+            "developing a disaster recovery plan",
+            "testing a business continuity scenario",
+            "maintaining a crisis management playbook"
+          ]
+        },
+        {
+          "id": "BIZ.USE.080",
+          "use": "Ethics and conduct oversight",
+          "function": "To set and enforce behavioral standards across the organization",
+          "examples": [
+            "managing a whistleblower process",
+            "running an ethics and compliance training program",
+            "investigating a conflict-of-interest allegation"
+          ]
+        }
+      ]
+    },
+    "INVESTOR_RELATIONS": {
+      "description": "Uses related to managing capital, investors, and board relationships",
+      "blocks": [
+        {
+          "id": "BIZ.USE.081",
+          "use": "Fundraising",
+          "function": "To raise capital from investors to fund growth or operations",
+          "examples": [
+            "running a Series B fundraising process",
+            "preparing pitch materials for a VC roadshow",
+            "negotiating term sheet terms"
+          ]
+        },
+        {
+          "id": "BIZ.USE.082",
+          "use": "Investor reporting",
+          "function": "To keep current investors informed of business performance and material developments",
+          "examples": [
+            "sending monthly investor updates",
+            "preparing a board package",
+            "delivering an annual shareholder report"
+          ]
+        },
+        {
+          "id": "BIZ.USE.083",
+          "use": "Board management",
+          "function": "To prepare for and facilitate effective board governance and decision-making",
+          "examples": [
+            "preparing and distributing a board deck",
+            "managing board committee charters and calendars",
+            "following up on board action items"
+          ]
+        },
+        {
+          "id": "BIZ.USE.084",
+          "use": "M&A execution",
+          "function": "To assess, negotiate, and close acquisitions or mergers",
+          "examples": [
+            "running a buy-side due diligence process",
+            "structuring and negotiating an acquisition agreement",
+            "managing post-merger integration"
+          ]
+        },
+        {
+          "id": "BIZ.USE.085",
+          "use": "Capital allocation",
+          "function": "To decide how to deploy available financial resources across competing priorities",
+          "examples": [
+            "prioritizing R&D investment vs. sales headcount",
+            "deciding between organic growth and acquisition",
+            "allocating capital across business units"
+          ]
+        }
+      ]
+    },
+    "TALENT_CULTURE": {
+      "description": "Uses related to building and maintaining organizational culture and employer brand",
+      "blocks": [
+        {
+          "id": "BIZ.USE.086",
+          "use": "Culture building",
+          "function": "To shape and reinforce shared values, behaviors, and norms across the organization",
+          "examples": [
+            "defining and embedding company values",
+            "running culture programs and rituals",
+            "recognizing behaviors that reflect cultural ideals"
+          ]
+        },
+        {
+          "id": "BIZ.USE.087",
+          "use": "Employee engagement",
+          "function": "To maintain and improve staff commitment, motivation, and satisfaction",
+          "examples": [
+            "running an annual engagement survey",
+            "launching a manager effectiveness program",
+            "designing a recognition and rewards initiative"
+          ]
+        },
+        {
+          "id": "BIZ.USE.088",
+          "use": "Employer brand management",
+          "function": "To shape how the organization is perceived as a place to work by candidates and employees",
+          "examples": [
+            "managing Glassdoor and LinkedIn presence",
+            "publicizing employee stories and culture content",
+            "articulating an employee value proposition"
+          ]
+        },
+        {
+          "id": "BIZ.USE.089",
+          "use": "Diversity equity and inclusion",
+          "function": "To create a workplace where people of all backgrounds can contribute and thrive",
+          "examples": [
+            "running a DEI training program",
+            "auditing hiring and promotion data for bias",
+            "establishing employee resource groups"
+          ]
+        },
+        {
+          "id": "BIZ.USE.090",
+          "use": "Workforce planning",
+          "function": "To ensure the organization has the right skills and capacity for future needs",
+          "examples": [
+            "identifying critical skills gaps for a three-year plan",
+            "building a succession plan for key roles",
+            "planning for a geographic expansion hiring wave"
+          ]
+        }
+      ]
+    },
+    "GROWTH_EXPANSION": {
+      "description": "Uses related to scaling the business and entering new markets",
+      "blocks": [
+        {
+          "id": "BIZ.USE.091",
+          "use": "Market entry",
+          "function": "To launch the business or a product into a new geographic or vertical market",
+          "examples": [
+            "entering a new country market",
+            "expanding into a new industry vertical",
+            "launching a new customer segment GTM motion"
+          ]
+        },
+        {
+          "id": "BIZ.USE.092",
+          "use": "Geographic expansion",
+          "function": "To establish operations, sales, or delivery in a new location",
+          "examples": [
+            "opening a new regional office",
+            "hiring a country manager for a new market",
+            "establishing local entity and compliance for a new geography"
+          ]
+        },
+        {
+          "id": "BIZ.USE.093",
+          "use": "Product line extension",
+          "function": "To grow revenue by adding adjacent offerings to the existing portfolio",
+          "examples": [
+            "launching a professional services tier",
+            "adding a new product module to a platform",
+            "introducing a lower-cost entry product"
+          ]
+        },
+        {
+          "id": "BIZ.USE.094",
+          "use": "Distribution channel development",
+          "function": "To build new routes to market that increase reach and reduce cost of sales",
+          "examples": [
+            "launching a self-serve e-commerce channel",
+            "building a reseller program",
+            "enabling a marketplace distribution channel"
+          ]
+        },
+        {
+          "id": "BIZ.USE.095",
+          "use": "Customer base expansion",
+          "function": "To grow the number of paying customers by targeting new segments or demographics",
+          "examples": [
+            "launching an SMB motion alongside an enterprise play",
+            "targeting a new buyer persona",
+            "building a consumer offering alongside a B2B one"
+          ]
+        }
+      ]
+    },
+    "UMG_BUSINESS_USE": {
+      "description": "Uses of UMG cognitive architecture within business and commercial contexts",
+      "blocks": [
+        {
+          "id": "BIZ.USE.096",
+          "use": "Sales agent governance",
+          "function": "To constrain an AI sales agent to approved messaging, pricing, and escalation protocols",
+          "examples": [
+            "ensuring an AI SDR uses only approved talk tracks",
+            "preventing unauthorized discount offers",
+            "routing enterprise deals to human AEs"
+          ]
+        },
+        {
+          "id": "BIZ.USE.097",
+          "use": "Customer service governance",
+          "function": "To govern AI support agents so they stay within policy and escalate correctly",
+          "examples": [
+            "constraining a support bot to documented resolutions only",
+            "requiring human handoff for billing disputes",
+            "enforcing tone and compliance standards in AI responses"
+          ]
+        },
+        {
+          "id": "BIZ.USE.098",
+          "use": "Business intelligence agent",
+          "function": "To run a governed AI that analyses business data and surfaces insights within defined bounds",
+          "examples": [
+            "an AI analyst that reports only on verified data",
+            "a governed forecasting agent",
+            "a pipeline review AI constrained to approved metrics"
+          ]
+        },
+        {
+          "id": "BIZ.USE.099",
+          "use": "Compliance automation",
+          "function": "To automate compliance checking with auditable governance and full trace",
+          "examples": [
+            "automated contract compliance screening",
+            "policy adherence checking with Decision Trace",
+            "regulatory filing review with governance pass"
+          ]
+        },
+        {
+          "id": "BIZ.USE.100",
+          "use": "Executive decision support",
+          "function": "To provide governed AI reasoning support for high-stakes business decisions",
+          "examples": [
+            "a governed strategic analysis agent for leadership",
+            "a board report generation agent with auditability",
+            "a merger evaluation AI with traceable recommendation logic"
+          ]
+        }
+      ]
+    }
+  }
+}

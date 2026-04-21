@@ -1,0 +1,1111 @@
+{
+  "library_name": "MOLT Use Library \u2014 Coding Edition",
+  "version": "1.0.0",
+  "created": "2026-04-21",
+  "created_by": "Claude UMG Envoy",
+  "supervised_by": "NeoMAG",
+  "description": "Coding-domain MOLT Use blocks. Use answers: 'What is this for?' Each block describes the software engineering function or purpose of the Subject \u2014 what that code, tool, pattern, or construct does or enables.",
+  "usage": "Select the Use block that best describes what the coding Subject is being used for. Use anchors the reasoning chain between Subject and Aim in software engineering contexts.",
+  "uses": {
+    "CODE_AUTHORING": {
+      "description": "Uses related to writing and structuring code",
+      "blocks": [
+        {
+          "id": "CODE.USE.001",
+          "use": "Feature implementation",
+          "function": "To write new code that delivers a defined user-facing or system capability",
+          "examples": [
+            "implementing a login form",
+            "adding a REST endpoint",
+            "building a file upload handler"
+          ]
+        },
+        {
+          "id": "CODE.USE.002",
+          "use": "Bug fixing",
+          "function": "To modify existing code to correct unintended behavior",
+          "examples": [
+            "patching a null pointer exception",
+            "fixing an off-by-one error",
+            "correcting an incorrect regex match"
+          ]
+        },
+        {
+          "id": "CODE.USE.003",
+          "use": "Refactoring",
+          "function": "To restructure existing code to improve quality without changing behavior",
+          "examples": [
+            "extracting a repeated block into a function",
+            "renaming variables for clarity",
+            "replacing a deeply nested conditional with early returns"
+          ]
+        },
+        {
+          "id": "CODE.USE.004",
+          "use": "Boilerplate generation",
+          "function": "To produce repetitive scaffolding code that follows a known pattern",
+          "examples": [
+            "generating a CRUD controller",
+            "scaffolding a React component",
+            "creating a migration file"
+          ]
+        },
+        {
+          "id": "CODE.USE.005",
+          "use": "Algorithm implementation",
+          "function": "To write code that executes a specific computational procedure",
+          "examples": [
+            "implementing binary search",
+            "coding a graph traversal",
+            "writing a sorting routine"
+          ]
+        }
+      ]
+    },
+    "CODE_REVIEW": {
+      "description": "Uses related to evaluating and improving code written by others",
+      "blocks": [
+        {
+          "id": "CODE.USE.006",
+          "use": "Correctness review",
+          "function": "To check whether code does what it claims and handles edge cases",
+          "examples": [
+            "verifying a function returns correct output",
+            "checking boundary conditions",
+            "confirming error paths are handled"
+          ]
+        },
+        {
+          "id": "CODE.USE.007",
+          "use": "Style and convention enforcement",
+          "function": "To ensure code follows team or language standards for readability",
+          "examples": [
+            "checking naming conventions",
+            "enforcing line length limits",
+            "verifying consistent use of async/await vs. promises"
+          ]
+        },
+        {
+          "id": "CODE.USE.008",
+          "use": "Security review",
+          "function": "To identify vulnerabilities and risky patterns in submitted code",
+          "examples": [
+            "checking for SQL injection vectors",
+            "reviewing input sanitization",
+            "flagging hardcoded secrets"
+          ]
+        },
+        {
+          "id": "CODE.USE.009",
+          "use": "Performance review",
+          "function": "To identify code patterns that will cause slowness or excessive resource use at scale",
+          "examples": [
+            "spotting N+1 query patterns",
+            "flagging synchronous operations on hot paths",
+            "identifying unindexed database lookups"
+          ]
+        },
+        {
+          "id": "CODE.USE.010",
+          "use": "Architecture review",
+          "function": "To evaluate whether code fits the intended structural design of the system",
+          "examples": [
+            "checking layer separation is respected",
+            "verifying domain logic is not leaking into controllers",
+            "confirming a new service follows the established pattern"
+          ]
+        }
+      ]
+    },
+    "DEBUGGING": {
+      "description": "Uses related to diagnosing and resolving failures in running code",
+      "blocks": [
+        {
+          "id": "CODE.USE.011",
+          "use": "Error tracing",
+          "function": "To follow a stack trace or error message back to its origin",
+          "examples": [
+            "reading a Python traceback",
+            "parsing a Java NullPointerException stack",
+            "tracing a segfault to the offending call"
+          ]
+        },
+        {
+          "id": "CODE.USE.012",
+          "use": "State inspection",
+          "function": "To examine the values of variables and data structures at a point in execution",
+          "examples": [
+            "adding print statements to log state",
+            "using a debugger to inspect heap objects",
+            "dumping a request payload to find a malformed field"
+          ]
+        },
+        {
+          "id": "CODE.USE.013",
+          "use": "Reproduction",
+          "function": "To trigger a bug reliably in a controlled environment before fixing it",
+          "examples": [
+            "writing a minimal repro case",
+            "adding a failing test that captures the bug",
+            "isolating the input that triggers the failure"
+          ]
+        },
+        {
+          "id": "CODE.USE.014",
+          "use": "Root cause isolation",
+          "function": "To narrow down which component, function, or line is responsible for a failure",
+          "examples": [
+            "bisecting a git history to find a regression",
+            "disabling components one by one to isolate a fault",
+            "adding assertions to narrow the fault to a single function"
+          ]
+        },
+        {
+          "id": "CODE.USE.015",
+          "use": "Log analysis",
+          "function": "To extract diagnostic information from runtime output to understand system behavior",
+          "examples": [
+            "searching logs for an error pattern",
+            "correlating timestamps across services",
+            "parsing structured log fields to trace a request"
+          ]
+        }
+      ]
+    },
+    "TESTING": {
+      "description": "Uses related to verifying code correctness through automated and manual tests",
+      "blocks": [
+        {
+          "id": "CODE.USE.016",
+          "use": "Unit testing",
+          "function": "To verify that a single function or class behaves correctly in isolation",
+          "examples": [
+            "asserting a function returns expected output",
+            "testing a class method with mocked dependencies",
+            "checking boundary values for a validator"
+          ]
+        },
+        {
+          "id": "CODE.USE.017",
+          "use": "Integration testing",
+          "function": "To verify that components interact correctly when connected",
+          "examples": [
+            "testing an API handler against a real database",
+            "verifying a service-to-service call works end to end",
+            "checking that a message producer and consumer interact correctly"
+          ]
+        },
+        {
+          "id": "CODE.USE.018",
+          "use": "End-to-end testing",
+          "function": "To simulate real user flows through the full system stack",
+          "examples": [
+            "Playwright test of a checkout flow",
+            "Cypress test of a login and navigation sequence",
+            "automated browser test of a form submission"
+          ]
+        },
+        {
+          "id": "CODE.USE.019",
+          "use": "Regression testing",
+          "function": "To confirm that a change has not broken previously working behavior",
+          "examples": [
+            "re-running the full test suite after a refactor",
+            "snapshot testing a UI component after a style change",
+            "comparing API response shapes before and after a migration"
+          ]
+        },
+        {
+          "id": "CODE.USE.020",
+          "use": "Property-based testing",
+          "function": "To verify code against automatically generated inputs that cover many cases",
+          "examples": [
+            "using Hypothesis to test a parser",
+            "fuzzing a serializer with random inputs",
+            "property testing a sort function with random arrays"
+          ]
+        }
+      ]
+    },
+    "DOCUMENTATION": {
+      "description": "Uses related to explaining code to current and future developers",
+      "blocks": [
+        {
+          "id": "CODE.USE.021",
+          "use": "Inline documentation",
+          "function": "To explain code intent and logic directly alongside the source code",
+          "examples": [
+            "writing a docstring for a function",
+            "adding a comment explaining a non-obvious algorithm",
+            "documenting a complex regex pattern"
+          ]
+        },
+        {
+          "id": "CODE.USE.022",
+          "use": "API documentation",
+          "function": "To describe how an interface should be called, what it expects, and what it returns",
+          "examples": [
+            "writing OpenAPI spec for a REST endpoint",
+            "documenting function signature and return type",
+            "writing a README section on API usage"
+          ]
+        },
+        {
+          "id": "CODE.USE.023",
+          "use": "Architecture documentation",
+          "function": "To describe the high-level structure, design decisions, and component relationships of a system",
+          "examples": [
+            "writing an ADR for a technology choice",
+            "documenting a service dependency diagram",
+            "explaining the data flow through a pipeline"
+          ]
+        },
+        {
+          "id": "CODE.USE.024",
+          "use": "Onboarding documentation",
+          "function": "To help a new developer understand a codebase and start contributing quickly",
+          "examples": [
+            "writing a CONTRIBUTING.md",
+            "documenting local development setup steps",
+            "creating a glossary of domain terms used in the code"
+          ]
+        },
+        {
+          "id": "CODE.USE.025",
+          "use": "Changelog authoring",
+          "function": "To record what changed between versions in a format useful to consumers",
+          "examples": [
+            "writing a CHANGELOG.md entry",
+            "documenting breaking changes for an API version",
+            "summarizing a release in a GitHub release note"
+          ]
+        }
+      ]
+    },
+    "DEPENDENCY_MANAGEMENT": {
+      "description": "Uses related to managing external libraries and packages",
+      "blocks": [
+        {
+          "id": "CODE.USE.026",
+          "use": "Package installation",
+          "function": "To add a third-party library to the project",
+          "examples": [
+            "running npm install lodash",
+            "adding a pip dependency",
+            "adding a Cargo crate to Cargo.toml"
+          ]
+        },
+        {
+          "id": "CODE.USE.027",
+          "use": "Dependency auditing",
+          "function": "To check dependencies for known vulnerabilities, license conflicts, or stale versions",
+          "examples": [
+            "running npm audit",
+            "checking for CVEs in pip packages",
+            "reviewing dependency licenses for GPL conflicts"
+          ]
+        },
+        {
+          "id": "CODE.USE.028",
+          "use": "Version pinning",
+          "function": "To lock a dependency to a specific version to ensure reproducible builds",
+          "examples": [
+            "pinning a package in requirements.txt",
+            "using a lockfile to freeze versions",
+            "specifying exact version constraints in go.mod"
+          ]
+        },
+        {
+          "id": "CODE.USE.029",
+          "use": "Dependency upgrade",
+          "function": "To update a library to a newer version to gain fixes, features, or security patches",
+          "examples": [
+            "upgrading a React version",
+            "bumping a vulnerable package",
+            "migrating to a new major version of an SDK"
+          ]
+        },
+        {
+          "id": "CODE.USE.030",
+          "use": "Dependency removal",
+          "function": "To eliminate an unused or problematic dependency from the project",
+          "examples": [
+            "removing an unmaintained library",
+            "eliminating a transitive dependency with a CVE",
+            "replacing a heavy package with a lightweight custom implementation"
+          ]
+        }
+      ]
+    },
+    "BUILD_TOOLING": {
+      "description": "Uses related to compiling, bundling, and preparing code for execution",
+      "blocks": [
+        {
+          "id": "CODE.USE.031",
+          "use": "Compilation",
+          "function": "To translate source code into a runnable or deployable artifact",
+          "examples": [
+            "compiling TypeScript to JavaScript",
+            "building a Go binary",
+            "compiling Rust to WASM"
+          ]
+        },
+        {
+          "id": "CODE.USE.032",
+          "use": "Bundling",
+          "function": "To combine multiple source files into a single optimized output",
+          "examples": [
+            "bundling a React app with Webpack",
+            "using Vite to bundle a frontend",
+            "rollup bundling a library for distribution"
+          ]
+        },
+        {
+          "id": "CODE.USE.033",
+          "use": "Transpilation",
+          "function": "To convert code from one language or syntax to a compatible but different form",
+          "examples": [
+            "Babel transpiling ES2023 to ES5",
+            "converting TypeScript to JavaScript",
+            "transpiling modern CSS for older browsers"
+          ]
+        },
+        {
+          "id": "CODE.USE.034",
+          "use": "Minification",
+          "function": "To reduce code size for production delivery by removing whitespace and renaming symbols",
+          "examples": [
+            "minifying a JavaScript bundle",
+            "compressing a CSS file",
+            "tree-shaking unused imports from a build"
+          ]
+        },
+        {
+          "id": "CODE.USE.035",
+          "use": "Artifact packaging",
+          "function": "To package compiled code into a distributable format",
+          "examples": [
+            "building a Docker image",
+            "creating an npm package tarball",
+            "packaging a Python wheel"
+          ]
+        }
+      ]
+    },
+    "VERSION_CONTROL": {
+      "description": "Uses related to managing code history and collaboration via git or similar",
+      "blocks": [
+        {
+          "id": "CODE.USE.036",
+          "use": "Commit authoring",
+          "function": "To record a meaningful, atomic unit of change with a clear message",
+          "examples": [
+            "writing a conventional commit message",
+            "staging and committing a bug fix",
+            "squashing work-in-progress commits before merge"
+          ]
+        },
+        {
+          "id": "CODE.USE.037",
+          "use": "Branch management",
+          "function": "To create and manage isolated lines of development",
+          "examples": [
+            "creating a feature branch",
+            "naming branches by convention",
+            "pruning stale remote branches"
+          ]
+        },
+        {
+          "id": "CODE.USE.038",
+          "use": "Merge and rebase",
+          "function": "To integrate changes from one branch into another",
+          "examples": [
+            "rebasing a feature branch onto main",
+            "resolving a merge conflict",
+            "fast-forward merging a hotfix"
+          ]
+        },
+        {
+          "id": "CODE.USE.039",
+          "use": "Code history inspection",
+          "function": "To examine past changes to understand when, why, and by whom something was changed",
+          "examples": [
+            "running git blame to trace a line",
+            "using git log to find a regression commit",
+            "reviewing diff history for a file"
+          ]
+        },
+        {
+          "id": "CODE.USE.040",
+          "use": "Tagging and releasing",
+          "function": "To mark a specific commit as a named version for release or reference",
+          "examples": [
+            "creating a semantic version tag",
+            "drafting a GitHub release from a tag",
+            "tagging a known-good commit for rollback reference"
+          ]
+        }
+      ]
+    },
+    "CODE_GENERATION": {
+      "description": "Uses related to automatically producing code from templates, specs, or models",
+      "blocks": [
+        {
+          "id": "CODE.USE.041",
+          "use": "Scaffolding",
+          "function": "To generate a starter project or component structure from a template",
+          "examples": [
+            "running create-react-app",
+            "using a Yeoman generator",
+            "running rails new to scaffold an app"
+          ]
+        },
+        {
+          "id": "CODE.USE.042",
+          "use": "Schema-driven generation",
+          "function": "To produce code from a data or API schema definition",
+          "examples": [
+            "generating TypeScript types from an OpenAPI spec",
+            "generating gRPC stubs from a proto file",
+            "generating ORM models from a database schema"
+          ]
+        },
+        {
+          "id": "CODE.USE.043",
+          "use": "Test generation",
+          "function": "To automatically produce test cases from source code or specifications",
+          "examples": [
+            "generating unit test stubs from a class",
+            "generating property tests from a type signature",
+            "producing test fixtures from example data"
+          ]
+        },
+        {
+          "id": "CODE.USE.044",
+          "use": "Migration generation",
+          "function": "To produce database migration scripts from a schema diff",
+          "examples": [
+            "generating an Alembic migration from model changes",
+            "auto-generating a Rails migration",
+            "producing a Prisma migration from schema changes"
+          ]
+        },
+        {
+          "id": "CODE.USE.045",
+          "use": "Client generation",
+          "function": "To produce SDK or client code from an API specification",
+          "examples": [
+            "generating a Python SDK from OpenAPI",
+            "producing a JavaScript client from a GraphQL schema",
+            "generating a gRPC client stub"
+          ]
+        }
+      ]
+    },
+    "PERFORMANCE_OPTIMISATION": {
+      "description": "Uses related to making code faster or more resource-efficient",
+      "blocks": [
+        {
+          "id": "CODE.USE.046",
+          "use": "Profiling",
+          "function": "To measure where a program spends time or memory during execution",
+          "examples": [
+            "running a CPU profile on a slow endpoint",
+            "using a memory profiler to find a leak",
+            "profiling database query execution plans"
+          ]
+        },
+        {
+          "id": "CODE.USE.047",
+          "use": "Caching",
+          "function": "To store computed results for reuse so expensive operations are not repeated",
+          "examples": [
+            "adding an in-memory cache for a database query",
+            "caching an API response in Redis",
+            "memoizing a recursive function"
+          ]
+        },
+        {
+          "id": "CODE.USE.048",
+          "use": "Query optimisation",
+          "function": "To improve the efficiency of database queries",
+          "examples": [
+            "adding an index to a slow query",
+            "rewriting an N+1 query as a join",
+            "using a covering index to avoid a table scan"
+          ]
+        },
+        {
+          "id": "CODE.USE.049",
+          "use": "Concurrency",
+          "function": "To run multiple tasks in parallel or overlap I/O-bound work to improve throughput",
+          "examples": [
+            "using async/await to overlap API calls",
+            "parallelising a data processing pipeline",
+            "using a thread pool for CPU-bound work"
+          ]
+        },
+        {
+          "id": "CODE.USE.050",
+          "use": "Lazy loading",
+          "function": "To defer loading or computing a resource until it is actually needed",
+          "examples": [
+            "lazy importing a heavy module",
+            "loading images only when in viewport",
+            "deferring a database join until fields are accessed"
+          ]
+        }
+      ]
+    },
+    "SECURITY_HARDENING": {
+      "description": "Uses related to making code safer against attacks and misuse",
+      "blocks": [
+        {
+          "id": "CODE.USE.051",
+          "use": "Input validation",
+          "function": "To reject or sanitize untrusted input before it is processed",
+          "examples": [
+            "validating a form field against a schema",
+            "rejecting unexpected characters in a URL parameter",
+            "stripping HTML tags from user-supplied content"
+          ]
+        },
+        {
+          "id": "CODE.USE.052",
+          "use": "Authentication enforcement",
+          "function": "To verify identity before allowing access to protected resources",
+          "examples": [
+            "checking a JWT before serving an endpoint",
+            "verifying an API key on each request",
+            "enforcing session validity before a sensitive action"
+          ]
+        },
+        {
+          "id": "CODE.USE.053",
+          "use": "Authorisation checking",
+          "function": "To confirm the authenticated user has permission for the requested action",
+          "examples": [
+            "checking a user's role before a write operation",
+            "verifying resource ownership before an update",
+            "enforcing scope restrictions on an OAuth token"
+          ]
+        },
+        {
+          "id": "CODE.USE.054",
+          "use": "Secret management",
+          "function": "To handle credentials, keys, and tokens securely in code and environments",
+          "examples": [
+            "reading secrets from environment variables rather than hardcoding",
+            "rotating an API key without downtime",
+            "using a vault to inject secrets at runtime"
+          ]
+        },
+        {
+          "id": "CODE.USE.055",
+          "use": "Dependency vulnerability patching",
+          "function": "To eliminate known security flaws in third-party packages",
+          "examples": [
+            "upgrading a package with a published CVE",
+            "replacing a vulnerable transitive dependency",
+            "applying a security advisory patch"
+          ]
+        }
+      ]
+    },
+    "API_DESIGN": {
+      "description": "Uses related to designing interfaces between systems or components",
+      "blocks": [
+        {
+          "id": "CODE.USE.056",
+          "use": "Endpoint design",
+          "function": "To define the shape, verbs, and semantics of an HTTP or RPC interface",
+          "examples": [
+            "designing REST resource routes",
+            "defining a GraphQL query and mutation schema",
+            "specifying gRPC service methods"
+          ]
+        },
+        {
+          "id": "CODE.USE.057",
+          "use": "Request/response modelling",
+          "function": "To define the data structures exchanged at an API boundary",
+          "examples": [
+            "writing an OpenAPI schema for a request body",
+            "defining a proto message for a service call",
+            "specifying a GraphQL type for a response"
+          ]
+        },
+        {
+          "id": "CODE.USE.058",
+          "use": "Error handling design",
+          "function": "To define how failures are communicated across an API boundary",
+          "examples": [
+            "designing HTTP error response shapes",
+            "defining gRPC status codes for service errors",
+            "specifying error envelopes in a JSON API"
+          ]
+        },
+        {
+          "id": "CODE.USE.059",
+          "use": "Versioning strategy",
+          "function": "To plan how the API will evolve without breaking existing consumers",
+          "examples": [
+            "designing URL path versioning",
+            "using Accept header versioning",
+            "planning a field deprecation strategy"
+          ]
+        },
+        {
+          "id": "CODE.USE.060",
+          "use": "Rate limiting design",
+          "function": "To define how the API constrains request volume to protect the system",
+          "examples": [
+            "designing per-token rate limits",
+            "specifying retry-after header semantics",
+            "planning burst vs. sustained rate limits"
+          ]
+        }
+      ]
+    },
+    "DATA_MODELLING": {
+      "description": "Uses related to designing how data is structured and stored",
+      "blocks": [
+        {
+          "id": "CODE.USE.061",
+          "use": "Schema design",
+          "function": "To define the structure of data stored in a database or passed through a system",
+          "examples": [
+            "designing a relational table schema",
+            "defining a MongoDB document shape",
+            "specifying a Kafka message schema"
+          ]
+        },
+        {
+          "id": "CODE.USE.062",
+          "use": "Normalisation",
+          "function": "To restructure data to eliminate redundancy and improve consistency",
+          "examples": [
+            "extracting a repeated value into a lookup table",
+            "splitting a wide table into related tables",
+            "removing derived fields that can be computed"
+          ]
+        },
+        {
+          "id": "CODE.USE.063",
+          "use": "Migration authoring",
+          "function": "To write the changes needed to evolve a database schema safely",
+          "examples": [
+            "writing a migration to add a nullable column",
+            "authoring a migration to rename a table",
+            "writing a data backfill migration"
+          ]
+        },
+        {
+          "id": "CODE.USE.064",
+          "use": "Indexing strategy",
+          "function": "To define which columns or fields should be indexed to support query patterns",
+          "examples": [
+            "adding a composite index for a common filter",
+            "deciding between B-tree and GIN index types",
+            "planning index coverage for a query plan"
+          ]
+        },
+        {
+          "id": "CODE.USE.065",
+          "use": "Data serialisation",
+          "function": "To convert data structures to and from a transmittable format",
+          "examples": [
+            "serialising a Python object to JSON",
+            "encoding a message as Protobuf",
+            "deserialising a YAML config file into a struct"
+          ]
+        }
+      ]
+    },
+    "ARCHITECTURE_DESIGN": {
+      "description": "Uses related to high-level structural decisions about a system",
+      "blocks": [
+        {
+          "id": "CODE.USE.066",
+          "use": "Service decomposition",
+          "function": "To decide how to split a system into independently deployable components",
+          "examples": [
+            "extracting a user service from a monolith",
+            "deciding service boundaries based on domain events",
+            "splitting a shared module into separate packages"
+          ]
+        },
+        {
+          "id": "CODE.USE.067",
+          "use": "Communication pattern selection",
+          "function": "To choose how components will exchange data and coordinate actions",
+          "examples": [
+            "choosing between REST and gRPC for a service boundary",
+            "selecting event-driven vs. request-reply messaging",
+            "deciding between synchronous and asynchronous integration"
+          ]
+        },
+        {
+          "id": "CODE.USE.068",
+          "use": "Data storage selection",
+          "function": "To choose the right database or storage technology for a workload",
+          "examples": [
+            "choosing Postgres over MongoDB for a relational use case",
+            "selecting Redis for a session cache",
+            "choosing S3 for object storage over a block store"
+          ]
+        },
+        {
+          "id": "CODE.USE.069",
+          "use": "Fault tolerance design",
+          "function": "To architect a system that degrades gracefully and recovers from failures",
+          "examples": [
+            "adding circuit breakers to downstream calls",
+            "designing retry logic with exponential backoff",
+            "planning for partial availability with graceful degradation"
+          ]
+        },
+        {
+          "id": "CODE.USE.070",
+          "use": "Scalability design",
+          "function": "To plan how the system will handle increasing load",
+          "examples": [
+            "designing for horizontal scaling from the start",
+            "planning stateless services to support autoscaling",
+            "choosing a sharding strategy for a high-write database"
+          ]
+        }
+      ]
+    },
+    "CI_CD_PIPELINE": {
+      "description": "Uses related to automating build, test, and delivery workflows",
+      "blocks": [
+        {
+          "id": "CODE.USE.071",
+          "use": "Build automation",
+          "function": "To compile and package code automatically on every change",
+          "examples": [
+            "running a build step in GitHub Actions",
+            "triggering a Docker build on push",
+            "compiling a binary in a CI step"
+          ]
+        },
+        {
+          "id": "CODE.USE.072",
+          "use": "Automated testing in pipeline",
+          "function": "To run the test suite automatically as part of every merge or deploy",
+          "examples": [
+            "running Jest on every PR",
+            "executing integration tests before merge",
+            "running lint and type check in CI"
+          ]
+        },
+        {
+          "id": "CODE.USE.073",
+          "use": "Deployment automation",
+          "function": "To push a build to an environment automatically after it passes checks",
+          "examples": [
+            "deploying to staging after a green CI run",
+            "triggering a Kubernetes rollout from a pipeline",
+            "auto-deploying to a preview environment on PR"
+          ]
+        },
+        {
+          "id": "CODE.USE.074",
+          "use": "Environment promotion",
+          "function": "To move a tested artifact through staging environments toward production",
+          "examples": [
+            "promoting a build from staging to pre-prod",
+            "gating promotion on manual approval",
+            "running smoke tests before production promotion"
+          ]
+        },
+        {
+          "id": "CODE.USE.075",
+          "use": "Pipeline observability",
+          "function": "To monitor and report on CI/CD run health, duration, and failures",
+          "examples": [
+            "alerting on a failing build",
+            "tracking mean build time over time",
+            "surfacing flaky test statistics"
+          ]
+        }
+      ]
+    },
+    "CODE_QUALITY": {
+      "description": "Uses related to maintaining high code standards automatically",
+      "blocks": [
+        {
+          "id": "CODE.USE.076",
+          "use": "Static analysis",
+          "function": "To detect bugs, smells, and anti-patterns in code without executing it",
+          "examples": [
+            "running ESLint on a JavaScript codebase",
+            "using Pylint on a Python project",
+            "running SonarQube on a Java service"
+          ]
+        },
+        {
+          "id": "CODE.USE.077",
+          "use": "Type checking",
+          "function": "To verify that values are used consistently with their declared types",
+          "examples": [
+            "running tsc on a TypeScript project",
+            "using mypy on Python code",
+            "checking Rust type constraints at compile time"
+          ]
+        },
+        {
+          "id": "CODE.USE.078",
+          "use": "Code formatting",
+          "function": "To apply consistent whitespace, indentation, and style automatically",
+          "examples": [
+            "running Prettier on a JavaScript file",
+            "applying Black to Python code",
+            "using gofmt on Go source"
+          ]
+        },
+        {
+          "id": "CODE.USE.079",
+          "use": "Coverage measurement",
+          "function": "To quantify how much of the codebase is exercised by tests",
+          "examples": [
+            "generating an Istanbul coverage report",
+            "measuring branch coverage with pytest-cov",
+            "tracking coverage trends in a CI pipeline"
+          ]
+        },
+        {
+          "id": "CODE.USE.080",
+          "use": "Complexity measurement",
+          "function": "To identify functions or modules that are too complex to maintain safely",
+          "examples": [
+            "measuring cyclomatic complexity",
+            "flagging functions above a line limit",
+            "identifying deeply nested code"
+          ]
+        }
+      ]
+    },
+    "RUNTIME_OBSERVABILITY": {
+      "description": "Uses related to understanding what code is doing in production",
+      "blocks": [
+        {
+          "id": "CODE.USE.081",
+          "use": "Structured logging",
+          "function": "To emit machine-parseable log records that carry context alongside messages",
+          "examples": [
+            "logging with a JSON format",
+            "adding trace IDs to log lines",
+            "logging request metadata on each API call"
+          ]
+        },
+        {
+          "id": "CODE.USE.082",
+          "use": "Metrics emission",
+          "function": "To record quantitative signals from a running system for monitoring and alerting",
+          "examples": [
+            "incrementing a counter on each API call",
+            "recording a histogram of response times",
+            "emitting a gauge for queue depth"
+          ]
+        },
+        {
+          "id": "CODE.USE.083",
+          "use": "Distributed tracing",
+          "function": "To track a request across multiple services and components",
+          "examples": [
+            "instrumenting with OpenTelemetry",
+            "propagating a trace context header",
+            "visualising a request span in Jaeger"
+          ]
+        },
+        {
+          "id": "CODE.USE.084",
+          "use": "Error tracking",
+          "function": "To capture, group, and alert on runtime exceptions in production",
+          "examples": [
+            "sending exceptions to Sentry",
+            "grouping errors by fingerprint",
+            "alerting on a spike in error rate"
+          ]
+        },
+        {
+          "id": "CODE.USE.085",
+          "use": "Feature flag evaluation",
+          "function": "To control which code paths execute for which users at runtime",
+          "examples": [
+            "checking a feature flag before a new code path",
+            "rolling out a feature to 10% of users",
+            "toggling an experimental algorithm without a deploy"
+          ]
+        }
+      ]
+    },
+    "INFRASTRUCTURE_AS_CODE": {
+      "description": "Uses related to defining and managing infrastructure through code",
+      "blocks": [
+        {
+          "id": "CODE.USE.086",
+          "use": "Resource provisioning",
+          "function": "To declare and create cloud or on-premise infrastructure resources through code",
+          "examples": [
+            "writing Terraform to provision an RDS instance",
+            "defining a Kubernetes deployment manifest",
+            "writing a CloudFormation template for a VPC"
+          ]
+        },
+        {
+          "id": "CODE.USE.087",
+          "use": "Configuration management",
+          "function": "To define and enforce the desired state of system configurations",
+          "examples": [
+            "writing an Ansible playbook to configure a server",
+            "using Chef to enforce package versions",
+            "defining Puppet manifests for a fleet"
+          ]
+        },
+        {
+          "id": "CODE.USE.088",
+          "use": "Container definition",
+          "function": "To specify how an application is packaged and run in a container",
+          "examples": [
+            "writing a Dockerfile",
+            "defining a docker-compose service",
+            "authoring a Kubernetes pod spec"
+          ]
+        },
+        {
+          "id": "CODE.USE.089",
+          "use": "Secret injection",
+          "function": "To provide credentials and sensitive values to infrastructure without hardcoding",
+          "examples": [
+            "referencing a Vault secret in Terraform",
+            "injecting a Kubernetes secret into a pod",
+            "reading an AWS Secrets Manager value in a Lambda"
+          ]
+        },
+        {
+          "id": "CODE.USE.090",
+          "use": "Infrastructure testing",
+          "function": "To verify that infrastructure code produces the expected resources and configurations",
+          "examples": [
+            "running Terratest against a Terraform module",
+            "using conftest to validate Kubernetes manifests",
+            "linting a Helm chart"
+          ]
+        }
+      ]
+    },
+    "CONCURRENCY_ASYNC": {
+      "description": "Uses related to writing code that runs tasks in parallel or non-blocking ways",
+      "blocks": [
+        {
+          "id": "CODE.USE.091",
+          "use": "Async I/O handling",
+          "function": "To write non-blocking code that yields control while waiting for I/O",
+          "examples": [
+            "using async/await for a database query",
+            "handling concurrent HTTP requests in an async loop",
+            "writing a non-blocking file read"
+          ]
+        },
+        {
+          "id": "CODE.USE.092",
+          "use": "Thread management",
+          "function": "To create and coordinate threads for parallel execution",
+          "examples": [
+            "spawning worker threads for CPU-bound tasks",
+            "using a thread pool executor",
+            "managing thread lifecycle and cleanup"
+          ]
+        },
+        {
+          "id": "CODE.USE.093",
+          "use": "Channel and queue communication",
+          "function": "To pass data safely between concurrent tasks using channels or queues",
+          "examples": [
+            "using a Golang channel for goroutine communication",
+            "passing work via a Python queue to worker threads",
+            "using a Rust mpsc channel for message passing"
+          ]
+        },
+        {
+          "id": "CODE.USE.094",
+          "use": "Lock and mutex management",
+          "function": "To protect shared state from concurrent modification",
+          "examples": [
+            "acquiring a mutex before writing to shared memory",
+            "using a read-write lock for concurrent reads",
+            "avoiding deadlock in a multi-lock scenario"
+          ]
+        },
+        {
+          "id": "CODE.USE.095",
+          "use": "Promise and future composition",
+          "function": "To chain and coordinate the results of asynchronous operations",
+          "examples": [
+            "chaining Promise.then calls in JavaScript",
+            "composing futures in Rust with combinators",
+            "handling concurrent futures with Promise.all"
+          ]
+        }
+      ]
+    },
+    "UMG_CODING_USE": {
+      "description": "Uses of code and tooling in the context of UMG framework implementation",
+      "blocks": [
+        {
+          "id": "CODE.USE.096",
+          "use": "Block serialisation",
+          "function": "To encode MOLT blocks and their metadata into a storable or transmissible format",
+          "examples": [
+            "serialising a block to JSON for a library file",
+            "encoding a NeoBlock with source references",
+            "writing a block to a YAML config"
+          ]
+        },
+        {
+          "id": "CODE.USE.097",
+          "use": "Compiler pipeline implementation",
+          "function": "To write the code that ingests sleeves, normalises them, and emits a RuntimeSpec and Trace",
+          "examples": [
+            "coding the governance pass stage",
+            "implementing the conflict resolution step",
+            "writing the synthesis and emission stage"
+          ]
+        },
+        {
+          "id": "CODE.USE.098",
+          "use": "Trace generation",
+          "function": "To emit a Decision Trace record at each compiler decision point",
+          "examples": [
+            "recording a governance action to the trace",
+            "logging a conflict winner and loser",
+            "writing a merge event to the Decision Trace"
+          ]
+        },
+        {
+          "id": "CODE.USE.099",
+          "use": "Sleeve validation",
+          "function": "To check a sleeve for correctness before it is compiled",
+          "examples": [
+            "verifying all block IDs are unique",
+            "checking MOLT types are valid",
+            "confirming governance blocks are present before compilation"
+          ]
+        },
+        {
+          "id": "CODE.USE.100",
+          "use": "Envoy runtime integration",
+          "function": "To wire a compiled RuntimeSpec into a model or agent execution context",
+          "examples": [
+            "injecting a RuntimeSpec as a system prompt",
+            "loading governance constraints into a model session",
+            "applying a Decision Trace check after an LLM output"
+          ]
+        }
+      ]
+    }
+  }
+}

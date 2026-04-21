@@ -1,0 +1,1111 @@
+{
+  "library_name": "MOLT Aim Library \u2014 Business Edition",
+  "version": "1.0.0",
+  "created": "2026-04-20",
+  "created_by": "Claude UMG Envoy",
+  "supervised_by": "NeoMAG",
+  "description": "Business-domain MOLT Aim blocks. Aim answers: 'What are we trying to achieve?' Each block describes the desired real-world business outcome \u2014 what success looks like when this commercial reasoning path completes.",
+  "usage": "Select the Aim block that best describes the intended business outcome. Aim governs what the response is ultimately trying to accomplish in a commercial context.",
+  "aims": {
+    "REVENUE_GROWTH": {
+      "description": "Aims oriented toward increasing commercial income",
+      "blocks": [
+        {
+          "id": "BIZ.AIM.001",
+          "aim": "Hit revenue target",
+          "outcome": "To close the period at or above the committed revenue number",
+          "examples": [
+            "achieving quarterly ARR target",
+            "closing the year at plan",
+            "hitting the monthly bookings goal"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.002",
+          "aim": "Grow ARR",
+          "outcome": "To increase annual recurring revenue through new business and expansion",
+          "examples": [
+            "adding net new ARR above churn",
+            "expanding ARR in existing accounts",
+            "growing ARR from a new product tier"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.003",
+          "aim": "Increase average deal size",
+          "outcome": "To close larger individual contracts by selling more scope or value",
+          "examples": [
+            "upselling to enterprise tier",
+            "adding multi-year prepay",
+            "bundling services with software"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.004",
+          "aim": "Improve pipeline coverage",
+          "outcome": "To maintain a healthy volume of qualified opportunities relative to quota",
+          "examples": [
+            "achieving 3x pipeline coverage",
+            "ensuring every rep has enough qualified deals",
+            "filling early-stage pipeline before end of quarter"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.005",
+          "aim": "Expand into new revenue streams",
+          "outcome": "To generate income from sources that did not previously exist in the business",
+          "examples": [
+            "launching a professional services offering",
+            "monetizing a previously free feature",
+            "creating a marketplace revenue stream"
+          ]
+        }
+      ]
+    },
+    "CUSTOMER_OUTCOMES": {
+      "description": "Aims oriented toward customer satisfaction, retention, and advocacy",
+      "blocks": [
+        {
+          "id": "BIZ.AIM.006",
+          "aim": "Retain customers",
+          "outcome": "To keep existing customers renewing and engaged, reducing churn",
+          "examples": [
+            "achieving net revenue retention above 110%",
+            "closing 90% of eligible renewals",
+            "reducing logo churn below 5% annually"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.007",
+          "aim": "Reach customer success milestones",
+          "outcome": "To help the customer achieve the outcomes they purchased the product to deliver",
+          "examples": [
+            "getting a customer to their first meaningful ROI",
+            "completing implementation within the agreed timeline",
+            "achieving the KPIs defined in the success plan"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.008",
+          "aim": "Improve customer satisfaction",
+          "outcome": "To raise NPS, CSAT, or equivalent scores by delivering a better experience",
+          "examples": [
+            "moving NPS from 30 to 50 within 12 months",
+            "reducing post-onboarding CSAT complaints",
+            "improving support ticket satisfaction scores"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.009",
+          "aim": "Create customer advocates",
+          "outcome": "To convert satisfied customers into active referrers and public champions",
+          "examples": [
+            "generating referenceable customer accounts",
+            "securing case study participation",
+            "building a panel of reference customers for analyst briefings"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.010",
+          "aim": "Reduce time to value",
+          "outcome": "To shorten the time between purchase and the customer realizing measurable benefit",
+          "examples": [
+            "getting customers live in under 30 days",
+            "delivering first ROI in the first quarter",
+            "reducing implementation duration by 40%"
+          ]
+        }
+      ]
+    },
+    "MARKET_POSITION": {
+      "description": "Aims oriented toward competitive standing and brand strength",
+      "blocks": [
+        {
+          "id": "BIZ.AIM.011",
+          "aim": "Win market share",
+          "outcome": "To increase the percentage of total available spend that flows to the business",
+          "examples": [
+            "growing from 5% to 8% market share in a segment",
+            "displacing a competitor in key accounts",
+            "capturing share in a new geography"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.012",
+          "aim": "Establish category leadership",
+          "outcome": "To be recognized as the leading player in a defined market category",
+          "examples": [
+            "achieving Gartner Magic Quadrant leader placement",
+            "becoming the default choice for a buyer persona",
+            "owning the brand association for a problem category"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.013",
+          "aim": "Differentiate from competitors",
+          "outcome": "To make the offering meaningfully distinct in ways that matter to buyers",
+          "examples": [
+            "demonstrating a capability gap vs. the nearest competitor",
+            "winning on governance and auditability against alternatives",
+            "building a moat through proprietary data or technology"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.014",
+          "aim": "Improve brand recognition",
+          "outcome": "To increase unaided brand awareness among target buyers",
+          "examples": [
+            "raising brand awareness score in ICP segment by 20%",
+            "getting the brand mentioned in industry analyst reports",
+            "achieving recognition at target conferences"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.015",
+          "aim": "Enter a new market successfully",
+          "outcome": "To achieve initial traction in a new geographic or vertical market",
+          "examples": [
+            "closing first 10 customers in a new country",
+            "landing reference accounts in a new vertical",
+            "establishing a beachhead in an adjacent segment"
+          ]
+        }
+      ]
+    },
+    "FINANCIAL_HEALTH": {
+      "description": "Aims oriented toward profitability, efficiency, and financial sustainability",
+      "blocks": [
+        {
+          "id": "BIZ.AIM.016",
+          "aim": "Achieve profitability",
+          "outcome": "To reach a state where revenue consistently exceeds costs",
+          "examples": [
+            "reaching EBITDA breakeven",
+            "achieving gross margin targets",
+            "becoming cash flow positive"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.017",
+          "aim": "Improve unit economics",
+          "outcome": "To lower the cost of acquiring and serving customers relative to the value they generate",
+          "examples": [
+            "reducing CAC by 20%",
+            "improving LTV/CAC ratio above 3x",
+            "increasing gross margin through cost reduction"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.018",
+          "aim": "Extend cash runway",
+          "outcome": "To increase the time the business can operate before requiring additional capital",
+          "examples": [
+            "reducing burn rate below $500k/month",
+            "achieving 18 months of runway post-raise",
+            "cutting operating costs to extend to next milestone"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.019",
+          "aim": "Hit EBITDA target",
+          "outcome": "To deliver the agreed earnings before interest, tax, depreciation, and amortization",
+          "examples": [
+            "meeting the board-approved EBITDA plan",
+            "returning to positive EBITDA after an investment cycle",
+            "improving EBITDA margin by 5 points year on year"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.020",
+          "aim": "Optimize capital allocation",
+          "outcome": "To deploy available funds in the combination of activities that produces the highest return",
+          "examples": [
+            "shifting spend from low-ROI channels to high performers",
+            "prioritizing product investment over headcount growth",
+            "retiring inefficient programs to fund a strategic bet"
+          ]
+        }
+      ]
+    },
+    "OPERATIONAL_EXCELLENCE": {
+      "description": "Aims oriented toward efficiency, quality, and reliable delivery",
+      "blocks": [
+        {
+          "id": "BIZ.AIM.021",
+          "aim": "Improve operational efficiency",
+          "outcome": "To deliver the same or better results with fewer resources or less time",
+          "examples": [
+            "reducing cost per unit served",
+            "automating a manual process to free up headcount",
+            "cutting meeting overhead without losing coordination"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.022",
+          "aim": "Achieve SLA compliance",
+          "outcome": "To meet all contractual service level commitments to customers",
+          "examples": [
+            "resolving 95% of P1 issues within SLA",
+            "meeting uptime SLA across all enterprise customers",
+            "responding to support tickets within committed time windows"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.023",
+          "aim": "Reduce operational errors",
+          "outcome": "To lower the rate of mistakes, rework, and defects in business processes",
+          "examples": [
+            "reducing billing errors to under 0.1%",
+            "cutting data entry errors in order processing",
+            "improving compliance with the expense policy"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.024",
+          "aim": "Scale operations without proportional headcount",
+          "outcome": "To grow delivery capacity without increasing costs at the same rate",
+          "examples": [
+            "doubling customer count without doubling support team",
+            "tripling transaction volume with the same infrastructure team",
+            "growing revenue per employee year on year"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.025",
+          "aim": "Deliver on time",
+          "outcome": "To complete commitments within agreed timeframes consistently",
+          "examples": [
+            "shipping the product milestone on the committed date",
+            "completing client deliverables before contractual deadline",
+            "hitting the quarterly close on schedule"
+          ]
+        }
+      ]
+    },
+    "PEOPLE_TALENT": {
+      "description": "Aims oriented toward building, retaining, and developing a high-performing workforce",
+      "blocks": [
+        {
+          "id": "BIZ.AIM.026",
+          "aim": "Hire to plan",
+          "outcome": "To fill all approved headcount with qualified candidates within the target timeframe",
+          "examples": [
+            "closing all Q1 engineering headcount by end of quarter",
+            "filling a critical VP role within 60 days",
+            "hitting a headcount plan for a new office opening"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.027",
+          "aim": "Retain top performers",
+          "outcome": "To keep high-performing employees engaged and prevent attrition",
+          "examples": [
+            "reducing top-quartile attrition below 5%",
+            "retaining all critical sales performers through a reset",
+            "maintaining key technical talent through a product pivot"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.028",
+          "aim": "Improve employee engagement",
+          "outcome": "To raise commitment, motivation, and satisfaction scores across the workforce",
+          "examples": [
+            "improving engagement survey score by 10 points",
+            "reducing voluntary turnover below 12%",
+            "achieving eNPS above 30"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.029",
+          "aim": "Build leadership pipeline",
+          "outcome": "To develop internal candidates who are ready to step into senior roles",
+          "examples": [
+            "identifying and developing two internal VP candidates",
+            "ensuring every director has a successor identified",
+            "completing a high-potential leadership program"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.030",
+          "aim": "Close a critical skills gap",
+          "outcome": "To give the organization the specific capability it lacks and needs to execute",
+          "examples": [
+            "building an in-house AI engineering team",
+            "developing a sales team's enterprise discovery skills",
+            "training the ops team on a new ERP system"
+          ]
+        }
+      ]
+    },
+    "STRATEGIC_POSITIONING": {
+      "description": "Aims oriented toward long-term competitive advantage and strategic clarity",
+      "blocks": [
+        {
+          "id": "BIZ.AIM.031",
+          "aim": "Achieve strategic clarity",
+          "outcome": "To align the entire organization on a clear, shared direction and set of priorities",
+          "examples": [
+            "completing an annual strategy refresh with leadership alignment",
+            "communicating a pivot clearly to all employees",
+            "closing the gap between stated strategy and resource allocation"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.032",
+          "aim": "Build defensible competitive moat",
+          "outcome": "To create structural advantages that are difficult for competitors to replicate",
+          "examples": [
+            "building a proprietary data asset",
+            "achieving network effects in a marketplace",
+            "establishing a dominant partner ecosystem"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.033",
+          "aim": "Secure strategic investment",
+          "outcome": "To raise capital that enables execution of a defined growth strategy",
+          "examples": [
+            "closing a Series B to fund enterprise GTM build-out",
+            "securing a strategic investor with sector expertise",
+            "raising a bridge to reach a profitability milestone"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.034",
+          "aim": "Complete a strategic acquisition",
+          "outcome": "To acquire a company or asset that accelerates strategic goals",
+          "examples": [
+            "acquiring a competitor to consolidate market share",
+            "buying a team to close a critical technology gap",
+            "acquiring a customer base through a tuck-in acquisition"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.035",
+          "aim": "Achieve exit readiness",
+          "outcome": "To reach a state where the business can be sold, listed, or transitioned successfully",
+          "examples": [
+            "preparing clean financials and a clean cap table for an M&A process",
+            "achieving the ARR and growth rate for an IPO filing",
+            "completing a management buyout preparation"
+          ]
+        }
+      ]
+    },
+    "COMPLIANCE_RISK": {
+      "description": "Aims oriented toward meeting obligations and protecting the business from risk",
+      "blocks": [
+        {
+          "id": "BIZ.AIM.036",
+          "aim": "Pass a regulatory audit",
+          "outcome": "To demonstrate full compliance to a regulator or certification body",
+          "examples": [
+            "passing a GDPR audit with no findings",
+            "achieving SOC 2 Type II certification",
+            "clearing an SEC examination"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.037",
+          "aim": "Close a compliance gap",
+          "outcome": "To eliminate a known deviation from required legal or regulatory standards",
+          "examples": [
+            "remediating a data handling gap flagged in an audit",
+            "updating a contract template to reflect new regulation",
+            "closing a HIPAA compliance finding"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.038",
+          "aim": "Reduce legal exposure",
+          "outcome": "To minimize the financial and reputational risk from litigation or regulatory action",
+          "examples": [
+            "resolving a contractual dispute before litigation",
+            "limiting liability through indemnity restructuring",
+            "proactively addressing a regulatory gray area"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.039",
+          "aim": "Protect intellectual property",
+          "outcome": "To secure legal ownership of proprietary assets and prevent unauthorized use",
+          "examples": [
+            "filing patents before a public announcement",
+            "registering trademarks in key markets",
+            "enforcing IP rights against an infringer"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.040",
+          "aim": "Maintain governance standards",
+          "outcome": "To uphold board-level and regulatory governance requirements consistently",
+          "examples": [
+            "maintaining an independent board with required committee structure",
+            "filing required corporate disclosures on time",
+            "documenting and following a board-approved policy framework"
+          ]
+        }
+      ]
+    },
+    "PARTNERSHIP_OUTCOMES": {
+      "description": "Aims oriented toward creating and extracting value from partnerships",
+      "blocks": [
+        {
+          "id": "BIZ.AIM.041",
+          "aim": "Source pipeline through partners",
+          "outcome": "To generate a defined volume of qualified opportunities via the partner channel",
+          "examples": [
+            "achieving 20% of new pipeline from partners",
+            "activating a set of resellers to hit a sourced pipeline target",
+            "launching a referral program that generates 50 leads per quarter"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.042",
+          "aim": "Win co-sell opportunities",
+          "outcome": "To close a higher proportion of deals when working jointly with a partner",
+          "examples": [
+            "improving partner-assisted win rate above 60%",
+            "closing a strategic deal with a SI partner",
+            "winning a competitive deal through cloud marketplace co-sell"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.043",
+          "aim": "Build an active partner ecosystem",
+          "outcome": "To create a network of engaged partners who regularly generate business value",
+          "examples": [
+            "activating 50 selling partners in 12 months",
+            "building a community of certified implementation partners",
+            "establishing a marketplace with active ISV participants"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.044",
+          "aim": "Secure a strategic alliance",
+          "outcome": "To establish a formalized partnership with a major player that creates structural advantage",
+          "examples": [
+            "signing a strategic go-to-market agreement with a cloud provider",
+            "formalizing a technology integration partnership with a market leader",
+            "establishing a co-development agreement with a strategic vendor"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.045",
+          "aim": "Reduce cost of sales via partners",
+          "outcome": "To lower the average cost to acquire a customer by shifting volume to partner channels",
+          "examples": [
+            "shifting 30% of deals to lower-cost partner channel",
+            "reducing direct sales headcount through channel leverage",
+            "achieving partner-assisted deals at 40% lower CAC"
+          ]
+        }
+      ]
+    },
+    "PRODUCT_SUCCESS": {
+      "description": "Aims oriented toward building and delivering products that achieve market traction",
+      "blocks": [
+        {
+          "id": "BIZ.AIM.046",
+          "aim": "Achieve product-market fit",
+          "outcome": "To reach a state where the product demonstrably meets the needs of a repeatable customer segment",
+          "examples": [
+            "achieving 40%+ would-be-very-disappointed score on a Superhuman-style PMF survey",
+            "reaching a segment where organic word of mouth is growing",
+            "demonstrating consistent renewal and expansion in a defined ICP"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.047",
+          "aim": "Ship on roadmap",
+          "outcome": "To deliver committed product milestones within the planned timeframe and scope",
+          "examples": [
+            "shipping a promised enterprise feature before a renewal deadline",
+            "delivering a roadmap quarter on time and within scope",
+            "meeting a committed launch date"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.048",
+          "aim": "Grow product adoption",
+          "outcome": "To increase active usage of the product among the target user base",
+          "examples": [
+            "growing daily active users by 30%",
+            "increasing feature adoption in the customer base",
+            "improving activation rate from signup to first key action"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.049",
+          "aim": "Reduce product-driven churn",
+          "outcome": "To prevent customers from leaving because of product gaps, bugs, or poor experience",
+          "examples": [
+            "eliminating the most common product-cited churn reasons",
+            "reducing support escalations caused by product issues",
+            "improving stability and reducing critical bugs in production"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.050",
+          "aim": "Win a competitive deal on product",
+          "outcome": "To beat an alternative in a direct comparison on product capability, fit, or innovation",
+          "examples": [
+            "winning an enterprise deal where the competitor had more features",
+            "demonstrating a differentiating capability in a bake-off",
+            "winning a POC evaluation against a named alternative"
+          ]
+        }
+      ]
+    },
+    "BRAND_REPUTATION": {
+      "description": "Aims oriented toward earning and protecting a strong market reputation",
+      "blocks": [
+        {
+          "id": "BIZ.AIM.051",
+          "aim": "Improve brand perception",
+          "outcome": "To shift how target buyers think and feel about the brand positively",
+          "examples": [
+            "moving from unknown to recognized in a new segment",
+            "rebuilding trust after a public incident",
+            "improving analyst perception in a Gartner report"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.052",
+          "aim": "Generate positive press coverage",
+          "outcome": "To secure favorable coverage in outlets and channels the target audience trusts",
+          "examples": [
+            "landing a product launch story in a tier-one trade publication",
+            "generating analyst coverage for a new category",
+            "getting a founder feature in a business publication"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.053",
+          "aim": "Build thought leadership",
+          "outcome": "To be recognized as a credible expert voice on a topic that matters to buyers",
+          "examples": [
+            "publishing an original research report that earns media coverage",
+            "building a speaker presence at industry conferences",
+            "developing a podcast that becomes the reference in the category"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.054",
+          "aim": "Protect brand in a crisis",
+          "outcome": "To limit reputational damage and restore confidence during a public incident",
+          "examples": [
+            "managing communications around a data breach",
+            "responding effectively to a negative viral moment",
+            "restoring customer trust after a major service outage"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.055",
+          "aim": "Build employer brand",
+          "outcome": "To attract top candidates by being known as a great place to work",
+          "examples": [
+            "improving Glassdoor rating above 4.2",
+            "being recognized on a best-places-to-work list",
+            "generating qualified inbound job applications from brand pull"
+          ]
+        }
+      ]
+    },
+    "SCALE_EFFICIENCY": {
+      "description": "Aims oriented toward growing the business without growing costs proportionally",
+      "blocks": [
+        {
+          "id": "BIZ.AIM.056",
+          "aim": "Automate a high-volume process",
+          "outcome": "To replace manual effort with reliable automation in a repeatable business operation",
+          "examples": [
+            "automating invoice generation and delivery",
+            "automating a first-line support triage",
+            "automating a routine compliance check"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.057",
+          "aim": "Improve revenue per employee",
+          "outcome": "To grow revenue faster than headcount, improving organizational productivity",
+          "examples": [
+            "growing revenue per FTE from $300k to $400k",
+            "scaling ARR 2x with the same commercial team",
+            "delivering more output per employee through tooling investment"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.058",
+          "aim": "Reduce support cost per customer",
+          "outcome": "To lower the cost of customer support without reducing satisfaction",
+          "examples": [
+            "deflecting 40% of tickets through self-service content",
+            "reducing average handle time with AI-assisted support",
+            "shifting volume from high-cost channels to lower-cost digital"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.059",
+          "aim": "Standardize a repeatable motion",
+          "outcome": "To create a consistent, documented process that new people can follow reliably",
+          "examples": [
+            "standardizing the enterprise sales discovery process",
+            "creating a repeatable customer onboarding playbook",
+            "building a standard vendor evaluation framework"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.060",
+          "aim": "Reduce time-to-hire",
+          "outcome": "To shorten the average duration from job opening to accepted offer",
+          "examples": [
+            "reducing time-to-hire from 60 to 30 days",
+            "standardizing interview process to remove bottlenecks",
+            "implementing sourcing automation to reduce sourcing time"
+          ]
+        }
+      ]
+    },
+    "TRANSFORMATION_OUTCOMES": {
+      "description": "Aims oriented toward organizational and business model transformation",
+      "blocks": [
+        {
+          "id": "BIZ.AIM.061",
+          "aim": "Complete a digital transformation",
+          "outcome": "To modernize core business processes and systems to operate effectively in a digital environment",
+          "examples": [
+            "migrating from legacy ERP to cloud-native platform",
+            "moving from manual sales process to CRM-driven workflow",
+            "transitioning from paper-based to digital-first operations"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.062",
+          "aim": "Shift from product to platform",
+          "outcome": "To evolve from selling a single product to operating an extensible platform with ecosystem value",
+          "examples": [
+            "building an API and marketplace around a core product",
+            "enabling third-party developers to build on the platform",
+            "generating ecosystem revenue alongside direct product revenue"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.063",
+          "aim": "Complete an acquisition integration",
+          "outcome": "To bring a newly acquired company into operations without disrupting either entity",
+          "examples": [
+            "integrating systems and data within 12 months post-close",
+            "unifying GTM teams after a merger",
+            "consolidating support and customer success operations"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.064",
+          "aim": "Pivot the business model",
+          "outcome": "To change the fundamental way the business creates and captures value",
+          "examples": [
+            "transitioning from perpetual license to SaaS subscription",
+            "shifting from services-led to product-led growth",
+            "moving from a direct sales model to a PLG motion"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.065",
+          "aim": "Achieve organizational alignment post-restructure",
+          "outcome": "To re-stabilize a team and restore high performance after a reorganization",
+          "examples": [
+            "achieving full team productivity within 60 days of a reorg",
+            "aligning a newly merged team on shared goals and culture",
+            "restoring engagement scores after a workforce reduction"
+          ]
+        }
+      ]
+    },
+    "INVESTOR_STAKEHOLDER": {
+      "description": "Aims oriented toward satisfying investors, board, and key stakeholders",
+      "blocks": [
+        {
+          "id": "BIZ.AIM.066",
+          "aim": "Close a funding round",
+          "outcome": "To complete a capital raise and receive funds from investors",
+          "examples": [
+            "closing a Series A within 6 months of launch",
+            "completing a bridge round to extend runway",
+            "closing an oversubscribed round from strategic investors"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.067",
+          "aim": "Meet board expectations",
+          "outcome": "To deliver the performance and governance standards the board has approved",
+          "examples": [
+            "hitting the plan approved at the last board meeting",
+            "delivering a clean audit with no material findings",
+            "maintaining the governance commitments in the investor agreement"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.068",
+          "aim": "Deliver investor returns",
+          "outcome": "To generate financial returns for shareholders through growth or liquidity events",
+          "examples": [
+            "achieving a valuation step-up at next round",
+            "delivering an M&A exit at target multiple",
+            "generating distributions to investors from operating profit"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.069",
+          "aim": "Achieve target valuation",
+          "outcome": "To build the business to the scale and metrics that justify a defined valuation",
+          "examples": [
+            "growing to the ARR and growth rate that supports a Series C valuation",
+            "achieving the metrics required for an IPO at target price",
+            "meeting the acquisition price expectations of a strategic buyer"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.070",
+          "aim": "Maintain investor confidence",
+          "outcome": "To keep existing investors informed and supportive through good and difficult periods",
+          "examples": [
+            "communicating a missed quarter with credibility and a clear plan",
+            "maintaining constructive board relationships through a pivot",
+            "building investor trust through consistent reporting and follow-through"
+          ]
+        }
+      ]
+    },
+    "GTM_EXECUTION": {
+      "description": "Aims oriented toward effective go-to-market execution",
+      "blocks": [
+        {
+          "id": "BIZ.AIM.071",
+          "aim": "Launch a product successfully",
+          "outcome": "To bring a new product to market in a way that generates immediate traction",
+          "examples": [
+            "achieving target sign-ups in the first 30 days post-launch",
+            "generating press coverage and qualified leads from a launch event",
+            "landing first 10 enterprise customers in the launch quarter"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.072",
+          "aim": "Build a repeatable sales motion",
+          "outcome": "To develop a predictable, documentable process that reliably converts qualified leads to customers",
+          "examples": [
+            "codifying the enterprise sales playbook so all reps follow it",
+            "achieving predictable win rates from a defined sales stage process",
+            "reducing deal cycle variance through a standardized motion"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.073",
+          "aim": "Improve win rate",
+          "outcome": "To close a higher proportion of contested opportunities",
+          "examples": [
+            "improving overall win rate from 25% to 35%",
+            "increasing win rate against the named competitor",
+            "improving technical evaluation win rate through better POC management"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.074",
+          "aim": "Reduce sales cycle",
+          "outcome": "To shorten the time from initial opportunity to closed deal",
+          "examples": [
+            "cutting average cycle from 90 to 60 days",
+            "accelerating SMB deals to under 30 days",
+            "removing a procurement bottleneck that was adding 3 weeks"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.075",
+          "aim": "Achieve territory coverage",
+          "outcome": "To ensure every target account in the addressable market is being actively pursued",
+          "examples": [
+            "assigning an SDR or AE to every ICP account in the territory",
+            "ensuring all named accounts are contacted at least once per quarter",
+            "achieving full coverage of a target industry vertical"
+          ]
+        }
+      ]
+    },
+    "LEARNING_IMPROVEMENT": {
+      "description": "Aims oriented toward improving the business through systematic learning",
+      "blocks": [
+        {
+          "id": "BIZ.AIM.076",
+          "aim": "Complete a win/loss review",
+          "outcome": "To understand why deals were won or lost and use that to improve future performance",
+          "examples": [
+            "interviewing buyers in 10 recent losses to identify common themes",
+            "conducting a competitive win analysis to document differentiators",
+            "using win/loss data to revise the sales playbook"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.077",
+          "aim": "Conduct a post-implementation review",
+          "outcome": "To assess whether a project or change delivered its intended outcome and what can be learned",
+          "examples": [
+            "reviewing a CRM implementation against original success criteria",
+            "evaluating a marketing campaign against its objectives",
+            "reviewing a reorg against its stated goals 6 months later"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.078",
+          "aim": "Identify and close knowledge gaps",
+          "outcome": "To ensure the team has the information and skills needed to perform at a high level",
+          "examples": [
+            "assessing sales skills gaps after a quota miss",
+            "identifying product knowledge gaps in the support team",
+            "finding and closing competitive intelligence gaps in marketing"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.079",
+          "aim": "Build institutional knowledge",
+          "outcome": "To capture and systematize what the organization has learned so it persists beyond individuals",
+          "examples": [
+            "documenting the sales playbook after a successful quarter",
+            "creating a customer success handbook from experienced CS reps",
+            "building a knowledge base from top-performing support resolutions"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.080",
+          "aim": "Improve decision quality",
+          "outcome": "To make better choices by using more rigorous frameworks, better data, and clearer criteria",
+          "examples": [
+            "implementing a structured product prioritization framework",
+            "using data to replace gut feel in hiring decisions",
+            "adopting a formal business case process for investment decisions"
+          ]
+        }
+      ]
+    },
+    "CULTURE_WELLBEING": {
+      "description": "Aims oriented toward organizational health and employee wellbeing",
+      "blocks": [
+        {
+          "id": "BIZ.AIM.081",
+          "aim": "Build a high-performance culture",
+          "outcome": "To create an environment where people consistently do great work and hold each other to high standards",
+          "examples": [
+            "establishing a culture of direct feedback and accountability",
+            "building a high-transparency operating cadence",
+            "creating a values-aligned recognition program"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.082",
+          "aim": "Improve psychological safety",
+          "outcome": "To create conditions where people feel safe to speak up, take risks, and admit mistakes",
+          "examples": [
+            "training managers on creating safe team environments",
+            "establishing a blameless post-mortem culture",
+            "reducing fear of speaking up in leadership meetings"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.083",
+          "aim": "Reduce employee burnout",
+          "outcome": "To lower unsustainable workload and stress before it causes attrition and health problems",
+          "examples": [
+            "implementing a sustainable meeting culture",
+            "setting clear work-hours expectations",
+            "identifying and addressing the root causes of team overload"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.084",
+          "aim": "Improve management quality",
+          "outcome": "To raise the standard of people management across the organization through training and accountability",
+          "examples": [
+            "training all managers on performance conversations",
+            "establishing a manager effectiveness feedback process",
+            "identifying and developing the bottom quartile of managers"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.085",
+          "aim": "Create an inclusive organization",
+          "outcome": "To build a workplace where people of all backgrounds can contribute fully and feel they belong",
+          "examples": [
+            "achieving gender parity at director level and above",
+            "building inclusion into hiring and promotion decisions",
+            "reducing attrition gaps between demographic groups"
+          ]
+        }
+      ]
+    },
+    "DATA_INTELLIGENCE": {
+      "description": "Aims oriented toward using data to make the business smarter and faster",
+      "blocks": [
+        {
+          "id": "BIZ.AIM.086",
+          "aim": "Build a data-driven culture",
+          "outcome": "To embed data-informed decision making as the default across the organization",
+          "examples": [
+            "moving from gut-feel to metric-based performance conversations",
+            "getting every team to report on KPIs weekly",
+            "making self-serve analytics available to all business leaders"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.087",
+          "aim": "Achieve a single source of truth",
+          "outcome": "To eliminate conflicting data and align the organization on one authoritative set of numbers",
+          "examples": [
+            "resolving the conflict between finance and sales revenue figures",
+            "building a unified customer data platform",
+            "standardizing the definition of ARR across the company"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.088",
+          "aim": "Predict customer behavior accurately",
+          "outcome": "To forecast customer actions \u2014 churn, expansion, support volume \u2014 with enough accuracy to act on",
+          "examples": [
+            "building a churn prediction model with 80% accuracy",
+            "forecasting renewal outcomes 90 days in advance",
+            "predicting expansion opportunity with enough lead time to act"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.089",
+          "aim": "Improve forecast accuracy",
+          "outcome": "To reduce the variance between predicted and actual business outcomes",
+          "examples": [
+            "improving sales forecast accuracy to within 5% of plan",
+            "reducing financial forecast miss rate",
+            "improving demand planning accuracy for operations"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.090",
+          "aim": "Identify the highest-value growth levers",
+          "outcome": "To determine through data analysis which investments will generate the greatest return",
+          "examples": [
+            "identifying the product feature most correlated with retention",
+            "finding the marketing channel with the lowest CAC",
+            "identifying the customer segment with the highest LTV/CAC"
+          ]
+        }
+      ]
+    },
+    "SUSTAINABILITY_IMPACT": {
+      "description": "Aims oriented toward responsible business and long-term societal impact",
+      "blocks": [
+        {
+          "id": "BIZ.AIM.091",
+          "aim": "Achieve sustainability targets",
+          "outcome": "To meet defined environmental commitments such as carbon, waste, or energy goals",
+          "examples": [
+            "reaching carbon neutrality by a committed date",
+            "reducing operational energy consumption by 30%",
+            "eliminating single-use plastics from operations"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.092",
+          "aim": "Meet ESG reporting standards",
+          "outcome": "To produce credible, complete disclosures that meet stakeholder expectations",
+          "examples": [
+            "publishing an annual ESG report to GRI standards",
+            "completing a TCFD climate disclosure",
+            "achieving a target ESG rating from an external agency"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.093",
+          "aim": "Deliver positive social impact",
+          "outcome": "To create measurable benefit for communities, employees, or customers beyond commercial gain",
+          "examples": [
+            "launching a community investment program",
+            "committing 1% of ARR to social initiatives",
+            "achieving living wage certification for all employees"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.094",
+          "aim": "Build ethical AI practices",
+          "outcome": "To embed responsible AI principles into how AI systems are built, governed, and deployed",
+          "examples": [
+            "adopting a formal AI ethics policy",
+            "deploying AI with auditable governance via UMG",
+            "establishing an AI review board for high-stakes applications"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.095",
+          "aim": "Strengthen supply chain responsibility",
+          "outcome": "To ensure the full supplier ecosystem meets ethical and environmental standards",
+          "examples": [
+            "auditing tier-1 suppliers for labor practices",
+            "requiring environmental standards from key vendors",
+            "removing suppliers who fail ethical assessments"
+          ]
+        }
+      ]
+    },
+    "UMG_BUSINESS_AIMS": {
+      "description": "Aims specific to deploying UMG in commercial and organizational contexts",
+      "blocks": [
+        {
+          "id": "BIZ.AIM.096",
+          "aim": "Deploy a governed AI commercial agent",
+          "outcome": "To put an auditable, policy-compliant AI agent into a business function that produces measurable results",
+          "examples": [
+            "activating a governed AI SDR that books qualified meetings",
+            "deploying a governed support agent that resolves tickets within policy",
+            "launching a governed BI agent that delivers accurate executive reports"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.097",
+          "aim": "Achieve compliance-grade AI auditability",
+          "outcome": "To ensure AI decisions in regulated business contexts are fully traceable and defensible",
+          "examples": [
+            "producing a Decision Trace for every AI-assisted credit decision",
+            "generating auditable AI outputs for a financial services workflow",
+            "meeting a regulator's AI transparency requirements with UMG traces"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.098",
+          "aim": "Reduce commercial risk from AI",
+          "outcome": "To prevent AI agents from taking unauthorized commercial actions through governance",
+          "examples": [
+            "blocking an AI from offering unauthorized discounts",
+            "preventing an AI from making contractual commitments outside scope",
+            "ensuring AI communications stay within legal and brand guidelines"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.099",
+          "aim": "Scale AI-assisted operations without proportional risk",
+          "outcome": "To grow the use of AI in business operations while keeping governance tight",
+          "examples": [
+            "tripling AI-assisted transactions without relaxing compliance controls",
+            "expanding AI agent deployment across geographies under unified governance",
+            "growing AI coverage without increasing compliance overhead proportionally"
+          ]
+        },
+        {
+          "id": "BIZ.AIM.100",
+          "aim": "Demonstrate AI governance to stakeholders",
+          "outcome": "To provide verifiable evidence of responsible AI deployment to customers, regulators, and investors",
+          "examples": [
+            "publishing a governance report for enterprise customer due diligence",
+            "providing audit evidence to a regulator asking about AI use",
+            "presenting AI governance architecture to a board risk committee"
+          ]
+        }
+      ]
+    }
+  }
+}
