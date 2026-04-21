@@ -84,8 +84,9 @@ function validateIdFields(doc, issues) {
         if (!hasBasicIdShape(doc.sleeveId)) {
             push(issues, "error", "INVALID_SLEEVE_ID", `Sleeve id has illegal characters: ${doc.sleeveId}`, "sleeveId");
         }
-        if (!/^(slv[.\-_@#:]|slv[A-Za-z0-9._-])/.test(doc.sleeveId)) {
-            push(issues, "warning", "SLEEVE_ID_SHAPE", "Sleeve id does not match expected slv-prefixed shape", "sleeveId");
+        const acceptedInternalShape = /^(slv[.\-_@#:]|slv[A-Za-z0-9._-]|sample-|generated-|runtime-)/.test(doc.sleeveId);
+        if (!acceptedInternalShape) {
+            push(issues, "warning", "SLEEVE_ID_SHAPE", "Sleeve id does not match expected internal/canonical shape", "sleeveId");
         }
     }
     for (const [index, stackId] of doc.loadedStacks.entries()) {
@@ -155,7 +156,8 @@ function validateStructure(doc, issues) {
                 push(issues, "warning", "EMPTY_BLOCK", `NeoBlock has no MOLT members: ${block.id}`, `stacks[${stackIndex}].blocks[${blockIndex}]`);
             }
             const activeCount = block.molts.filter((molt) => molt.state === "active").length;
-            if (activeCount > 1) {
+            const modulationBlock = /^NB\.MOD\./.test(block.id);
+            if (activeCount > 1 && !modulationBlock) {
                 push(issues, "warning", "MULTI_ACTIVE_BLOCK", `NeoBlock has multiple active MOLT nodes: ${block.id}`, `stacks[${stackIndex}].blocks[${blockIndex}]`);
             }
             for (const [moltIndex, molt] of block.molts.entries()) {
@@ -331,7 +333,8 @@ export function validateUMGPath(doc) {
     if (!doc.loadedStacks.length) {
         push(issues, "warning", "EMPTY_LOAD", "LOAD is empty");
     }
-    if (!doc.triggers.length) {
+    const triggerStateHint = doc.need.find((item) => item.startsWith("trigger_state:"));
+    if (!doc.triggers.length && triggerStateHint !== "trigger_state:neutral") {
         push(issues, "warning", "NO_TRIGGERS", "TRG is empty");
     }
     if (!doc.stacks.length) {
