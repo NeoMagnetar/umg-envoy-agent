@@ -6,6 +6,7 @@ export interface PluginConfig {
     defaultSleeveId?: string;
     debugDirectReplyBehavior?: boolean;
     runtimeLegendAlignmentPath?: string;
+    sleeveOperationalProfilesPath?: string;
 }
 export interface ResolvedPaths {
     pluginRoot: string;
@@ -16,15 +17,16 @@ export interface ResolvedPaths {
     compilerCli: string;
     compilerPackageJson: string;
     resleeverRoot: string;
-    resleeverSleevesDir: string;
     resleeverBlocksDir: string;
+    resleeverSleevesDir: string;
     resleeverRuntimeDir: string;
     resleeverCompilerDir: string;
-    activeSleevePath: string;
     activeStackPath: string;
+    activeSleevePath: string;
     sleeveCatalogPath: string;
     blockCategoryIndexPath: string;
     blockLibraryIndexPath: string;
     resolverRulesPath: string;
     runtimeLegendAlignmentPath: string;
+    sleeveOperationalProfilesPath: string;
 }
