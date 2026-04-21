@@ -1,7 +1,7 @@
 # INSTALL
 
 ## Package
-UMG Envoy Agent (`umg-envoy-agent`)
+OpenClaw UMG Envoy Agent (`openclaw-umg-envoy-agent`)
 
 Package root after extraction or local checkout:
 - `umg-envoy-agent-plugin/`
@@ -60,6 +60,17 @@ Only after that, if desired:
 9. `umg_envoy_promote_runtime`
 10. `umg_envoy_list_runtime_backups`
 11. `umg_envoy_rollback_runtime`
+
+## Path shorthand docs
+The package now also includes planner-path shorthand docs/examples:
+- `docs/PATH-SHORTHAND.md`
+- `docs/PATH-SHORTHAND-EXAMPLE.umgpath`
+
+Useful CLI commands:
+- `openclaw umg-envoy parse-path --file <path>`
+- `openclaw umg-envoy validate-path --file <path>`
+- `openclaw umg-envoy render-path --file <path>`
+- `openclaw umg-envoy build-path --message "..." --sleeve <id>`
 
 ## Validation evidence
 See:

@@ -1,12 +1,12 @@
-# UMG Envoy Agent
+# OpenClaw UMG Envoy Agent
 
-UMG Envoy Agent is a native OpenClaw plugin for the **internal Resleever lane**.
+OpenClaw UMG Envoy Agent is a native OpenClaw plugin for the canonical internal lane, but its long-term role is to be a **stable plugin/operator layer** rather than a hardcoded repo-dependent wrapper.
 
-It bridges three layers of the current UMG stack:
+It currently bridges three layers of the UMG stack:
 
 1. the doctrine / synthesis anchor
 2. the canonical `umg-compiler`
-3. the local `UMG_Envoy_Resleever` runtime homebase
+3. a compatible content root for sleeves, blocks, and runtime state (today often `UMG_Envoy_Resleever`, but not required in principle)
 
 Its purpose is to expose sleeves, blocks, compilation, runtime inspection, promotion, rollback, and related authoring utilities as explicit OpenClaw tools and CLI surfaces instead of scattered manual repo operations.
 
@@ -14,14 +14,29 @@ Its purpose is to expose sleeves, blocks, compilation, runtime inspection, promo
 
 This package is the **canonical internal plugin**.
 
-- Plugin id: `umg-envoy-agent`
+## Design direction
+
+The intended long-term model is:
+- the plugin stays relatively stable
+- content repos/libraries grow independently
+- users may also maintain their own sleeves/blocks/neostacks/neoblocks without depending on the upstream repos at all
+
+In other words:
+- the plugin should use repos as rich default libraries/resources
+- but it should not conceptually require the repos in order to exist as a useful system
+
+- Plugin id: `openclaw-umg-envoy-agent`
 - Canonical source-of-record:
   - `C:\.openclaw\workspace\artifacts\umg-envoy-agent-plugin`
 - Default content root:
   - `vendor\UMG_Envoy_Resleever`
 
-This plugin is **not** the public UMG Block Library package.
+This plugin is **not** the public UMG Envoy Agent release package.
 That public-facing package is a later derivative product and should not be treated as the design authority for this internal lane.
+
+The underlying private runtime repo now also documents the twin-track split explicitly:
+- private repo lane: `vendor\\UMG_Envoy_Resleever`
+- public mirrored lane: `UMG-Block-Library`
 
 ## Current status
 
@@ -42,6 +57,7 @@ What is currently proven in the canonical internal lane:
 
 Primary current evidence:
 - `C:\.openclaw\workspace\RESLEEVER-STAGE-B4-B5-B6-REPORT.md`
+- `C:\.openclaw\workspace\RESLEEVER-TRUTH-AUDIT.md`
 - `validation/` artifacts in this plugin folder
 
 ## What it does
@@ -87,6 +103,8 @@ CLI root:
 
 See also:
 - `docs/TOOL-SURFACE.md`
+- `docs/PATH-SHORTHAND.md`
+- `docs/PATH-SHORTHAND-EXAMPLE.umgpath`
 
 ## Included package contents
 
@@ -155,14 +173,24 @@ Recommended when:
 - you want the canonical internal working lane
 - you want reproducible workspace testing
 
-### External override mode
-Use plugin config to point at live working trees:
+### External/library override mode
+Use plugin config to point at external compatible content roots:
 - `compilerRoot`
 - `resleeverRoot`
 
 Recommended when:
 - you are actively developing against external repos
 - bundled vendor state is not the desired source of truth
+
+### User-owned standalone content mode
+Use plugin config to point at a user-owned content workspace:
+- `workspaceRoot`
+- optionally `resleeverRoot`
+
+Recommended when:
+- a user wants to author their own sleeves/blocks/stacks without relying on the canonical repos
+- the repos are being used mainly as reference libraries or community content sources
+- the plugin should operate against user-curated local content instead of upstream repo defaults
 
 ## Recommended validation order
 

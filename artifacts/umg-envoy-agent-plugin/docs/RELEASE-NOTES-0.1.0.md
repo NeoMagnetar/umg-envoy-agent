@@ -6,7 +6,7 @@
 This is the first packaged release of the UMG Envoy Agent plugin as a real native OpenClaw tool plugin rather than a planning scaffold.
 
 ## What shipped
-- native OpenClaw plugin package identity: `umg-envoy-agent`
+- native OpenClaw plugin package identity: `openclaw-umg-envoy-agent`
 - compiled runtime in `dist/`
 - manifest/config schema in `openclaw.plugin.json`
 - bundled doctrine anchor
@@ -64,7 +64,7 @@ Problem:
 - package identity hints and manifest id were inconsistent
 
 Resolution:
-- normalized package identity to `umg-envoy-agent`
+- normalized package identity to `openclaw-umg-envoy-agent`
 
 ### Fixed: validation contract mismatch against real compiler output
 Problem:
@@ -111,6 +111,16 @@ Validation completed in this pass:
 - fresh compile through updated vendored compiler succeeded
 - promotion through plugin runtime path succeeded with backup creation
 - `read-active-runtime` confirmed new active runtime shape
+
+## Docs/examples update after initial packaging
+A follow-up packaging refresh added the planner-path shorthand docs/examples into the plugin docs surface.
+
+Added:
+- `docs/PATH-SHORTHAND.md`
+- `docs/PATH-SHORTHAND-EXAMPLE.umgpath`
+- tool-surface/install references to the shorthand CLI flow
+
+This refresh is intended to ensure the staged public package includes shorthand guidance alongside the already-implemented parser/renderer/validator/builder surfaces.
 
 ## Known follow-up work
 - optional package-size/vendor pruning pass
