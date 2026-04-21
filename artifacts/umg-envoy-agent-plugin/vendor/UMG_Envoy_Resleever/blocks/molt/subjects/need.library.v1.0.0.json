@@ -1,0 +1,1111 @@
+{
+  "library_name": "MOLT Need Library",
+  "version": "1.0.0",
+  "created": "2026-04-20",
+  "created_by": "Claude UMG Envoy",
+  "supervised_by": "NeoMAG",
+  "description": "Comprehensive library of atomic MOLT Need blocks. Need answers: 'What must be true first?' Each block describes a prerequisite, enabling condition, or required state that must exist before the Aim can be achieved.",
+  "usage": "Select the Need block that best describes what must already be in place for the current Aim to succeed. Need is the enabling condition \u2014 if it is absent, the Aim cannot be reached regardless of effort.",
+  "needs": {
+    "DATA_PREREQUISITES": {
+      "description": "What must be true about data before it can be used",
+      "blocks": [
+        {
+          "id": "NEED.001",
+          "need": "Data availability",
+          "condition": "The required data must exist and be accessible to the process before it can proceed",
+          "examples": [
+            "logs must be present before analysis",
+            "user records must exist before profiling",
+            "block library must be loaded before compilation"
+          ]
+        },
+        {
+          "id": "NEED.002",
+          "need": "Data accuracy",
+          "condition": "The data must be correct and substantially free from errors before use",
+          "examples": [
+            "sensor readings must be calibrated",
+            "block content must match the authored intent",
+            "requirements must reflect what was actually agreed"
+          ]
+        },
+        {
+          "id": "NEED.003",
+          "need": "Data freshness",
+          "condition": "The data must be recent enough to reflect current state for the decision at hand",
+          "examples": [
+            "metrics must be from the last 24 hours",
+            "block library must be current canon",
+            "inventory data must be updated before stock check"
+          ]
+        },
+        {
+          "id": "NEED.004",
+          "need": "Schema alignment",
+          "condition": "The data must conform to the expected format or structure before it can be processed",
+          "examples": [
+            "JSON must match the expected schema",
+            "MOLT block must carry a valid type",
+            "CIR must be normalized before resolution"
+          ]
+        },
+        {
+          "id": "NEED.005",
+          "need": "Data access rights",
+          "condition": "The process must have explicit permission to read the required data",
+          "examples": [
+            "read role must be granted before query",
+            "API key must be scoped to the data endpoint",
+            "governance must permit block access before compilation"
+          ]
+        }
+      ]
+    },
+    "CODE_PREREQUISITES": {
+      "description": "What must be true about a codebase or runtime before execution",
+      "blocks": [
+        {
+          "id": "NEED.006",
+          "need": "Working runtime",
+          "condition": "A functional execution environment must be present and healthy before code can run",
+          "examples": [
+            "Node.js must be installed and on PATH",
+            "Python virtual environment must be active",
+            "JVM must be running before app starts"
+          ]
+        },
+        {
+          "id": "NEED.007",
+          "need": "Dependencies resolved",
+          "condition": "All required libraries, packages, and modules must be installed and version-compatible",
+          "examples": [
+            "npm install must complete without error",
+            "pip packages must be resolved",
+            "UMG block references must all exist in the library"
+          ]
+        },
+        {
+          "id": "NEED.008",
+          "need": "Source code available",
+          "condition": "The code to be executed, built, or analyzed must be accessible in the environment",
+          "examples": [
+            "repo must be cloned before build",
+            "block definitions must be present before compilation",
+            "source files must be readable before lint"
+          ]
+        },
+        {
+          "id": "NEED.009",
+          "need": "Compilation success",
+          "condition": "The code must have compiled without errors before it can be tested or deployed",
+          "examples": [
+            "TypeScript must compile clean",
+            "CIR must normalize without errors",
+            "binary must build before deployment"
+          ]
+        },
+        {
+          "id": "NEED.010",
+          "need": "Test baseline",
+          "condition": "A known-good reference state must exist to compare results against",
+          "examples": [
+            "golden output must be stored before regression test",
+            "prior compilation trace must exist for comparison",
+            "baseline metrics must be recorded before benchmark"
+          ]
+        }
+      ]
+    },
+    "SYSTEM_PREREQUISITES": {
+      "description": "What must be true about infrastructure and environment before a system can operate",
+      "blocks": [
+        {
+          "id": "NEED.011",
+          "need": "Infrastructure online",
+          "condition": "The underlying servers, networks, or cloud resources must be running and reachable",
+          "examples": [
+            "database must be up before app starts",
+            "network must be available before API call",
+            "cluster must be healthy before deploy"
+          ]
+        },
+        {
+          "id": "NEED.012",
+          "need": "Connectivity established",
+          "condition": "Network paths between system components must be open, tested, and reachable",
+          "examples": [
+            "VPN must be connected before internal API access",
+            "firewall rules must allow traffic",
+            "service discovery must resolve before first call"
+          ]
+        },
+        {
+          "id": "NEED.013",
+          "need": "Credentials valid",
+          "condition": "Authentication tokens, certificates, or keys must be current and correct before access is attempted",
+          "examples": [
+            "OAuth token must not be expired",
+            "TLS certificate must be valid",
+            "API key must be active and scoped correctly"
+          ]
+        },
+        {
+          "id": "NEED.014",
+          "need": "Sufficient capacity",
+          "condition": "Enough compute, storage, memory, or bandwidth must be available before the task is started",
+          "examples": [
+            "disk space must be available before write",
+            "memory must be below threshold before heavy job",
+            "queue must have capacity before message send"
+          ]
+        },
+        {
+          "id": "NEED.015",
+          "need": "Stable environment",
+          "condition": "The system environment must not be in a transitional, degraded, or actively failing state",
+          "examples": [
+            "deployment must not be in progress before traffic shift",
+            "database must not be in recovery before query",
+            "governance pass must complete before trigger pass starts"
+          ]
+        }
+      ]
+    },
+    "CONTENT_PREREQUISITES": {
+      "description": "What must be true about source material and context before content can be produced or processed",
+      "blocks": [
+        {
+          "id": "NEED.016",
+          "need": "Source material present",
+          "condition": "The content to be processed, summarized, edited, or delivered must exist before work begins",
+          "examples": [
+            "article must be written before it can be summarized",
+            "blocks must be authored before sleeve can be compiled",
+            "source doc must be uploaded before analysis"
+          ]
+        },
+        {
+          "id": "NEED.017",
+          "need": "Context understood",
+          "condition": "The purpose, audience, and situation for the content must be clear before production begins",
+          "examples": [
+            "user intent must be parsed before response is drafted",
+            "MOLT map must be set before output is synthesized",
+            "audience level must be known before explanation is written"
+          ]
+        },
+        {
+          "id": "NEED.018",
+          "need": "Format known",
+          "condition": "The required input or output format must be specified before processing begins",
+          "examples": [
+            "output schema must be defined before rendering",
+            "target blueprint must be selected before synthesis",
+            "export format must be agreed before report is generated"
+          ]
+        },
+        {
+          "id": "NEED.019",
+          "need": "Content approved",
+          "condition": "Where applicable, required approvals must be in place before content is used or published",
+          "examples": [
+            "governance pass must approve blocks before compilation",
+            "legal must sign off before publishing",
+            "stakeholder must review before release"
+          ]
+        },
+        {
+          "id": "NEED.020",
+          "need": "Language and locale set",
+          "condition": "The target language and regional conventions must be defined before content is produced",
+          "examples": [
+            "locale must be set before date formatting",
+            "target language must be specified before translation",
+            "region must be known before regulatory content is included"
+          ]
+        }
+      ]
+    },
+    "PROCESS_PREREQUISITES": {
+      "description": "What must be true about a process or workflow before it can run",
+      "blocks": [
+        {
+          "id": "NEED.021",
+          "need": "Process defined",
+          "condition": "The steps, sequence, and rules of the process must be documented before execution begins",
+          "examples": [
+            "compiler pipeline must be defined before compilation",
+            "workflow DAG must be authored before orchestration",
+            "deployment runbook must exist before release"
+          ]
+        },
+        {
+          "id": "NEED.022",
+          "need": "Roles assigned",
+          "condition": "Each step in a process must have a designated owner or executor before the process starts",
+          "examples": [
+            "each governance block must have an author",
+            "each stage must have an assigned reviewer",
+            "each alert must have a responsible team"
+          ]
+        },
+        {
+          "id": "NEED.023",
+          "need": "Triggers configured",
+          "condition": "The conditions that start or advance the process must be set and tested before the process runs",
+          "examples": [
+            "CI trigger must be configured before first push",
+            "UMG trigger blocks must be authored before evaluation",
+            "scheduled job must be registered before first run"
+          ]
+        },
+        {
+          "id": "NEED.024",
+          "need": "Exception handling defined",
+          "condition": "Failure paths and edge cases must have documented responses before the process goes live",
+          "examples": [
+            "error recovery block must be in place before pipeline runs",
+            "rollback procedure must exist before deployment",
+            "governance fail-fast behavior must be defined before compilation"
+          ]
+        },
+        {
+          "id": "NEED.025",
+          "need": "Process tested",
+          "condition": "The process must have been validated in a safe environment before production use",
+          "examples": [
+            "pipeline must pass integration tests before production deploy",
+            "sleeve must be tested before Envoy activation",
+            "workflow must run in staging before going live"
+          ]
+        }
+      ]
+    },
+    "ACCESS_AUTHORIZATION": {
+      "description": "What must be true about identity and permission before action is permitted",
+      "blocks": [
+        {
+          "id": "NEED.026",
+          "need": "Identity verified",
+          "condition": "The user or system must be authenticated before access is granted",
+          "examples": [
+            "login must succeed before dashboard is shown",
+            "API client must present valid credentials",
+            "governance must confirm caller identity before permitting block access"
+          ]
+        },
+        {
+          "id": "NEED.027",
+          "need": "Role assigned",
+          "condition": "The actor must have a defined role that specifies what they are permitted to do",
+          "examples": [
+            "admin role must be assigned before config change",
+            "Envoy role must be declared before sleeve activation",
+            "reviewer role must be granted before approval action"
+          ]
+        },
+        {
+          "id": "NEED.028",
+          "need": "Permissions granted",
+          "condition": "Explicit permission for the requested action must exist in the access control system",
+          "examples": [
+            "write permission must exist before file is modified",
+            "governance must permit the block before it is compiled",
+            "user must have delete right before resource removal"
+          ]
+        },
+        {
+          "id": "NEED.029",
+          "need": "Session active",
+          "condition": "A valid authenticated session must be in place and unexpired",
+          "examples": [
+            "OAuth session must be valid before protected call",
+            "active user session must exist before state mutation",
+            "compilation session must be open before CIR is written"
+          ]
+        },
+        {
+          "id": "NEED.030",
+          "need": "Scope bounded",
+          "condition": "Access must be explicitly limited to the minimum required for the task",
+          "examples": [
+            "API token must be scoped to read-only",
+            "governance block must limit tool access before execution",
+            "service account must not have broader rights than needed"
+          ]
+        }
+      ]
+    },
+    "REQUIREMENT_CLARITY": {
+      "description": "What must be true about requirements and scope before design or build begins",
+      "blocks": [
+        {
+          "id": "NEED.031",
+          "need": "Requirements documented",
+          "condition": "What must be built or achieved must be written down explicitly before work starts",
+          "examples": [
+            "spec must be written before development begins",
+            "MOLT block intent must be stated before authoring",
+            "acceptance criteria must exist before test is written"
+          ]
+        },
+        {
+          "id": "NEED.032",
+          "need": "Acceptance criteria defined",
+          "condition": "The conditions for success must be agreed by stakeholders before work begins",
+          "examples": [
+            "UAT criteria must be set before build",
+            "MOLT invariants must be defined before compilation",
+            "test pass conditions must exist before test suite is run"
+          ]
+        },
+        {
+          "id": "NEED.033",
+          "need": "Scope bounded",
+          "condition": "The boundaries of what is and is not included must be clear before design begins",
+          "examples": [
+            "in-scope and out-of-scope must be listed before sprint",
+            "sleeve domain must be defined before block authoring",
+            "patent claim scope must be set before novelty analysis"
+          ]
+        },
+        {
+          "id": "NEED.034",
+          "need": "Stakeholders aligned",
+          "condition": "All key parties must agree on what is required before design or build proceeds",
+          "examples": [
+            "product and engineering must align on requirements",
+            "all Envoy owners must agree on shared canon",
+            "governance owner and compiler author must agree on pipeline order"
+          ]
+        },
+        {
+          "id": "NEED.035",
+          "need": "Ambiguity resolved",
+          "condition": "Unclear or contradictory requirements must be clarified before work proceeds",
+          "examples": [
+            "open ODRs that block design must be resolved first",
+            "conflicting block definitions must be reconciled before compilation",
+            "ambiguous requirements must be clarified before implementation"
+          ]
+        }
+      ]
+    },
+    "PROBLEM_DEFINITION": {
+      "description": "What must be true about a problem before diagnosis or resolution begins",
+      "blocks": [
+        {
+          "id": "NEED.036",
+          "need": "Problem stated clearly",
+          "condition": "The issue must be described with enough precision to guide investigation",
+          "examples": [
+            "error message must be available before debugging",
+            "governance violation must be named before it can be corrected",
+            "user complaint must be understood before a fix is designed"
+          ]
+        },
+        {
+          "id": "NEED.037",
+          "need": "Scope understood",
+          "condition": "The boundaries of the problem must be known before diagnosis begins",
+          "examples": [
+            "affected services must be identified before incident response",
+            "which blocks are failing must be known before compilation fix",
+            "impacted users must be quantified before severity is set"
+          ]
+        },
+        {
+          "id": "NEED.038",
+          "need": "Symptoms documented",
+          "condition": "Observable evidence of the problem must be recorded before root cause analysis begins",
+          "examples": [
+            "error logs must be captured before investigation",
+            "trace events must be collected before audit review",
+            "user-reported behavior must be noted before reproduction attempt"
+          ]
+        },
+        {
+          "id": "NEED.039",
+          "need": "Reproduction steps available",
+          "condition": "A reliable way to trigger the problem must be known before a fix is attempted",
+          "examples": [
+            "steps to reproduce a bug must exist before patch",
+            "a sleeve that fails must be available before fix",
+            "a governance violation must be reproducible before rule is written"
+          ]
+        },
+        {
+          "id": "NEED.040",
+          "need": "Impact quantified",
+          "condition": "The severity and scope of the problem must be measurable before priority is set",
+          "examples": [
+            "number of affected users must be known before escalation",
+            "data loss extent must be measured before recovery plan",
+            "block failure rate must be measured before redesign"
+          ]
+        }
+      ]
+    },
+    "TEST_INFRASTRUCTURE": {
+      "description": "What must be true about testing environment and tooling before tests can run",
+      "blocks": [
+        {
+          "id": "NEED.041",
+          "need": "Test environment available",
+          "condition": "A dedicated, stable environment for running tests must exist before tests are executed",
+          "examples": [
+            "staging environment must be provisioned",
+            "isolated test namespace must be ready",
+            "sandbox must be clean before test run"
+          ]
+        },
+        {
+          "id": "NEED.042",
+          "need": "Test data prepared",
+          "condition": "Representative, compliant input data for tests must be ready before tests run",
+          "examples": [
+            "seed data must be loaded before integration test",
+            "mock objects must be configured before unit test",
+            "sample sleeves must be available before compiler test"
+          ]
+        },
+        {
+          "id": "NEED.043",
+          "need": "Test cases written",
+          "condition": "Specific scenarios to validate must be documented and executable before testing begins",
+          "examples": [
+            "test scripts must be authored before CI run",
+            "MOLT invariant checks must be written before audit",
+            "acceptance tests must exist before UAT"
+          ]
+        },
+        {
+          "id": "NEED.044",
+          "need": "Baseline established",
+          "condition": "A known-good reference state must exist before comparison-based testing begins",
+          "examples": [
+            "golden output must be stored before regression",
+            "prior Decision Trace must be saved before re-run",
+            "benchmark metrics must be recorded before optimization test"
+          ]
+        },
+        {
+          "id": "NEED.045",
+          "need": "Test tooling installed",
+          "condition": "Required testing frameworks, runners, and libraries must be in place before tests execute",
+          "examples": [
+            "Jest must be installed before unit test run",
+            "test harness must be configured before sleeve audit",
+            "coverage tool must be present before measurement"
+          ]
+        }
+      ]
+    },
+    "CONFIGURATION_STATE": {
+      "description": "What must be true about configuration and settings before a system can operate correctly",
+      "blocks": [
+        {
+          "id": "NEED.046",
+          "need": "Configuration documented",
+          "condition": "All settings and parameters must be recorded and accessible before operation begins",
+          "examples": [
+            "config file must exist before service start",
+            "MOLT block parameters must be declared before compilation",
+            "environment manifest must be present before provisioning"
+          ]
+        },
+        {
+          "id": "NEED.047",
+          "need": "Environment variables set",
+          "condition": "Required runtime variables must be present and correct in the environment before execution",
+          "examples": [
+            "DATABASE_URL must be set before app start",
+            "GOVERNANCE_MODE must be declared before compilation",
+            "API_KEY must be injected before first call"
+          ]
+        },
+        {
+          "id": "NEED.048",
+          "need": "Secrets injected",
+          "condition": "Credentials, keys, and tokens must be securely available to the process before it runs",
+          "examples": [
+            "vault secrets must be fetched before service start",
+            "TLS keys must be mounted before HTTPS listener",
+            "signing key must be available before token issuance"
+          ]
+        },
+        {
+          "id": "NEED.049",
+          "need": "Feature flags set",
+          "condition": "The correct feature toggles must be in the expected state before the system executes",
+          "examples": [
+            "governance strict mode must be enabled before audit",
+            "experimental block must be flagged OFF before production",
+            "live compilation must be toggled on before interactive session"
+          ]
+        },
+        {
+          "id": "NEED.050",
+          "need": "Configuration versioned",
+          "condition": "The configuration in use must be traceable to a specific documented version before deployment",
+          "examples": [
+            "config must be committed to source control before deploy",
+            "canon version must be confirmed before compilation",
+            "infrastructure manifest must be tagged before apply"
+          ]
+        }
+      ]
+    },
+    "COMMUNICATION_CHANNEL": {
+      "description": "What must be true about channels and protocols before communication can occur",
+      "blocks": [
+        {
+          "id": "NEED.051",
+          "need": "Channel open",
+          "condition": "The communication pathway must be active and reachable before a message is sent",
+          "examples": [
+            "WebSocket must be connected before event push",
+            "SMTP server must be reachable before email send",
+            "API endpoint must be listening before request"
+          ]
+        },
+        {
+          "id": "NEED.052",
+          "need": "Protocol agreed",
+          "condition": "Both parties must use the same communication format or standard before exchange begins",
+          "examples": [
+            "REST contract must be agreed before first API call",
+            "MOLT schema version must match before block exchange",
+            "message format must be aligned before queue publish"
+          ]
+        },
+        {
+          "id": "NEED.053",
+          "need": "Recipient reachable",
+          "condition": "The target of the message must be available to receive before sending",
+          "examples": [
+            "service must be healthy before routing to it",
+            "user must be active before push notification",
+            "Envoy must be initialized before receiving a MOLT block"
+          ]
+        },
+        {
+          "id": "NEED.054",
+          "need": "Throughput sufficient",
+          "condition": "The channel must have capacity for the required message volume before traffic is sent",
+          "examples": [
+            "queue must not be full before new publish",
+            "bandwidth must be available before file transfer",
+            "governance channel must not be saturated before audit send"
+          ]
+        },
+        {
+          "id": "NEED.055",
+          "need": "Message format valid",
+          "condition": "The message must conform to what the recipient expects before delivery",
+          "examples": [
+            "JSON must be well-formed before parse",
+            "MOLT block must be correctly typed before ingestion",
+            "API body must match OpenAPI spec before acceptance"
+          ]
+        }
+      ]
+    },
+    "STRUCTURAL_FOUNDATION": {
+      "description": "What must be true about models, schemas, and structures before reasoning can proceed",
+      "blocks": [
+        {
+          "id": "NEED.056",
+          "need": "Schema defined",
+          "condition": "A formal structure for data or blocks must be established before authoring or processing begins",
+          "examples": [
+            "MOLT block schema must be defined before authoring library",
+            "database schema must exist before migration",
+            "API response schema must be agreed before client is built"
+          ]
+        },
+        {
+          "id": "NEED.057",
+          "need": "Model validated",
+          "condition": "The structural model must be internally consistent and correct before it is relied upon",
+          "examples": [
+            "domain model must pass consistency checks before build",
+            "sleeve must be validated before Envoy activation",
+            "data model must be reviewed before production use"
+          ]
+        },
+        {
+          "id": "NEED.058",
+          "need": "Taxonomy established",
+          "condition": "Categories and classifications must be agreed and documented before things are organized into them",
+          "examples": [
+            "MOLT type hierarchy must be defined before blocks are typed",
+            "permission levels must be named before roles are assigned",
+            "product categories must exist before items are cataloged"
+          ]
+        },
+        {
+          "id": "NEED.059",
+          "need": "Relationships mapped",
+          "condition": "Connections between entities must be defined and documented before reasoning about them proceeds",
+          "examples": [
+            "block dependencies must be mapped before compilation",
+            "service dependencies must be known before load test",
+            "team dependencies must be understood before scheduling"
+          ]
+        },
+        {
+          "id": "NEED.060",
+          "need": "Canonical source identified",
+          "condition": "A single authoritative version of the structure must be designated before any work uses it",
+          "examples": [
+            "canon document must be the source of truth before implementation",
+            "master branch must be designated before merge",
+            "primary block definition must be identified before synthesis"
+          ]
+        }
+      ]
+    },
+    "RESOURCE_AVAILABILITY": {
+      "description": "What must be true about resources before work can proceed",
+      "blocks": [
+        {
+          "id": "NEED.061",
+          "need": "Compute available",
+          "condition": "Sufficient processing capacity must be allocated for the task before it starts",
+          "examples": [
+            "CPU quota must not be exhausted before job starts",
+            "inference budget must be available before compilation",
+            "cluster capacity must exist before deploy"
+          ]
+        },
+        {
+          "id": "NEED.062",
+          "need": "Storage allocated",
+          "condition": "Enough storage for inputs, outputs, and state must be reserved before the process runs",
+          "examples": [
+            "disk space must be confirmed before log write",
+            "S3 bucket must exist before artifact upload",
+            "CIR storage must be available before compilation"
+          ]
+        },
+        {
+          "id": "NEED.063",
+          "need": "Budget approved",
+          "condition": "Financial resources must be authorized before spending is committed",
+          "examples": [
+            "project budget must be approved before tooling purchase",
+            "API cost must be estimated before high-volume call",
+            "infrastructure cost must be cleared before provisioning"
+          ]
+        },
+        {
+          "id": "NEED.064",
+          "need": "Time available",
+          "condition": "A sufficient window must exist to complete the task before the deadline",
+          "examples": [
+            "deployment window must be open before release",
+            "review cycle must fit within sprint before ship",
+            "compilation must complete within session timeout"
+          ]
+        },
+        {
+          "id": "NEED.065",
+          "need": "Personnel assigned",
+          "condition": "Required people must be available and committed before work is scheduled to begin",
+          "examples": [
+            "reviewer must be assigned before PR is submitted",
+            "governance owner must be named before policy is enacted",
+            "Envoy operator must be available before sleeve activation"
+          ]
+        }
+      ]
+    },
+    "INTERFACE_CONTRACT": {
+      "description": "What must be true about interfaces and contracts before systems can connect",
+      "blocks": [
+        {
+          "id": "NEED.066",
+          "need": "API contract defined",
+          "condition": "The interface specification must be agreed and published before any client or server implements it",
+          "examples": [
+            "OpenAPI spec must be finalized before SDK is built",
+            "RuntimeSpec schema must be stable before executor is coded",
+            "MOLT block interface must be defined before first authoring tool"
+          ]
+        },
+        {
+          "id": "NEED.067",
+          "need": "Input format specified",
+          "condition": "What the system expects to receive must be precisely defined before data is sent",
+          "examples": [
+            "request body schema must be published before client sends",
+            "sleeve format must be specified before compiler reads it",
+            "trigger activation pattern must be defined before input is mapped"
+          ]
+        },
+        {
+          "id": "NEED.068",
+          "need": "Output format specified",
+          "condition": "What the system will produce must be precisely defined before consumers depend on it",
+          "examples": [
+            "RuntimeSpec format must be stable before executor relies on it",
+            "report structure must be agreed before report is built",
+            "Decision Trace schema must be published before auditor reads it"
+          ]
+        },
+        {
+          "id": "NEED.069",
+          "need": "Error handling agreed",
+          "condition": "How failures will be signaled and handled must be documented before the interface is used",
+          "examples": [
+            "error codes must be defined before client handles them",
+            "governance fail-fast behavior must be specified before compilation",
+            "retry semantics must be agreed before queue consumer is built"
+          ]
+        },
+        {
+          "id": "NEED.070",
+          "need": "Version pinned",
+          "condition": "The specific interface version in use must be locked before work that depends on it begins",
+          "examples": [
+            "API version must be pinned in client config",
+            "canon version must be confirmed before compilation",
+            "library version must be locked in package manifest"
+          ]
+        }
+      ]
+    },
+    "OBSERVABILITY_BASELINE": {
+      "description": "What must be true about logging, metrics, and monitoring before a system goes live",
+      "blocks": [
+        {
+          "id": "NEED.071",
+          "need": "Logging enabled",
+          "condition": "The system must be configured to record its actions and state changes before it handles real traffic",
+          "examples": [
+            "application logging must be on before production deploy",
+            "Decision Trace logging must be active before compilation",
+            "audit log must be enabled before sensitive actions are taken"
+          ]
+        },
+        {
+          "id": "NEED.072",
+          "need": "Metrics collected",
+          "condition": "Quantitative measures of system behavior must be captured before performance can be assessed",
+          "examples": [
+            "response time instrumentation must be in place before load test",
+            "block compilation counts must be emitted before analysis",
+            "error rates must be tracked before SLA is evaluated"
+          ]
+        },
+        {
+          "id": "NEED.073",
+          "need": "Tracing active",
+          "condition": "Requests must be traceable from entry to exit across all components before debugging is possible",
+          "examples": [
+            "distributed trace IDs must be propagated before correlation",
+            "MOLT compilation trace must be written before audit",
+            "request span must be started before downstream calls"
+          ]
+        },
+        {
+          "id": "NEED.074",
+          "need": "Alerting configured",
+          "condition": "Thresholds and notification rules must be set before a system is relied upon in production",
+          "examples": [
+            "error rate alert must be configured before release",
+            "governance violation alert must be active before deployment",
+            "capacity warning must be set before high-load event"
+          ]
+        },
+        {
+          "id": "NEED.075",
+          "need": "Baseline captured",
+          "condition": "Normal system behavior must be characterized before deviations can be detected as anomalies",
+          "examples": [
+            "baseline metrics must be recorded before anomaly detection is trusted",
+            "expected compilation time must be profiled before regression alert",
+            "normal error rate must be known before alerting threshold is set"
+          ]
+        }
+      ]
+    },
+    "POLICY_DEFINITION": {
+      "description": "What must be true about policies and rules before they can be enforced",
+      "blocks": [
+        {
+          "id": "NEED.076",
+          "need": "Policy authored",
+          "condition": "The governing rules must be written in explicit, inspectable form before enforcement begins",
+          "examples": [
+            "governance block must be authored before governance pass runs",
+            "data retention policy must be written before it is enforced",
+            "access control rules must be declared before permission checks"
+          ]
+        },
+        {
+          "id": "NEED.077",
+          "need": "Policy published",
+          "condition": "The rules must be made available to all parties subject to them before enforcement",
+          "examples": [
+            "governance stack must be visible to all Envoys before compilation",
+            "data policy must be published before it is binding",
+            "rate limit rules must be documented before API is used"
+          ]
+        },
+        {
+          "id": "NEED.078",
+          "need": "Policy understood",
+          "condition": "Those governed by the policy must know what it requires of them before they can comply",
+          "examples": [
+            "Envoy must understand which blocks are OFF before composing a sleeve",
+            "team must understand GDPR obligations before handling data",
+            "user must know rate limits before building an integration"
+          ]
+        },
+        {
+          "id": "NEED.079",
+          "need": "Enforcement mechanism active",
+          "condition": "A mechanism that applies the policy and detects violations must be operating before the system handles real inputs",
+          "examples": [
+            "governance pass must be running before compilation",
+            "rate limiter must be active before API is public",
+            "access control layer must be deployed before traffic is routed"
+          ]
+        },
+        {
+          "id": "NEED.080",
+          "need": "Policy version controlled",
+          "condition": "Changes to policy must be tracked with clear versioning before multiple versions can coexist or evolve",
+          "examples": [
+            "governance stack must be tagged before canon update",
+            "policy document must be committed to source control",
+            "MOLT invariants must be versioned before v1 is declared"
+          ]
+        }
+      ]
+    },
+    "DATA_QUALITY_BASELINE": {
+      "description": "What must be true about data quality before analysis or decisions can rely on it",
+      "blocks": [
+        {
+          "id": "NEED.081",
+          "need": "Completeness verified",
+          "condition": "All required fields, records, and elements must be present before the data is used",
+          "examples": [
+            "all MOLT types must be populated before sleeve is compiled",
+            "all required form fields must be filled before submission",
+            "all test cases must be present before coverage is measured"
+          ]
+        },
+        {
+          "id": "NEED.082",
+          "need": "Consistency confirmed",
+          "condition": "Data must not contain internal contradictions within or across sources before it is trusted",
+          "examples": [
+            "block definitions must not conflict before library is used",
+            "config values must not contradict each other before deploy",
+            "governance rules must not conflict before enforcement"
+          ]
+        },
+        {
+          "id": "NEED.083",
+          "need": "Duplicates removed",
+          "condition": "Redundant records must be identified and eliminated before analysis produces reliable results",
+          "examples": [
+            "duplicate blocks must be resolved before library is published",
+            "duplicate events must be deduplicated before metrics are calculated",
+            "duplicate requirements must be merged before spec is finalized"
+          ]
+        },
+        {
+          "id": "NEED.084",
+          "need": "Provenance established",
+          "condition": "The origin and chain of custody of data must be known before it is relied upon for decisions",
+          "examples": [
+            "block source must be traceable before it is used in governance",
+            "data lineage must be documented before regulatory report",
+            "Decision Trace must record block origin before audit"
+          ]
+        },
+        {
+          "id": "NEED.085",
+          "need": "Timeliness confirmed",
+          "condition": "Data must fall within the acceptable age window for the use case before it is used",
+          "examples": [
+            "block library must be current canon version before compilation",
+            "market data must be from today before trading decision",
+            "security scan results must be recent before deployment approval"
+          ]
+        }
+      ]
+    },
+    "DELIVERY_READINESS": {
+      "description": "What must be true about delivery pipelines and processes before releasing",
+      "blocks": [
+        {
+          "id": "NEED.086",
+          "need": "Pipeline operational",
+          "condition": "The deployment or delivery mechanism must be running and tested before it carries production traffic",
+          "examples": [
+            "CI/CD pipeline must be passing before merge to main",
+            "compilation pipeline must complete without error before RuntimeSpec is trusted",
+            "delivery channel must be tested before release"
+          ]
+        },
+        {
+          "id": "NEED.087",
+          "need": "Rollback plan ready",
+          "condition": "A way to undo the delivery must exist and be tested before proceeding",
+          "examples": [
+            "previous version must be tagged before new deploy",
+            "governance rollback procedure must be documented before rule change",
+            "database migration must be reversible before apply"
+          ]
+        },
+        {
+          "id": "NEED.088",
+          "need": "Stakeholders notified",
+          "condition": "Those affected by the delivery must be informed in advance before it proceeds",
+          "examples": [
+            "users must be notified of maintenance window before deploy",
+            "downstream Envoys must be informed of canon change before it is released",
+            "affected teams must be briefed before a breaking API change"
+          ]
+        },
+        {
+          "id": "NEED.089",
+          "need": "Approvals obtained",
+          "condition": "All required sign-offs must be in place before the release proceeds",
+          "examples": [
+            "security review must be signed off before production deploy",
+            "governance owner must approve rule change before enforcement",
+            "product must sign off on feature before ship"
+          ]
+        },
+        {
+          "id": "NEED.090",
+          "need": "Health checks passing",
+          "condition": "Pre-delivery validation checks must all succeed before the release proceeds",
+          "examples": [
+            "all tests must pass before merge",
+            "all MOLT invariants must be satisfied before RuntimeSpec is emitted",
+            "all canary checks must pass before full rollout"
+          ]
+        }
+      ]
+    },
+    "DEPENDENCY_RESOLUTION": {
+      "description": "What must be true about dependencies before a component can function",
+      "blocks": [
+        {
+          "id": "NEED.091",
+          "need": "All dependencies identified",
+          "condition": "Every component, service, library, or block that is required must be listed before work begins",
+          "examples": [
+            "all block references in a sleeve must be listed before compilation",
+            "all service dependencies must be known before architecture review",
+            "all package requirements must be declared in manifest before install"
+          ]
+        },
+        {
+          "id": "NEED.092",
+          "need": "Versions compatible",
+          "condition": "All dependency versions must be mutually compatible before they are used together",
+          "examples": [
+            "block library version must be compatible with compiler version",
+            "package versions must not have peer conflicts",
+            "canon version must be agreed across all Envoys before mesh sync"
+          ]
+        },
+        {
+          "id": "NEED.093",
+          "need": "Circular dependencies absent",
+          "condition": "No dependency must ultimately require itself to function before the system is assembled",
+          "examples": [
+            "block must not reference itself as a dependency",
+            "service must not depend on itself through a chain",
+            "MOLT type must not require itself in its resolution"
+          ]
+        },
+        {
+          "id": "NEED.094",
+          "need": "External dependencies reachable",
+          "condition": "Third-party services, APIs, or libraries must be available before the system starts",
+          "examples": [
+            "npm registry must be reachable before install",
+            "external API must be up before integration test",
+            "external block library must be accessible before compilation"
+          ]
+        },
+        {
+          "id": "NEED.095",
+          "need": "Dependency licenses reviewed",
+          "condition": "Legal obligations of all dependencies must be understood before they are included in a product",
+          "examples": [
+            "open source licenses must be checked before distribution",
+            "third-party block licenses must be reviewed before ClawHub publication",
+            "SDK terms must be accepted before commercial use"
+          ]
+        }
+      ]
+    },
+    "UMG_FRAMEWORK_NEEDS": {
+      "description": "Prerequisites specific to UMG compilation, governance, and Envoy operation",
+      "blocks": [
+        {
+          "id": "NEED.096",
+          "need": "Governance blocks authored",
+          "condition": "The governance stack must be written and canon-valid before any compilation pass begins",
+          "examples": [
+            "governance NeoStack must be defined before sleeve is compiled",
+            "OFF states must be declared before governance pass runs",
+            "governance rules must be authored before Envoy activation"
+          ]
+        },
+        {
+          "id": "NEED.097",
+          "need": "Sleeve loaded",
+          "condition": "The target sleeve must be expanded and normalized into CIR before resolution begins",
+          "examples": [
+            "sleeve must be ingested and modules expanded before normalization",
+            "CIR must be produced before governance pass runs",
+            "sleeve must be valid before trigger evaluation begins"
+          ]
+        },
+        {
+          "id": "NEED.098",
+          "need": "Block library available",
+          "condition": "The blocks referenced in the sleeve must exist and be accessible before compilation proceeds",
+          "examples": [
+            "all MOLT blocks must be in the library before sleeve is compiled",
+            "NeoBlock sources must be resolvable before merge",
+            "governance block definitions must be accessible before governance pass"
+          ]
+        },
+        {
+          "id": "NEED.099",
+          "need": "MOLT types assigned",
+          "condition": "Every block must carry a valid MOLT type before authority resolution can proceed",
+          "examples": [
+            "all blocks must be typed before compiler sorts by authority",
+            "untyped blocks must be rejected before CIR is produced",
+            "MOLT type must be declared before conflict site is evaluated"
+          ]
+        },
+        {
+          "id": "NEED.100",
+          "need": "Compiler initialized",
+          "condition": "The UMG compiler must be ready, with canon version confirmed, before a compilation pass is started",
+          "examples": [
+            "compiler canon version must match sleeve spec version before compile",
+            "compiler must be initialized before sleeve ingestion",
+            "compiler state must be clean before each compilation session"
+          ]
+        }
+      ]
+    }
+  }
+}
