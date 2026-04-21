@@ -1,0 +1,14 @@
+﻿{
+    "id":  "NB.MOD.01",
+    "title":  "Persona Modulation NeoBlock",
+    "kind":  "neoblock",
+    "summary":  "Authoritative NeoBlock for persona modulation behavior.",
+    "blockIds":  [
+                     "INST.MOD.001",
+                     "INST.MOD.002",
+                     "INST.MOD.003",
+                     "INST.MOD.004"
+                 ],
+    "createdBy":  "openclaw-umg-envoy-agent",
+    "createdAt":  "2026-04-21T15:49:24.4357926Z"
+}

@@ -1,0 +1,12 @@
+﻿{
+    "id":  "NB.MOD.02",
+    "title":  "Response Posture Modulation NeoBlock",
+    "kind":  "neoblock",
+    "summary":  "Authoritative NeoBlock for response posture modulation behavior.",
+    "blockIds":  [
+                     "INST.MOD.101",
+                     "INST.MOD.102"
+                 ],
+    "createdBy":  "openclaw-umg-envoy-agent",
+    "createdAt":  "2026-04-21T15:49:24.4357926Z"
+}

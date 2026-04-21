@@ -1,0 +1,11 @@
+﻿{
+    "id":  "S.MOD.01",
+    "title":  "Persona Modulation Stack",
+    "kind":  "neostack",
+    "summary":  "Authoritative runtime modulation stack for persona selection behavior.",
+    "memberIds":  [
+                      "NB.MOD.01"
+                  ],
+    "createdBy":  "openclaw-umg-envoy-agent",
+    "createdAt":  "2026-04-21T15:49:24.4357926Z"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "stage5-micro-agent",
+  "title": "Stage5 Micro Agent",
+  "category": "micro-agent",
+  "role": "validator",
+  "summary": "Stage5 generated micro agent",
+  "createdBy": "umg-envoy-agent-plugin",
+  "createdAt": "2026-04-17T12:45:30.763Z",
+  "executionIntent": {
+    "kind": "micro-task-agent",
+    "notes": [
+      "This scaffold is a first-pass generated UMG micro-agent block.",
+      "Downstream refinement should decide whether it becomes a MOLT block, NeoBlock, or NeoStack-linked artifact."
+    ]
+  }
+}

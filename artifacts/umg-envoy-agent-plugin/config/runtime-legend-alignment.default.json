@@ -8,141 +8,141 @@
   ],
   "stackIdMap": {
     "stack.persona.core": {
-      "resolvedId": "S.01",
+      "resolvedId": "S.MOD.01",
       "status": "authoritative",
-      "source": "manual-stage4b-alignment",
-      "intent": "bridge_only",
+      "source": "stage5a-modulation-recovery",
+      "intent": "canon_candidate",
       "targetKind": "catalog_backed"
     },
     "stack.response.posture": {
-      "resolvedId": "S.01",
+      "resolvedId": "S.MOD.02",
       "status": "authoritative",
-      "source": "manual-stage4b-alignment",
-      "intent": "bridge_only",
+      "source": "stage5a-modulation-recovery",
+      "intent": "canon_candidate",
       "targetKind": "catalog_backed"
     },
     "stack.response.format": {
-      "resolvedId": "S.01",
+      "resolvedId": "S.MOD.03",
       "status": "authoritative",
-      "source": "manual-stage4b-alignment",
-      "intent": "bridge_only",
+      "source": "stage5a-modulation-recovery",
+      "intent": "canon_candidate",
       "targetKind": "catalog_backed"
     }
   },
   "blockIdMap": {
     "block.persona.base": {
-      "resolvedId": "N.03.01",
+      "resolvedId": "NB.MOD.01",
       "status": "authoritative",
-      "source": "manual-stage4b-alignment",
-      "intent": "bridge_only",
+      "source": "stage5a-modulation-recovery",
+      "intent": "canon_candidate",
       "targetKind": "catalog_backed"
     },
     "block.persona.playful": {
-      "resolvedId": "N.03.01",
+      "resolvedId": "NB.MOD.01",
       "status": "authoritative",
-      "source": "manual-stage4b-alignment",
+      "source": "stage5a-modulation-recovery",
       "intent": "bridge_only",
       "targetKind": "catalog_backed"
     },
     "block.persona.analytical": {
-      "resolvedId": "N.03.01",
+      "resolvedId": "NB.MOD.01",
       "status": "authoritative",
-      "source": "manual-stage4b-alignment",
+      "source": "stage5a-modulation-recovery",
       "intent": "bridge_only",
       "targetKind": "catalog_backed"
     },
     "block.persona.formal": {
-      "resolvedId": "N.03.01",
+      "resolvedId": "NB.MOD.01",
       "status": "authoritative",
-      "source": "manual-stage4b-alignment",
+      "source": "stage5a-modulation-recovery",
       "intent": "bridge_only",
       "targetKind": "catalog_backed"
     },
     "block.posture.direct": {
-      "resolvedId": "N.03.01",
+      "resolvedId": "NB.MOD.02",
       "status": "authoritative",
-      "source": "manual-stage4b-alignment",
-      "intent": "bridge_only",
+      "source": "stage5a-modulation-recovery",
+      "intent": "canon_candidate",
       "targetKind": "catalog_backed"
     },
     "block.posture.expansive": {
-      "resolvedId": "N.03.01",
+      "resolvedId": "NB.MOD.02",
       "status": "authoritative",
-      "source": "manual-stage4b-alignment",
+      "source": "stage5a-modulation-recovery",
       "intent": "bridge_only",
       "targetKind": "catalog_backed"
     },
     "block.format.list": {
-      "resolvedId": "N.03.01",
+      "resolvedId": "NB.MOD.03",
       "status": "authoritative",
-      "source": "manual-stage4b-alignment",
-      "intent": "bridge_only",
+      "source": "stage5a-modulation-recovery",
+      "intent": "canon_candidate",
       "targetKind": "catalog_backed"
     },
     "block.format.narrative": {
-      "resolvedId": "N.03.01",
+      "resolvedId": "NB.MOD.03",
       "status": "authoritative",
-      "source": "manual-stage4b-alignment",
+      "source": "stage5a-modulation-recovery",
       "intent": "bridge_only",
       "targetKind": "catalog_backed"
     }
   },
   "moltIdMap": {
     "block.persona.base": {
-      "resolvedId": "INST.061",
-      "status": "discovered",
-      "source": "manual-stage4b-alignment",
-      "intent": "bridge_only",
-      "targetKind": "discovered_fallback"
+      "resolvedId": "INST.MOD.001",
+      "status": "authoritative",
+      "source": "stage5a-modulation-recovery",
+      "intent": "canon_candidate",
+      "targetKind": "catalog_backed"
     },
     "block.persona.playful": {
-      "resolvedId": "INST.061",
-      "status": "discovered",
-      "source": "manual-stage4b-alignment",
-      "intent": "bridge_only",
-      "targetKind": "discovered_fallback"
+      "resolvedId": "INST.MOD.002",
+      "status": "authoritative",
+      "source": "stage5a-modulation-recovery",
+      "intent": "canon_candidate",
+      "targetKind": "catalog_backed"
     },
     "block.persona.analytical": {
-      "resolvedId": "INST.061",
-      "status": "discovered",
-      "source": "manual-stage4b-alignment",
-      "intent": "bridge_only",
-      "targetKind": "discovered_fallback"
+      "resolvedId": "INST.MOD.003",
+      "status": "authoritative",
+      "source": "stage5a-modulation-recovery",
+      "intent": "canon_candidate",
+      "targetKind": "catalog_backed"
     },
     "block.persona.formal": {
-      "resolvedId": "INST.061",
-      "status": "discovered",
-      "source": "manual-stage4b-alignment",
-      "intent": "bridge_only",
-      "targetKind": "discovered_fallback"
+      "resolvedId": "INST.MOD.004",
+      "status": "authoritative",
+      "source": "stage5a-modulation-recovery",
+      "intent": "canon_candidate",
+      "targetKind": "catalog_backed"
     },
     "block.posture.direct": {
-      "resolvedId": "INST.061",
-      "status": "discovered",
-      "source": "manual-stage4b-alignment",
-      "intent": "bridge_only",
-      "targetKind": "discovered_fallback"
+      "resolvedId": "INST.MOD.101",
+      "status": "authoritative",
+      "source": "stage5a-modulation-recovery",
+      "intent": "canon_candidate",
+      "targetKind": "catalog_backed"
     },
     "block.posture.expansive": {
-      "resolvedId": "INST.061",
-      "status": "discovered",
-      "source": "manual-stage4b-alignment",
-      "intent": "bridge_only",
-      "targetKind": "discovered_fallback"
+      "resolvedId": "INST.MOD.102",
+      "status": "authoritative",
+      "source": "stage5a-modulation-recovery",
+      "intent": "canon_candidate",
+      "targetKind": "catalog_backed"
     },
     "block.format.list": {
-      "resolvedId": "INST.061",
-      "status": "discovered",
-      "source": "manual-stage4b-alignment",
-      "intent": "bridge_only",
-      "targetKind": "discovered_fallback"
+      "resolvedId": "INST.MOD.201",
+      "status": "authoritative",
+      "source": "stage5a-modulation-recovery",
+      "intent": "canon_candidate",
+      "targetKind": "catalog_backed"
     },
     "block.format.narrative": {
-      "resolvedId": "INST.061",
-      "status": "discovered",
-      "source": "manual-stage4b-alignment",
-      "intent": "bridge_only",
-      "targetKind": "discovered_fallback"
+      "resolvedId": "INST.MOD.202",
+      "status": "authoritative",
+      "source": "stage5a-modulation-recovery",
+      "intent": "canon_candidate",
+      "targetKind": "catalog_backed"
     }
   }
 }

@@ -1,0 +1,15 @@
+﻿{
+    "id":  "INST.MOD.001",
+    "title":  "Persona Base Modulation",
+    "kind":  "molt-block",
+    "moltType":  "instruction",
+    "summary":  "Base persona modulation instruction used by runtime planner alignment recovery.",
+    "authority":  70,
+    "tags":  [
+                 "modulation",
+                 "runtime-planner",
+                 "stage-5a"
+             ],
+    "createdBy":  "openclaw-umg-envoy-agent",
+    "createdAt":  "2026-04-21T15:49:24.4357926Z"
+}

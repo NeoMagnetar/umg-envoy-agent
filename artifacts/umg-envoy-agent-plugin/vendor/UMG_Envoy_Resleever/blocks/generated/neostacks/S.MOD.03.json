@@ -1,0 +1,11 @@
+﻿{
+    "id":  "S.MOD.03",
+    "title":  "Response Format Modulation Stack",
+    "kind":  "neostack",
+    "summary":  "Authoritative runtime modulation stack for response format behavior.",
+    "memberIds":  [
+                      "NB.MOD.03"
+                  ],
+    "createdBy":  "openclaw-umg-envoy-agent",
+    "createdAt":  "2026-04-21T15:49:24.4357926Z"
+}

@@ -1,0 +1,12 @@
+﻿{
+    "id":  "NB.MOD.03",
+    "title":  "Response Format Modulation NeoBlock",
+    "kind":  "neoblock",
+    "summary":  "Authoritative NeoBlock for response format modulation behavior.",
+    "blockIds":  [
+                     "INST.MOD.201",
+                     "INST.MOD.202"
+                 ],
+    "createdBy":  "openclaw-umg-envoy-agent",
+    "createdAt":  "2026-04-21T15:49:24.4357926Z"
+}

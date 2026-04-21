@@ -1,0 +1,11 @@
+{
+  "id": "stage5-molt",
+  "title": "Stage5 MOLT",
+  "kind": "molt-block",
+  "moltType": "cognition",
+  "summary": "Stage5 validation MOLT block",
+  "authority": 50,
+  "tags": [],
+  "createdBy": "umg-envoy-agent-plugin",
+  "createdAt": "2026-04-17T12:43:08.118Z"
+}

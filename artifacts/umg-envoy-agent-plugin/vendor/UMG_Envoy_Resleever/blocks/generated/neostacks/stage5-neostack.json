@@ -1,0 +1,9 @@
+{
+  "id": "stage5-neostack",
+  "title": "Stage5 NeoStack",
+  "kind": "neostack",
+  "summary": "Stage5 validation neostack",
+  "memberIds": [],
+  "createdBy": "umg-envoy-agent-plugin",
+  "createdAt": "2026-04-17T12:44:06.312Z"
+}
