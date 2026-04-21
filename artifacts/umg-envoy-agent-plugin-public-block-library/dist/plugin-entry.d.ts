@@ -10,9 +10,6 @@ declare const entry: {
         registerCli?: (register: any, options?: {
             commands?: string[];
         }) => void;
-        registerHook?: (hookName: string, handler: any, options?: {
-            priority?: number;
-        }) => void;
     }, config?: PluginConfig): void;
 };
 export default entry;

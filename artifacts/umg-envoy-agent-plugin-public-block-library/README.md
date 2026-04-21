@@ -64,6 +64,7 @@ Current registered tools:
 
 See also:
 - `docs/TOOL-SURFACE.md`
+- `docs/PUBLIC-SAFE-CAPABILITY.md`
 - `vendor/UMG-Block-Library/HUMAN/MOLT-BLOCKS/INDEX.md`
 
 Bundled public library additions in this pass:
