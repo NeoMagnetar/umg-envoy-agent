@@ -1,0 +1,61 @@
+{
+  "id": "umg-envoy-agent",
+  "name": "UMG Envoy Agent",
+  "description": "UMG cognitive runtime plugin variant wired to the public UMG Block Library surface for release packaging.",
+  "version": "0.1.0",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "workspaceRoot": {
+        "type": "string",
+        "description": "Plugin-local workspace root used for bundled doctrine, compiler, and runtime assets."
+      },
+      "compilerRoot": {
+        "type": "string",
+        "description": "Optional override path to a real umg-compiler checkout or compiled compiler-v0 root."
+      },
+      "resleeverRoot": {
+        "type": "string",
+        "description": "Optional override path to a real UMG_Envoy_Resleever checkout."
+      },
+      "allowRuntimeWrites": {
+        "type": "boolean",
+        "description": "Allow runtime-affecting resleeve/promote operations that modify runtime state files."
+      },
+      "defaultSleeveId": {
+        "type": "string",
+        "description": "Default sleeve id to use when a tool call omits sleeve selection."
+      },
+      "debugDirectReplyBehavior": {
+        "type": "boolean",
+        "description": "Enable legacy direct reply override behavior for trigger debugging. Default off."
+      }
+    }
+  },
+  "uiHints": {
+    "workspaceRoot": {
+      "label": "Workspace root"
+    },
+    "compilerRoot": {
+      "label": "Compiler root",
+      "advanced": true
+    },
+    "resleeverRoot": {
+      "label": "Resleever root",
+      "advanced": true
+    },
+    "allowRuntimeWrites": {
+      "label": "Allow runtime writes",
+      "help": "Enable operations that modify active runtime sleeve/stack state."
+    },
+    "defaultSleeveId": {
+      "label": "Default sleeve id"
+    },
+    "debugDirectReplyBehavior": {
+      "label": "Debug Direct Reply Behavior",
+      "help": "Enable legacy trigger reply override behavior for debugging only.",
+      "advanced": true
+    }
+  }
+}
