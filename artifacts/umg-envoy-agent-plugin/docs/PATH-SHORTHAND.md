@@ -36,6 +36,14 @@ Optional relationship layers:
 - `MRG[...]`
 - `WIN[...]`
 
+Canonical relationship markers for the frozen v0.2 contract:
+- `PAR` = parallel
+- `SEQ` = sequence
+- `NEST` = nested
+- `OVR` = overlay
+
+`CHN` may still appear in transitional code paths, but it is compatibility-only rather than part of the canonical frozen syntax.
+
 ## State symbols
 `MOLT[...]` lines use a state symbol before the role code.
 
@@ -43,7 +51,9 @@ State symbols:
 - `+` = active
 - `~` = latent
 - `-` = suppressed
-- `x` = off
+- `x` = hard-off
+
+Winner is a planner declaration expressed through `WIN[...]`, not a fifth `MOLT` state symbol.
 
 Example:
 - `MOLT[+Iblock.answer.direct]`

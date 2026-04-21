@@ -1,5 +1,6 @@
 export type MoltRoleCode = "T" | "D" | "I" | "S" | "P" | "H" | "B";
 export type PlannerNodeState = "active" | "latent" | "suppressed" | "off";
+export type PlannerWinnerKind = "chain" | string;
 export type RelationshipKind = "PAR" | "SEQ" | "CHN" | "NEST" | "OVR";
 export type BundleIntent = "ALT" | "RANK" | "COACT";
 export interface GateStateChange {

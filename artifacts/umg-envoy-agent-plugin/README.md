@@ -104,6 +104,8 @@ CLI root:
 See also:
 - `docs/TOOL-SURFACE.md`
 - `docs/PATH-SHORTHAND.md`
+- `docs/UMG-PATH-SHORTHAND-v0.2-CONTRACT.md`
+- `docs/PLANNER-INTEGRATION-STAGES.md`
 - `docs/PATH-SHORTHAND-EXAMPLE.umgpath`
 
 ## Included package contents
