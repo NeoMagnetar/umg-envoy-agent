@@ -1,7 +1,7 @@
 {
   "$schema": "https://openclaw.ai/schemas/plugin-manifest.v1.json",
   "id": "umg-envoy-agent",
-  "name": "UMG Envoy Agent",
+  "name": "umg-envoy-agent",
   "version": "0.1.0",
   "description": "Public-safe UMG planner shorthand plugin for OpenClaw.",
   "entry": "dist/index.js",
