@@ -77,7 +77,7 @@ function registerCliBridge(api: any, _config?: PluginConfig) {
 const entry = {
   id: "umg-envoy-agent",
   name: "UMG Envoy Agent",
-  description: "Public-safe UMG planner plugin surface for OpenClaw.",
+  description: "UMG Envoy Agent is a modular cognitive architecture runtime for OpenClaw that exposes a bounded public-safe planner and path-building surface from the broader UMG system.",
   register(api: { registerTool: (definition: any, options?: { optional?: boolean }) => void; registerCli?: (register: any, options?: { commands?: string[] }) => void }, config?: PluginConfig) {
     registerCliBridge(api, config);
 

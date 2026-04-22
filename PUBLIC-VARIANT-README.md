@@ -1,30 +1,31 @@
-# Public Variant Readiness Notes
+# UMG Envoy Agent Public Package Notes
 
-## Public content source
+UMG Envoy Agent is a modular cognitive architecture runtime for OpenClaw that exposes a bounded public-safe planner and path-building surface from the broader UMG system.
 
-This plugin variant prefers:
-- `vendor/UMG-Block-Library`
+## Public package purpose
 
-That public Block Library is the content source for public-safe examples, public-safe sleeves, public-facing runtime-aligned assets, and the dedicated AIM / USE / NEED libraries bundled with this package.
+This package is the public-facing bounded release of UMG Envoy Agent.
+It is intentionally narrower than the broader internal UMG lane and is designed for review, installation, and public-safe use.
 
-## Shared with the private lane
+## Public package scope
 
-Shared architecture concepts include:
-- canonical trigger identifiers
-- runtime activation payload model
-- authored resolver rule architecture
-- persistent stack naming discipline
-- family naming discipline
+The public package keeps only the bounded public command surface:
+- status
+- parse-path
+- validate-path
+- render-path
+- build-path
+- matrix-status
 
-## Kept private
+## Excluded internal lanes
 
-The following remain private to the internal lane:
-- private/proprietary sleeves
-- runtime traces and active state
-- generated/archive sleeve lanes
-- internal operational artifacts
-- unreviewed experiments
+The public package intentionally excludes:
+- compiler/build orchestration
+- runtime promotion and rollback
+- authoring/scaffolding lanes
+- broader internal operator-heavy runtime surfaces
+- internal trace-heavy lanes
 
-## Review packaging note
+## Packaging note
 
-This package is intended as a public-facing reviewable build, not a claim that the public lane equals the full internal lane in depth.
+This package should be read as a bounded public runtime release, not as a claim that the public package equals the full internal UMG system in depth or operational breadth.

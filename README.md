@@ -1,23 +1,21 @@
 # UMG Envoy Agent
 
-UMG Envoy Agent is a public-safe OpenClaw plugin package that exposes a narrowed planner shorthand surface from the broader internal UMG Envoy lane.
-
-It is intended to provide a safe outward-facing subset, not the full internal planner / adapter / compiler operator system.
+UMG Envoy Agent is a modular cognitive architecture runtime built on the UMG system. This public release exposes a bounded planner and path-building surface for parsing, validating, rendering, and building human-inspectable runtime paths, while intentionally excluding internal compiler, rollback, promotion, and operator-heavy lanes from the public package.
 
 ## Release status
 
-**Version:** `0.1.0`
-**Release posture:** public-safe first release candidate
+**Version:** `0.1.1`
+**Release posture:** trust-cleanup public-safe release
 
 ## What it does
-This public package exposes a public-safe planner shorthand surface for:
+This public package exposes a bounded public-safe planner and path-building surface for:
 - parsing planner shorthand
 - validating planner shorthand
 - rendering planner shorthand
 - building a human-inspectable planner path from a message
 - reporting high-level status and matrix summary
 
-## Supported public-safe commands
+## Supported public commands
 - `umg-envoy status`
 - `umg-envoy parse-path`
 - `umg-envoy validate-path`
@@ -25,24 +23,29 @@ This public package exposes a public-safe planner shorthand surface for:
 - `umg-envoy build-path`
 - `umg-envoy matrix-status`
 
-## Intentionally not widened
-This public package does **not** expose:
+## Intentionally excluded from the public package
+This public package does **not** ship:
+- internal compiler/build orchestration lanes
+- rollback and promotion lanes
+- runtime authoring/scaffolding lanes
+- internal operator-heavy runtime surfaces
 - full `path-trace`
 - full `adapter-trace`
 - full `compiler-trace`
 - raw bridge provenance
-- recovery internals
-- internal operator lane detail
-- the full internal modulation-heavy runtime promise
 
 ## Included package contents
-This public-safe package includes:
-- `dist/` compiled plugin runtime
-- `docs/` public-safe docs
-- selected vendored public-safe assets required by this subset
+This public package includes:
+- `dist/` compiled public plugin runtime
+- `docs/` public-facing package docs
+- `README.md`
+- `PUBLIC-VARIANT-README.md`
+- `PUBLIC-VARIANT-OVERVIEW.md`
+- `openclaw.plugin.json`
+- `package.json`
 
 ## Install
-### Option A - local path install in OpenClaw
+### Local path install in OpenClaw
 Use the plugin folder directly:
 
 - `C:\.openclaw\workspace\artifacts\umg-envoy-agent-plugin-public-block-library`
@@ -59,18 +62,23 @@ npm install
 npm run build
 ```
 
-If you are using the already-prepared packaged release, `dist/` is already included.
+If you are using the prepared packaged release, `dist/` is already included.
 
 ## Configuration
-Config schema lives in:
+OpenClaw package metadata required for publishing and installation lives in:
+- `package.json -> openclaw.extensions`
+- `package.json -> openclaw.configSchema`
+
+Plugin manifest metadata lives in:
 - `openclaw.plugin.json`
 
 ## Public-safe posture
-This package is a selective outward-facing subset of the internal UMG Envoy lane.
-It should be evaluated as a bounded public-safe planner utility package, not as the full internal architecture export.
+UMG Envoy Agent is a modular cognitive architecture runtime for OpenClaw that exposes a bounded public-safe planner and path-building surface from the broader UMG system.
+
+It should be evaluated as a bounded public package, not as the full internal UMG runtime lane.
 
 ## See also
 - `docs/TOOL-SURFACE.md`
 - `docs/PUBLIC-SAFE-CAPABILITY.md`
 - `docs/INSTALL.md`
-- `docs/PUBLISHABILITY-ASSESSMENT.md`
+- `docs/RELEASE-NOTES-0.1.1.md`

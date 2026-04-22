@@ -1,8 +1,8 @@
 {
   "id": "umg-envoy-agent",
   "name": "umg-envoy-agent",
-  "version": "0.1.0",
-  "description": "Public-safe UMG planner shorthand plugin for OpenClaw.",
+  "version": "0.1.1",
+  "description": "UMG Envoy Agent is a modular cognitive architecture runtime for OpenClaw that exposes a bounded public-safe planner and path-building surface from the broader UMG system.",
   "entry": "dist/index.js",
   "apiVersion": 1,
   "config": {
