@@ -1,0 +1,19 @@
+{
+  "$schema": "https://openclaw.ai/schemas/plugin-manifest.v1.json",
+  "id": "umg-envoy-agent",
+  "name": "UMG Envoy Agent",
+  "version": "0.1.0",
+  "description": "Public-safe UMG planner shorthand plugin for OpenClaw.",
+  "entry": "dist/index.js",
+  "apiVersion": 1,
+  "config": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "defaultSleeveId": {
+        "type": "string",
+        "description": "Optional default public-safe sleeve id for build-path." 
+      }
+    }
+  }
+}

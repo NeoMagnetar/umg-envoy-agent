@@ -1,0 +1,41 @@
+{
+  "name": "umg-envoy-agent",
+  "version": "0.1.0",
+  "description": "Public-safe UMG planner shorthand plugin for OpenClaw.",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "docs",
+    "vendor/UMG-Block-Library",
+    "README.md",
+    "PUBLIC-VARIANT-README.md",
+    "PUBLIC-VARIANT-OVERVIEW.md",
+    "openclaw.plugin.json",
+    "package.json"
+  ],
+  "scripts": {
+    "build": "tsc -p ."
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "openclaw": {
+    "compat": {
+      "pluginApi": ">=2026.3.23-1",
+      "minGatewayVersion": "2026.3.23-1"
+    },
+    "build": {
+      "openclawVersion": "2026.3.23-1",
+      "pluginSdkVersion": "2026.3.23-1"
+    }
+  },
+  "dependencies": {
+    "@sinclair/typebox": "^0.34.41"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.8.3"
+  }
+}
