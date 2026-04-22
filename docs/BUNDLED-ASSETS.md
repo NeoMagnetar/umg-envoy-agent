@@ -31,3 +31,4 @@ Config overrides allow the operator to point the plugin at live working checkout
 
 ## Stage 2 caution
 Bundling a source tree is not the same as wiring the runtime behavior. Stage 3 is where the plugin actually starts using these assets through registered OpenClaw tools.
+
