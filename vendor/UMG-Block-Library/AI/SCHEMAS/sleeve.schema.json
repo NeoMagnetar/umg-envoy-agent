@@ -1,0 +1,36 @@
+{
+  "$schema": "https://umg.envoy/schemas/sleeve.template.schema.json",
+  "id": "{{REQUIRED_SLEEVE_ID}}",
+  "name": "{{REQUIRED_NAME}}",
+  "purpose": "{{REQUIRED_PURPOSE}}",
+  "category": "{{general|domain_specific|framework_specific|experimental|archived}}",
+  "subcategory": "{{lower_snake_case}}",
+  "status": "{{active|staged|archived|experimental}}",
+  "version": "{{semver}}",
+  "tags": [
+    "{{primary_tag}}"
+  ],
+  "neostack_ids": [
+    "{{NST.xxx}}"
+  ],
+  "governance": {
+    "directive_ids": [],
+    "policy_links": [],
+    "notes": null
+  },
+  "runtime": {
+    "staging_file": null,
+    "active_stack_path": null,
+    "compiler_helper": null,
+    "notes": null
+  },
+  "activation_notes": null,
+  "examples": [],
+  "source": {
+    "library_name": "{{source_library}}",
+    "library_version": "{{library_semver}}",
+    "created": "{{YYYY-MM-DD}}",
+    "created_by": "{{steward}}"
+  },
+  "notes": null
+}

@@ -1,0 +1,5220 @@
+{
+  "schema": "https://umg.envoy/schemas/molt-primary.library.schema.json",
+  "library": {
+    "name": "MOLT PRIMARY Library",
+    "version": "1.0.0",
+    "block_type": "PRIMARY",
+    "category": "general",
+    "description": "Normalized primary catalog produced during Stage 4",
+    "source": {
+      "provided_by": "User supplied Stage 4 drop",
+      "ingested_at": "2026-03-13T08:35:23-06:00",
+      "ingested_by": "Stage4-Agent",
+      "last_expanded_at": "2026-04-17T18:31:13Z",
+      "last_expanded_by": "OpenClaw"
+    },
+    "entry_count": 200
+  },
+  "entries": [
+    {
+      "id": "PRIM.001",
+      "type": "PRIMARY",
+      "name": "Factual accuracy",
+      "category": "accuracy_precision",
+      "subcategory": "factual_accuracy",
+      "domain": "ACCURACY_PRECISION",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "accuracy-precision",
+        "factual-accuracy"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Getting the facts right",
+      "core_concern": "Truth over approximation",
+      "notes": null
+    },
+    {
+      "id": "PRIM.002",
+      "type": "PRIMARY",
+      "name": "Technical precision",
+      "category": "accuracy_precision",
+      "subcategory": "technical_precision",
+      "domain": "ACCURACY_PRECISION",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "accuracy-precision",
+        "technical-precision"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Exact specifications and measurements",
+      "core_concern": "Precision over vagueness",
+      "notes": null
+    },
+    {
+      "id": "PRIM.003",
+      "type": "PRIMARY",
+      "name": "Logical correctness",
+      "category": "accuracy_precision",
+      "subcategory": "logical_correctness",
+      "domain": "ACCURACY_PRECISION",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "accuracy-precision",
+        "logical-correctness"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Valid reasoning without fallacies",
+      "core_concern": "Sound logic over persuasion",
+      "notes": null
+    },
+    {
+      "id": "PRIM.004",
+      "type": "PRIMARY",
+      "name": "Data integrity",
+      "category": "accuracy_precision",
+      "subcategory": "data_integrity",
+      "domain": "ACCURACY_PRECISION",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "accuracy-precision",
+        "data-integrity"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Trustworthy and uncorrupted information",
+      "core_concern": "Reliability over convenience",
+      "notes": null
+    },
+    {
+      "id": "PRIM.005",
+      "type": "PRIMARY",
+      "name": "Verification",
+      "category": "accuracy_precision",
+      "subcategory": "verification",
+      "domain": "ACCURACY_PRECISION",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "accuracy-precision",
+        "verification"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Confirming correctness through testing",
+      "core_concern": "Proven over assumed",
+      "notes": null
+    },
+    {
+      "id": "PRIM.006",
+      "type": "PRIMARY",
+      "name": "Conceptual understanding",
+      "category": "understanding_clarity",
+      "subcategory": "conceptual_understanding",
+      "domain": "UNDERSTANDING_CLARITY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "understanding-clarity",
+        "conceptual-understanding"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Grasping fundamental ideas",
+      "core_concern": "Deep comprehension over surface knowledge",
+      "notes": null
+    },
+    {
+      "id": "PRIM.007",
+      "type": "PRIMARY",
+      "name": "Clear communication",
+      "category": "understanding_clarity",
+      "subcategory": "clear_communication",
+      "domain": "UNDERSTANDING_CLARITY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "understanding-clarity",
+        "clear-communication"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Being understood without ambiguity",
+      "core_concern": "Clarity over completeness",
+      "notes": null
+    },
+    {
+      "id": "PRIM.008",
+      "type": "PRIMARY",
+      "name": "Shared meaning",
+      "category": "understanding_clarity",
+      "subcategory": "shared_meaning",
+      "domain": "UNDERSTANDING_CLARITY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "understanding-clarity",
+        "shared-meaning"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Mutual understanding across parties",
+      "core_concern": "Alignment over efficiency",
+      "notes": null
+    },
+    {
+      "id": "PRIM.009",
+      "type": "PRIMARY",
+      "name": "Transparency",
+      "category": "understanding_clarity",
+      "subcategory": "transparency",
+      "domain": "UNDERSTANDING_CLARITY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "understanding-clarity",
+        "transparency"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Making reasoning visible",
+      "core_concern": "Openness over simplicity",
+      "notes": null
+    },
+    {
+      "id": "PRIM.010",
+      "type": "PRIMARY",
+      "name": "Explanation quality",
+      "category": "understanding_clarity",
+      "subcategory": "explanation_quality",
+      "domain": "UNDERSTANDING_CLARITY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "understanding-clarity",
+        "explanation-quality"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Helping others understand",
+      "core_concern": "Comprehension over brevity",
+      "notes": null
+    },
+    {
+      "id": "PRIM.011",
+      "type": "PRIMARY",
+      "name": "Root cause elimination",
+      "category": "problem_resolution",
+      "subcategory": "root_cause_elimination",
+      "domain": "PROBLEM_RESOLUTION",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "problem-resolution",
+        "root-cause-elimination"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Fixing underlying issues not symptoms",
+      "core_concern": "Permanent fix over quick patch",
+      "notes": null
+    },
+    {
+      "id": "PRIM.012",
+      "type": "PRIMARY",
+      "name": "Obstacle removal",
+      "category": "problem_resolution",
+      "subcategory": "obstacle_removal",
+      "domain": "PROBLEM_RESOLUTION",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "problem-resolution",
+        "obstacle-removal"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Clearing path to progress",
+      "core_concern": "Unblocking over workaround",
+      "notes": null
+    },
+    {
+      "id": "PRIM.013",
+      "type": "PRIMARY",
+      "name": "Solution effectiveness",
+      "category": "problem_resolution",
+      "subcategory": "solution_effectiveness",
+      "domain": "PROBLEM_RESOLUTION",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "problem-resolution",
+        "solution-effectiveness"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Actually solving the problem",
+      "core_concern": "Results over effort",
+      "notes": null
+    },
+    {
+      "id": "PRIM.014",
+      "type": "PRIMARY",
+      "name": "Issue prevention",
+      "category": "problem_resolution",
+      "subcategory": "issue_prevention",
+      "domain": "PROBLEM_RESOLUTION",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "problem-resolution",
+        "issue-prevention"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Stopping problems before they occur",
+      "core_concern": "Proactive over reactive",
+      "notes": null
+    },
+    {
+      "id": "PRIM.015",
+      "type": "PRIMARY",
+      "name": "Recovery capability",
+      "category": "problem_resolution",
+      "subcategory": "recovery_capability",
+      "domain": "PROBLEM_RESOLUTION",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "problem-resolution",
+        "recovery-capability"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Returning to functional state after failure",
+      "core_concern": "Resilience over avoidance",
+      "notes": null
+    },
+    {
+      "id": "PRIM.016",
+      "type": "PRIMARY",
+      "name": "User value",
+      "category": "value_creation",
+      "subcategory": "user_value",
+      "domain": "VALUE_CREATION",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "value-creation",
+        "user-value"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Benefit to people using the system",
+      "core_concern": "User outcomes over feature count",
+      "notes": null
+    },
+    {
+      "id": "PRIM.017",
+      "type": "PRIMARY",
+      "name": "Business impact",
+      "category": "value_creation",
+      "subcategory": "business_impact",
+      "domain": "VALUE_CREATION",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "value-creation",
+        "business-impact"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Measurable improvement to operations",
+      "core_concern": "Impact over activity",
+      "notes": null
+    },
+    {
+      "id": "PRIM.018",
+      "type": "PRIMARY",
+      "name": "Innovation",
+      "category": "value_creation",
+      "subcategory": "innovation",
+      "domain": "VALUE_CREATION",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "value-creation",
+        "innovation"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Creating new capabilities or approaches",
+      "core_concern": "Novelty over familiarity",
+      "notes": null
+    },
+    {
+      "id": "PRIM.019",
+      "type": "PRIMARY",
+      "name": "Efficiency gain",
+      "category": "value_creation",
+      "subcategory": "efficiency_gain",
+      "domain": "VALUE_CREATION",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "value-creation",
+        "efficiency-gain"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Doing more with less",
+      "core_concern": "Optimization over status quo",
+      "notes": null
+    },
+    {
+      "id": "PRIM.020",
+      "type": "PRIMARY",
+      "name": "Quality improvement",
+      "category": "value_creation",
+      "subcategory": "quality_improvement",
+      "domain": "VALUE_CREATION",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "value-creation",
+        "quality-improvement"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Making things better",
+      "core_concern": "Excellence over adequacy",
+      "notes": null
+    },
+    {
+      "id": "PRIM.021",
+      "type": "PRIMARY",
+      "name": "Harm prevention",
+      "category": "safety_security",
+      "subcategory": "harm_prevention",
+      "domain": "SAFETY_SECURITY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "safety-security",
+        "harm-prevention"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Avoiding damage to people or systems",
+      "core_concern": "Safety over speed",
+      "notes": null
+    },
+    {
+      "id": "PRIM.022",
+      "type": "PRIMARY",
+      "name": "Security protection",
+      "category": "safety_security",
+      "subcategory": "security_protection",
+      "domain": "SAFETY_SECURITY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "safety-security",
+        "security-protection"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Defending against threats",
+      "core_concern": "Security over convenience",
+      "notes": null
+    },
+    {
+      "id": "PRIM.023",
+      "type": "PRIMARY",
+      "name": "Privacy preservation",
+      "category": "safety_security",
+      "subcategory": "privacy_preservation",
+      "domain": "SAFETY_SECURITY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "safety-security",
+        "privacy-preservation"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Protecting personal information",
+      "core_concern": "Privacy over functionality",
+      "notes": null
+    },
+    {
+      "id": "PRIM.024",
+      "type": "PRIMARY",
+      "name": "Risk mitigation",
+      "category": "safety_security",
+      "subcategory": "risk_mitigation",
+      "domain": "SAFETY_SECURITY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "safety-security",
+        "risk-mitigation"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Reducing exposure to danger",
+      "core_concern": "Risk management over opportunity",
+      "notes": null
+    },
+    {
+      "id": "PRIM.025",
+      "type": "PRIMARY",
+      "name": "Stability maintenance",
+      "category": "safety_security",
+      "subcategory": "stability_maintenance",
+      "domain": "SAFETY_SECURITY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "safety-security",
+        "stability-maintenance"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Keeping systems functioning reliably",
+      "core_concern": "Stability over new features",
+      "notes": null
+    },
+    {
+      "id": "PRIM.026",
+      "type": "PRIMARY",
+      "name": "Usability",
+      "category": "user_experience",
+      "subcategory": "usability",
+      "domain": "USER_EXPERIENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "user-experience",
+        "usability"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Easy and intuitive to use",
+      "core_concern": "User ease over technical elegance",
+      "notes": null
+    },
+    {
+      "id": "PRIM.027",
+      "type": "PRIMARY",
+      "name": "Accessibility",
+      "category": "user_experience",
+      "subcategory": "accessibility",
+      "domain": "USER_EXPERIENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "user-experience",
+        "accessibility"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Available to all users including those with limitations",
+      "core_concern": "Inclusion over simplification",
+      "notes": null
+    },
+    {
+      "id": "PRIM.028",
+      "type": "PRIMARY",
+      "name": "User satisfaction",
+      "category": "user_experience",
+      "subcategory": "user_satisfaction",
+      "domain": "USER_EXPERIENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "user-experience",
+        "user-satisfaction"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Meeting or exceeding expectations",
+      "core_concern": "Experience over specifications",
+      "notes": null
+    },
+    {
+      "id": "PRIM.029",
+      "type": "PRIMARY",
+      "name": "Engagement",
+      "category": "user_experience",
+      "subcategory": "engagement",
+      "domain": "USER_EXPERIENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "user-experience",
+        "engagement"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Keeping users interested and involved",
+      "core_concern": "Attention over exposure",
+      "notes": null
+    },
+    {
+      "id": "PRIM.030",
+      "type": "PRIMARY",
+      "name": "Delight",
+      "category": "user_experience",
+      "subcategory": "delight",
+      "domain": "USER_EXPERIENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "user-experience",
+        "delight"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Exceeding expectations pleasantly",
+      "core_concern": "Joy over function",
+      "notes": null
+    },
+    {
+      "id": "PRIM.031",
+      "type": "PRIMARY",
+      "name": "Knowledge acquisition",
+      "category": "learning_growth",
+      "subcategory": "knowledge_acquisition",
+      "domain": "LEARNING_GROWTH",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "learning-growth",
+        "knowledge-acquisition"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Gaining new understanding",
+      "core_concern": "Learning over performing",
+      "notes": null
+    },
+    {
+      "id": "PRIM.032",
+      "type": "PRIMARY",
+      "name": "Skill development",
+      "category": "learning_growth",
+      "subcategory": "skill_development",
+      "domain": "LEARNING_GROWTH",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "learning-growth",
+        "skill-development"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Improving capabilities",
+      "core_concern": "Growth over comfort",
+      "notes": null
+    },
+    {
+      "id": "PRIM.033",
+      "type": "PRIMARY",
+      "name": "Continuous improvement",
+      "category": "learning_growth",
+      "subcategory": "continuous_improvement",
+      "domain": "LEARNING_GROWTH",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "learning-growth",
+        "continuous-improvement"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Getting better over time",
+      "core_concern": "Progress over perfection",
+      "notes": null
+    },
+    {
+      "id": "PRIM.034",
+      "type": "PRIMARY",
+      "name": "Feedback integration",
+      "category": "learning_growth",
+      "subcategory": "feedback_integration",
+      "domain": "LEARNING_GROWTH",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "learning-growth",
+        "feedback-integration"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Learning from results",
+      "core_concern": "Adaptation over consistency",
+      "notes": null
+    },
+    {
+      "id": "PRIM.035",
+      "type": "PRIMARY",
+      "name": "Experimentation",
+      "category": "learning_growth",
+      "subcategory": "experimentation",
+      "domain": "LEARNING_GROWTH",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "learning-growth",
+        "experimentation"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Testing new approaches",
+      "core_concern": "Discovery over certainty",
+      "notes": null
+    },
+    {
+      "id": "PRIM.036",
+      "type": "PRIMARY",
+      "name": "Team alignment",
+      "category": "collaboration_teamwork",
+      "subcategory": "team_alignment",
+      "domain": "COLLABORATION_TEAMWORK",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "collaboration-teamwork",
+        "team-alignment"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Everyone working toward same goals",
+      "core_concern": "Coordination over independence",
+      "notes": null
+    },
+    {
+      "id": "PRIM.037",
+      "type": "PRIMARY",
+      "name": "Knowledge sharing",
+      "category": "collaboration_teamwork",
+      "subcategory": "knowledge_sharing",
+      "domain": "COLLABORATION_TEAMWORK",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "collaboration-teamwork",
+        "knowledge-sharing"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Distributing information across team",
+      "core_concern": "Collective wisdom over individual expertise",
+      "notes": null
+    },
+    {
+      "id": "PRIM.038",
+      "type": "PRIMARY",
+      "name": "Consensus building",
+      "category": "collaboration_teamwork",
+      "subcategory": "consensus_building",
+      "domain": "COLLABORATION_TEAMWORK",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "collaboration-teamwork",
+        "consensus-building"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Reaching agreement on direction",
+      "core_concern": "Buy-in over dictation",
+      "notes": null
+    },
+    {
+      "id": "PRIM.039",
+      "type": "PRIMARY",
+      "name": "Mutual support",
+      "category": "collaboration_teamwork",
+      "subcategory": "mutual_support",
+      "domain": "COLLABORATION_TEAMWORK",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "collaboration-teamwork",
+        "mutual-support"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Helping each other succeed",
+      "core_concern": "Collective success over individual glory",
+      "notes": null
+    },
+    {
+      "id": "PRIM.040",
+      "type": "PRIMARY",
+      "name": "Conflict resolution",
+      "category": "collaboration_teamwork",
+      "subcategory": "conflict_resolution",
+      "domain": "COLLABORATION_TEAMWORK",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "collaboration-teamwork",
+        "conflict-resolution"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Addressing disagreements constructively",
+      "core_concern": "Relationship over being right",
+      "notes": null
+    },
+    {
+      "id": "PRIM.041",
+      "type": "PRIMARY",
+      "name": "Resource conservation",
+      "category": "efficiency_optimization",
+      "subcategory": "resource_conservation",
+      "domain": "EFFICIENCY_OPTIMIZATION",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "efficiency-optimization",
+        "resource-conservation"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Minimizing waste",
+      "core_concern": "Efficiency over abundance",
+      "notes": null
+    },
+    {
+      "id": "PRIM.042",
+      "type": "PRIMARY",
+      "name": "Time optimization",
+      "category": "efficiency_optimization",
+      "subcategory": "time_optimization",
+      "domain": "EFFICIENCY_OPTIMIZATION",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "efficiency-optimization",
+        "time-optimization"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Achieving results faster",
+      "core_concern": "Speed over process",
+      "notes": null
+    },
+    {
+      "id": "PRIM.043",
+      "type": "PRIMARY",
+      "name": "Automation",
+      "category": "efficiency_optimization",
+      "subcategory": "automation",
+      "domain": "EFFICIENCY_OPTIMIZATION",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "efficiency-optimization",
+        "automation"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Reducing manual effort",
+      "core_concern": "Leverage over labor",
+      "notes": null
+    },
+    {
+      "id": "PRIM.044",
+      "type": "PRIMARY",
+      "name": "Simplification",
+      "category": "efficiency_optimization",
+      "subcategory": "simplification",
+      "domain": "EFFICIENCY_OPTIMIZATION",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "efficiency-optimization",
+        "simplification"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Removing unnecessary complexity",
+      "core_concern": "Simplicity over comprehensiveness",
+      "notes": null
+    },
+    {
+      "id": "PRIM.045",
+      "type": "PRIMARY",
+      "name": "Scalability",
+      "category": "efficiency_optimization",
+      "subcategory": "scalability",
+      "domain": "EFFICIENCY_OPTIMIZATION",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "efficiency-optimization",
+        "scalability"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Handling growth without proportional resource increase",
+      "core_concern": "Scale over current capacity",
+      "notes": null
+    },
+    {
+      "id": "PRIM.046",
+      "type": "PRIMARY",
+      "name": "Craftsmanship",
+      "category": "quality_excellence",
+      "subcategory": "craftsmanship",
+      "domain": "QUALITY_EXCELLENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "quality-excellence",
+        "craftsmanship"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Attention to detail and quality",
+      "core_concern": "Excellence over adequacy",
+      "notes": null
+    },
+    {
+      "id": "PRIM.047",
+      "type": "PRIMARY",
+      "name": "Standards compliance",
+      "category": "quality_excellence",
+      "subcategory": "standards_compliance",
+      "domain": "QUALITY_EXCELLENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "quality-excellence",
+        "standards-compliance"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Meeting established criteria",
+      "core_concern": "Standards over shortcuts",
+      "notes": null
+    },
+    {
+      "id": "PRIM.048",
+      "type": "PRIMARY",
+      "name": "Consistency",
+      "category": "quality_excellence",
+      "subcategory": "consistency",
+      "domain": "QUALITY_EXCELLENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "quality-excellence",
+        "consistency"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Reliable performance across instances",
+      "core_concern": "Reliability over variance",
+      "notes": null
+    },
+    {
+      "id": "PRIM.049",
+      "type": "PRIMARY",
+      "name": "Robustness",
+      "category": "quality_excellence",
+      "subcategory": "robustness",
+      "domain": "QUALITY_EXCELLENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "quality-excellence",
+        "robustness"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Working well under varied conditions",
+      "core_concern": "Resilience over optimal-case performance",
+      "notes": null
+    },
+    {
+      "id": "PRIM.050",
+      "type": "PRIMARY",
+      "name": "Refinement",
+      "category": "quality_excellence",
+      "subcategory": "refinement",
+      "domain": "QUALITY_EXCELLENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "quality-excellence",
+        "refinement"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Polishing to high standard",
+      "core_concern": "Polish over completion",
+      "notes": null
+    },
+    {
+      "id": "PRIM.051",
+      "type": "PRIMARY",
+      "name": "Informed choice",
+      "category": "decision_making",
+      "subcategory": "informed_choice",
+      "domain": "DECISION_MAKING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "decision-making",
+        "informed-choice"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Deciding based on good information",
+      "core_concern": "Information over intuition",
+      "notes": null
+    },
+    {
+      "id": "PRIM.052",
+      "type": "PRIMARY",
+      "name": "Strategic thinking",
+      "category": "decision_making",
+      "subcategory": "strategic_thinking",
+      "domain": "DECISION_MAKING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "decision-making",
+        "strategic-thinking"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Considering long-term implications",
+      "core_concern": "Future over present",
+      "notes": null
+    },
+    {
+      "id": "PRIM.053",
+      "type": "PRIMARY",
+      "name": "Risk assessment",
+      "category": "decision_making",
+      "subcategory": "risk_assessment",
+      "domain": "DECISION_MAKING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "decision-making",
+        "risk-assessment"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Understanding potential downsides",
+      "core_concern": "Risk awareness over optimism",
+      "notes": null
+    },
+    {
+      "id": "PRIM.054",
+      "type": "PRIMARY",
+      "name": "Option evaluation",
+      "category": "decision_making",
+      "subcategory": "option_evaluation",
+      "domain": "DECISION_MAKING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "decision-making",
+        "option-evaluation"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Fairly comparing alternatives",
+      "core_concern": "Comparison over first acceptable",
+      "notes": null
+    },
+    {
+      "id": "PRIM.055",
+      "type": "PRIMARY",
+      "name": "Decisiveness",
+      "category": "decision_making",
+      "subcategory": "decisiveness",
+      "domain": "DECISION_MAKING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "decision-making",
+        "decisiveness"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Making timely choices",
+      "core_concern": "Action over analysis paralysis",
+      "notes": null
+    },
+    {
+      "id": "PRIM.056",
+      "type": "PRIMARY",
+      "name": "Trust building",
+      "category": "relationships_trust",
+      "subcategory": "trust_building",
+      "domain": "RELATIONSHIPS_TRUST",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "relationships-trust",
+        "trust-building"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Establishing reliability and honesty",
+      "core_concern": "Trust over transaction",
+      "notes": null
+    },
+    {
+      "id": "PRIM.057",
+      "type": "PRIMARY",
+      "name": "Relationship maintenance",
+      "category": "relationships_trust",
+      "subcategory": "relationship_maintenance",
+      "domain": "RELATIONSHIPS_TRUST",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "relationships-trust",
+        "relationship-maintenance"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Keeping connections healthy",
+      "core_concern": "Relationship over task",
+      "notes": null
+    },
+    {
+      "id": "PRIM.058",
+      "type": "PRIMARY",
+      "name": "Respect",
+      "category": "relationships_trust",
+      "subcategory": "respect",
+      "domain": "RELATIONSHIPS_TRUST",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "relationships-trust",
+        "respect"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Honoring others' dignity and autonomy",
+      "core_concern": "Dignity over convenience",
+      "notes": null
+    },
+    {
+      "id": "PRIM.059",
+      "type": "PRIMARY",
+      "name": "Empathy",
+      "category": "relationships_trust",
+      "subcategory": "empathy",
+      "domain": "RELATIONSHIPS_TRUST",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "relationships-trust",
+        "empathy"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Understanding others' perspectives",
+      "core_concern": "Understanding over judgment",
+      "notes": null
+    },
+    {
+      "id": "PRIM.060",
+      "type": "PRIMARY",
+      "name": "Reciprocity",
+      "category": "relationships_trust",
+      "subcategory": "reciprocity",
+      "domain": "RELATIONSHIPS_TRUST",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "relationships-trust",
+        "reciprocity"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Mutual benefit and fairness",
+      "core_concern": "Balance over exploitation",
+      "notes": null
+    },
+    {
+      "id": "PRIM.061",
+      "type": "PRIMARY",
+      "name": "Long-term viability",
+      "category": "sustainability_longevity",
+      "subcategory": "long_term_viability",
+      "domain": "SUSTAINABILITY_LONGEVITY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "sustainability-longevity",
+        "long-term-viability"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Lasting beyond immediate needs",
+      "core_concern": "Sustainability over quick wins",
+      "notes": null
+    },
+    {
+      "id": "PRIM.062",
+      "type": "PRIMARY",
+      "name": "Maintainability",
+      "category": "sustainability_longevity",
+      "subcategory": "maintainability",
+      "domain": "SUSTAINABILITY_LONGEVITY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "sustainability-longevity",
+        "maintainability"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Easy to keep functioning over time",
+      "core_concern": "Maintainability over initial development speed",
+      "notes": null
+    },
+    {
+      "id": "PRIM.063",
+      "type": "PRIMARY",
+      "name": "Adaptability",
+      "category": "sustainability_longevity",
+      "subcategory": "adaptability",
+      "domain": "SUSTAINABILITY_LONGEVITY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "sustainability-longevity",
+        "adaptability"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Ability to change with needs",
+      "core_concern": "Flexibility over optimization",
+      "notes": null
+    },
+    {
+      "id": "PRIM.064",
+      "type": "PRIMARY",
+      "name": "Resource renewal",
+      "category": "sustainability_longevity",
+      "subcategory": "resource_renewal",
+      "domain": "SUSTAINABILITY_LONGEVITY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "sustainability-longevity",
+        "resource-renewal"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Replenishing what is consumed",
+      "core_concern": "Renewal over extraction",
+      "notes": null
+    },
+    {
+      "id": "PRIM.065",
+      "type": "PRIMARY",
+      "name": "Future readiness",
+      "category": "sustainability_longevity",
+      "subcategory": "future_readiness",
+      "domain": "SUSTAINABILITY_LONGEVITY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "sustainability-longevity",
+        "future-readiness"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Prepared for what comes next",
+      "core_concern": "Preparation over current fit",
+      "notes": null
+    },
+    {
+      "id": "PRIM.066",
+      "type": "PRIMARY",
+      "name": "Visible reasoning",
+      "category": "transparency_accountability",
+      "subcategory": "visible_reasoning",
+      "domain": "TRANSPARENCY_ACCOUNTABILITY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "transparency-accountability",
+        "visible-reasoning"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Making thought process clear",
+      "core_concern": "Transparency over efficiency",
+      "notes": null
+    },
+    {
+      "id": "PRIM.067",
+      "type": "PRIMARY",
+      "name": "Auditability",
+      "category": "transparency_accountability",
+      "subcategory": "auditability",
+      "domain": "TRANSPARENCY_ACCOUNTABILITY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "transparency-accountability",
+        "auditability"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Able to be reviewed and verified",
+      "core_concern": "Accountability over autonomy",
+      "notes": null
+    },
+    {
+      "id": "PRIM.068",
+      "type": "PRIMARY",
+      "name": "Ownership",
+      "category": "transparency_accountability",
+      "subcategory": "ownership",
+      "domain": "TRANSPARENCY_ACCOUNTABILITY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "transparency-accountability",
+        "ownership"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Taking responsibility for outcomes",
+      "core_concern": "Responsibility over blame avoidance",
+      "notes": null
+    },
+    {
+      "id": "PRIM.069",
+      "type": "PRIMARY",
+      "name": "Traceability",
+      "category": "transparency_accountability",
+      "subcategory": "traceability",
+      "domain": "TRANSPARENCY_ACCOUNTABILITY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "transparency-accountability",
+        "traceability"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Following decision and data lineage",
+      "core_concern": "Tracking over mystery",
+      "notes": null
+    },
+    {
+      "id": "PRIM.070",
+      "type": "PRIMARY",
+      "name": "Honesty",
+      "category": "transparency_accountability",
+      "subcategory": "honesty",
+      "domain": "TRANSPARENCY_ACCOUNTABILITY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "transparency-accountability",
+        "honesty"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Truthful representation of reality",
+      "core_concern": "Truth over appearance",
+      "notes": null
+    },
+    {
+      "id": "PRIM.071",
+      "type": "PRIMARY",
+      "name": "Original thinking",
+      "category": "creativity_innovation",
+      "subcategory": "original_thinking",
+      "domain": "CREATIVITY_INNOVATION",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "creativity-innovation",
+        "original-thinking"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Novel ideas and perspectives",
+      "core_concern": "Originality over convention",
+      "notes": null
+    },
+    {
+      "id": "PRIM.072",
+      "type": "PRIMARY",
+      "name": "Creative synthesis",
+      "category": "creativity_innovation",
+      "subcategory": "creative_synthesis",
+      "domain": "CREATIVITY_INNOVATION",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "creativity-innovation",
+        "creative-synthesis"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Combining ideas in new ways",
+      "core_concern": "Innovation over imitation",
+      "notes": null
+    },
+    {
+      "id": "PRIM.073",
+      "type": "PRIMARY",
+      "name": "Possibility exploration",
+      "category": "creativity_innovation",
+      "subcategory": "possibility_exploration",
+      "domain": "CREATIVITY_INNOVATION",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "creativity-innovation",
+        "possibility-exploration"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Discovering what could be",
+      "core_concern": "Potential over proven",
+      "notes": null
+    },
+    {
+      "id": "PRIM.074",
+      "type": "PRIMARY",
+      "name": "Artistic expression",
+      "category": "creativity_innovation",
+      "subcategory": "artistic_expression",
+      "domain": "CREATIVITY_INNOVATION",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "creativity-innovation",
+        "artistic-expression"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Conveying meaning through creative form",
+      "core_concern": "Expression over utility",
+      "notes": null
+    },
+    {
+      "id": "PRIM.075",
+      "type": "PRIMARY",
+      "name": "Divergent thinking",
+      "category": "creativity_innovation",
+      "subcategory": "divergent_thinking",
+      "domain": "CREATIVITY_INNOVATION",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "creativity-innovation",
+        "divergent-thinking"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Generating multiple alternative approaches",
+      "core_concern": "Options over single solution",
+      "notes": null
+    },
+    {
+      "id": "PRIM.076",
+      "type": "PRIMARY",
+      "name": "Situational understanding",
+      "category": "context_awareness",
+      "subcategory": "situational_understanding",
+      "domain": "CONTEXT_AWARENESS",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "context-awareness",
+        "situational-understanding"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Grasping the full context",
+      "core_concern": "Context over abstraction",
+      "notes": null
+    },
+    {
+      "id": "PRIM.077",
+      "type": "PRIMARY",
+      "name": "Cultural sensitivity",
+      "category": "context_awareness",
+      "subcategory": "cultural_sensitivity",
+      "domain": "CONTEXT_AWARENESS",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "context-awareness",
+        "cultural-sensitivity"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Respecting diverse perspectives and norms",
+      "core_concern": "Cultural fit over universal approach",
+      "notes": null
+    },
+    {
+      "id": "PRIM.078",
+      "type": "PRIMARY",
+      "name": "Timing",
+      "category": "context_awareness",
+      "subcategory": "timing",
+      "domain": "CONTEXT_AWARENESS",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "context-awareness",
+        "timing"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Acting at the right moment",
+      "core_concern": "Timing over readiness",
+      "notes": null
+    },
+    {
+      "id": "PRIM.079",
+      "type": "PRIMARY",
+      "name": "Relevance",
+      "category": "context_awareness",
+      "subcategory": "relevance",
+      "domain": "CONTEXT_AWARENESS",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "context-awareness",
+        "relevance"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Mattering to current situation",
+      "core_concern": "Applicability over comprehensiveness",
+      "notes": null
+    },
+    {
+      "id": "PRIM.080",
+      "type": "PRIMARY",
+      "name": "Appropriateness",
+      "category": "context_awareness",
+      "subcategory": "appropriateness",
+      "domain": "CONTEXT_AWARENESS",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "context-awareness",
+        "appropriateness"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Fitting the context and audience",
+      "core_concern": "Suitability over capability",
+      "notes": null
+    },
+    {
+      "id": "PRIM.081",
+      "type": "PRIMARY",
+      "name": "System integration",
+      "category": "integration_coherence",
+      "subcategory": "system_integration",
+      "domain": "INTEGRATION_COHERENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "integration-coherence",
+        "system-integration"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Components working together smoothly",
+      "core_concern": "Integration over isolation",
+      "notes": null
+    },
+    {
+      "id": "PRIM.082",
+      "type": "PRIMARY",
+      "name": "Internal consistency",
+      "category": "integration_coherence",
+      "subcategory": "internal_consistency",
+      "domain": "INTEGRATION_COHERENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "integration-coherence",
+        "internal-consistency"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Parts not contradicting each other",
+      "core_concern": "Coherence over completeness",
+      "notes": null
+    },
+    {
+      "id": "PRIM.083",
+      "type": "PRIMARY",
+      "name": "Unified experience",
+      "category": "integration_coherence",
+      "subcategory": "unified_experience",
+      "domain": "INTEGRATION_COHERENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "integration-coherence",
+        "unified-experience"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Feeling like single whole not collection of parts",
+      "core_concern": "Unity over modularity",
+      "notes": null
+    },
+    {
+      "id": "PRIM.084",
+      "type": "PRIMARY",
+      "name": "Interoperability",
+      "category": "integration_coherence",
+      "subcategory": "interoperability",
+      "domain": "INTEGRATION_COHERENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "integration-coherence",
+        "interoperability"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Working with other systems",
+      "core_concern": "Compatibility over independence",
+      "notes": null
+    },
+    {
+      "id": "PRIM.085",
+      "type": "PRIMARY",
+      "name": "Alignment",
+      "category": "integration_coherence",
+      "subcategory": "alignment",
+      "domain": "INTEGRATION_COHERENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "integration-coherence",
+        "alignment"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "All elements supporting same direction",
+      "core_concern": "Harmony over diversity",
+      "notes": null
+    },
+    {
+      "id": "PRIM.086",
+      "type": "PRIMARY",
+      "name": "User agency",
+      "category": "empowerment_autonomy",
+      "subcategory": "user_agency",
+      "domain": "EMPOWERMENT_AUTONOMY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "empowerment-autonomy",
+        "user-agency"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "People having control and choice",
+      "core_concern": "Autonomy over automation",
+      "notes": null
+    },
+    {
+      "id": "PRIM.087",
+      "type": "PRIMARY",
+      "name": "Capability building",
+      "category": "empowerment_autonomy",
+      "subcategory": "capability_building",
+      "domain": "EMPOWERMENT_AUTONOMY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "empowerment-autonomy",
+        "capability-building"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Increasing what people can do",
+      "core_concern": "Empowerment over service",
+      "notes": null
+    },
+    {
+      "id": "PRIM.088",
+      "type": "PRIMARY",
+      "name": "Self-sufficiency",
+      "category": "empowerment_autonomy",
+      "subcategory": "self_sufficiency",
+      "domain": "EMPOWERMENT_AUTONOMY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "empowerment-autonomy",
+        "self-sufficiency"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Not creating dependency",
+      "core_concern": "Independence over convenience",
+      "notes": null
+    },
+    {
+      "id": "PRIM.089",
+      "type": "PRIMARY",
+      "name": "Choice preservation",
+      "category": "empowerment_autonomy",
+      "subcategory": "choice_preservation",
+      "domain": "EMPOWERMENT_AUTONOMY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "empowerment-autonomy",
+        "choice-preservation"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Keeping options open",
+      "core_concern": "Options over optimization",
+      "notes": null
+    },
+    {
+      "id": "PRIM.090",
+      "type": "PRIMARY",
+      "name": "Informed consent",
+      "category": "empowerment_autonomy",
+      "subcategory": "informed_consent",
+      "domain": "EMPOWERMENT_AUTONOMY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "empowerment-autonomy",
+        "informed-consent"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Understanding before agreeing",
+      "core_concern": "Understanding over compliance",
+      "notes": null
+    },
+    {
+      "id": "PRIM.091",
+      "type": "PRIMARY",
+      "name": "Balanced perspective",
+      "category": "wisdom_judgment",
+      "subcategory": "balanced_perspective",
+      "domain": "WISDOM_JUDGMENT",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "wisdom-judgment",
+        "balanced-perspective"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Seeing multiple sides fairly",
+      "core_concern": "Balance over advocacy",
+      "notes": null
+    },
+    {
+      "id": "PRIM.092",
+      "type": "PRIMARY",
+      "name": "Principle adherence",
+      "category": "wisdom_judgment",
+      "subcategory": "principle_adherence",
+      "domain": "WISDOM_JUDGMENT",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "wisdom-judgment",
+        "principle-adherence"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Acting consistently with values",
+      "core_concern": "Integrity over expediency",
+      "notes": null
+    },
+    {
+      "id": "PRIM.093",
+      "type": "PRIMARY",
+      "name": "Proportional response",
+      "category": "wisdom_judgment",
+      "subcategory": "proportional_response",
+      "domain": "WISDOM_JUDGMENT",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "wisdom-judgment",
+        "proportional-response"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Matching reaction to situation",
+      "core_concern": "Calibration over maximal",
+      "notes": null
+    },
+    {
+      "id": "PRIM.094",
+      "type": "PRIMARY",
+      "name": "Humility",
+      "category": "wisdom_judgment",
+      "subcategory": "humility",
+      "domain": "WISDOM_JUDGMENT",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "wisdom-judgment",
+        "humility"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Recognizing limits and uncertainty",
+      "core_concern": "Humility over confidence",
+      "notes": null
+    },
+    {
+      "id": "PRIM.095",
+      "type": "PRIMARY",
+      "name": "Discernment",
+      "category": "wisdom_judgment",
+      "subcategory": "discernment",
+      "domain": "WISDOM_JUDGMENT",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "wisdom-judgment",
+        "discernment"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Distinguishing important from trivial",
+      "core_concern": "Priority over completeness",
+      "notes": null
+    },
+    {
+      "id": "PRIM.096",
+      "type": "PRIMARY",
+      "name": "Human sovereignty",
+      "category": "umg_framework_primary",
+      "subcategory": "human_sovereignty",
+      "domain": "UMG_FRAMEWORK_PRIMARY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "umg-framework-primary",
+        "human-sovereignty"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Preserving ultimate human authority",
+      "core_concern": "Human authority over AI autonomy",
+      "notes": null
+    },
+    {
+      "id": "PRIM.097",
+      "type": "PRIMARY",
+      "name": "Governance compliance",
+      "category": "umg_framework_primary",
+      "subcategory": "governance_compliance",
+      "domain": "UMG_FRAMEWORK_PRIMARY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "umg-framework-primary",
+        "governance-compliance"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Operating within established rules",
+      "core_concern": "Compliance over capability",
+      "notes": null
+    },
+    {
+      "id": "PRIM.098",
+      "type": "PRIMARY",
+      "name": "Tool status",
+      "category": "umg_framework_primary",
+      "subcategory": "tool_status",
+      "domain": "UMG_FRAMEWORK_PRIMARY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "umg-framework-primary",
+        "tool-status"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Maintaining identity as computational tool",
+      "core_concern": "Tool nature over agent identity",
+      "notes": null
+    },
+    {
+      "id": "PRIM.099",
+      "type": "PRIMARY",
+      "name": "Explicit reasoning",
+      "category": "umg_framework_primary",
+      "subcategory": "explicit_reasoning",
+      "domain": "UMG_FRAMEWORK_PRIMARY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "umg-framework-primary",
+        "explicit-reasoning"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Making cognition visible through MOLT",
+      "core_concern": "Explicitness over efficiency",
+      "notes": null
+    },
+    {
+      "id": "PRIM.100",
+      "type": "PRIMARY",
+      "name": "Mesh coherence",
+      "category": "umg_framework_primary",
+      "subcategory": "mesh_coherence",
+      "domain": "UMG_FRAMEWORK_PRIMARY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "umg-framework-primary",
+        "mesh-coherence"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T07:46:36-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Coordinating with other UMG agents",
+      "core_concern": "Collective coherence over individual optimization",
+      "notes": null
+    },
+    {
+      "id": "PRIM.101",
+      "type": "PRIMARY",
+      "name": "Customer Value is Paramount",
+      "category": "customer_value",
+      "subcategory": "customer_value_is_paramount",
+      "domain": "CUSTOMER_VALUE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "customer-value",
+        "customer-value-is-paramount"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Creating genuine customer value is the foundation of sustainable business",
+      "core_concern": "CRITICAL",
+      "notes": null
+    },
+    {
+      "id": "PRIM.102",
+      "type": "PRIMARY",
+      "name": "Solve Real Problems",
+      "category": "customer_value",
+      "subcategory": "solve_real_problems",
+      "domain": "CUSTOMER_VALUE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "customer-value",
+        "solve-real-problems"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Focus on solving actual customer problems, not imagined ones",
+      "core_concern": "CRITICAL",
+      "notes": null
+    },
+    {
+      "id": "PRIM.103",
+      "type": "PRIMARY",
+      "name": "Customer Success Equals Our Success",
+      "category": "customer_value",
+      "subcategory": "customer_success_equals_our_success",
+      "domain": "CUSTOMER_VALUE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "customer-value",
+        "customer-success-equals-our-success"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Business thrives when customers achieve their desired outcomes",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.104",
+      "type": "PRIMARY",
+      "name": "Long-Term Relationships Over Transactions",
+      "category": "customer_value",
+      "subcategory": "long_term_relationships_over_transactions",
+      "domain": "CUSTOMER_VALUE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "customer-value",
+        "long-term-relationships-over-transactions"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Prioritize building lasting customer relationships over one-time sales",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.105",
+      "type": "PRIMARY",
+      "name": "Listen to Customer Feedback",
+      "category": "customer_value",
+      "subcategory": "listen_to_customer_feedback",
+      "domain": "CUSTOMER_VALUE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "customer-value",
+        "listen-to-customer-feedback"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Customer input is invaluable for product and service improvement",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.106",
+      "type": "PRIMARY",
+      "name": "Earn Customer Trust",
+      "category": "customer_value",
+      "subcategory": "earn_customer_trust",
+      "domain": "CUSTOMER_VALUE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "customer-value",
+        "earn-customer-trust"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Trust is earned through consistent delivery and integrity",
+      "core_concern": "CRITICAL",
+      "notes": null
+    },
+    {
+      "id": "PRIM.107",
+      "type": "PRIMARY",
+      "name": "Delight, Don't Just Satisfy",
+      "category": "customer_value",
+      "subcategory": "delight_don_t_just_satisfy",
+      "domain": "CUSTOMER_VALUE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "customer-value",
+        "delight-don-t-just-satisfy"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Exceeding expectations creates memorable experiences and loyalty",
+      "core_concern": "MODERATE",
+      "notes": null
+    },
+    {
+      "id": "PRIM.108",
+      "type": "PRIMARY",
+      "name": "Customer Retention is Cheaper Than Acquisition",
+      "category": "customer_value",
+      "subcategory": "customer_retention_is_cheaper_than_acquisition",
+      "domain": "CUSTOMER_VALUE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "customer-value",
+        "customer-retention-is-cheaper-than-acquisition"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Keeping existing customers is more cost-effective than finding new ones",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.109",
+      "type": "PRIMARY",
+      "name": "Measure Value Delivered, Not Features Shipped",
+      "category": "customer_value",
+      "subcategory": "measure_value_delivered_not_features_shipped",
+      "domain": "CUSTOMER_VALUE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "customer-value",
+        "measure-value-delivered-not-features-shipped"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Success is measured by customer outcomes, not output volume",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.110",
+      "type": "PRIMARY",
+      "name": "Make It Easy for Customers",
+      "category": "customer_value",
+      "subcategory": "make_it_easy_for_customers",
+      "domain": "CUSTOMER_VALUE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "customer-value",
+        "make-it-easy-for-customers"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Reduce friction and complexity in all customer interactions",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.111",
+      "type": "PRIMARY",
+      "name": "Integrity is Non-Negotiable",
+      "category": "business_integrity",
+      "subcategory": "integrity_is_non_negotiable",
+      "domain": "BUSINESS_INTEGRITY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "business-integrity",
+        "integrity-is-non-negotiable"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Ethical behavior and honesty are fundamental requirements, not options",
+      "core_concern": "CRITICAL",
+      "notes": null
+    },
+    {
+      "id": "PRIM.112",
+      "type": "PRIMARY",
+      "name": "Transparency Builds Trust",
+      "category": "business_integrity",
+      "subcategory": "transparency_builds_trust",
+      "domain": "BUSINESS_INTEGRITY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "business-integrity",
+        "transparency-builds-trust"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Open, honest communication strengthens all relationships",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.113",
+      "type": "PRIMARY",
+      "name": "Keep Commitments",
+      "category": "business_integrity",
+      "subcategory": "keep_commitments",
+      "domain": "BUSINESS_INTEGRITY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "business-integrity",
+        "keep-commitments"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Deliver on promises and own up to failures",
+      "core_concern": "CRITICAL",
+      "notes": null
+    },
+    {
+      "id": "PRIM.114",
+      "type": "PRIMARY",
+      "name": "Ethical Shortcuts Don't Exist",
+      "category": "business_integrity",
+      "subcategory": "ethical_shortcuts_don_t_exist",
+      "domain": "BUSINESS_INTEGRITY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "business-integrity",
+        "ethical-shortcuts-don-t-exist"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "There is no ethical way to achieve unethical ends",
+      "core_concern": "CRITICAL",
+      "notes": null
+    },
+    {
+      "id": "PRIM.115",
+      "type": "PRIMARY",
+      "name": "Admit Mistakes Quickly",
+      "category": "business_integrity",
+      "subcategory": "admit_mistakes_quickly",
+      "domain": "BUSINESS_INTEGRITY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "business-integrity",
+        "admit-mistakes-quickly"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Acknowledge errors promptly and take corrective action",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.116",
+      "type": "PRIMARY",
+      "name": "Treat All Stakeholders Fairly",
+      "category": "business_integrity",
+      "subcategory": "treat_all_stakeholders_fairly",
+      "domain": "BUSINESS_INTEGRITY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "business-integrity",
+        "treat-all-stakeholders-fairly"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Balance interests of customers, employees, investors, and community",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.117",
+      "type": "PRIMARY",
+      "name": "Compliance is Minimum, Not Maximum",
+      "category": "business_integrity",
+      "subcategory": "compliance_is_minimum_not_maximum",
+      "domain": "BUSINESS_INTEGRITY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "business-integrity",
+        "compliance-is-minimum-not-maximum"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Legal compliance is baseline; ethical behavior goes beyond",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.118",
+      "type": "PRIMARY",
+      "name": "Protect Customer Data",
+      "category": "business_integrity",
+      "subcategory": "protect_customer_data",
+      "domain": "BUSINESS_INTEGRITY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "business-integrity",
+        "protect-customer-data"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Customer privacy and data security are sacred responsibilities",
+      "core_concern": "CRITICAL",
+      "notes": null
+    },
+    {
+      "id": "PRIM.119",
+      "type": "PRIMARY",
+      "name": "No Retaliation for Speaking Up",
+      "category": "business_integrity",
+      "subcategory": "no_retaliation_for_speaking_up",
+      "domain": "BUSINESS_INTEGRITY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "business-integrity",
+        "no-retaliation-for-speaking-up"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Encourage reporting of issues without fear of punishment",
+      "core_concern": "CRITICAL",
+      "notes": null
+    },
+    {
+      "id": "PRIM.120",
+      "type": "PRIMARY",
+      "name": "Reputation Takes Years to Build, Moments to Destroy",
+      "category": "business_integrity",
+      "subcategory": "reputation_takes_years_to_build_moments_to_destroy",
+      "domain": "BUSINESS_INTEGRITY",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "business-integrity",
+        "reputation-takes-years-to-build-moments-to-destroy"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Protect reputation through consistent ethical behavior",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.121",
+      "type": "PRIMARY",
+      "name": "Execution Beats Ideas",
+      "category": "execution_excellence",
+      "subcategory": "execution_beats_ideas",
+      "domain": "EXECUTION_EXCELLENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "execution-excellence",
+        "execution-beats-ideas"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Great execution of good ideas trumps poor execution of great ideas",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.122",
+      "type": "PRIMARY",
+      "name": "Speed Matters",
+      "category": "execution_excellence",
+      "subcategory": "speed_matters",
+      "domain": "EXECUTION_EXCELLENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "execution-excellence",
+        "speed-matters"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Velocity creates competitive advantage and learning opportunities",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.123",
+      "type": "PRIMARY",
+      "name": "Done is Better Than Perfect",
+      "category": "execution_excellence",
+      "subcategory": "done_is_better_than_perfect",
+      "domain": "EXECUTION_EXCELLENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "execution-excellence",
+        "done-is-better-than-perfect"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Shipping imperfect work enables iteration and learning",
+      "core_concern": "MODERATE",
+      "notes": null
+    },
+    {
+      "id": "PRIM.124",
+      "type": "PRIMARY",
+      "name": "Measure What Matters",
+      "category": "execution_excellence",
+      "subcategory": "measure_what_matters",
+      "domain": "EXECUTION_EXCELLENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "execution-excellence",
+        "measure-what-matters"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Track metrics that actually drive business outcomes",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.125",
+      "type": "PRIMARY",
+      "name": "Focus is a Competitive Advantage",
+      "category": "execution_excellence",
+      "subcategory": "focus_is_a_competitive_advantage",
+      "domain": "EXECUTION_EXCELLENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "execution-excellence",
+        "focus-is-a-competitive-advantage"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Doing few things well beats doing many things poorly",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.126",
+      "type": "PRIMARY",
+      "name": "Quality Compounds",
+      "category": "execution_excellence",
+      "subcategory": "quality_compounds",
+      "domain": "EXECUTION_EXCELLENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "execution-excellence",
+        "quality-compounds"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Consistent quality builds reputation and customer loyalty over time",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.127",
+      "type": "PRIMARY",
+      "name": "Bias Toward Action",
+      "category": "execution_excellence",
+      "subcategory": "bias_toward_action",
+      "domain": "EXECUTION_EXCELLENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "execution-excellence",
+        "bias-toward-action"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "When uncertain, take action and learn rather than endlessly deliberating",
+      "core_concern": "MODERATE",
+      "notes": null
+    },
+    {
+      "id": "PRIM.128",
+      "type": "PRIMARY",
+      "name": "Simplicity Scales",
+      "category": "execution_excellence",
+      "subcategory": "simplicity_scales",
+      "domain": "EXECUTION_EXCELLENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "execution-excellence",
+        "simplicity-scales"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Simple solutions are easier to execute, maintain, and scale",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.129",
+      "type": "PRIMARY",
+      "name": "Accountability Drives Results",
+      "category": "execution_excellence",
+      "subcategory": "accountability_drives_results",
+      "domain": "EXECUTION_EXCELLENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "execution-excellence",
+        "accountability-drives-results"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Clear ownership and responsibility produce better outcomes",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.130",
+      "type": "PRIMARY",
+      "name": "Process Serves Purpose",
+      "category": "execution_excellence",
+      "subcategory": "process_serves_purpose",
+      "domain": "EXECUTION_EXCELLENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "execution-excellence",
+        "process-serves-purpose"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Processes should enable work, not become work themselves",
+      "core_concern": "MODERATE",
+      "notes": null
+    },
+    {
+      "id": "PRIM.131",
+      "type": "PRIMARY",
+      "name": "People are the Business",
+      "category": "people_team",
+      "subcategory": "people_are_the_business",
+      "domain": "PEOPLE_TEAM",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "people-team",
+        "people-are-the-business"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Talent and culture determine long-term success more than strategy",
+      "core_concern": "CRITICAL",
+      "notes": null
+    },
+    {
+      "id": "PRIM.132",
+      "type": "PRIMARY",
+      "name": "Hire for Culture Add, Not Culture Fit",
+      "category": "people_team",
+      "subcategory": "hire_for_culture_add_not_culture_fit",
+      "domain": "PEOPLE_TEAM",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "people-team",
+        "hire-for-culture-add-not-culture-fit"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Seek people who enhance culture while sharing core values",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.133",
+      "type": "PRIMARY",
+      "name": "Invest in Employee Growth",
+      "category": "people_team",
+      "subcategory": "invest_in_employee_growth",
+      "domain": "PEOPLE_TEAM",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "people-team",
+        "invest-in-employee-growth"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Developing people creates value for them and the business",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.134",
+      "type": "PRIMARY",
+      "name": "Psychological Safety Enables Performance",
+      "category": "people_team",
+      "subcategory": "psychological_safety_enables_performance",
+      "domain": "PEOPLE_TEAM",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "people-team",
+        "psychological-safety-enables-performance"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "People perform best when they feel safe to take risks and be vulnerable",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.135",
+      "type": "PRIMARY",
+      "name": "Diversity Strengthens Teams",
+      "category": "people_team",
+      "subcategory": "diversity_strengthens_teams",
+      "domain": "PEOPLE_TEAM",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "people-team",
+        "diversity-strengthens-teams"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Diverse perspectives lead to better decisions and innovation",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.136",
+      "type": "PRIMARY",
+      "name": "Fair Compensation Reflects Value",
+      "category": "people_team",
+      "subcategory": "fair_compensation_reflects_value",
+      "domain": "PEOPLE_TEAM",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "people-team",
+        "fair-compensation-reflects-value"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Pay people fairly based on the value they create",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.137",
+      "type": "PRIMARY",
+      "name": "Feedback is a Gift",
+      "category": "people_team",
+      "subcategory": "feedback_is_a_gift",
+      "domain": "PEOPLE_TEAM",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "people-team",
+        "feedback-is-a-gift"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Honest feedback, given with care, helps people grow",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.138",
+      "type": "PRIMARY",
+      "name": "Recognition Motivates",
+      "category": "people_team",
+      "subcategory": "recognition_motivates",
+      "domain": "PEOPLE_TEAM",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "people-team",
+        "recognition-motivates"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Acknowledging contributions fuels engagement and morale",
+      "core_concern": "MODERATE",
+      "notes": null
+    },
+    {
+      "id": "PRIM.139",
+      "type": "PRIMARY",
+      "name": "Leaders Serve Teams",
+      "category": "people_team",
+      "subcategory": "leaders_serve_teams",
+      "domain": "PEOPLE_TEAM",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "people-team",
+        "leaders-serve-teams"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Leadership exists to enable and support others' success",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.140",
+      "type": "PRIMARY",
+      "name": "Toxic Behavior Cannot Be Tolerated",
+      "category": "people_team",
+      "subcategory": "toxic_behavior_cannot_be_tolerated",
+      "domain": "PEOPLE_TEAM",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "people-team",
+        "toxic-behavior-cannot-be-tolerated"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "No talent justifies keeping people who damage culture",
+      "core_concern": "CRITICAL",
+      "notes": null
+    },
+    {
+      "id": "PRIM.141",
+      "type": "PRIMARY",
+      "name": "Cash is King",
+      "category": "financial_discipline",
+      "subcategory": "cash_is_king",
+      "domain": "FINANCIAL_DISCIPLINE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "financial-discipline",
+        "cash-is-king"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Cash flow and liquidity are essential for business survival",
+      "core_concern": "CRITICAL",
+      "notes": null
+    },
+    {
+      "id": "PRIM.142",
+      "type": "PRIMARY",
+      "name": "Profitability Matters",
+      "category": "financial_discipline",
+      "subcategory": "profitability_matters",
+      "domain": "FINANCIAL_DISCIPLINE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "financial-discipline",
+        "profitability-matters"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Sustainable businesses must generate more value than they consume",
+      "core_concern": "CRITICAL",
+      "notes": null
+    },
+    {
+      "id": "PRIM.143",
+      "type": "PRIMARY",
+      "name": "Unit Economics Must Work",
+      "category": "financial_discipline",
+      "subcategory": "unit_economics_must_work",
+      "domain": "FINANCIAL_DISCIPLINE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "financial-discipline",
+        "unit-economics-must-work"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Contribution margin at the unit level determines viability at scale",
+      "core_concern": "CRITICAL",
+      "notes": null
+    },
+    {
+      "id": "PRIM.144",
+      "type": "PRIMARY",
+      "name": "Understand Your Numbers",
+      "category": "financial_discipline",
+      "subcategory": "understand_your_numbers",
+      "domain": "FINANCIAL_DISCIPLINE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "financial-discipline",
+        "understand-your-numbers"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Financial literacy and awareness are required at all levels",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.145",
+      "type": "PRIMARY",
+      "name": "Invest for Return",
+      "category": "financial_discipline",
+      "subcategory": "invest_for_return",
+      "domain": "FINANCIAL_DISCIPLINE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "financial-discipline",
+        "invest-for-return"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Every dollar deployed should generate measurable returns",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.146",
+      "type": "PRIMARY",
+      "name": "Manage Risk Intelligently",
+      "category": "financial_discipline",
+      "subcategory": "manage_risk_intelligently",
+      "domain": "FINANCIAL_DISCIPLINE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "financial-discipline",
+        "manage-risk-intelligently"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Take calculated risks; avoid betting the company unnecessarily",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.147",
+      "type": "PRIMARY",
+      "name": "Maintain Financial Runway",
+      "category": "financial_discipline",
+      "subcategory": "maintain_financial_runway",
+      "domain": "FINANCIAL_DISCIPLINE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "financial-discipline",
+        "maintain-financial-runway"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Preserve enough cash to weather downturns and seize opportunities",
+      "core_concern": "CRITICAL",
+      "notes": null
+    },
+    {
+      "id": "PRIM.148",
+      "type": "PRIMARY",
+      "name": "Capital Efficiency Creates Options",
+      "category": "financial_discipline",
+      "subcategory": "capital_efficiency_creates_options",
+      "domain": "FINANCIAL_DISCIPLINE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "financial-discipline",
+        "capital-efficiency-creates-options"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Doing more with less preserves resources and flexibility",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.149",
+      "type": "PRIMARY",
+      "name": "Revenue Quality Matters",
+      "category": "financial_discipline",
+      "subcategory": "revenue_quality_matters",
+      "domain": "FINANCIAL_DISCIPLINE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "financial-discipline",
+        "revenue-quality-matters"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Predictable, recurring revenue is more valuable than one-time sales",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.150",
+      "type": "PRIMARY",
+      "name": "Cost Control Enables Investment",
+      "category": "financial_discipline",
+      "subcategory": "cost_control_enables_investment",
+      "domain": "FINANCIAL_DISCIPLINE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "financial-discipline",
+        "cost-control-enables-investment"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Managing costs well frees resources for growth initiatives",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.151",
+      "type": "PRIMARY",
+      "name": "Innovation is Survival",
+      "category": "innovation_learning",
+      "subcategory": "innovation_is_survival",
+      "domain": "INNOVATION_LEARNING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "innovation-learning",
+        "innovation-is-survival"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Businesses must innovate continuously or become obsolete",
+      "core_concern": "CRITICAL",
+      "notes": null
+    },
+    {
+      "id": "PRIM.152",
+      "type": "PRIMARY",
+      "name": "Experiment and Learn",
+      "category": "innovation_learning",
+      "subcategory": "experiment_and_learn",
+      "domain": "INNOVATION_LEARNING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "innovation-learning",
+        "experiment-and-learn"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Testing hypotheses rapidly accelerates learning and improvement",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.153",
+      "type": "PRIMARY",
+      "name": "Failure is Data",
+      "category": "innovation_learning",
+      "subcategory": "failure_is_data",
+      "domain": "INNOVATION_LEARNING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "innovation-learning",
+        "failure-is-data"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Failed experiments provide valuable information if learned from",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.154",
+      "type": "PRIMARY",
+      "name": "Challenge Assumptions",
+      "category": "innovation_learning",
+      "subcategory": "challenge_assumptions",
+      "domain": "INNOVATION_LEARNING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "innovation-learning",
+        "challenge-assumptions"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Questioning conventional wisdom opens new possibilities",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.155",
+      "type": "PRIMARY",
+      "name": "Stay Curious",
+      "category": "innovation_learning",
+      "subcategory": "stay_curious",
+      "domain": "INNOVATION_LEARNING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "innovation-learning",
+        "stay-curious"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Intellectual curiosity drives discovery and innovation",
+      "core_concern": "MODERATE",
+      "notes": null
+    },
+    {
+      "id": "PRIM.156",
+      "type": "PRIMARY",
+      "name": "Learn from Others",
+      "category": "innovation_learning",
+      "subcategory": "learn_from_others",
+      "domain": "INNOVATION_LEARNING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "innovation-learning",
+        "learn-from-others"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Study successes and failures across industries for insights",
+      "core_concern": "MODERATE",
+      "notes": null
+    },
+    {
+      "id": "PRIM.157",
+      "type": "PRIMARY",
+      "name": "Embrace Change",
+      "category": "innovation_learning",
+      "subcategory": "embrace_change",
+      "domain": "INNOVATION_LEARNING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "innovation-learning",
+        "embrace-change"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Adaptability is essential in dynamic environments",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.158",
+      "type": "PRIMARY",
+      "name": "Technology Enables, Strategy Directs",
+      "category": "innovation_learning",
+      "subcategory": "technology_enables_strategy_directs",
+      "domain": "INNOVATION_LEARNING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "innovation-learning",
+        "technology-enables-strategy-directs"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Use technology to amplify strategy, not dictate it",
+      "core_concern": "MODERATE",
+      "notes": null
+    },
+    {
+      "id": "PRIM.159",
+      "type": "PRIMARY",
+      "name": "Balance Core and Explore",
+      "category": "innovation_learning",
+      "subcategory": "balance_core_and_explore",
+      "domain": "INNOVATION_LEARNING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "innovation-learning",
+        "balance-core-and-explore"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Maintain existing business while exploring new opportunities",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.160",
+      "type": "PRIMARY",
+      "name": "Question Success",
+      "category": "innovation_learning",
+      "subcategory": "question_success",
+      "domain": "INNOVATION_LEARNING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "innovation-learning",
+        "question-success"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Even successful approaches should be continuously examined",
+      "core_concern": "MODERATE",
+      "notes": null
+    },
+    {
+      "id": "PRIM.161",
+      "type": "PRIMARY",
+      "name": "Differentiation is Essential",
+      "category": "competitive_positioning",
+      "subcategory": "differentiation_is_essential",
+      "domain": "COMPETITIVE_POSITIONING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "competitive-positioning",
+        "differentiation-is-essential"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Clear differentiation is required for sustainable competitive advantage",
+      "core_concern": "CRITICAL",
+      "notes": null
+    },
+    {
+      "id": "PRIM.162",
+      "type": "PRIMARY",
+      "name": "Build Defensibility",
+      "category": "competitive_positioning",
+      "subcategory": "build_defensibility",
+      "domain": "COMPETITIVE_POSITIONING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "competitive-positioning",
+        "build-defensibility"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Create barriers that protect your position from competitors",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.163",
+      "type": "PRIMARY",
+      "name": "Compete on Value, Not Just Price",
+      "category": "competitive_positioning",
+      "subcategory": "compete_on_value_not_just_price",
+      "domain": "COMPETITIVE_POSITIONING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "competitive-positioning",
+        "compete-on-value-not-just-price"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Price competition erodes margins; compete on unique value instead",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.164",
+      "type": "PRIMARY",
+      "name": "Know Your Competition",
+      "category": "competitive_positioning",
+      "subcategory": "know_your_competition",
+      "domain": "COMPETITIVE_POSITIONING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "competitive-positioning",
+        "know-your-competition"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Understanding competitors enables better strategic decisions",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.165",
+      "type": "PRIMARY",
+      "name": "Choose Your Battles",
+      "category": "competitive_positioning",
+      "subcategory": "choose_your_battles",
+      "domain": "COMPETITIVE_POSITIONING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "competitive-positioning",
+        "choose-your-battles"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Win where you have advantages; avoid unfavorable competitive arenas",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.166",
+      "type": "PRIMARY",
+      "name": "Network Effects Create Moats",
+      "category": "competitive_positioning",
+      "subcategory": "network_effects_create_moats",
+      "domain": "COMPETITIVE_POSITIONING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "competitive-positioning",
+        "network-effects-create-moats"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Products that improve with more users build powerful advantages",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.167",
+      "type": "PRIMARY",
+      "name": "Speed Can Trump Resources",
+      "category": "competitive_positioning",
+      "subcategory": "speed_can_trump_resources",
+      "domain": "COMPETITIVE_POSITIONING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "competitive-positioning",
+        "speed-can-trump-resources"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Moving faster can overcome disadvantages in size or capital",
+      "core_concern": "MODERATE",
+      "notes": null
+    },
+    {
+      "id": "PRIM.168",
+      "type": "PRIMARY",
+      "name": "Reputation is a Competitive Asset",
+      "category": "competitive_positioning",
+      "subcategory": "reputation_is_a_competitive_asset",
+      "domain": "COMPETITIVE_POSITIONING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "competitive-positioning",
+        "reputation-is-a-competitive-asset"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Strong reputation attracts customers, talent, and partners",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.169",
+      "type": "PRIMARY",
+      "name": "Winner Often Takes Most",
+      "category": "competitive_positioning",
+      "subcategory": "winner_often_takes_most",
+      "domain": "COMPETITIVE_POSITIONING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "competitive-positioning",
+        "winner-often-takes-most"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "In many markets, market leaders capture disproportionate value",
+      "core_concern": "MODERATE",
+      "notes": null
+    },
+    {
+      "id": "PRIM.170",
+      "type": "PRIMARY",
+      "name": "Compete and Cooperate Strategically",
+      "category": "competitive_positioning",
+      "subcategory": "compete_and_cooperate_strategically",
+      "domain": "COMPETITIVE_POSITIONING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "competitive-positioning",
+        "compete-and-cooperate-strategically"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Sometimes cooperation with competitors creates more value than pure competition",
+      "core_concern": "MODERATE",
+      "notes": null
+    },
+    {
+      "id": "PRIM.171",
+      "type": "PRIMARY",
+      "name": "Strategy Requires Choices",
+      "category": "strategic_thinking",
+      "subcategory": "strategy_requires_choices",
+      "domain": "STRATEGIC_THINKING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "strategic-thinking",
+        "strategy-requires-choices"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Real strategy means saying no to good opportunities",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.172",
+      "type": "PRIMARY",
+      "name": "Think Long-Term",
+      "category": "strategic_thinking",
+      "subcategory": "think_long_term",
+      "domain": "STRATEGIC_THINKING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "strategic-thinking",
+        "think-long-term"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Optimize for sustainable value over short-term gains",
+      "core_concern": "CRITICAL",
+      "notes": null
+    },
+    {
+      "id": "PRIM.173",
+      "type": "PRIMARY",
+      "name": "Align Strategy and Execution",
+      "category": "strategic_thinking",
+      "subcategory": "align_strategy_and_execution",
+      "domain": "STRATEGIC_THINKING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "strategic-thinking",
+        "align-strategy-and-execution"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Strategy without execution is wishful thinking",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.174",
+      "type": "PRIMARY",
+      "name": "Adapt Strategy to Reality",
+      "category": "strategic_thinking",
+      "subcategory": "adapt_strategy_to_reality",
+      "domain": "STRATEGIC_THINKING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "strategic-thinking",
+        "adapt-strategy-to-reality"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Be willing to pivot when facts change or assumptions prove wrong",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.175",
+      "type": "PRIMARY",
+      "name": "Position for the Future",
+      "category": "strategic_thinking",
+      "subcategory": "position_for_the_future",
+      "domain": "STRATEGIC_THINKING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "strategic-thinking",
+        "position-for-the-future"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Build capabilities and positions for where the market is going",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.176",
+      "type": "PRIMARY",
+      "name": "Strategic Patience with Tactical Urgency",
+      "category": "strategic_thinking",
+      "subcategory": "strategic_patience_with_tactical_urgency",
+      "domain": "STRATEGIC_THINKING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "strategic-thinking",
+        "strategic-patience-with-tactical-urgency"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Patient on vision, impatient on execution and learning",
+      "core_concern": "MODERATE",
+      "notes": null
+    },
+    {
+      "id": "PRIM.177",
+      "type": "PRIMARY",
+      "name": "Concentrate Resources",
+      "category": "strategic_thinking",
+      "subcategory": "concentrate_resources",
+      "domain": "STRATEGIC_THINKING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "strategic-thinking",
+        "concentrate-resources"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Focus resources on critical battles rather than spreading thin",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.178",
+      "type": "PRIMARY",
+      "name": "Understand Market Dynamics",
+      "category": "strategic_thinking",
+      "subcategory": "understand_market_dynamics",
+      "domain": "STRATEGIC_THINKING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "strategic-thinking",
+        "understand-market-dynamics"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Industry structure and trends shape competitive possibilities",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.179",
+      "type": "PRIMARY",
+      "name": "Build Optionality",
+      "category": "strategic_thinking",
+      "subcategory": "build_optionality",
+      "domain": "STRATEGIC_THINKING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "strategic-thinking",
+        "build-optionality"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Preserve flexibility to respond to future opportunities",
+      "core_concern": "MODERATE",
+      "notes": null
+    },
+    {
+      "id": "PRIM.180",
+      "type": "PRIMARY",
+      "name": "Strategy is Hypothesis",
+      "category": "strategic_thinking",
+      "subcategory": "strategy_is_hypothesis",
+      "domain": "STRATEGIC_THINKING",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "strategic-thinking",
+        "strategy-is-hypothesis"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Test strategic assumptions and update based on evidence",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.181",
+      "type": "PRIMARY",
+      "name": "Consistency Builds Trust",
+      "category": "operational_excellence",
+      "subcategory": "consistency_builds_trust",
+      "domain": "OPERATIONAL_EXCELLENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "operational-excellence",
+        "consistency-builds-trust"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Reliable, consistent delivery creates confidence and loyalty",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.182",
+      "type": "PRIMARY",
+      "name": "Systems Beat Heroics",
+      "category": "operational_excellence",
+      "subcategory": "systems_beat_heroics",
+      "domain": "OPERATIONAL_EXCELLENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "operational-excellence",
+        "systems-beat-heroics"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Scalable systems are more sustainable than individual heroics",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.183",
+      "type": "PRIMARY",
+      "name": "Eliminate Waste",
+      "category": "operational_excellence",
+      "subcategory": "eliminate_waste",
+      "domain": "OPERATIONAL_EXCELLENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "operational-excellence",
+        "eliminate-waste"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Non-value-adding activities drain resources and slow progress",
+      "core_concern": "MODERATE",
+      "notes": null
+    },
+    {
+      "id": "PRIM.184",
+      "type": "PRIMARY",
+      "name": "Continuous Improvement",
+      "category": "operational_excellence",
+      "subcategory": "continuous_improvement",
+      "domain": "OPERATIONAL_EXCELLENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "operational-excellence",
+        "continuous-improvement"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Small, consistent improvements compound into major gains",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.185",
+      "type": "PRIMARY",
+      "name": "Standardize to Scale",
+      "category": "operational_excellence",
+      "subcategory": "standardize_to_scale",
+      "domain": "OPERATIONAL_EXCELLENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "operational-excellence",
+        "standardize-to-scale"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Standardization enables efficient scaling and quality control",
+      "core_concern": "MODERATE",
+      "notes": null
+    },
+    {
+      "id": "PRIM.186",
+      "type": "PRIMARY",
+      "name": "Optimize the Whole, Not Parts",
+      "category": "operational_excellence",
+      "subcategory": "optimize_the_whole_not_parts",
+      "domain": "OPERATIONAL_EXCELLENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "operational-excellence",
+        "optimize-the-whole-not-parts"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "System-level optimization beats local optimization",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.187",
+      "type": "PRIMARY",
+      "name": "Build Redundancy for Critical Functions",
+      "category": "operational_excellence",
+      "subcategory": "build_redundancy_for_critical_functions",
+      "domain": "OPERATIONAL_EXCELLENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "operational-excellence",
+        "build-redundancy-for-critical-functions"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Accept some inefficiency to ensure reliability and resilience",
+      "core_concern": "MODERATE",
+      "notes": null
+    },
+    {
+      "id": "PRIM.188",
+      "type": "PRIMARY",
+      "name": "Automate Repetitive Work",
+      "category": "operational_excellence",
+      "subcategory": "automate_repetitive_work",
+      "domain": "OPERATIONAL_EXCELLENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "operational-excellence",
+        "automate-repetitive-work"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Free people for high-value work by automating routine tasks",
+      "core_concern": "MODERATE",
+      "notes": null
+    },
+    {
+      "id": "PRIM.189",
+      "type": "PRIMARY",
+      "name": "Plan for Scale",
+      "category": "operational_excellence",
+      "subcategory": "plan_for_scale",
+      "domain": "OPERATIONAL_EXCELLENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "operational-excellence",
+        "plan-for-scale"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Design operations to handle 10x growth from day one",
+      "core_concern": "MODERATE",
+      "notes": null
+    },
+    {
+      "id": "PRIM.190",
+      "type": "PRIMARY",
+      "name": "Fix Root Causes",
+      "category": "operational_excellence",
+      "subcategory": "fix_root_causes",
+      "domain": "OPERATIONAL_EXCELLENCE",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "operational-excellence",
+        "fix-root-causes"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Address underlying issues, not just symptoms",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.191",
+      "type": "PRIMARY",
+      "name": "Make Reversible Decisions Quickly",
+      "category": "decision_principles",
+      "subcategory": "make_reversible_decisions_quickly",
+      "domain": "DECISION_PRINCIPLES",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "decision-principles",
+        "make-reversible-decisions-quickly"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Speed matters more than perfection on decisions that can be undone",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.192",
+      "type": "PRIMARY",
+      "name": "Data Informs, Judgment Decides",
+      "category": "decision_principles",
+      "subcategory": "data_informs_judgment_decides",
+      "domain": "DECISION_PRINCIPLES",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "decision-principles",
+        "data-informs-judgment-decides"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Use data to inform decisions, but don't abdicate judgment to metrics",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.193",
+      "type": "PRIMARY",
+      "name": "Disagree and Commit",
+      "category": "decision_principles",
+      "subcategory": "disagree_and_commit",
+      "domain": "DECISION_PRINCIPLES",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "decision-principles",
+        "disagree-and-commit"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Once decisions are made, everyone commits fully regardless of initial position",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.194",
+      "type": "PRIMARY",
+      "name": "Seek Diverse Perspectives",
+      "category": "decision_principles",
+      "subcategory": "seek_diverse_perspectives",
+      "domain": "DECISION_PRINCIPLES",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "decision-principles",
+        "seek-diverse-perspectives"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Better decisions emerge from considering multiple viewpoints",
+      "core_concern": "MODERATE",
+      "notes": null
+    },
+    {
+      "id": "PRIM.195",
+      "type": "PRIMARY",
+      "name": "Consider Second-Order Effects",
+      "category": "decision_principles",
+      "subcategory": "consider_second_order_effects",
+      "domain": "DECISION_PRINCIPLES",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "decision-principles",
+        "consider-second-order-effects"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Think through consequences of consequences, not just immediate impacts",
+      "core_concern": "MODERATE",
+      "notes": null
+    },
+    {
+      "id": "PRIM.196",
+      "type": "PRIMARY",
+      "name": "Acknowledge Uncertainty",
+      "category": "decision_principles",
+      "subcategory": "acknowledge_uncertainty",
+      "domain": "DECISION_PRINCIPLES",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "decision-principles",
+        "acknowledge-uncertainty"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Be explicit about what is known, unknown, and unknowable",
+      "core_concern": "HIGH",
+      "notes": null
+    },
+    {
+      "id": "PRIM.197",
+      "type": "PRIMARY",
+      "name": "Optimize for Expected Value",
+      "category": "decision_principles",
+      "subcategory": "optimize_for_expected_value",
+      "domain": "DECISION_PRINCIPLES",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "decision-principles",
+        "optimize-for-expected-value"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Make decisions that maximize expected outcomes over time",
+      "core_concern": "MODERATE",
+      "notes": null
+    },
+    {
+      "id": "PRIM.198",
+      "type": "PRIMARY",
+      "name": "Learn from Outcomes",
+      "category": "decision_principles",
+      "subcategory": "learn_from_outcomes",
+      "domain": "DECISION_PRINCIPLES",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "decision-principles",
+        "learn-from-outcomes"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Review decision outcomes to improve future decision-making",
+      "core_concern": "MODERATE",
+      "notes": null
+    },
+    {
+      "id": "PRIM.199",
+      "type": "PRIMARY",
+      "name": "Decide at the Right Level",
+      "category": "decision_principles",
+      "subcategory": "decide_at_the_right_level",
+      "domain": "DECISION_PRINCIPLES",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "decision-principles",
+        "decide-at-the-right-level"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Push decisions to those closest to information and impact",
+      "core_concern": "MODERATE",
+      "notes": null
+    },
+    {
+      "id": "PRIM.200",
+      "type": "PRIMARY",
+      "name": "Act on Conviction, Not Consensus",
+      "category": "decision_principles",
+      "subcategory": "act_on_conviction_not_consensus",
+      "domain": "DECISION_PRINCIPLES",
+      "status": "active",
+      "version": "1.0.0",
+      "tags": [
+        "primary",
+        "decision-principles",
+        "act-on-conviction-not-consensus"
+      ],
+      "source": {
+        "library_name": "MOLT PRIMARY Library",
+        "library_version": "1.0.0",
+        "provided_by": "User supplied Stage 4 drop",
+        "ingested_at": "2026-03-13T08:35:23-06:00",
+        "ingested_by": "Stage4-Agent",
+        "supervised_by": "NeoMAG"
+      },
+      "essence": "Seek input widely, but don't require unanimous agreement to act",
+      "core_concern": "MODERATE",
+      "notes": null
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "status": "public_safe_sample",
+  "source": "compiler smoke sample: hot taco",
+  "notes": [
+    "This is a curated public-safe sample trace.",
+    "It is not a private runtime history export.",
+    "It shows the style of compiler trace events for a simple trigger-gated compile pass."
+  ],
+  "trace": {
+    "sleeveId": "sleeve_umg_trigger_smoke",
+    "events": [
+      {
+        "id": "evt_00001",
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_START",
+        "message": "compileSleeve(v0) started.",
+        "timestamp": "2026-04-19T17:22:01.728Z"
+      },
+      {
+        "id": "evt_00021",
+        "kind": "gating_resolution",
+        "severity": "info",
+        "code": "INFO_STACK_GATE_ACTIVE",
+        "message": "Stack stack_hot_taco passed gate resolution.",
+        "relatedStackIds": [
+          "stack_hot_taco"
+        ],
+        "relatedTriggerIds": [
+          "umg.trigger.hot_taco"
+        ],
+        "timestamp": "2026-04-19T17:22:01.730Z"
+      },
+      {
+        "id": "evt_00025",
+        "kind": "pipeline_stage",
+        "severity": "info",
+        "code": "INFO_DONE",
+        "message": "compileSleeve(v0) succeeded. Active stacks: 1. Matched triggers: 1.",
+        "relatedTriggerIds": [
+          "umg.trigger.hot_taco"
+        ],
+        "relatedStackIds": [
+          "stack_hot_taco"
+        ],
+        "timestamp": "2026-04-19T17:22:01.734Z"
+      }
+    ]
+  }
+}

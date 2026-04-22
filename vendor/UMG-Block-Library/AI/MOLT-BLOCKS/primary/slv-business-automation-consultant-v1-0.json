@@ -1,0 +1,56 @@
+{
+  "sleeve_folder": "slv-business-automation-consultant-v1-0",
+  "title": "BUSINESS AUTOMATION CONSULTANT - COMPLETE SLEEVE STRUCTURE",
+  "category": "business",
+  "promoted_blocks_by_type": {
+    "trigger": [
+      {
+        "id": "TRG.BIZ.013",
+        "name": "Social Media Planning Required",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      }
+    ],
+    "directive": [
+      {
+        "id": "DIR.BIZ.013",
+        "name": "Establish Sustainable Content Calendar",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      }
+    ],
+    "instruction": [
+      {
+        "id": "INST.SOCIAL.001",
+        "name": "Content Calendar Setup Procedure",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      }
+    ],
+    "subject": [
+      {
+        "id": "SUBJ.SOCIAL.001",
+        "name": "Social Media Automation Fundamentals",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      }
+    ],
+    "philosophy": [
+      {
+        "id": "PHIL.SOCIAL.001",
+        "name": "Social Media Automation Philosophy",
+        "moltType": "philosophy",
+        "content": "- Type: PHILOSOPHY"
+      }
+    ],
+    "blueprint": [
+      {
+        "id": "BP.SOCIAL.001",
+        "name": "Content Calendar Template",
+        "moltType": "blueprint",
+        "content": "- Type: BLUEPRINT"
+      }
+    ]
+  },
+  "existing_ids_skipped": []
+}

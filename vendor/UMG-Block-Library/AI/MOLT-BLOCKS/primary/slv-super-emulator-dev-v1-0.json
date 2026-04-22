@@ -1,0 +1,80 @@
+{
+  "sleeve_folder": "slv-super-emulator-dev-v1-0",
+  "title": "SUPER EMULATOR DEVELOPMENT - COMPLETE SLEEVE STRUCTURE",
+  "category": "coders",
+  "promoted_blocks_by_type": {
+    "trigger": [
+      {
+        "id": "TRG.EMU.001",
+        "name": "CPU Emulation Required",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      },
+      {
+        "id": "TRG.EMU.002",
+        "name": "Memory System Required",
+        "moltType": "trigger",
+        "content": "- Type: TRIGGER"
+      }
+    ],
+    "directive": [
+      {
+        "id": "DIR.EMU.001",
+        "name": "Implement Accurate CPU Core",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      },
+      {
+        "id": "DIR.EMU.002",
+        "name": "Implement Flexible Memory System",
+        "moltType": "directive",
+        "content": "- Type: DIRECTIVE"
+      }
+    ],
+    "instruction": [
+      {
+        "id": "INST.CPU.001",
+        "name": "CPU Core Implementation Procedure",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      },
+      {
+        "id": "INST.MEMORY.001",
+        "name": "Memory System Implementation",
+        "moltType": "instruction",
+        "content": "- Type: INSTRUCTION"
+      }
+    ],
+    "subject": [
+      {
+        "id": "SUBJ.CPU.001",
+        "name": "CPU Architecture Fundamentals",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      },
+      {
+        "id": "SUBJ.MEMORY.001",
+        "name": "Memory Mapping Fundamentals",
+        "moltType": "subject",
+        "content": "- Type: SUBJECT"
+      }
+    ],
+    "philosophy": [
+      {
+        "id": "PHIL.CPU.001",
+        "name": "CPU Emulation Philosophy",
+        "moltType": "philosophy",
+        "content": "- Type: PHILOSOPHY"
+      }
+    ],
+    "blueprint": [
+      {
+        "id": "BP.CPU.001",
+        "name": "6502 CPU Core Blueprint",
+        "moltType": "blueprint",
+        "content": "- Type: BLUEPRINT"
+      }
+    ]
+  },
+  "existing_ids_skipped": []
+}

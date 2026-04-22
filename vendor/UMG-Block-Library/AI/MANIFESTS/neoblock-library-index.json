@@ -1,0 +1,66 @@
+﻿[
+    {
+        "store":  "neoblocks",
+        "id":  "slv-bank_audit-compliance-v1-0",
+        "title":  "BANK ACCOUNT COMPLIANCE AUDITOR - COMPLETE SLEEVE STRUCTURE",
+        "category":  "finance",
+        "path":  "blocks\\library\\neoblocks\\slv-bank_audit-compliance-v1-0.json",
+        "declared_count":  38
+    },
+    {
+        "store":  "neoblocks",
+        "id":  "slv-business-automation-consultant-v1-0",
+        "title":  "BUSINESS AUTOMATION CONSULTANT - COMPLETE SLEEVE STRUCTURE",
+        "category":  "business",
+        "path":  "blocks\\library\\neoblocks\\slv-business-automation-consultant-v1-0.json",
+        "declared_count":  1
+    },
+    {
+        "store":  "neoblocks",
+        "id":  "slv-idaho-grants-finder-v1-0",
+        "title":  "IDAHO GRANT FINDER - COMPLETE SLEEVE STRUCTURE",
+        "category":  "finance",
+        "path":  "blocks\\library\\neoblocks\\slv-idaho-grants-finder-v1-0.json",
+        "declared_count":  2
+    },
+    {
+        "store":  "neoblocks",
+        "id":  "slv-investigative-intelligence-v1-0",
+        "title":  "INVESTIGATIVE INTELLIGENCE AGENT - COMPLETE UMG SLEEVE",
+        "category":  "research",
+        "path":  "blocks\\library\\neoblocks\\slv-investigative-intelligence-v1-0.json",
+        "declared_count":  11
+    },
+    {
+        "store":  "neoblocks",
+        "id":  "slv-journalism-investigative-v1-0",
+        "title":  "INVESTIGATIVE JOURNALIST \u0026 REPORTER - COMPLETE SLEEVE STRUCTURE",
+        "category":  "research",
+        "path":  "blocks\\library\\neoblocks\\slv-journalism-investigative-v1-0.json",
+        "declared_count":  36
+    },
+    {
+        "store":  "neoblocks",
+        "id":  "slv-nonprofit-financing-v1-0",
+        "title":  "NONPROFIT FINANCING AGENT - COMPLETE UMG SLEEVE",
+        "category":  "meta-random",
+        "path":  "blocks\\library\\neoblocks\\slv-nonprofit-financing-v1-0.json",
+        "declared_count":  10
+    },
+    {
+        "store":  "neoblocks",
+        "id":  "slv-super-emulator-dev-v1-0",
+        "title":  "SUPER EMULATOR DEVELOPMENT - COMPLETE SLEEVE STRUCTURE",
+        "category":  "coders",
+        "path":  "blocks\\library\\neoblocks\\slv-super-emulator-dev-v1-0.json",
+        "declared_count":  2
+    },
+    {
+        "store":  "neoblocks",
+        "id":  "slv-uo-server-developer-v1-0",
+        "title":  "ULTIMA ONLINE SERVER DEVELOPER - COMPLETE SLEEVE STRUCTURE",
+        "category":  "coders",
+        "path":  "blocks\\library\\neoblocks\\slv-uo-server-developer-v1-0.json",
+        "declared_count":  1
+    }
+]

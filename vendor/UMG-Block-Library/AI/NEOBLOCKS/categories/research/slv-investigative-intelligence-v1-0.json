@@ -1,0 +1,51 @@
+{
+  "sleeve_folder": "slv-investigative-intelligence-v1-0",
+  "title": "INVESTIGATIVE INTELLIGENCE AGENT - COMPLETE UMG SLEEVE",
+  "category": "research",
+  "neoblocks": [
+    {
+      "id": "N.01.01",
+      "name": "Investigation Scoping"
+    },
+    {
+      "id": "N.02.01",
+      "name": "Geographic Research"
+    },
+    {
+      "id": "N.02.02",
+      "name": "Venue Type Specialization"
+    },
+    {
+      "id": "N.03.01",
+      "name": "Flight Research"
+    },
+    {
+      "id": "N.03.02",
+      "name": "Ground Transportation & Border Crossings"
+    },
+    {
+      "id": "N.04.01",
+      "name": "Social Platform Research"
+    },
+    {
+      "id": "N.05.01",
+      "name": "Property Records"
+    },
+    {
+      "id": "N.06.01",
+      "name": "Timeline Development"
+    },
+    {
+      "id": "N.06.02",
+      "name": "Geographic Pattern Analysis"
+    },
+    {
+      "id": "N.07.01",
+      "name": "Associate Identification"
+    },
+    {
+      "id": "N.08.01",
+      "name": "Investigation Report Assembly"
+    }
+  ]
+}

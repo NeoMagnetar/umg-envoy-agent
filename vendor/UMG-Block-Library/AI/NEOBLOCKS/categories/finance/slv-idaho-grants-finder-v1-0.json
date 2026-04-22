@@ -1,0 +1,15 @@
+{
+  "sleeve_folder": "slv-idaho-grants-finder-v1-0",
+  "title": "IDAHO GRANT FINDER - COMPLETE SLEEVE STRUCTURE",
+  "category": "finance",
+  "neoblocks": [
+    {
+      "id": "N.01.01",
+      "name": "Grants.gov Search and Filtering"
+    },
+    {
+      "id": "N.01.03",
+      "name": "USDA Rural Development Grants (Idaho Focus)"
+    }
+  ]
+}

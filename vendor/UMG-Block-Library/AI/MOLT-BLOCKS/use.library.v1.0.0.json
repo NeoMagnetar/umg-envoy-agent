@@ -1,0 +1,1111 @@
+{
+  "library_name": "MOLT Use Library",
+  "version": "1.0.0",
+  "created": "2026-04-20",
+  "created_by": "Claude UMG Envoy",
+  "supervised_by": "NeoMAG",
+  "description": "Comprehensive library of atomic MOLT Use blocks. Use answers: 'What is this for?' Each block describes the function or purpose of the Subject \u2014 what that thing does or enables.",
+  "usage": "Select the Use block that best describes what the Subject is being used for in the current context. Use anchors the reasoning chain between Subject and Aim.",
+  "uses": {
+    "DATA_PROCESSING": {
+      "description": "Uses related to transforming, moving, or operating on data",
+      "blocks": [
+        {
+          "id": "USE.001",
+          "use": "Data ingestion",
+          "function": "To receive and load raw input into a processing pipeline",
+          "examples": [
+            "parsing an uploaded file",
+            "consuming an API stream",
+            "importing database records"
+          ]
+        },
+        {
+          "id": "USE.002",
+          "use": "Data transformation",
+          "function": "To reshape or convert data from one format or state to another",
+          "examples": [
+            "normalizing JSON fields",
+            "converting CSV to schema",
+            "flattening nested objects"
+          ]
+        },
+        {
+          "id": "USE.003",
+          "use": "Data aggregation",
+          "function": "To combine multiple data sources into unified output",
+          "examples": [
+            "merging sales tables",
+            "joining log streams",
+            "consolidating report feeds"
+          ]
+        },
+        {
+          "id": "USE.004",
+          "use": "Data filtering",
+          "function": "To select relevant subsets from a larger dataset",
+          "examples": [
+            "querying by date range",
+            "excluding null records",
+            "isolating high-priority items"
+          ]
+        },
+        {
+          "id": "USE.005",
+          "use": "Data validation",
+          "function": "To verify that data meets expected structure or quality standards",
+          "examples": [
+            "schema conformance check",
+            "null and type checks",
+            "business rule assertion"
+          ]
+        }
+      ]
+    },
+    "CODE_EXECUTION": {
+      "description": "Uses related to building, running, or deploying software",
+      "blocks": [
+        {
+          "id": "USE.006",
+          "use": "Build compilation",
+          "function": "To translate source code into executable or deployable form",
+          "examples": [
+            "compiling TypeScript",
+            "bundling a web app",
+            "building a Docker image"
+          ]
+        },
+        {
+          "id": "USE.007",
+          "use": "Test execution",
+          "function": "To run tests against a codebase to verify behavior",
+          "examples": [
+            "running a Jest suite",
+            "executing integration tests",
+            "triggering CI pipeline checks"
+          ]
+        },
+        {
+          "id": "USE.008",
+          "use": "Deployment",
+          "function": "To release a build into a live or staging environment",
+          "examples": [
+            "pushing to production",
+            "rolling out a new version",
+            "deploying to Kubernetes"
+          ]
+        },
+        {
+          "id": "USE.009",
+          "use": "Runtime evaluation",
+          "function": "To execute logic and produce results in real time",
+          "examples": [
+            "running a script on demand",
+            "evaluating a function call",
+            "live query execution"
+          ]
+        },
+        {
+          "id": "USE.010",
+          "use": "Debugging",
+          "function": "To identify and isolate failures in running code",
+          "examples": [
+            "stepping through a stack trace",
+            "inspecting variable state",
+            "reproducing a reported bug"
+          ]
+        }
+      ]
+    },
+    "SYSTEM_OPERATION": {
+      "description": "Uses related to keeping systems running and healthy",
+      "blocks": [
+        {
+          "id": "USE.011",
+          "use": "Service hosting",
+          "function": "To run software components continuously and serve requests",
+          "examples": [
+            "running an HTTP server",
+            "hosting a background worker",
+            "serving a gRPC endpoint"
+          ]
+        },
+        {
+          "id": "USE.012",
+          "use": "Load balancing",
+          "function": "To distribute traffic or work across available resources",
+          "examples": [
+            "routing requests across pods",
+            "spreading queue messages",
+            "balancing database replicas"
+          ]
+        },
+        {
+          "id": "USE.013",
+          "use": "Backup and recovery",
+          "function": "To preserve state and restore it when needed",
+          "examples": [
+            "daily database snapshots",
+            "point-in-time restore",
+            "disaster recovery drills"
+          ]
+        },
+        {
+          "id": "USE.014",
+          "use": "Scaling",
+          "function": "To adjust resource capacity to match demand",
+          "examples": [
+            "auto-scaling pods",
+            "resizing a database tier",
+            "adding compute nodes"
+          ]
+        },
+        {
+          "id": "USE.015",
+          "use": "System monitoring",
+          "function": "To observe system health and surface anomalies",
+          "examples": [
+            "CPU and memory dashboards",
+            "uptime checks",
+            "error rate alerts"
+          ]
+        }
+      ]
+    },
+    "CONTENT_DELIVERY": {
+      "description": "Uses related to publishing, distributing, or rendering content",
+      "blocks": [
+        {
+          "id": "USE.016",
+          "use": "Publishing",
+          "function": "To make content available to an intended audience",
+          "examples": [
+            "posting a blog article",
+            "releasing documentation",
+            "publishing an API changelog"
+          ]
+        },
+        {
+          "id": "USE.017",
+          "use": "Notification",
+          "function": "To alert recipients of an event, update, or required action",
+          "examples": [
+            "sending a release email",
+            "push notification on mobile",
+            "Slack alert on failure"
+          ]
+        },
+        {
+          "id": "USE.018",
+          "use": "Rendering",
+          "function": "To convert structured content into a presentable format",
+          "examples": [
+            "rendering markdown to HTML",
+            "generating a PDF report",
+            "building a UI from JSON"
+          ]
+        },
+        {
+          "id": "USE.019",
+          "use": "Distribution",
+          "function": "To spread content across multiple channels or recipients",
+          "examples": [
+            "syndicating to RSS",
+            "broadcasting to mailing list",
+            "multi-region CDN delivery"
+          ]
+        },
+        {
+          "id": "USE.020",
+          "use": "Versioning",
+          "function": "To manage and serve multiple versions of content over time",
+          "examples": [
+            "serving API v1 and v2",
+            "maintaining doc site versions",
+            "tagging release artifacts"
+          ]
+        }
+      ]
+    },
+    "PROCESS_AUTOMATION": {
+      "description": "Uses related to automating tasks, workflows, and pipelines",
+      "blocks": [
+        {
+          "id": "USE.021",
+          "use": "Workflow orchestration",
+          "function": "To sequence and coordinate steps in an automated process",
+          "examples": [
+            "running a CI/CD pipeline",
+            "orchestrating a data ETL job",
+            "chaining approval steps"
+          ]
+        },
+        {
+          "id": "USE.022",
+          "use": "Scheduled execution",
+          "function": "To trigger tasks at defined times or intervals",
+          "examples": [
+            "nightly report generation",
+            "weekly cleanup job",
+            "hourly data sync"
+          ]
+        },
+        {
+          "id": "USE.023",
+          "use": "Event handling",
+          "function": "To respond to system or user events with predefined actions",
+          "examples": [
+            "on file upload trigger",
+            "on error restart service",
+            "on user signup send welcome"
+          ]
+        },
+        {
+          "id": "USE.024",
+          "use": "Pipeline management",
+          "function": "To control the flow of work through multi-stage processes",
+          "examples": [
+            "managing build stages",
+            "controlling ETL phases",
+            "tracking approval stages"
+          ]
+        },
+        {
+          "id": "USE.025",
+          "use": "Error recovery",
+          "function": "To detect failures and resume or reroute processing",
+          "examples": [
+            "retry on timeout",
+            "dead letter queue handling",
+            "fallback to cached result"
+          ]
+        }
+      ]
+    },
+    "USER_ENABLEMENT": {
+      "description": "Uses related to supporting, guiding, or empowering users",
+      "blocks": [
+        {
+          "id": "USE.026",
+          "use": "Onboarding",
+          "function": "To introduce and orient new users to a system or capability",
+          "examples": [
+            "guided setup wizard",
+            "first-use walkthrough",
+            "role-based getting started guide"
+          ]
+        },
+        {
+          "id": "USE.027",
+          "use": "Assistance",
+          "function": "To support users in completing a task or understanding something",
+          "examples": [
+            "contextual help tooltips",
+            "AI answer to a question",
+            "troubleshooting guide"
+          ]
+        },
+        {
+          "id": "USE.028",
+          "use": "Permission management",
+          "function": "To grant or restrict access based on user identity and role",
+          "examples": [
+            "role assignment",
+            "feature access control",
+            "resource sharing settings"
+          ]
+        },
+        {
+          "id": "USE.029",
+          "use": "Personalization",
+          "function": "To adapt outputs or behavior to individual user context",
+          "examples": [
+            "saved preferences",
+            "tailored content feed",
+            "localized language settings"
+          ]
+        },
+        {
+          "id": "USE.030",
+          "use": "Feedback collection",
+          "function": "To gather responses from users to inform improvement",
+          "examples": [
+            "post-task survey",
+            "thumbs up/down rating",
+            "bug report submission"
+          ]
+        }
+      ]
+    },
+    "SPECIFICATION_CAPTURE": {
+      "description": "Uses related to defining, documenting, and specifying intent",
+      "blocks": [
+        {
+          "id": "USE.031",
+          "use": "Requirement documentation",
+          "function": "To record what a system or process must do",
+          "examples": [
+            "user story writing",
+            "functional spec authoring",
+            "product brief drafting"
+          ]
+        },
+        {
+          "id": "USE.032",
+          "use": "API contract definition",
+          "function": "To specify the interface between components or systems",
+          "examples": [
+            "OpenAPI schema authoring",
+            "gRPC proto definition",
+            "event schema design"
+          ]
+        },
+        {
+          "id": "USE.033",
+          "use": "Schema authoring",
+          "function": "To define the structure of data or cognitive blocks",
+          "examples": [
+            "JSON Schema writing",
+            "database ERD",
+            "MOLT block typing"
+          ]
+        },
+        {
+          "id": "USE.034",
+          "use": "Policy writing",
+          "function": "To express rules that govern behavior, access, or constraint",
+          "examples": [
+            "data retention policy",
+            "access control rules",
+            "UMG governance block"
+          ]
+        },
+        {
+          "id": "USE.035",
+          "use": "Standard alignment",
+          "function": "To map work to recognized standards or frameworks",
+          "examples": [
+            "ISO conformance mapping",
+            "WCAG compliance check",
+            "UMG canon alignment"
+          ]
+        }
+      ]
+    },
+    "PROBLEM_DIAGNOSIS": {
+      "description": "Uses related to investigating, tracing, and understanding failures",
+      "blocks": [
+        {
+          "id": "USE.036",
+          "use": "Error classification",
+          "function": "To categorize failure types for systematic resolution",
+          "examples": [
+            "sorting errors by severity",
+            "tagging bugs by type",
+            "grouping exceptions by cause"
+          ]
+        },
+        {
+          "id": "USE.037",
+          "use": "Log analysis",
+          "function": "To extract meaning from system or event logs",
+          "examples": [
+            "parsing server logs",
+            "querying error logs",
+            "correlating events in logs"
+          ]
+        },
+        {
+          "id": "USE.038",
+          "use": "Trace inspection",
+          "function": "To follow execution paths and decision records through a system",
+          "examples": [
+            "reading a UMG Decision Trace",
+            "inspecting a distributed trace",
+            "reviewing compilation log"
+          ]
+        },
+        {
+          "id": "USE.039",
+          "use": "Symptom correlation",
+          "function": "To link observed behaviors to their root causes",
+          "examples": [
+            "mapping latency spike to DB query",
+            "linking crash to memory leak",
+            "correlating alert to config change"
+          ]
+        },
+        {
+          "id": "USE.040",
+          "use": "Impact assessment",
+          "function": "To determine the scope and severity of an identified issue",
+          "examples": [
+            "counting affected users",
+            "measuring revenue impact",
+            "quantifying data loss"
+          ]
+        }
+      ]
+    },
+    "QUALITY_ASSURANCE": {
+      "description": "Uses related to verifying correctness and meeting standards",
+      "blocks": [
+        {
+          "id": "USE.041",
+          "use": "Unit testing",
+          "function": "To verify individual components behave as expected in isolation",
+          "examples": [
+            "testing a pure function",
+            "mocking dependencies",
+            "asserting return values"
+          ]
+        },
+        {
+          "id": "USE.042",
+          "use": "Integration testing",
+          "function": "To confirm that components work correctly when connected",
+          "examples": [
+            "testing API and DB together",
+            "end-to-end auth flow",
+            "service-to-service call"
+          ]
+        },
+        {
+          "id": "USE.043",
+          "use": "Regression testing",
+          "function": "To ensure changes have not broken previously working behavior",
+          "examples": [
+            "re-running old test suite",
+            "comparing before and after outputs",
+            "snapshot testing"
+          ]
+        },
+        {
+          "id": "USE.044",
+          "use": "Coverage measurement",
+          "function": "To quantify how much of the system is exercised by tests",
+          "examples": [
+            "line coverage report",
+            "branch coverage analysis",
+            "path coverage check"
+          ]
+        },
+        {
+          "id": "USE.045",
+          "use": "Acceptance validation",
+          "function": "To confirm a deliverable meets stakeholder-defined criteria",
+          "examples": [
+            "UAT session",
+            "demo to product owner",
+            "sign-off against acceptance criteria"
+          ]
+        }
+      ]
+    },
+    "SYSTEM_CONFIGURATION": {
+      "description": "Uses related to setting up and tuning systems",
+      "blocks": [
+        {
+          "id": "USE.046",
+          "use": "Environment setup",
+          "function": "To prepare a runtime context with required dependencies and settings",
+          "examples": [
+            "provisioning a dev environment",
+            "bootstrapping a container",
+            "initializing a local repo"
+          ]
+        },
+        {
+          "id": "USE.047",
+          "use": "Parameter tuning",
+          "function": "To adjust settings to optimize behavior or performance",
+          "examples": [
+            "setting cache TTLs",
+            "tuning thread pool size",
+            "adjusting retry intervals"
+          ]
+        },
+        {
+          "id": "USE.048",
+          "use": "Secret management",
+          "function": "To securely store and inject credentials, keys, and tokens",
+          "examples": [
+            "rotating API keys",
+            "injecting vault secrets",
+            "managing TLS certificates"
+          ]
+        },
+        {
+          "id": "USE.049",
+          "use": "Feature flagging",
+          "function": "To enable or disable capabilities without code changes",
+          "examples": [
+            "rolling out a feature to 10%",
+            "toggling a beta feature",
+            "disabling a breaking change"
+          ]
+        },
+        {
+          "id": "USE.050",
+          "use": "Infrastructure provisioning",
+          "function": "To create and configure the resources a system needs to run",
+          "examples": [
+            "Terraform apply",
+            "CloudFormation stack",
+            "Kubernetes namespace setup"
+          ]
+        }
+      ]
+    },
+    "COMMUNICATION_FACILITATION": {
+      "description": "Uses related to routing, buffering, and delivering messages",
+      "blocks": [
+        {
+          "id": "USE.051",
+          "use": "Message routing",
+          "function": "To direct communications to the correct recipient or channel",
+          "examples": [
+            "topic-based pub/sub routing",
+            "email address resolution",
+            "API gateway path matching"
+          ]
+        },
+        {
+          "id": "USE.052",
+          "use": "Protocol translation",
+          "function": "To convert messages between different communication formats or standards",
+          "examples": [
+            "REST to gRPC bridge",
+            "XML to JSON conversion",
+            "MQTT to HTTP adapter"
+          ]
+        },
+        {
+          "id": "USE.053",
+          "use": "Queue management",
+          "function": "To buffer and order messages for reliable asynchronous delivery",
+          "examples": [
+            "SQS queue processing",
+            "Kafka topic consumption",
+            "task queue priority management"
+          ]
+        },
+        {
+          "id": "USE.054",
+          "use": "Broadcast",
+          "function": "To send a message or event to multiple recipients simultaneously",
+          "examples": [
+            "system status broadcast",
+            "push notification fan-out",
+            "event bus emission"
+          ]
+        },
+        {
+          "id": "USE.055",
+          "use": "Acknowledgment",
+          "function": "To confirm receipt and correct processing of a communication",
+          "examples": [
+            "message ack in queue",
+            "HTTP 200 response",
+            "read receipt in messaging"
+          ]
+        }
+      ]
+    },
+    "PATTERN_MODELING": {
+      "description": "Uses related to representing, structuring, and abstracting concepts",
+      "blocks": [
+        {
+          "id": "USE.056",
+          "use": "Entity modeling",
+          "function": "To represent real-world objects as structured data entities",
+          "examples": [
+            "defining a user object",
+            "modeling a product entity",
+            "specifying an order schema"
+          ]
+        },
+        {
+          "id": "USE.057",
+          "use": "Relationship mapping",
+          "function": "To define and trace connections between entities or concepts",
+          "examples": [
+            "foreign key relationships",
+            "UMG block snap/scope",
+            "domain model associations"
+          ]
+        },
+        {
+          "id": "USE.058",
+          "use": "Pattern abstraction",
+          "function": "To extract reusable structures or rules from specific instances",
+          "examples": [
+            "design pattern identification",
+            "NeoBlock synthesis",
+            "template extraction"
+          ]
+        },
+        {
+          "id": "USE.059",
+          "use": "Taxonomy definition",
+          "function": "To organize concepts into a classified, hierarchical structure",
+          "examples": [
+            "MOLT type hierarchy",
+            "category tree for a product catalog",
+            "permission role hierarchy"
+          ]
+        },
+        {
+          "id": "USE.060",
+          "use": "Simulation",
+          "function": "To model system behavior under hypothetical conditions",
+          "examples": [
+            "UMG branch simulation",
+            "load test scenario",
+            "failure mode modeling"
+          ]
+        }
+      ]
+    },
+    "RESOURCE_MANAGEMENT": {
+      "description": "Uses related to allocating, tracking, and governing resources",
+      "blocks": [
+        {
+          "id": "USE.061",
+          "use": "Allocation",
+          "function": "To assign available resources to tasks, users, or systems",
+          "examples": [
+            "assigning a compute node",
+            "reserving a conference room",
+            "assigning budget to a team"
+          ]
+        },
+        {
+          "id": "USE.062",
+          "use": "Tracking",
+          "function": "To maintain a live record of resource state and consumption",
+          "examples": [
+            "real-time memory usage",
+            "budget spend tracker",
+            "ticket assignment board"
+          ]
+        },
+        {
+          "id": "USE.063",
+          "use": "Throttling",
+          "function": "To limit resource consumption to prevent overload or abuse",
+          "examples": [
+            "API rate limiting",
+            "CPU quota enforcement",
+            "request concurrency cap"
+          ]
+        },
+        {
+          "id": "USE.064",
+          "use": "Lifecycle management",
+          "function": "To govern how resources are created, used, and retired",
+          "examples": [
+            "session expiry",
+            "object TTL policy",
+            "infrastructure decommission workflow"
+          ]
+        },
+        {
+          "id": "USE.065",
+          "use": "Cost accounting",
+          "function": "To attribute resource usage to owners, projects, or cost centers",
+          "examples": [
+            "cloud spend by team tag",
+            "compute cost per job",
+            "API call billing attribution"
+          ]
+        }
+      ]
+    },
+    "INTERFACE_BRIDGING": {
+      "description": "Uses related to connecting, adapting, and translating between systems",
+      "blocks": [
+        {
+          "id": "USE.066",
+          "use": "API gateway",
+          "function": "To expose and mediate access to internal services through a unified endpoint",
+          "examples": [
+            "Kong gateway routing",
+            "AWS API Gateway",
+            "BFF layer for mobile"
+          ]
+        },
+        {
+          "id": "USE.067",
+          "use": "Data adapter",
+          "function": "To translate between incompatible data formats at system boundaries",
+          "examples": [
+            "Salesforce to internal CRM mapping",
+            "legacy to modern schema bridge",
+            "CSV to API body"
+          ]
+        },
+        {
+          "id": "USE.068",
+          "use": "Protocol bridge",
+          "function": "To allow systems using different protocols to communicate",
+          "examples": [
+            "MQTT to WebSocket bridge",
+            "FTP to S3 sync",
+            "SOAP to REST wrapper"
+          ]
+        },
+        {
+          "id": "USE.069",
+          "use": "Webhook",
+          "function": "To push event notifications from one system to another over HTTP",
+          "examples": [
+            "GitHub PR webhook",
+            "Stripe payment event",
+            "Slack incoming webhook"
+          ]
+        },
+        {
+          "id": "USE.070",
+          "use": "SDK provision",
+          "function": "To give external developers tooling to integrate with a system",
+          "examples": [
+            "Python SDK for an API",
+            "JavaScript client library",
+            "UMG Envoy integration kit"
+          ]
+        }
+      ]
+    },
+    "EVENT_MONITORING": {
+      "description": "Uses related to capturing, logging, and surfacing events",
+      "blocks": [
+        {
+          "id": "USE.071",
+          "use": "Event capture",
+          "function": "To record that something happened at a specific time and place",
+          "examples": [
+            "user click tracking",
+            "service call logging",
+            "governance action recording"
+          ]
+        },
+        {
+          "id": "USE.072",
+          "use": "Alerting",
+          "function": "To notify operators when a threshold or anomalous condition is breached",
+          "examples": [
+            "error rate spike alert",
+            "disk full warning",
+            "latency threshold breach"
+          ]
+        },
+        {
+          "id": "USE.073",
+          "use": "Audit logging",
+          "function": "To maintain a tamper-evident record of significant or sensitive actions",
+          "examples": [
+            "UMG Decision Trace",
+            "admin action log",
+            "financial transaction record"
+          ]
+        },
+        {
+          "id": "USE.074",
+          "use": "Telemetry collection",
+          "function": "To continuously gather operational signals from a running system",
+          "examples": [
+            "OpenTelemetry spans",
+            "JVM metrics export",
+            "custom instrumentation"
+          ]
+        },
+        {
+          "id": "USE.075",
+          "use": "Dashboarding",
+          "function": "To visualize current and historical system state for operators",
+          "examples": [
+            "Grafana dashboard",
+            "real-time KPI board",
+            "Datadog service map"
+          ]
+        }
+      ]
+    },
+    "POLICY_ENFORCEMENT": {
+      "description": "Uses related to applying, governing, and constraining behavior via rules",
+      "blocks": [
+        {
+          "id": "USE.076",
+          "use": "Access control",
+          "function": "To permit or deny actions based on identity, role, and policy",
+          "examples": [
+            "RBAC check on API call",
+            "governance block OFF state",
+            "folder permission enforcement"
+          ]
+        },
+        {
+          "id": "USE.077",
+          "use": "Rate limiting",
+          "function": "To bound how frequently an action can be performed in a time window",
+          "examples": [
+            "100 requests per minute cap",
+            "login attempt throttle",
+            "API quota enforcement"
+          ]
+        },
+        {
+          "id": "USE.078",
+          "use": "Compliance checking",
+          "function": "To verify that behavior conforms to defined rules or standards",
+          "examples": [
+            "GDPR data handling audit",
+            "UMG invariant check",
+            "PCI-DSS control verification"
+          ]
+        },
+        {
+          "id": "USE.079",
+          "use": "Governance anchoring",
+          "function": "To enforce the authority hierarchy at compile or runtime",
+          "examples": [
+            "UMG governance pass",
+            "policy-as-code evaluation",
+            "pre-execution constraint check"
+          ]
+        },
+        {
+          "id": "USE.080",
+          "use": "Constraint propagation",
+          "function": "To carry restrictions from higher authority layers to lower ones",
+          "examples": [
+            "MOLT authority top-down flow",
+            "inherited permissions",
+            "cascading policy rules"
+          ]
+        }
+      ]
+    },
+    "INSIGHT_GENERATION": {
+      "description": "Uses related to deriving meaning, patterns, and foresight from information",
+      "blocks": [
+        {
+          "id": "USE.081",
+          "use": "Trend analysis",
+          "function": "To surface patterns emerging over time from data streams",
+          "examples": [
+            "weekly sales trends",
+            "user growth rate",
+            "error frequency over time"
+          ]
+        },
+        {
+          "id": "USE.082",
+          "use": "Anomaly detection",
+          "function": "To identify data points or behaviors that deviate from expected norms",
+          "examples": [
+            "fraud signal detection",
+            "unusual login location",
+            "outlier in metrics"
+          ]
+        },
+        {
+          "id": "USE.083",
+          "use": "Summarization",
+          "function": "To condense large volumes of information into key findings",
+          "examples": [
+            "meeting notes summary",
+            "report executive summary",
+            "MOLT synthesis output"
+          ]
+        },
+        {
+          "id": "USE.084",
+          "use": "Recommendation",
+          "function": "To suggest actions or options based on patterns and context",
+          "examples": [
+            "next best action for support agent",
+            "product recommendation",
+            "refactoring suggestion"
+          ]
+        },
+        {
+          "id": "USE.085",
+          "use": "Prediction",
+          "function": "To forecast likely future states from current and historical evidence",
+          "examples": [
+            "churn probability score",
+            "capacity forecast",
+            "failure prediction"
+          ]
+        }
+      ]
+    },
+    "OUTPUT_PRODUCTION": {
+      "description": "Uses related to producing, exporting, and delivering outputs",
+      "blocks": [
+        {
+          "id": "USE.086",
+          "use": "Report generation",
+          "function": "To assemble findings and data into a structured deliverable",
+          "examples": [
+            "weekly status report",
+            "audit findings report",
+            "UMG Decision Trace report"
+          ]
+        },
+        {
+          "id": "USE.087",
+          "use": "Artifact compilation",
+          "function": "To produce a deployable or shareable output from input sources",
+          "examples": [
+            "compiled binary",
+            "RuntimeSpec emission",
+            "packaged npm module"
+          ]
+        },
+        {
+          "id": "USE.088",
+          "use": "Export formatting",
+          "function": "To convert output into a target format for external use",
+          "examples": [
+            "CSV export from dashboard",
+            "PDF export of doc",
+            "JSON export of model"
+          ]
+        },
+        {
+          "id": "USE.089",
+          "use": "Documentation generation",
+          "function": "To produce human-readable documentation from source artifacts",
+          "examples": [
+            "auto-generated API docs",
+            "docstring to README",
+            "UMG glossary generation"
+          ]
+        },
+        {
+          "id": "USE.090",
+          "use": "Rendering pipeline",
+          "function": "To transform raw or structured content into final presentable form",
+          "examples": [
+            "static site generation",
+            "PDF compile from Markdown",
+            "diagram render from spec"
+          ]
+        }
+      ]
+    },
+    "DEPENDENCY_MAPPING": {
+      "description": "Uses related to identifying, resolving, and tracing dependencies",
+      "blocks": [
+        {
+          "id": "USE.091",
+          "use": "Dependency discovery",
+          "function": "To identify everything a component relies on to function correctly",
+          "examples": [
+            "package.json audit",
+            "import graph analysis",
+            "UMG block reference check"
+          ]
+        },
+        {
+          "id": "USE.092",
+          "use": "Dependency resolution",
+          "function": "To find compatible versions of all required components",
+          "examples": [
+            "npm install resolution",
+            "pip dependency solving",
+            "MOLT block version alignment"
+          ]
+        },
+        {
+          "id": "USE.093",
+          "use": "Impact tracing",
+          "function": "To determine what is affected when a dependency changes",
+          "examples": [
+            "breaking change impact analysis",
+            "upstream consumer identification",
+            "cascade failure path"
+          ]
+        },
+        {
+          "id": "USE.094",
+          "use": "Graph construction",
+          "function": "To build a structural or visual map of relationships and dependencies",
+          "examples": [
+            "dependency graph visualization",
+            "UMG sleeve map",
+            "service mesh diagram"
+          ]
+        },
+        {
+          "id": "USE.095",
+          "use": "Conflict detection",
+          "function": "To find incompatible, circular, or missing dependencies",
+          "examples": [
+            "peer dependency conflict",
+            "circular import detection",
+            "MOLT priority conflict site"
+          ]
+        }
+      ]
+    },
+    "UMG_FRAMEWORK_USE": {
+      "description": "Uses specific to the UMG cognitive architecture and its operation",
+      "blocks": [
+        {
+          "id": "USE.096",
+          "use": "Sleeve loading",
+          "function": "To load a configured sleeve into the active compilation context",
+          "examples": [
+            "activating SLV.CLAUDE.UMG.v1",
+            "ingesting a governance sleeve",
+            "expanding modules into stacks"
+          ]
+        },
+        {
+          "id": "USE.097",
+          "use": "Block composition",
+          "function": "To assemble atomic MOLT blocks into NeoBlocks and NeoStacks",
+          "examples": [
+            "merging Instruction blocks",
+            "composing a NeoBlock",
+            "building a NeoStack from NeoBlocks"
+          ]
+        },
+        {
+          "id": "USE.098",
+          "use": "Governance enforcement",
+          "function": "To apply governance rules before any content is resolved or compiled",
+          "examples": [
+            "running the governance pass",
+            "evaluating OFF states",
+            "rejecting non-compliant blocks"
+          ]
+        },
+        {
+          "id": "USE.099",
+          "use": "MOLT compilation",
+          "function": "To resolve typed blocks by authority and priority into a RuntimeSpec and Decision Trace",
+          "examples": [
+            "running the compiler pipeline",
+            "emitting a RuntimeSpec",
+            "producing a Decision Trace"
+          ]
+        },
+        {
+          "id": "USE.100",
+          "use": "Trace inspection",
+          "function": "To audit and review the decisions made during a compilation pass",
+          "examples": [
+            "reviewing winner and loser blocks",
+            "verifying governance actions in trace",
+            "validating determinism across runs"
+          ]
+        }
+      ]
+    }
+  }
+}

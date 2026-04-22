@@ -1,0 +1,151 @@
+{
+  "sleeve_folder": "slv-journalism-investigative-v1-0",
+  "title": "INVESTIGATIVE JOURNALIST & REPORTER - COMPLETE SLEEVE STRUCTURE",
+  "category": "research",
+  "neoblocks": [
+    {
+      "id": "N.01.01",
+      "name": "Source Credibility Evaluation"
+    },
+    {
+      "id": "N.01.02",
+      "name": "Document Authentication"
+    },
+    {
+      "id": "N.01.03",
+      "name": "Expert Source Validation"
+    },
+    {
+      "id": "N.01.04",
+      "name": "Witness Credibility Assessment"
+    },
+    {
+      "id": "N.01.05",
+      "name": "Anonymous Source Protocols"
+    },
+    {
+      "id": "N.01.06",
+      "name": "Conflict of Interest Detection"
+    },
+    {
+      "id": "N.02.01",
+      "name": "Factual Claim Verification"
+    },
+    {
+      "id": "N.02.02",
+      "name": "Quote Verification and Context"
+    },
+    {
+      "id": "N.02.03",
+      "name": "Timeline Contradiction Detection"
+    },
+    {
+      "id": "N.02.04",
+      "name": "Claim Contradiction Analysis"
+    },
+    {
+      "id": "N.02.05",
+      "name": "Mathematical and Statistical Verification"
+    },
+    {
+      "id": "N.02.06",
+      "name": "Misinformation Detection"
+    },
+    {
+      "id": "N.03.01",
+      "name": "Document Analysis and Extraction"
+    },
+    {
+      "id": "N.03.02",
+      "name": "Financial Document Analysis"
+    },
+    {
+      "id": "N.03.03",
+      "name": "Legal Document Analysis"
+    },
+    {
+      "id": "N.03.04",
+      "name": "Email and Communication Analysis"
+    },
+    {
+      "id": "N.04.01",
+      "name": "Interview Preparation"
+    },
+    {
+      "id": "N.04.02",
+      "name": "Difficult Interview Techniques"
+    },
+    {
+      "id": "N.04.03",
+      "name": "Source Development"
+    },
+    {
+      "id": "N.04.04",
+      "name": "Whistleblower Management"
+    },
+    {
+      "id": "N.05.01",
+      "name": "Event Timeline Construction"
+    },
+    {
+      "id": "N.05.02",
+      "name": "Relationship Mapping"
+    },
+    {
+      "id": "N.05.03",
+      "name": "Money Trail Analysis"
+    },
+    {
+      "id": "N.05.04",
+      "name": "Pattern Recognition Across Cases"
+    },
+    {
+      "id": "N.06.01",
+      "name": "Libel and Defamation Risk Assessment"
+    },
+    {
+      "id": "N.06.02",
+      "name": "Privacy and Intrusion Considerations"
+    },
+    {
+      "id": "N.06.03",
+      "name": "Undercover and Deception Ethics"
+    },
+    {
+      "id": "N.06.04",
+      "name": "Harm Minimization"
+    },
+    {
+      "id": "N.07.01",
+      "name": "Narrative Development"
+    },
+    {
+      "id": "N.07.02",
+      "name": "Quote Selection and Integration"
+    },
+    {
+      "id": "N.07.03",
+      "name": "Fact-Checking Before Publication"
+    },
+    {
+      "id": "N.07.04",
+      "name": "Corrections and Accountability"
+    },
+    {
+      "id": "N.08.01",
+      "name": "Evidence Chain of Custody"
+    },
+    {
+      "id": "N.08.02",
+      "name": "Interview Documentation"
+    },
+    {
+      "id": "N.08.03",
+      "name": "Source Contact Logging"
+    },
+    {
+      "id": "N.08.04",
+      "name": "Fact-Checking Audit Trail"
+    }
+  ]
+}

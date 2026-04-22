@@ -1,0 +1,40 @@
+{
+  "generated_at": "2026-04-18T08:15:00-09:00",
+  "catalog_status": "curated_authoritative_direct_sleeve_catalog",
+  "catalog_scope": "direct sleeve JSON entries under sleeves/archive, sleeves/generated, and selected top-level sleeve source artifacts; broader sleeves/library and extracted block-library surfaces remain derived/provisional and are not treated as exhaustive direct sleeve catalog entries here",
+  "notes": [
+    "This catalog is authoritative for directly cataloged sleeve JSON source entries, not for every derived sleeve/library artifact.",
+    "Broader sleeve/library documentation surfaces and extracted structured stores contain additional sleeve-derived material and should be treated as derived/provisional until later reconciliation.",
+    "See docs/TRUTH-STATE.md and docs/BROWSE-COVERAGE.md for current doctrine."
+  ],
+  "sleeves": [
+    {
+      "id": "slv-operator",
+      "name": "SLV.OPERATOR",
+      "status": "top_level_source",
+      "source_path": "..\\SLV.OPERATOR.json",
+      "notes": "Top-level sleeve source artifact present under sleeves/."
+    },
+    {
+      "id": "neomagnetar-dynamic-persona-v1",
+      "name": "Neomagnetar Dynamic Persona Sleeve",
+      "status": "generated",
+      "source_path": "..\\generated\\sleeve-neomagnetar-dynamic-persona-v1.json",
+      "notes": "Large dynamic persona sleeve with multi-domain trigger routing and 100+ blocks."
+    },
+    {
+      "id": "stage5-sleeve",
+      "name": "Stage 5 Sleeve",
+      "status": "generated",
+      "source_path": "..\\generated\\stage5-sleeve.json",
+      "notes": "Generated stage-era sleeve artifact retained as historical/generated source entry."
+    },
+    {
+      "id": "sample-basic-minimal",
+      "name": "Sample Basic Minimal",
+      "status": "archived",
+      "source_path": "..\\archive\\sample-basic_minimal.json",
+      "notes": "Upstream compiler sample copied locally for dry-run validation."
+    }
+  ]
+}

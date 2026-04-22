@@ -1,0 +1,7 @@
+﻿{
+    "id":  "sample-basic-minimal",
+    "name":  "Sample Basic Minimal",
+    "status":  "archived",
+    "source_path":  "..\\archive\\sample-basic_minimal.json",
+    "notes":  "Upstream compiler sample copied locally for dry-run validation."
+}

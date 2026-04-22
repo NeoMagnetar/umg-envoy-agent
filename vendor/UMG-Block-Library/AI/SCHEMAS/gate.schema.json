@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "UMG Gate Schema (public placeholder)",
+  "description": "Provisional public placeholder for future gate schema publication. This file intentionally marks the gate schema surface as planned but not yet release-ready in this first public population pass.",
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string",
+      "const": "provisional_placeholder"
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "status",
+    "notes"
+  ],
+  "additionalProperties": true,
+  "examples": [
+    {
+      "status": "provisional_placeholder",
+      "notes": [
+        "Public gate schema not yet stabilized for publication.",
+        "See AI/DOCTRINE/TRIGGER-GATE-DOCTRINE.md for current doctrine."
+      ]
+    }
+  ]
+}

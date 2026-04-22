@@ -1,0 +1,7 @@
+﻿{
+    "id":  "slv-operator",
+    "name":  "SLV.OPERATOR",
+    "status":  "top_level_source",
+    "source_path":  "..\\SLV.OPERATOR.json",
+    "notes":  "Top-level sleeve source artifact present under sleeves/."
+}

@@ -1,0 +1,33 @@
+{
+  "generated_at": "2026-04-20T17:26:00Z",
+  "catalog_status": "public_package_curated_sleeve_catalog",
+  "catalog_scope": "Bundled public-facing sleeve catalog for the public UMG Block Library package. Entries are intentionally classified by promotion posture rather than treated as undifferentiated compatibility mirror material.",
+  "notes": [
+    "This catalog supports the current public v0 tool surface while also distinguishing promoted reference sleeves from compatibility-only and historical sleeves.",
+    "The public lane is intentionally narrower than the private Resleever sleeve lane.",
+    "Payload/runtime ids may differ from public catalog ids; the catalog id is the stable public reference name."
+  ],
+  "sleeves": [
+    {
+      "id": "slv-operator",
+      "name": "SLV.OPERATOR",
+      "status": "needs_normalization",
+      "source_path": "../SLV.OPERATOR.json",
+      "notes": "Public-compatible operator sleeve carried forward from the private lane. Stable source exists, but naming/style normalization is still recommended before stronger public promotion posture."
+    },
+    {
+      "id": "sample-basic-minimal",
+      "name": "Sample Basic Minimal",
+      "status": "promoted_reference",
+      "source_path": "../archive/sample-basic_minimal.json",
+      "notes": "Public-safe promoted reference sleeve. Valid compile success-path sample used for public smoke validation. Payload runtime id remains sleeve_basic."
+    },
+    {
+      "id": "neomagnetar-dynamic-persona-v1",
+      "name": "Neomagnetar Dynamic Persona Sleeve",
+      "status": "compatibility_reference",
+      "source_path": "../generated/sleeve-neomagnetar-dynamic-persona-v1.json",
+      "notes": "Meaningful public compatibility/reference sleeve with multi-domain routing value. Public catalog id is stable; payload runtime id remains sleeve_neomagnetar_dynamic_persona_v1."
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "status": "public_safe_sample",
+  "source": "compiler smoke sample: hot taco",
+  "notes": [
+    "This is a curated public-safe sample runtime snapshot.",
+    "It is not a live private runtime artifact.",
+    "It demonstrates the general runtime shape for a single trigger-gated stack."
+  ],
+  "runtime": {
+    "sleeveId": "sleeve_umg_trigger_smoke",
+    "sleeveName": "UMG Trigger Smoke Sleeve",
+    "matchedTriggerIds": [
+      "umg.trigger.hot_taco"
+    ],
+    "activeStackIds": [
+      "stack_hot_taco"
+    ],
+    "stacks": [
+      {
+        "stackId": "stack_hot_taco",
+        "domainKey": "hot_taco",
+        "orderedBlockIds": [
+          "blk_dir_hot_taco",
+          "blk_instr_hot_taco",
+          "blk_primary_hot_taco"
+        ]
+      }
+    ],
+    "neoBlockIdByStackId": {
+      "stack_hot_taco": "nb_stack_hot_taco"
+    },
+    "meta": {
+      "compiledAt": "2026-04-19T17:22:01.734Z",
+      "compilerVersion": "v0"
+    }
+  }
+}

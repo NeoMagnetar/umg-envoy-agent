@@ -1,0 +1,10 @@
+{
+  "status": "placeholder_curated_surface_not_populated_yet",
+  "scope": "public-safe gate library index",
+  "notes": [
+    "This surface exists intentionally in the first public population pass.",
+    "Curated public gate entries are not populated yet.",
+    "Use AI/DOCTRINE/TRIGGER-GATE-DOCTRINE.md for current public doctrine until a reviewed gate index is published."
+  ],
+  "gates": []
+}

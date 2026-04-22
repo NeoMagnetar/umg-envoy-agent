@@ -1,0 +1,35 @@
+{
+  "$schema": "https://umg.envoy/schemas/neostack.template.schema.json",
+  "id": "{{REQUIRED_NEOSTACK_ID}}",
+  "name": "{{REQUIRED_NAME}}",
+  "purpose": "{{REQUIRED_PURPOSE}}",
+  "category": "{{general|domain_specific|framework_specific|experimental|archived}}",
+  "subcategory": "{{lower_snake_case}}",
+  "status": "{{active|deprecated|experimental|archived}}",
+  "version": "{{semver}}",
+  "tags": [
+    "{{primary_tag}}"
+  ],
+  "neoblock_ids": [
+    "{{NBK.xxx}}"
+  ],
+  "activation_logic": {
+    "entry": null,
+    "sequence": [],
+    "conditions": [],
+    "fallback": null,
+    "notes": null
+  },
+  "governance": {
+    "directive_ids": [],
+    "policy_links": []
+  },
+  "examples": [],
+  "source": {
+    "library_name": "{{source_library}}",
+    "library_version": "{{library_semver}}",
+    "created": "{{YYYY-MM-DD}}",
+    "created_by": "{{steward}}"
+  },
+  "notes": null
+}

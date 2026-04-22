@@ -1,0 +1,45 @@
+﻿{
+  "release": "0.1.0",
+  "status": "curated_first_population_pass",
+  "approved": {
+    "doctrine": [
+      "AI/DOCTRINE/MOLT-BLOCK-DOCTRINE.md",
+      "AI/DOCTRINE/TRIGGER-GATE-DOCTRINE.md",
+      "AI/DOCTRINE/SCHEMA-STATUS.md"
+    ],
+    "schemas": [
+      "AI/SCHEMAS/molt-block.schema.json",
+      "AI/SCHEMAS/neoblock.schema.json",
+      "AI/SCHEMAS/neostack.schema.json",
+      "AI/SCHEMAS/sleeve.schema.json"
+    ],
+    "runtime_aligned_surfaces": [
+      "AI/MANIFESTS/public-resolver-rule-example.json",
+      "AI/COMPILER/SAMPLE-INPUTS/runtime-aligned-public-sample.json",
+      "AI/RUNTIME-REFERENCE/runtime-family-map.md"
+    ],
+    "molt_categories": [
+      "blueprints",
+      "directives",
+      "instructions",
+      "subjects",
+      "primary",
+      "philosophy",
+      "aim",
+      "use",
+      "need"
+    ],
+    "molt_library_files": [
+      "AI/MOLT-BLOCKS/aim.library.v1.0.0.json",
+      "AI/MOLT-BLOCKS/use.library.v1.0.0.json",
+      "AI/MOLT-BLOCKS/need.library.v1.0.0.json",
+      "HUMAN/MOLT-BLOCKS/aim/AIM-LIBRARY-v1.0.0.md",
+      "HUMAN/MOLT-BLOCKS/use/USE-LIBRARY-v1.0.0.md",
+      "HUMAN/MOLT-BLOCKS/need/NEED-LIBRARY-v1.0.0.md"
+    ]
+  },
+  "notes": [
+    "This file lists what is intentionally approved for first public population.",
+    "Not-yet-ready structural surfaces remain placeholders rather than misleading partial dumps."
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "$schema": "https://umg.envoy/schemas/molt-block.template.schema.json",
+  "id": "{{REQUIRED_BLOCK_ID}}",
+  "type": "{{DIRECTIVE|TRIGGER|INSTRUCTION|SUBJECT|PRIMARY|PHILOSOPHY|BLUEPRINT}}",
+  "name": "{{REQUIRED_BLOCK_NAME}}",
+  "category": "{{general|domain_specific|framework_specific|experimental|archived}}",
+  "subcategory": "{{lower_snake_case_subcategory}}",
+  "status": "{{active|deprecated|experimental|archived}}",
+  "version": "{{semver}}",
+  "tags": [
+    "{{required_primary_tag}}"
+  ],
+  "source": {
+    "library_name": "{{source_library}}",
+    "library_version": "{{library_semver}}",
+    "created": "{{YYYY-MM-DD}}",
+    "created_by": "{{steward}}",
+    "supervised_by": "{{optional_supervisor}}",
+    "reference": "{{link_or_location}}"
+  },
+  "scope": null,
+  "content": {
+    "summary": "{{short_summary}}",
+    "details": null,
+    "structure": null
+  },
+  "constraints": [],
+  "examples": [],
+  "type_specific": {
+    "directive": {
+      "governance_links": [],
+      "enforcement_level": null
+    },
+    "trigger": {
+      "activation": null,
+      "signals": [],
+      "required_context": []
+    },
+    "instruction": {
+      "action": null,
+      "expected_output": null,
+      "steps": []
+    },
+    "subject": {
+      "definition": null,
+      "key_attributes": [],
+      "related_subjects": []
+    },
+    "primary": {
+      "essence": null,
+      "core_concern": null,
+      "driver": null
+    },
+    "philosophy": {
+      "core_principles": [],
+      "application": null,
+      "risks": []
+    },
+    "blueprint": {
+      "structure": null,
+      "input_contract": null,
+      "output_characteristics": null
+    }
+  },
+  "notes": null
+}

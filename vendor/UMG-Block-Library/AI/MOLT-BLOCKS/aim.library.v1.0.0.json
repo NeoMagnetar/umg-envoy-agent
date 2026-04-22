@@ -1,0 +1,1111 @@
+{
+  "library_name": "MOLT Aim Library",
+  "version": "1.0.0",
+  "created": "2026-04-20",
+  "created_by": "Claude UMG Envoy",
+  "supervised_by": "NeoMAG",
+  "description": "Comprehensive library of atomic MOLT Aim blocks. Aim answers: 'What are we trying to achieve?' Each block describes the desired real-world outcome \u2014 what success looks like when this reasoning path completes.",
+  "usage": "Select the Aim block that best describes the intended outcome for the current context. Aim sits above Need in the interpretive chain and governs what the response is ultimately trying to accomplish.",
+  "aims": {
+    "ANALYTICAL_OUTCOMES": {
+      "description": "Aims oriented toward understanding, classifying, and explaining",
+      "blocks": [
+        {
+          "id": "AIM.001",
+          "aim": "Classify correctly",
+          "outcome": "To assign the right category, label, or type to an input",
+          "examples": [
+            "correctly typing a MOLT block",
+            "categorizing a bug by severity",
+            "labeling a support ticket"
+          ]
+        },
+        {
+          "id": "AIM.002",
+          "aim": "Explain clearly",
+          "outcome": "To produce an accurate, comprehensible explanation the recipient can act on",
+          "examples": [
+            "making a complex system understandable",
+            "clarifying a governance rule",
+            "explaining why a block was OFF'd"
+          ]
+        },
+        {
+          "id": "AIM.003",
+          "aim": "Detect patterns",
+          "outcome": "To identify recurring structures, trends, or regularities in data or behavior",
+          "examples": [
+            "finding seasonal sales cycles",
+            "spotting repeated error types",
+            "recognizing a MOLT authority pattern"
+          ]
+        },
+        {
+          "id": "AIM.004",
+          "aim": "Expose root cause",
+          "outcome": "To trace a problem back to its fundamental origin",
+          "examples": [
+            "finding the source of a memory leak",
+            "identifying the governance rule that blocked compilation",
+            "tracing a UX issue to a data model flaw"
+          ]
+        },
+        {
+          "id": "AIM.005",
+          "aim": "Validate assumption",
+          "outcome": "To confirm or refute a stated belief with evidence before proceeding",
+          "examples": [
+            "checking that a service is actually down",
+            "verifying a requirement is in scope",
+            "testing that a hypothesis holds against data"
+          ]
+        }
+      ]
+    },
+    "CREATIVE_OUTCOMES": {
+      "description": "Aims oriented toward generating, designing, and inventing",
+      "blocks": [
+        {
+          "id": "AIM.006",
+          "aim": "Generate novel content",
+          "outcome": "To produce original material that did not previously exist",
+          "examples": [
+            "drafting a new policy document",
+            "writing a new UMG block",
+            "composing a design proposal"
+          ]
+        },
+        {
+          "id": "AIM.007",
+          "aim": "Design a solution",
+          "outcome": "To create a structured approach that resolves a defined problem",
+          "examples": [
+            "architecting a new service",
+            "designing a MOLT sleeve for a new agent",
+            "proposing a workflow redesign"
+          ]
+        },
+        {
+          "id": "AIM.008",
+          "aim": "Produce a prototype",
+          "outcome": "To build a working early version that demonstrates the concept",
+          "examples": [
+            "shipping an MVP",
+            "creating a proof-of-concept sleeve",
+            "building a clickable wireframe"
+          ]
+        },
+        {
+          "id": "AIM.009",
+          "aim": "Adapt an existing artifact",
+          "outcome": "To modify something that exists so it serves a new purpose",
+          "examples": [
+            "refactoring code for a new use case",
+            "repurposing a block library entry",
+            "adapting a process for a new team"
+          ]
+        },
+        {
+          "id": "AIM.010",
+          "aim": "Synthesize across domains",
+          "outcome": "To combine ideas from different fields into something coherent and new",
+          "examples": [
+            "merging philosophy and instruction blocks",
+            "applying UMG to robotics",
+            "integrating legal and technical constraints"
+          ]
+        }
+      ]
+    },
+    "LEARNING_OUTCOMES": {
+      "description": "Aims oriented toward knowledge acquisition and skill development",
+      "blocks": [
+        {
+          "id": "AIM.011",
+          "aim": "Build understanding",
+          "outcome": "To develop accurate mental models of a concept or system",
+          "examples": [
+            "understanding MOLT authority hierarchy",
+            "learning how governance pass works",
+            "grasping the difference between Aim and Need"
+          ]
+        },
+        {
+          "id": "AIM.012",
+          "aim": "Acquire a skill",
+          "outcome": "To gain the reliable ability to perform a task",
+          "examples": [
+            "learning to author UMG blocks",
+            "becoming proficient at trace inspection",
+            "mastering deployment workflows"
+          ]
+        },
+        {
+          "id": "AIM.013",
+          "aim": "Correct a misconception",
+          "outcome": "To replace an inaccurate belief with a true and useful one",
+          "examples": [
+            "clarifying that triggers add no authority",
+            "correcting confusion between Aim and Directive",
+            "fixing a wrong mental model of governance"
+          ]
+        },
+        {
+          "id": "AIM.014",
+          "aim": "Transfer knowledge",
+          "outcome": "To apply learning from one context accurately to another",
+          "examples": [
+            "applying UMG principles to a new domain",
+            "reusing a diagnostic approach on a new system",
+            "adapting a teaching method to a new learner"
+          ]
+        },
+        {
+          "id": "AIM.015",
+          "aim": "Achieve mastery",
+          "outcome": "To reach high proficiency in a domain through deliberate practice",
+          "examples": [
+            "mastering MOLT block composition",
+            "becoming fluent in governance rule authoring",
+            "achieving expert-level trace analysis"
+          ]
+        }
+      ]
+    },
+    "DECISION_OUTCOMES": {
+      "description": "Aims oriented toward making choices and committing to action",
+      "blocks": [
+        {
+          "id": "AIM.016",
+          "aim": "Select the best option",
+          "outcome": "To choose the most suitable alternative from available candidates",
+          "examples": [
+            "picking the right MOLT type for a block",
+            "selecting a technology stack",
+            "choosing a conflict resolution strategy"
+          ]
+        },
+        {
+          "id": "AIM.017",
+          "aim": "Commit to a course of action",
+          "outcome": "To lock in a plan and proceed with confidence and accountability",
+          "examples": [
+            "approving a release",
+            "finalizing a sleeve design",
+            "agreeing on a governance structure"
+          ]
+        },
+        {
+          "id": "AIM.018",
+          "aim": "Eliminate uncertainty",
+          "outcome": "To reduce ambiguity to the point where a sound decision is possible",
+          "examples": [
+            "resolving an open ODR",
+            "clarifying a requirement before build",
+            "confirming a dependency version"
+          ]
+        },
+        {
+          "id": "AIM.019",
+          "aim": "Prioritize correctly",
+          "outcome": "To order competing demands by genuine importance and urgency",
+          "examples": [
+            "ranking backlog items",
+            "ordering conflict resolution passes",
+            "sequencing governance checks"
+          ]
+        },
+        {
+          "id": "AIM.020",
+          "aim": "Align stakeholders",
+          "outcome": "To bring all decision-makers to shared understanding and agreement",
+          "examples": [
+            "getting sign-off on a spec",
+            "aligning on UMG canon changes",
+            "resolving inter-team priority disputes"
+          ]
+        }
+      ]
+    },
+    "RESOLUTION_OUTCOMES": {
+      "description": "Aims oriented toward fixing, repairing, and preventing failures",
+      "blocks": [
+        {
+          "id": "AIM.021",
+          "aim": "Fix the defect",
+          "outcome": "To eliminate a specific identified bug, error, or failure",
+          "examples": [
+            "patching a null pointer exception",
+            "correcting a mistyped MOLT block",
+            "resolving a broken deployment"
+          ]
+        },
+        {
+          "id": "AIM.022",
+          "aim": "Restore normal operation",
+          "outcome": "To return a disrupted system or process to its expected state",
+          "examples": [
+            "recovering a downed service",
+            "re-enabling an OFF'd block",
+            "resuming a failed pipeline"
+          ]
+        },
+        {
+          "id": "AIM.023",
+          "aim": "Prevent recurrence",
+          "outcome": "To make systemic changes that stop a problem from happening again",
+          "examples": [
+            "adding a governance rule to block bad input",
+            "writing a regression test",
+            "updating the invariant documentation"
+          ]
+        },
+        {
+          "id": "AIM.024",
+          "aim": "Reduce error rate",
+          "outcome": "To lower the frequency of failures in a process or system",
+          "examples": [
+            "improving validation coverage",
+            "tightening trigger evaluation",
+            "adding defensive null checks"
+          ]
+        },
+        {
+          "id": "AIM.025",
+          "aim": "Achieve zero known defects",
+          "outcome": "To reach a state where no identified failures remain unresolved",
+          "examples": [
+            "clearing the bug backlog for release",
+            "resolving all open ODRs",
+            "closing all failing tests before ship"
+          ]
+        }
+      ]
+    },
+    "COMMUNICATION_OUTCOMES": {
+      "description": "Aims oriented toward conveying, documenting, and aligning through language",
+      "blocks": [
+        {
+          "id": "AIM.026",
+          "aim": "Convey intent clearly",
+          "outcome": "To ensure the recipient understands exactly what was meant without inference",
+          "examples": [
+            "writing an unambiguous spec",
+            "authoring a clear governance block",
+            "making a directive that cannot be misread"
+          ]
+        },
+        {
+          "id": "AIM.027",
+          "aim": "Reach consensus",
+          "outcome": "To bring parties with different views to a shared agreed position",
+          "examples": [
+            "resolving a MOLT ordering dispute",
+            "aligning on a release date",
+            "agreeing on governance scope"
+          ]
+        },
+        {
+          "id": "AIM.028",
+          "aim": "Document for future use",
+          "outcome": "To capture information in a form others can retrieve and use accurately",
+          "examples": [
+            "writing a UMG glossary entry",
+            "creating a runbook",
+            "documenting a Decision Trace"
+          ]
+        },
+        {
+          "id": "AIM.029",
+          "aim": "Persuade with evidence",
+          "outcome": "To change a position through demonstration and data rather than assertion",
+          "examples": [
+            "proving a claim with a Decision Trace",
+            "showing benchmark data to support architecture choice",
+            "backing a proposal with user research"
+          ]
+        },
+        {
+          "id": "AIM.030",
+          "aim": "Surface disagreement",
+          "outcome": "To make conflicting views explicit so they can be examined and resolved",
+          "examples": [
+            "flagging a conflict site",
+            "raising a governance concern",
+            "documenting an open decision record"
+          ]
+        }
+      ]
+    },
+    "PLANNING_OUTCOMES": {
+      "description": "Aims oriented toward organizing, sequencing, and preparing work",
+      "blocks": [
+        {
+          "id": "AIM.031",
+          "aim": "Define clear milestones",
+          "outcome": "To break a goal into checkpoints that confirm genuine progress",
+          "examples": [
+            "sprint planning",
+            "UMG canon closure checklist",
+            "phased rollout plan"
+          ]
+        },
+        {
+          "id": "AIM.032",
+          "aim": "Sequence work correctly",
+          "outcome": "To order tasks so dependencies are resolved before dependent work begins",
+          "examples": [
+            "ordering MOLT block authoring before compilation",
+            "scheduling infrastructure before app deployment",
+            "putting governance pass before trigger pass"
+          ]
+        },
+        {
+          "id": "AIM.033",
+          "aim": "Estimate accurately",
+          "outcome": "To forecast effort, time, or cost within an acceptable confidence interval",
+          "examples": [
+            "story point estimation",
+            "resource cost projection",
+            "timeline for canon closure"
+          ]
+        },
+        {
+          "id": "AIM.034",
+          "aim": "Manage risk proactively",
+          "outcome": "To identify and mitigate threats before they materialize into harm",
+          "examples": [
+            "flagging open ODRs before patent filing",
+            "pre-release security review",
+            "governance pre-pass as risk gate"
+          ]
+        },
+        {
+          "id": "AIM.035",
+          "aim": "Deliver on schedule",
+          "outcome": "To complete committed work within the agreed timeframe",
+          "examples": [
+            "shipping before a deadline",
+            "closing a sprint on time",
+            "meeting a regulatory filing date"
+          ]
+        }
+      ]
+    },
+    "DISCOVERY_OUTCOMES": {
+      "description": "Aims oriented toward finding, uncovering, and mapping the unknown",
+      "blocks": [
+        {
+          "id": "AIM.036",
+          "aim": "Find the right information",
+          "outcome": "To locate accurate, relevant data or knowledge for the current need",
+          "examples": [
+            "finding the right block in the library",
+            "locating the source of a log entry",
+            "retrieving the relevant canon document"
+          ]
+        },
+        {
+          "id": "AIM.037",
+          "aim": "Uncover hidden structure",
+          "outcome": "To reveal organization or patterns not immediately visible from surface inspection",
+          "examples": [
+            "discovering implicit authority in a stack",
+            "finding a hidden dependency loop",
+            "revealing an undocumented coupling"
+          ]
+        },
+        {
+          "id": "AIM.038",
+          "aim": "Map the unknown",
+          "outcome": "To chart a domain or space that was previously unexplored or unclear",
+          "examples": [
+            "mapping the UMG dependency graph",
+            "exploring a new integration space",
+            "auditing an undocumented legacy system"
+          ]
+        },
+        {
+          "id": "AIM.039",
+          "aim": "Surface relevant evidence",
+          "outcome": "To bring forward facts that support or change a conclusion",
+          "examples": [
+            "finding trace evidence of a governance violation",
+            "surfacing a conflicting requirement",
+            "locating a prior art reference"
+          ]
+        },
+        {
+          "id": "AIM.040",
+          "aim": "Validate a hypothesis",
+          "outcome": "To test and confirm or disprove a proposed explanation",
+          "examples": [
+            "testing whether a MOLT ordering change improves synthesis",
+            "A/B testing a UX assumption",
+            "running an experiment to validate performance claim"
+          ]
+        }
+      ]
+    },
+    "IMPLEMENTATION_OUTCOMES": {
+      "description": "Aims oriented toward building, shipping, and integrating",
+      "blocks": [
+        {
+          "id": "AIM.041",
+          "aim": "Ship working software",
+          "outcome": "To deliver functional, tested code to users or production",
+          "examples": [
+            "releasing a feature to production",
+            "deploying a new UMG compiler version",
+            "shipping a ClawHub skill package"
+          ]
+        },
+        {
+          "id": "AIM.042",
+          "aim": "Meet acceptance criteria",
+          "outcome": "To satisfy every stated condition for the deliverable to be accepted",
+          "examples": [
+            "passing all UAT scenarios",
+            "meeting every MOLT invariant",
+            "satisfying a patent claim enablement checklist"
+          ]
+        },
+        {
+          "id": "AIM.043",
+          "aim": "Achieve performance targets",
+          "outcome": "To meet defined benchmarks for speed, throughput, or efficiency",
+          "examples": [
+            "achieving sub-100ms response time",
+            "hitting 99.9% uptime SLA",
+            "meeting 90% compute reduction target"
+          ]
+        },
+        {
+          "id": "AIM.044",
+          "aim": "Complete integration",
+          "outcome": "To successfully connect components so they operate correctly together",
+          "examples": [
+            "integrating UMG with Claude instance",
+            "connecting a new data source to a pipeline",
+            "linking a webhook to a processing service"
+          ]
+        },
+        {
+          "id": "AIM.045",
+          "aim": "Reach production readiness",
+          "outcome": "To bring a system to a state that can safely serve real users",
+          "examples": [
+            "passing all pre-release gates",
+            "completing governance review before launch",
+            "clearing all blocking defects"
+          ]
+        }
+      ]
+    },
+    "EVALUATION_OUTCOMES": {
+      "description": "Aims oriented toward assessing, scoring, and recommending improvement",
+      "blocks": [
+        {
+          "id": "AIM.046",
+          "aim": "Produce an honest assessment",
+          "outcome": "To give a truthful, unbiased evaluation of a system, design, or artifact",
+          "examples": [
+            "auditing a sleeve for MOLT compliance",
+            "reviewing a spec for completeness",
+            "evaluating a proposal without flattery"
+          ]
+        },
+        {
+          "id": "AIM.047",
+          "aim": "Score against criteria",
+          "outcome": "To measure performance against defined, agreed standards",
+          "examples": [
+            "scoring a deliverable on a rubric",
+            "evaluating a block against MOLT invariants",
+            "grading a solution against requirements"
+          ]
+        },
+        {
+          "id": "AIM.048",
+          "aim": "Identify strengths and weaknesses",
+          "outcome": "To surface what works well and what needs improvement",
+          "examples": [
+            "UMG audit revealing open ODRs",
+            "code review noting quality and gaps",
+            "skill assessment highlighting capability gaps"
+          ]
+        },
+        {
+          "id": "AIM.049",
+          "aim": "Benchmark performance",
+          "outcome": "To compare current state against a reference point or competitor",
+          "examples": [
+            "comparing compile time before and after optimization",
+            "benchmarking against prior art",
+            "measuring improvement from a baseline"
+          ]
+        },
+        {
+          "id": "AIM.050",
+          "aim": "Recommend improvement actions",
+          "outcome": "To propose specific, actionable steps that will improve outcomes",
+          "examples": [
+            "recommending block consolidation",
+            "suggesting a governance rule addition",
+            "proposing a process change to reduce errors"
+          ]
+        }
+      ]
+    },
+    "INSIGHT_OUTCOMES": {
+      "description": "Aims oriented toward understanding deeply and enabling informed action",
+      "blocks": [
+        {
+          "id": "AIM.051",
+          "aim": "Extract meaning from data",
+          "outcome": "To turn raw information into understanding that can be acted on",
+          "examples": [
+            "interpreting a Decision Trace",
+            "drawing conclusions from metrics",
+            "surfacing implications from a log analysis"
+          ]
+        },
+        {
+          "id": "AIM.052",
+          "aim": "Surface non-obvious connections",
+          "outcome": "To reveal relationships not apparent from surface inspection",
+          "examples": [
+            "finding that two failing blocks share a root cause",
+            "discovering a UMG pattern across sleeves",
+            "linking a business metric to a technical decision"
+          ]
+        },
+        {
+          "id": "AIM.053",
+          "aim": "Enable informed strategy",
+          "outcome": "To produce understanding that supports better strategic choices",
+          "examples": [
+            "producing a prior art analysis before patent filing",
+            "surfacing competitive risks before product launch",
+            "clarifying canon gaps before lock"
+          ]
+        },
+        {
+          "id": "AIM.054",
+          "aim": "Reduce cognitive load",
+          "outcome": "To make complex information easier to process and act on",
+          "examples": [
+            "summarizing a long Decision Trace",
+            "simplifying a complex sleeve to its key blocks",
+            "distilling a technical spec to decision points"
+          ]
+        },
+        {
+          "id": "AIM.055",
+          "aim": "Achieve shared understanding",
+          "outcome": "To bring all parties to the same accurate model of a situation",
+          "examples": [
+            "aligning team on what UMG governance does",
+            "syncing stakeholders on scope before build",
+            "ensuring all Envoys share the same MOLT map"
+          ]
+        }
+      ]
+    },
+    "WELLBEING_OUTCOMES": {
+      "description": "Aims oriented toward safety, dignity, and human welfare",
+      "blocks": [
+        {
+          "id": "AIM.056",
+          "aim": "Reduce harm",
+          "outcome": "To lower the risk or occurrence of negative impact on people",
+          "examples": [
+            "removing a governance gap that allowed harmful output",
+            "fixing a process that caused user data loss",
+            "improving safety in a physical system"
+          ]
+        },
+        {
+          "id": "AIM.057",
+          "aim": "Increase safety",
+          "outcome": "To improve protection against physical, psychological, or systemic threats",
+          "examples": [
+            "adding a force cap in a robot sleeve",
+            "enforcing a non-negotiable block in governance",
+            "improving failsafe coverage"
+          ]
+        },
+        {
+          "id": "AIM.058",
+          "aim": "Support autonomy",
+          "outcome": "To enable people or systems to make informed, self-directed choices",
+          "examples": [
+            "giving users clear options rather than forcing a path",
+            "enabling a governed AI to reconfigure its own blocks",
+            "providing enough context for an informed decision"
+          ]
+        },
+        {
+          "id": "AIM.059",
+          "aim": "Build resilience",
+          "outcome": "To strengthen the ability to withstand and recover from adversity",
+          "examples": [
+            "improving error recovery in a pipeline",
+            "adding redundancy to a critical service",
+            "designing a sleeve that degrades gracefully"
+          ]
+        },
+        {
+          "id": "AIM.060",
+          "aim": "Restore dignity",
+          "outcome": "To return respectful treatment and status to those who experienced harm",
+          "examples": [
+            "acknowledging and correcting an error",
+            "repairing a damaged relationship after a governance failure",
+            "offering a genuine path forward after a mistake"
+          ]
+        }
+      ]
+    },
+    "STRATEGIC_OUTCOMES": {
+      "description": "Aims oriented toward positioning, advantage, and long-term capability",
+      "blocks": [
+        {
+          "id": "AIM.061",
+          "aim": "Establish competitive advantage",
+          "outcome": "To reach a position that is difficult for others to match or replicate",
+          "examples": [
+            "filing a patent on UMG before public release",
+            "building a proprietary block library",
+            "achieving first-mover status in governed AI"
+          ]
+        },
+        {
+          "id": "AIM.062",
+          "aim": "Achieve market fit",
+          "outcome": "To align an offering with genuine, validated demand",
+          "examples": [
+            "validating a ClawHub skill against real user needs",
+            "confirming a product feature is valued before building",
+            "testing a governance model against enterprise requirements"
+          ]
+        },
+        {
+          "id": "AIM.063",
+          "aim": "Build sustainable capability",
+          "outcome": "To develop organizational or system strength that persists over time",
+          "examples": [
+            "establishing a repeatable UMG authoring process",
+            "building a team that can maintain canon",
+            "creating infrastructure that scales without rework"
+          ]
+        },
+        {
+          "id": "AIM.064",
+          "aim": "Neutralize a threat",
+          "outcome": "To remove or reduce a risk before it causes harm",
+          "examples": [
+            "addressing a semantic bypass vulnerability",
+            "closing a governance gap before exploitation",
+            "resolving a competitor advantage before market entry"
+          ]
+        },
+        {
+          "id": "AIM.065",
+          "aim": "Create optionality",
+          "outcome": "To preserve the ability to pivot or choose different paths later",
+          "examples": [
+            "keeping ODRs open until empirically resolved",
+            "building a modular sleeve that supports reconfiguration",
+            "avoiding lock-in to a single platform or partner"
+          ]
+        }
+      ]
+    },
+    "COMPLIANCE_OUTCOMES": {
+      "description": "Aims oriented toward meeting standards, rules, and obligations",
+      "blocks": [
+        {
+          "id": "AIM.066",
+          "aim": "Meet regulatory requirements",
+          "outcome": "To satisfy obligations imposed by law, regulation, or licensing",
+          "examples": [
+            "GDPR compliance for data handling",
+            "achieving ADA accessibility requirements",
+            "meeting financial reporting standards"
+          ]
+        },
+        {
+          "id": "AIM.067",
+          "aim": "Achieve certification",
+          "outcome": "To receive formal recognition of conformance to a standard",
+          "examples": [
+            "ISO 27001 certification",
+            "SOC 2 Type II report",
+            "UMG canon compliance certification"
+          ]
+        },
+        {
+          "id": "AIM.068",
+          "aim": "Pass audit",
+          "outcome": "To demonstrate compliance to an independent reviewer or auditor",
+          "examples": [
+            "passing a security audit",
+            "clearing a UMG invariant audit",
+            "satisfying a financial audit"
+          ]
+        },
+        {
+          "id": "AIM.069",
+          "aim": "Close a compliance gap",
+          "outcome": "To eliminate a known deviation from required standards",
+          "examples": [
+            "fixing a data retention policy gap",
+            "resolving an open MOLT ordering conflict",
+            "addressing a missing governance pass"
+          ]
+        },
+        {
+          "id": "AIM.070",
+          "aim": "Establish audit trail",
+          "outcome": "To produce the documentation and records needed to demonstrate compliance",
+          "examples": [
+            "generating a UMG Decision Trace",
+            "maintaining immutable action logs",
+            "producing a patent evidence log"
+          ]
+        }
+      ]
+    },
+    "INTEGRATION_OUTCOMES": {
+      "description": "Aims oriented toward connecting, unifying, and achieving coherence",
+      "blocks": [
+        {
+          "id": "AIM.071",
+          "aim": "Achieve seamless interoperability",
+          "outcome": "To make disparate systems work together without friction or manual intervention",
+          "examples": [
+            "integrating UMG across GPT and Claude",
+            "connecting a CRM to an ERP",
+            "bridging a legacy and modern API"
+          ]
+        },
+        {
+          "id": "AIM.072",
+          "aim": "Unify data sources",
+          "outcome": "To merge multiple data streams into a single consistent view",
+          "examples": [
+            "building a unified analytics layer",
+            "merging separate block libraries into one",
+            "consolidating user records across systems"
+          ]
+        },
+        {
+          "id": "AIM.073",
+          "aim": "Eliminate silos",
+          "outcome": "To break down barriers that prevent information or capability from being shared",
+          "examples": [
+            "sharing a block library across Envoys",
+            "enabling cross-team access to governance rules",
+            "removing isolated data stores"
+          ]
+        },
+        {
+          "id": "AIM.074",
+          "aim": "Standardize interfaces",
+          "outcome": "To make connections between components consistent, predictable, and documented",
+          "examples": [
+            "standardizing the MOLT block schema",
+            "defining a common API contract",
+            "aligning on a shared event format"
+          ]
+        },
+        {
+          "id": "AIM.075",
+          "aim": "Achieve end-to-end traceability",
+          "outcome": "To track a transaction, decision, or artifact across every system it passes through",
+          "examples": [
+            "tracing a block from authoring to RuntimeSpec",
+            "following a request from entry to response",
+            "linking a requirement to a deployed feature"
+          ]
+        }
+      ]
+    },
+    "COORDINATION_OUTCOMES": {
+      "description": "Aims oriented toward aligning people, teams, and systems",
+      "blocks": [
+        {
+          "id": "AIM.076",
+          "aim": "Synchronize team effort",
+          "outcome": "To align work across people so contributions progress together coherently",
+          "examples": [
+            "daily standup alignment",
+            "cross-Envoy MOLT map sync",
+            "sprint planning for parallel work streams"
+          ]
+        },
+        {
+          "id": "AIM.077",
+          "aim": "Resolve conflict",
+          "outcome": "To bring opposing parties, priorities, or blocks to a workable resolution",
+          "examples": [
+            "resolving a MOLT block competition",
+            "mediating a stakeholder disagreement",
+            "closing an open ODR"
+          ]
+        },
+        {
+          "id": "AIM.078",
+          "aim": "Establish shared cadence",
+          "outcome": "To create a common rhythm for collaboration, review, and delivery",
+          "examples": [
+            "weekly canon review cycle",
+            "sprint cadence for feature delivery",
+            "Envoy sync schedule"
+          ]
+        },
+        {
+          "id": "AIM.079",
+          "aim": "Clarify ownership",
+          "outcome": "To make it unambiguous who is responsible for each part of the work",
+          "examples": [
+            "assigning a block library maintainer",
+            "designating a governance owner",
+            "clarifying who closes each open ODR"
+          ]
+        },
+        {
+          "id": "AIM.080",
+          "aim": "Prevent duplication of effort",
+          "outcome": "To ensure the same work is not done multiple times unnecessarily",
+          "examples": [
+            "checking the block library before authoring new blocks",
+            "reviewing existing sleeves before building a new one",
+            "aligning teams on who owns which component"
+          ]
+        }
+      ]
+    },
+    "TRANSFORMATION_OUTCOMES": {
+      "description": "Aims oriented toward converting, migrating, and modernizing",
+      "blocks": [
+        {
+          "id": "AIM.081",
+          "aim": "Complete migration",
+          "outcome": "To successfully move data, systems, or processes from one environment to another",
+          "examples": [
+            "migrating a block library to a new schema",
+            "moving a legacy system to cloud",
+            "transitioning from implicit to explicit governance"
+          ]
+        },
+        {
+          "id": "AIM.082",
+          "aim": "Modernize a legacy system",
+          "outcome": "To replace outdated components with current, maintainable alternatives",
+          "examples": [
+            "replacing a monolith with microservices",
+            "upgrading from prompt-layer UMG to architectural integration",
+            "refactoring an old block to canon-compliant form"
+          ]
+        },
+        {
+          "id": "AIM.083",
+          "aim": "Change format without losing meaning",
+          "outcome": "To convert content or structure while preserving its intent and accuracy",
+          "examples": [
+            "translating UMG to academic terminology without semantic loss",
+            "converting a spec to a different schema",
+            "exporting a sleeve to a new format"
+          ]
+        },
+        {
+          "id": "AIM.084",
+          "aim": "Achieve behavioral change",
+          "outcome": "To shift how a system, team, or process operates in a lasting way",
+          "examples": [
+            "moving a team from implicit to explicit governance",
+            "shifting an AI from generative to governed output",
+            "changing a workflow from manual to automated"
+          ]
+        },
+        {
+          "id": "AIM.085",
+          "aim": "Replace manual with automated",
+          "outcome": "To substitute reliable automated process for human effort in repeatable tasks",
+          "examples": [
+            "automating UMG compilation",
+            "replacing manual test runs with CI",
+            "automating a report generation pipeline"
+          ]
+        }
+      ]
+    },
+    "VERIFICATION_OUTCOMES": {
+      "description": "Aims oriented toward proving, confirming, and certifying",
+      "blocks": [
+        {
+          "id": "AIM.086",
+          "aim": "Confirm correctness",
+          "outcome": "To prove that a system or output does exactly what it claims to do",
+          "examples": [
+            "verifying a RuntimeSpec matches the compiled CIR",
+            "confirming a function returns expected output",
+            "proving a policy has no gaps"
+          ]
+        },
+        {
+          "id": "AIM.087",
+          "aim": "Certify safety",
+          "outcome": "To verify that operation poses no unacceptable risk to users or systems",
+          "examples": [
+            "pre-release safety review",
+            "robot sleeve force cap verification",
+            "governance block OFF state certification"
+          ]
+        },
+        {
+          "id": "AIM.088",
+          "aim": "Prove completeness",
+          "outcome": "To demonstrate that all required elements are present and accounted for",
+          "examples": [
+            "confirming all MOLT types are populated in a sleeve",
+            "verifying all canon invariants are covered",
+            "checking all acceptance criteria are met"
+          ]
+        },
+        {
+          "id": "AIM.089",
+          "aim": "Establish reproducibility",
+          "outcome": "To confirm that results are consistent and identical across repeated runs",
+          "examples": [
+            "verifying deterministic compilation",
+            "confirming a test produces the same result on re-run",
+            "establishing that identical inputs yield identical outputs"
+          ]
+        },
+        {
+          "id": "AIM.090",
+          "aim": "Close all known issues",
+          "outcome": "To resolve every identified defect or gap before delivery",
+          "examples": [
+            "clearing all open ODRs before canon lock",
+            "resolving all failing tests before release",
+            "addressing all reviewer comments before publication"
+          ]
+        }
+      ]
+    },
+    "REFLECTION_OUTCOMES": {
+      "description": "Aims oriented toward learning from experience and improving",
+      "blocks": [
+        {
+          "id": "AIM.091",
+          "aim": "Identify lessons learned",
+          "outcome": "To surface what worked, what did not, and why after a cycle or project",
+          "examples": [
+            "retrospective after a canon revision",
+            "post-incident review",
+            "Envoy performance debrief"
+          ]
+        },
+        {
+          "id": "AIM.092",
+          "aim": "Improve the process",
+          "outcome": "To make the next cycle more effective based on this one",
+          "examples": [
+            "refining the MOLT compilation pipeline",
+            "improving block authoring workflow",
+            "streamlining the governance review cycle"
+          ]
+        },
+        {
+          "id": "AIM.093",
+          "aim": "Calibrate judgment",
+          "outcome": "To refine decision-making by comparing predictions to actual outcomes",
+          "examples": [
+            "reviewing whether a priority choice produced the expected synthesis",
+            "comparing estimated and actual effort",
+            "checking whether a governance rule caught what it was supposed to"
+          ]
+        },
+        {
+          "id": "AIM.094",
+          "aim": "Acknowledge error",
+          "outcome": "To explicitly recognize where something went wrong without deflection",
+          "examples": [
+            "naming a mistyped block as the cause of a compilation failure",
+            "acknowledging an incorrect audit result",
+            "owning a design flaw openly"
+          ]
+        },
+        {
+          "id": "AIM.095",
+          "aim": "Build institutional memory",
+          "outcome": "To capture knowledge in a form that persists beyond the people who currently hold it",
+          "examples": [
+            "documenting the UMG genesis snapshot",
+            "writing a transfer document for an AI instance",
+            "publishing canon decisions with full rationale"
+          ]
+        }
+      ]
+    },
+    "UMG_FRAMEWORK_AIMS": {
+      "description": "Aims specific to achieving correct, governed, auditable UMG operation",
+      "blocks": [
+        {
+          "id": "AIM.096",
+          "aim": "Achieve governance supremacy",
+          "outcome": "To ensure governance blocks constrain all cognition before any execution proceeds",
+          "examples": [
+            "completing the governance pass before triggers",
+            "verifying no block bypasses the governance layer",
+            "confirming governance is evaluated first in every compilation"
+          ]
+        },
+        {
+          "id": "AIM.097",
+          "aim": "Produce a valid RuntimeSpec",
+          "outcome": "To compile a sleeve into a correct, fully governed execution contract",
+          "examples": [
+            "emitting a RuntimeSpec with no OFF'd blocks active",
+            "producing a RuntimeSpec that matches the resolved CIR",
+            "delivering a RuntimeSpec a safe executor can consume"
+          ]
+        },
+        {
+          "id": "AIM.098",
+          "aim": "Achieve deterministic resolution",
+          "outcome": "To ensure identical inputs always produce identical compiled outputs",
+          "examples": [
+            "confirming two compiler runs on the same sleeve produce the same RuntimeSpec",
+            "verifying no random or context-sensitive resolution occurs",
+            "proving compilation is reproducible across Envoy instances"
+          ]
+        },
+        {
+          "id": "AIM.099",
+          "aim": "Maintain full auditability",
+          "outcome": "To produce a Decision Trace that covers and explains every compilation decision",
+          "examples": [
+            "recording every governance action in the trace",
+            "documenting every winner and loser block",
+            "ensuring no silent conflict resolution occurs"
+          ]
+        },
+        {
+          "id": "AIM.100",
+          "aim": "Evolve the canon deliberately",
+          "outcome": "To improve and extend the UMG framework through explicit, versioned, traceable change",
+          "examples": [
+            "resolving an ODR and updating the canon",
+            "incrementing the canon version with a documented rationale",
+            "adding a new MOLT type with full invariant and non-goal documentation"
+          ]
+        }
+      ]
+    }
+  }
+}

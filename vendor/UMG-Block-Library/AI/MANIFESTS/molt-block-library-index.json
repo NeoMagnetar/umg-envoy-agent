@@ -1,0 +1,65 @@
+﻿[
+    {
+        "store":  "molt-extracted",
+        "id":  "slv-business-automation-consultant-v1-0",
+        "title":  "BUSINESS AUTOMATION CONSULTANT - COMPLETE SLEEVE STRUCTURE",
+        "category":  "business",
+        "path":  "blocks\\library\\molt-extracted\\slv-business-automation-consultant-v1-0.json",
+        "declared_count":  6,
+        "types":  [
+                      "blueprint",
+                      "directive",
+                      "instruction",
+                      "philosophy",
+                      "subject",
+                      "trigger"
+                  ]
+    },
+    {
+        "store":  "molt-extracted",
+        "id":  "slv-idaho-grants-finder-v1-0",
+        "title":  "IDAHO GRANT FINDER - COMPLETE SLEEVE STRUCTURE",
+        "category":  "finance",
+        "path":  "blocks\\library\\molt-extracted\\slv-idaho-grants-finder-v1-0.json",
+        "declared_count":  10,
+        "types":  [
+                      "blueprint",
+                      "directive",
+                      "instruction",
+                      "philosophy",
+                      "subject",
+                      "trigger"
+                  ]
+    },
+    {
+        "store":  "molt-extracted",
+        "id":  "slv-super-emulator-dev-v1-0",
+        "title":  "SUPER EMULATOR DEVELOPMENT - COMPLETE SLEEVE STRUCTURE",
+        "category":  "coders",
+        "path":  "blocks\\library\\molt-extracted\\slv-super-emulator-dev-v1-0.json",
+        "declared_count":  10,
+        "types":  [
+                      "blueprint",
+                      "directive",
+                      "instruction",
+                      "philosophy",
+                      "subject",
+                      "trigger"
+                  ]
+    },
+    {
+        "store":  "molt-extracted",
+        "id":  "slv-uo-server-developer-v1-0",
+        "title":  "ULTIMA ONLINE SERVER DEVELOPER - COMPLETE SLEEVE STRUCTURE",
+        "category":  "coders",
+        "path":  "blocks\\library\\molt-extracted\\slv-uo-server-developer-v1-0.json",
+        "declared_count":  5,
+        "types":  [
+                      "blueprint",
+                      "directive",
+                      "instruction",
+                      "subject",
+                      "trigger"
+                  ]
+    }
+]

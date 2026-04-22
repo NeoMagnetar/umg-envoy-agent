@@ -1,0 +1,32 @@
+{
+  "$schema": "https://umg.envoy/schemas/neoblock.template.schema.json",
+  "id": "{{REQUIRED_NEOBLOCK_ID}}",
+  "name": "{{REQUIRED_NAME}}",
+  "purpose": "{{REQUIRED_PURPOSE}}",
+  "category": "{{general|domain_specific|framework_specific|experimental|archived}}",
+  "subcategory": "{{lower_snake_case}}",
+  "status": "{{active|deprecated|experimental|archived}}",
+  "version": "{{semver}}",
+  "tags": [
+    "{{primary_tag}}"
+  ],
+  "molt_block_ids": [
+    "{{TRG.xxx}}",
+    "{{DIR.xxx}}"
+  ],
+  "composition_logic": {
+    "sequence": [],
+    "parallel": [],
+    "conditions": [],
+    "notes": null
+  },
+  "governing_directives": [],
+  "examples": [],
+  "source": {
+    "library_name": "{{source_library}}",
+    "library_version": "{{library_semver}}",
+    "created": "{{YYYY-MM-DD}}",
+    "created_by": "{{steward}}"
+  },
+  "notes": null
+}

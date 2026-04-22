@@ -1,0 +1,85 @@
+{
+  "sleeve": {
+    "id": "sleeve_public_runtime_aligned_sample",
+    "name": "Public Runtime-Aligned Sample Sleeve",
+    "version": "v0-public-sample",
+    "blocks": [
+      {
+        "id": "blk_primary_formal",
+        "moltType": "primary",
+        "content": "Formal response shell.",
+        "priorityOrder": 80
+      },
+      {
+        "id": "blk_instr_direct",
+        "moltType": "instruction",
+        "content": "Keep the answer concise and direct.",
+        "priorityOrder": 20
+      },
+      {
+        "id": "blk_instr_list",
+        "moltType": "instruction",
+        "content": "Prefer a bullet-list output shape.",
+        "priorityOrder": 20
+      }
+    ],
+    "stacks": [
+      {
+        "id": "stack_public_persona_formal",
+        "name": "Public Persona Formal Stack",
+        "domainKey": "persona_formal",
+        "gate": {
+          "triggerIdsAny": [
+            "umg.trigger.public.persona_formal"
+          ]
+        },
+        "blockIds": [
+          "blk_primary_formal"
+        ]
+      },
+      {
+        "id": "stack_public_posture_direct",
+        "name": "Public Posture Direct Stack",
+        "domainKey": "posture_direct",
+        "gate": {
+          "triggerIdsAny": [
+            "umg.trigger.public.posture_direct"
+          ]
+        },
+        "blockIds": [
+          "blk_instr_direct"
+        ]
+      },
+      {
+        "id": "stack_public_format_list",
+        "name": "Public Format List Stack",
+        "domainKey": "format_list",
+        "gate": {
+          "triggerIdsAny": [
+            "umg.trigger.public.format_list"
+          ]
+        },
+        "blockIds": [
+          "blk_instr_list"
+        ]
+      }
+    ],
+    "triggers": [
+      {
+        "id": "umg.trigger.public.persona_formal",
+        "name": "Public Persona Formal"
+      },
+      {
+        "id": "umg.trigger.public.posture_direct",
+        "name": "Public Posture Direct"
+      },
+      {
+        "id": "umg.trigger.public.format_list",
+        "name": "Public Format List"
+      }
+    ]
+  },
+  "triggerState": {
+    "activeTriggerIds": []
+  }
+}

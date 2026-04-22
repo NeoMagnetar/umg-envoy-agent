@@ -1,0 +1,42 @@
+﻿[
+    {
+        "store":  "neostacks",
+        "id":  "slv-business-automation-consultant-v1-0",
+        "title":  "BUSINESS AUTOMATION CONSULTANT - COMPLETE SLEEVE STRUCTURE",
+        "category":  "business",
+        "path":  "blocks\\library\\neostacks\\slv-business-automation-consultant-v1-0.json",
+        "declared_count":  8
+    },
+    {
+        "store":  "neostacks",
+        "id":  "slv-idaho-grants-finder-v1-0",
+        "title":  "IDAHO GRANT FINDER - COMPLETE SLEEVE STRUCTURE",
+        "category":  "finance",
+        "path":  "blocks\\library\\neostacks\\slv-idaho-grants-finder-v1-0.json",
+        "declared_count":  8
+    },
+    {
+        "store":  "neostacks",
+        "id":  "slv-super-emulator-dev-v1-0",
+        "title":  "SUPER EMULATOR DEVELOPMENT - COMPLETE SLEEVE STRUCTURE",
+        "category":  "coders",
+        "path":  "blocks\\library\\neostacks\\slv-super-emulator-dev-v1-0.json",
+        "declared_count":  8
+    },
+    {
+        "store":  "neostacks",
+        "id":  "slv-uo-server-developer-v1-0",
+        "title":  "ULTIMA ONLINE SERVER DEVELOPER - COMPLETE SLEEVE STRUCTURE",
+        "category":  "coders",
+        "path":  "blocks\\library\\neostacks\\slv-uo-server-developer-v1-0.json",
+        "declared_count":  8
+    },
+    {
+        "store":  "neostacks",
+        "id":  "slv-vrchat-developer-v1-0",
+        "title":  "VRCHAT/BLENDER DEVELOPER - COMPLETE SLEEVE STRUCTURE",
+        "category":  "coders",
+        "path":  "blocks\\library\\neostacks\\slv-vrchat-developer-v1-0.json",
+        "declared_count":  8
+    }
+]
