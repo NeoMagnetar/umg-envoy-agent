@@ -22,6 +22,19 @@
     "node": ">=22"
   },
   "openclaw": {
+    "extensions": [
+      "./dist/plugin-entry.js"
+    ],
+    "configSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "defaultSleeveId": {
+          "type": "string",
+          "description": "Optional default public-safe sleeve id for build-path."
+        }
+      }
+    },
     "compat": {
       "pluginApi": ">=2026.3.23-1",
       "minGatewayVersion": "2026.3.23-1"
