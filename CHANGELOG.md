@@ -1,5 +1,12 @@
 ﻿# Changelog
 
+## 0.2.1 - 2026-04-26
+
+### Fixed
+
+- Added required ClawHub config schema declaration for code plugin publication.
+- No functional compiler/runtime changes from 0.2.0.
+
 ## 0.2.0 - 2026-04-26
 
 - Commit: `a7b8e76`

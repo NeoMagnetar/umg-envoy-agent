@@ -1,7 +1,7 @@
 {
   "id": "umg-envoy-agent",
   "name": "UMG Envoy Agent",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Public compiler-backed UMG Envoy Agent for OpenClaw",
   "entry": "dist/plugin-entry.js",
   "apiVersion": 1,
@@ -28,6 +28,34 @@
       "defaultSleeveId": {
         "type": "string",
         "description": "Optional default bundled public sleeve id."
+      }
+    }
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "allowRuntimeWrites": {
+        "type": "boolean",
+        "default": false,
+        "description": "Allow runtime write operations. Disabled by default for public release."
+      },
+      "contentMode": {
+        "type": "string",
+        "enum": ["bundled-public"],
+        "default": "bundled-public",
+        "description": "Use bundled public sample sleeves and blocks."
+      },
+      "compilerMode": {
+        "type": "string",
+        "enum": ["bundled-adapter"],
+        "default": "bundled-adapter",
+        "description": "Use the bundled public compiler adapter."
+      },
+      "debug": {
+        "type": "boolean",
+        "default": false,
+        "description": "Enable debug output."
       }
     }
   },
