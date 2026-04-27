@@ -1,0 +1,21 @@
+{
+  "sleeve_id": "public-basic-envoy",
+  "title": "Public Basic Envoy",
+  "snap_id": "default",
+  "primary_shell_block_id": "primary.sample",
+  "block_refs": [
+    { "block_id": "primary.sample", "enabled": true },
+    { "block_id": "directive.sample", "enabled": true },
+    { "block_id": "instruction.sample", "enabled": true },
+    { "block_id": "subject.sample", "enabled": true },
+    { "block_id": "philosophy.sample", "enabled": true },
+    { "block_id": "blueprint.sample", "enabled": true },
+    { "block_id": "trigger.sample", "enabled": false }
+  ],
+  "strategy": { "mode": "public-basic", "compiler": "bundled-adapter" },
+  "constraints": ["public-safe", "read-only-default"],
+  "context": { "audience": "public" },
+  "values": { "transparency": true },
+  "format": { "style": "structured" },
+  "tool_requests": []
+}

@@ -1,0 +1,21 @@
+{
+  "sleeve_id": "public-coder-envoy",
+  "title": "Public Coder Envoy",
+  "snap_id": "default",
+  "primary_shell_block_id": "primary.sample",
+  "block_refs": [
+    { "block_id": "primary.sample", "enabled": true },
+    { "block_id": "directive.sample", "enabled": true },
+    { "block_id": "instruction.sample", "enabled": true },
+    { "block_id": "subject.sample", "enabled": true },
+    { "block_id": "philosophy.sample", "enabled": true },
+    { "block_id": "blueprint.sample", "enabled": true },
+    { "block_id": "trigger.sample", "enabled": true }
+  ],
+  "strategy": { "mode": "public-coder", "compiler": "bundled-adapter" },
+  "constraints": ["public-safe", "compiler-visible", "no-private-paths"],
+  "context": { "audience": "developers" },
+  "values": { "debuggable": true },
+  "format": { "style": "technical" },
+  "tool_requests": [{ "name": "inspect" }]
+}

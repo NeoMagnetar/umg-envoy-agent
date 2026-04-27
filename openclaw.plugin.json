@@ -1,18 +1,48 @@
 {
   "id": "umg-envoy-agent",
-  "name": "umg-envoy-agent",
-  "version": "0.1.2",
-  "description": "UMG Envoy Agent is a modular cognitive runtime for OpenClaw that lets you parse, validate, render, and build human-inspectable planner paths through a bounded public-safe interface.",
-  "entry": "dist/index.js",
+  "name": "UMG Envoy Agent",
+  "version": "0.2.0",
+  "description": "Public compiler-backed UMG Envoy Agent for OpenClaw",
+  "entry": "dist/plugin-entry.js",
   "apiVersion": 1,
   "config": {
     "type": "object",
     "additionalProperties": false,
     "properties": {
+      "allowRuntimeWrites": {
+        "type": "boolean",
+        "description": "Keep runtime mutation disabled by default in the public package."
+      },
+      "contentMode": {
+        "type": "string",
+        "description": "Content loading mode for the public package."
+      },
+      "compilerMode": {
+        "type": "string",
+        "description": "Compiler adapter mode for the public package."
+      },
+      "debug": {
+        "type": "boolean",
+        "description": "Enable debug logging for the public compiler-backed package."
+      },
       "defaultSleeveId": {
         "type": "string",
-        "description": "Optional default public-safe sleeve id for build-path." 
+        "description": "Optional default bundled public sleeve id."
       }
     }
-  }
+  },
+  "tools": [
+    "umg_envoy_status",
+    "umg_envoy_compiler_smoke_test",
+    "umg_envoy_list_sleeves",
+    "umg_envoy_list_block_libraries",
+    "umg_envoy_compile_sleeve",
+    "umg_envoy_validate_runtime_output",
+    "umg_envoy_compare_sleeves",
+    "umg_envoy_parse_path",
+    "umg_envoy_validate_path",
+    "umg_envoy_render_path",
+    "umg_envoy_build_path",
+    "umg_envoy_matrix_status"
+  ]
 }

@@ -1,21 +1,27 @@
 {
   "name": "umg-envoy-agent",
-  "version": "0.1.2",
-  "description": "UMG Envoy Agent is a modular cognitive runtime for OpenClaw that lets you parse, validate, render, and build human-inspectable planner paths through a bounded public-safe interface.",
+  "version": "0.2.0",
+  "description": "Public compiler-backed UMG Envoy Agent for OpenClaw",
   "type": "module",
-  "main": "dist/index.js",
+  "main": "dist/plugin-entry.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist",
     "docs",
+    "public-content",
     "README.md",
     "PUBLIC-VARIANT-README.md",
     "PUBLIC-VARIANT-OVERVIEW.md",
     "openclaw.plugin.json",
-    "package.json"
+    "package.json",
+    "package-lock.json",
+    "tsconfig.json"
   ],
   "scripts": {
-    "build": "tsc -p ."
+    "build": "tsc",
+    "check": "tsc --noEmit",
+    "smoke": "node dist/plugin-entry.js --smoke",
+    "pack:dry": "npm pack --dry-run"
   },
   "engines": {
     "node": ">=22"
@@ -24,16 +30,6 @@
     "extensions": [
       "./dist/plugin-entry.js"
     ],
-    "configSchema": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "defaultSleeveId": {
-          "type": "string",
-          "description": "Optional default public-safe sleeve id for build-path."
-        }
-      }
-    },
     "compat": {
       "pluginApi": ">=2026.3.23-1",
       "minGatewayVersion": "2026.3.23-1"

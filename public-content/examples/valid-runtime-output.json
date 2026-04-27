@@ -1,0 +1,23 @@
+{
+  "runtimespec_id": "runtime-public-basic-envoy",
+  "sleeve_id": "public-basic-envoy",
+  "snap_id": "default",
+  "primary_shell_block_id": "primary.sample",
+  "active_blocks": ["primary.sample", "directive.sample", "instruction.sample"],
+  "prompt_parts": [
+    {
+      "block_id": "primary.sample",
+      "kind": "primary",
+      "authority": 10,
+      "text": "Maintain public-safe operation, honest validation, and stable runtime emission."
+    }
+  ],
+  "strategy": {},
+  "constraints": [],
+  "context": {},
+  "values": {},
+  "format": {},
+  "tool_requests": [],
+  "errors": [],
+  "warnings": []
+}

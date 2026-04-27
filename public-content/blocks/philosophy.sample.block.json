@@ -1,0 +1,9 @@
+{
+  "block_id": "philosophy.sample",
+  "kind": "philosophy",
+  "title": "Sample Philosophy",
+  "text": "Fail closed, bundle public examples, and avoid private path assumptions.",
+  "authority": 50,
+  "enabled": true,
+  "tags": ["sample", "philosophy"]
+}
