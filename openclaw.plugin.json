@@ -21,6 +21,10 @@
         "type": "string",
         "description": "Compiler adapter mode for the public package."
       },
+      "compilerBridge": {
+        "type": "object",
+        "description": "Optional external compiler bridge configuration."
+      },
       "debug": {
         "type": "boolean",
         "description": "Enable debug logging for the public compiler-backed package."
@@ -48,9 +52,45 @@
       },
       "compilerMode": {
         "type": "string",
-        "enum": ["bundled-adapter"],
+        "enum": ["bundled-adapter", "external-cli"],
         "default": "bundled-adapter",
-        "description": "Use the bundled public compiler adapter."
+        "description": "Use the bundled public compiler adapter or the explicit external compiler bridge."
+      },
+      "compilerBridge": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "allowCompilerBridge": {
+            "type": "boolean",
+            "default": false,
+            "description": "Explicitly allow external compiler bridge execution."
+          },
+          "compilerMode": {
+            "type": "string",
+            "enum": ["bundled-adapter", "external-cli"],
+            "default": "bundled-adapter"
+          },
+          "compilerRepoPath": {
+            "type": ["string", "null"],
+            "default": null
+          },
+          "compilerCliPath": {
+            "type": ["string", "null"],
+            "default": null
+          },
+          "compilerCommand": {
+            "type": ["string", "null"],
+            "default": null
+          },
+          "compilerTimeoutMs": {
+            "type": "number",
+            "default": 30000
+          },
+          "compilerTempRoot": {
+            "type": ["string", "null"],
+            "default": null
+          }
+        }
       },
       "debug": {
         "type": "boolean",
@@ -71,6 +111,7 @@
     "umg_envoy_validate_path",
     "umg_envoy_render_path",
     "umg_envoy_build_path",
-    "umg_envoy_matrix_status"
+    "umg_envoy_matrix_status",
+    "umg_envoy_compile_ir_bridge"
   ]
 }

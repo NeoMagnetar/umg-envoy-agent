@@ -8,6 +8,7 @@ import { validateRuntimeOutput } from "./compiler/runtime-validator.js";
 import { loadSleeveFile } from "./compiler/sleeve-loader.js";
 import { validateSleeveStructure } from "./compiler/sleeve-schema-validator.js";
 import { resolveSleeveArtifacts } from "./compiler/artifact-resolver.js";
+import { runCompilerBridge } from "./compiler/compiler-bridge.js";
 import { parseUMGPath } from "./umg-path-parser.js";
 import { renderUMGPath } from "./umg-path-renderer.js";
 import { validateUMGPath } from "./umg-path-validator.js";
@@ -49,7 +50,8 @@ function statusPayload(config) {
             "umg_envoy_render_path",
             "umg_envoy_build_path",
             "umg_envoy_matrix_status",
-            "umg_envoy_load_sleeve"
+            "umg_envoy_load_sleeve",
+            "umg_envoy_compile_ir_bridge"
         ]
     };
 }
@@ -186,6 +188,25 @@ function registerCliBridge(api, config) {
             .action(async (opts) => {
             console.log(JSON.stringify(loadSleevePreview(opts.sleevePath, opts.libraryRoot), null, 2));
         });
+        root.command("compile-ir-bridge")
+            .requiredOption("--sleeve-path <path>")
+            .requiredOption("--library-root <path>")
+            .option("--compiler-repo-path <path>")
+            .option("--compiler-cli-path <path>")
+            .option("--output-dir <path>")
+            .option("--timeout-ms <number>")
+            .action(async (opts) => {
+            const result = await runCompilerBridge({
+                sleevePath: opts.sleevePath,
+                libraryRoot: opts.libraryRoot,
+                compilerRepoPath: opts.compilerRepoPath,
+                compilerCliPath: opts.compilerCliPath,
+                outputDir: opts.outputDir,
+                timeoutMs: opts.timeoutMs ? Number(opts.timeoutMs) : undefined,
+                allowCompilerBridge: true
+            });
+            console.log(JSON.stringify(result, null, 2));
+        });
     }, { commands: ["umg-envoy"] });
 }
 const entry = {
@@ -212,6 +233,22 @@ const entry = {
             parameters: Type.Object({ sleevePath: Type.String(), libraryRoot: Type.String() }, { additionalProperties: false }),
             async execute(input) {
                 return { content: [{ type: "text", text: JSON.stringify(loadSleevePreview(input.sleevePath, input.libraryRoot), null, 2) }] };
+            }
+        }, { optional: true });
+        api.registerTool({
+            name: "umg_envoy_compile_ir_bridge",
+            description: "Invoke the configured local umg-compiler compile-ir path using a constrained canonical IR bridge.",
+            parameters: Type.Object({
+                sleevePath: Type.String(),
+                libraryRoot: Type.String(),
+                compilerRepoPath: Type.Optional(Type.String()),
+                compilerCliPath: Type.Optional(Type.String()),
+                outputDir: Type.Optional(Type.String()),
+                timeoutMs: Type.Optional(Type.Number()),
+                allowCompilerBridge: Type.Optional(Type.Boolean())
+            }, { additionalProperties: false }),
+            async execute(input) {
+                return { content: [{ type: "text", text: JSON.stringify(await runCompilerBridge({ ...input, allowCompilerBridge: input.allowCompilerBridge ?? true }), null, 2) }] };
             }
         }, { optional: true });
     }

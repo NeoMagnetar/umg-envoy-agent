@@ -24,3 +24,12 @@ Read-only Stage 7B addition:
   - does not invoke the compiler
   - does not emit runtime-spec, trace, diagnostics, or relation matrix outputs
   - Stage 8 compiler bridge remains deferred
+
+Stage 8B bridge addition:
+- `umg_envoy_compile_ir_bridge`
+  - requires explicit compiler bridge opt-in
+  - prepares canonical IR in an Envoy-local temp workspace
+  - invokes the configured local compiler `compile-ir` path only
+  - captures `runtime-spec.json`, `trace.json`, and `diagnostics.json`
+  - does not emit relation matrix output
+  - does not mutate UMG-Block-Library or the compiler repo
