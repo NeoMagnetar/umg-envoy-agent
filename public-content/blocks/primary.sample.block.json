@@ -1,0 +1,9 @@
+{
+  "block_id": "primary.sample",
+  "kind": "primary",
+  "title": "Sample Primary",
+  "text": "Maintain public-safe operation, honest validation, and stable runtime emission.",
+  "authority": 10,
+  "enabled": true,
+  "tags": ["sample", "primary"]
+}

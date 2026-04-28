@@ -1,0 +1,9 @@
+{
+  "block_id": "instruction.sample",
+  "kind": "instruction",
+  "title": "Sample Instruction",
+  "text": "Assemble a stable prompt part list from active bundled blocks.",
+  "authority": 30,
+  "enabled": true,
+  "tags": ["sample", "instruction"]
+}

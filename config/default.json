@@ -1,0 +1,6 @@
+{
+  "allowRuntimeWrites": false,
+  "contentMode": "bundled-public",
+  "compilerMode": "bundled-adapter",
+  "debug": false
+}

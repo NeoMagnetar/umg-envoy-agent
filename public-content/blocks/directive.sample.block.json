@@ -1,0 +1,9 @@
+{
+  "block_id": "directive.sample",
+  "kind": "directive",
+  "title": "Sample Directive",
+  "text": "Prefer concise, public-safe, compiler-visible directives.",
+  "authority": 20,
+  "enabled": true,
+  "tags": ["sample", "directive"]
+}
