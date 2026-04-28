@@ -5,6 +5,9 @@ import { runCompilerSmoke } from "./compiler/compiler-smoke.js";
 import { getCompilerMatrixStatus } from "./compiler/compiler-matrix.js";
 import { loadSleeves, publicContentRoot, summarizeBlockLibraries } from "./compiler/content-loader.js";
 import { validateRuntimeOutput } from "./compiler/runtime-validator.js";
+import { loadSleeveFile } from "./compiler/sleeve-loader.js";
+import { validateSleeveStructure } from "./compiler/sleeve-schema-validator.js";
+import { resolveSleeveArtifacts } from "./compiler/artifact-resolver.js";
 import { parseUMGPath } from "./umg-path-parser.js";
 import { renderUMGPath } from "./umg-path-renderer.js";
 import { validateUMGPath } from "./umg-path-validator.js";
@@ -45,7 +48,8 @@ function statusPayload(config) {
             "umg_envoy_validate_path",
             "umg_envoy_render_path",
             "umg_envoy_build_path",
-            "umg_envoy_matrix_status"
+            "umg_envoy_matrix_status",
+            "umg_envoy_load_sleeve"
         ]
     };
 }
@@ -66,6 +70,56 @@ function compareSleeves(left, right, config) {
         },
         onlyLeftBlocks: leftCompiled.runtimeSpec.active_blocks.filter((id) => !rightCompiled.runtimeSpec.active_blocks.includes(id)),
         onlyRightBlocks: rightCompiled.runtimeSpec.active_blocks.filter((id) => !leftCompiled.runtimeSpec.active_blocks.includes(id))
+    };
+}
+function buildCompilerInputPreview(result, libraryRoot) {
+    if (!result.loadedSleeve || !result.artifactResolution) {
+        return undefined;
+    }
+    const dependencies = result.loadedSleeve.sleeve?.dependencies;
+    const entries = result.artifactResolution.entries;
+    return {
+        mode: "canonical-preparation-preview",
+        sleeveArtifactId: result.loadedSleeve.identity?.artifact_id ?? null,
+        sleevePath: result.sleevePath,
+        libraryRoot,
+        routeCount: Array.isArray(result.loadedSleeve.sleeve?.routes) ? result.loadedSleeve.sleeve.routes.length : 0,
+        dependencyCounts: {
+            sleeves: Array.isArray(dependencies?.sleeve_ids) ? dependencies.sleeve_ids.length : 0,
+            neostacks: Array.isArray(dependencies?.neostack_ids) ? dependencies.neostack_ids.length : 0,
+            bundles: Array.isArray(dependencies?.bundle_ids) ? dependencies.bundle_ids.length : 0,
+            overlays: Array.isArray(dependencies?.overlay_ids) ? dependencies.overlay_ids.length : 0,
+            schemas: Array.isArray(dependencies?.schema_ids) ? dependencies.schema_ids.length : 0
+        },
+        resolvedArtifactCounts: {
+            resolved: entries.filter((entry) => entry.status === "resolved").length,
+            missing: entries.filter((entry) => entry.status === "missing").length,
+            invalid: entries.filter((entry) => entry.status === "invalid").length
+        },
+        stageBoundary: {
+            compilerInvoked: false,
+            stage8BridgeDeferred: true,
+            runtimeOutputsWritten: false
+        }
+    };
+}
+function loadSleevePreview(sleevePath, libraryRoot) {
+    const loaded = loadSleeveFile({ sleevePath, libraryRoot });
+    if (!loaded.ok || !loaded.loadedSleeve) {
+        return loaded;
+    }
+    const validation = validateSleeveStructure(loaded.loadedSleeve);
+    const artifactResolution = resolveSleeveArtifacts(libraryRoot, loaded.loadedSleeve);
+    const compilerInputPreview = buildCompilerInputPreview({ ...loaded, validation, artifactResolution }, libraryRoot);
+    return {
+        ok: loaded.ok && validation.ok && artifactResolution.ok,
+        sleevePath: loaded.sleevePath,
+        loadedSleeve: loaded.loadedSleeve,
+        validation,
+        artifactResolution,
+        compilerInputPreview,
+        warnings: [...loaded.warnings, ...validation.warnings, ...artifactResolution.warnings],
+        errors: [...loaded.errors, ...validation.errors, ...artifactResolution.errors]
     };
 }
 function registerCliBridge(api, config) {
@@ -126,6 +180,12 @@ function registerCliBridge(api, config) {
         root.command("matrix-status").action(async () => {
             console.log(JSON.stringify(getCompilerMatrixStatus(import.meta.url), null, 2));
         });
+        root.command("load-sleeve")
+            .requiredOption("--sleeve-path <path>")
+            .requiredOption("--library-root <path>")
+            .action(async (opts) => {
+            console.log(JSON.stringify(loadSleevePreview(opts.sleevePath, opts.libraryRoot), null, 2));
+        });
     }, { commands: ["umg-envoy"] });
 }
 const entry = {
@@ -146,6 +206,14 @@ const entry = {
         api.registerTool({ name: "umg_envoy_render_path", description: "Render a parsed UMG path string back to text.", parameters: Type.Object({ source: Type.String() }, { additionalProperties: false }), async execute(input) { return { content: [{ type: "text", text: renderUMGPath(parseUMGPath(input.source)) }] }; } }, { optional: true });
         api.registerTool({ name: "umg_envoy_build_path", description: "Build a public-safe UMG path document.", parameters: Type.Object({ message: Type.String(), sleeveId: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input) { return { content: [{ type: "text", text: renderUMGPath(buildPublicPath(input.message, input.sleeveId ?? config?.defaultSleeveId ?? "public-basic-envoy")) }] }; } }, { optional: true });
         api.registerTool({ name: "umg_envoy_matrix_status", description: "Report bundled compiler matrix status.", parameters: Type.Object({}, { additionalProperties: false }), async execute() { return { content: [{ type: "text", text: JSON.stringify(getCompilerMatrixStatus(import.meta.url), null, 2) }] }; } }, { optional: true });
+        api.registerTool({
+            name: "umg_envoy_load_sleeve",
+            description: "Read-only sleeve loader that validates sleeve structure, resolves artifacts, and previews canonical compiler preparation without invoking the compiler.",
+            parameters: Type.Object({ sleevePath: Type.String(), libraryRoot: Type.String() }, { additionalProperties: false }),
+            async execute(input) {
+                return { content: [{ type: "text", text: JSON.stringify(loadSleevePreview(input.sleevePath, input.libraryRoot), null, 2) }] };
+            }
+        }, { optional: true });
     }
 };
 if (process.argv.includes("--smoke")) {

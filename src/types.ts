@@ -75,3 +75,112 @@ export interface BlockLibrarySummary {
   byKind: Record<string, number>;
   blockIds: string[];
 }
+
+export interface SleeveLoadRequest {
+  sleevePath: string;
+  libraryRoot?: string;
+}
+
+export interface LoadedSleeveFile {
+  identity?: {
+    artifact_id?: string;
+    artifact_type?: string;
+    version?: string;
+    [key: string]: unknown;
+  };
+  provenance?: Record<string, unknown>;
+  sleeve?: {
+    name?: string;
+    description?: string;
+    dependencies?: {
+      sleeve_ids?: string[];
+      neostack_ids?: string[];
+      bundle_ids?: string[];
+      overlay_ids?: string[];
+      schema_ids?: string[];
+      [key: string]: unknown;
+    };
+    composition?: {
+      neostack_ids?: string[];
+      bundle_ids?: string[];
+      overlay_ids?: string[];
+      local_refs?: unknown[];
+      [key: string]: unknown;
+    };
+    routes?: Array<Record<string, unknown>>;
+    runtime?: {
+      services?: string[];
+      [key: string]: unknown;
+    };
+    capabilities?: {
+      required?: string[];
+      optional?: string[];
+      [key: string]: unknown;
+    };
+    activation?: Record<string, unknown>;
+    [key: string]: unknown;
+  };
+  metadata?: Record<string, unknown>;
+  [key: string]: unknown;
+}
+
+export interface SleeveValidationResult {
+  ok: boolean;
+  valid: boolean;
+  mode: "structural";
+  errors: string[];
+  warnings: string[];
+}
+
+export interface ArtifactResolutionEntry {
+  artifactType: "sleeve" | "neostack" | "neoblock" | "overlay" | "bundle" | "schema";
+  artifactId: string;
+  expectedPath: string | null;
+  exists: boolean;
+  status: "resolved" | "missing" | "invalid";
+}
+
+export interface ArtifactResolutionResult {
+  ok: boolean;
+  libraryRoot: string;
+  entries: ArtifactResolutionEntry[];
+  missing: ArtifactResolutionEntry[];
+  warnings: string[];
+  errors: string[];
+}
+
+export interface CompilerInputPreview {
+  mode: "canonical-preparation-preview";
+  sleeveArtifactId: string | null;
+  sleevePath: string;
+  libraryRoot: string;
+  routeCount: number;
+  dependencyCounts: {
+    sleeves: number;
+    neostacks: number;
+    bundles: number;
+    overlays: number;
+    schemas: number;
+  };
+  resolvedArtifactCounts: {
+    resolved: number;
+    missing: number;
+    invalid: number;
+  };
+  stageBoundary: {
+    compilerInvoked: false;
+    stage8BridgeDeferred: true;
+    runtimeOutputsWritten: false;
+  };
+}
+
+export interface SleeveLoadResult {
+  ok: boolean;
+  sleevePath: string;
+  loadedSleeve?: LoadedSleeveFile;
+  validation?: SleeveValidationResult;
+  artifactResolution?: ArtifactResolutionResult;
+  compilerInputPreview?: CompilerInputPreview;
+  warnings: string[];
+  errors: string[];
+}
