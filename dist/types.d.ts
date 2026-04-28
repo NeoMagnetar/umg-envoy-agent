@@ -1,9 +1,10 @@
 export interface PluginConfig {
     allowRuntimeWrites?: boolean;
     contentMode?: "bundled-public" | string;
-    compilerMode?: "bundled-adapter" | string;
+    compilerMode?: "bundled-adapter" | "external-cli" | string;
     debug?: boolean;
     defaultSleeveId?: string;
+    compilerBridge?: CompilerBridgeConfig;
 }
 export interface PublicBlock {
     block_id: string;
@@ -156,7 +157,7 @@ export interface CompilerInputPreview {
     };
     stageBoundary: {
         compilerInvoked: false;
-        stage8BridgeDeferred: true;
+        stage8BridgeDeferred: boolean;
         runtimeOutputsWritten: false;
     };
 }
@@ -169,4 +170,81 @@ export interface SleeveLoadResult {
     compilerInputPreview?: CompilerInputPreview;
     warnings: string[];
     errors: string[];
+}
+export interface CompilerBridgeConfig {
+    allowCompilerBridge?: boolean;
+    compilerMode?: "bundled-adapter" | "external-cli";
+    compilerRepoPath?: string | null;
+    compilerCliPath?: string | null;
+    compilerCommand?: string | null;
+    compilerTimeoutMs?: number;
+    compilerTempRoot?: string | null;
+}
+export interface CompilerBridgeRequest {
+    sleevePath: string;
+    libraryRoot: string;
+    compilerRepoPath?: string;
+    compilerCliPath?: string;
+    compilerCommand?: string;
+    outputDir?: string;
+    timeoutMs?: number;
+    allowCompilerBridge?: boolean;
+    compilerTempRoot?: string;
+}
+export interface CanonicalIrBuildResult {
+    ok: boolean;
+    inputPath: string;
+    canonicalIr?: Record<string, unknown>;
+    compilerInputPreview?: CompilerInputPreview;
+    warnings: string[];
+    errors: string[];
+}
+export interface CompilerInvocationResult {
+    ok: boolean;
+    mode: "external-cli";
+    commandPath: string;
+    timeoutMs: number;
+    exitCode: number | null;
+    stdout: string;
+    stderr: string;
+    stdoutSummary?: string;
+    stderrSummary?: string;
+    timedOut: boolean;
+}
+export interface CompilerBridgeResult {
+    ok: boolean;
+    sleevePath: string;
+    libraryRoot: string;
+    loadedSleeveSummary?: {
+        artifactId: string | null;
+        routeCount: number;
+        dependencyCounts: {
+            sleeves: number;
+            neostacks: number;
+            bundles: number;
+            overlays: number;
+            schemas: number;
+        };
+    };
+    validation?: SleeveValidationResult;
+    artifactResolution?: ArtifactResolutionResult;
+    canonicalIr?: Record<string, unknown>;
+    compilerInvocation?: CompilerInvocationResult;
+    runtimeSpec?: unknown;
+    trace?: unknown;
+    diagnostics?: unknown;
+    outputFiles?: {
+        canonicalIrPath: string;
+        runtimeSpecPath: string | null;
+        tracePath: string | null;
+        diagnosticsPath: string | null;
+    };
+    warnings: string[];
+    errors: string[];
+    boundary: {
+        compilerInvoked: boolean;
+        relationMatrixEmitted: false | boolean;
+        umgBlockLibraryModified: false;
+        compilerRepoModified: false;
+    };
 }

@@ -2,5 +2,14 @@
   "allowRuntimeWrites": false,
   "contentMode": "bundled-public",
   "compilerMode": "bundled-adapter",
-  "debug": false
+  "debug": false,
+  "compilerBridge": {
+    "allowCompilerBridge": false,
+    "compilerMode": "bundled-adapter",
+    "compilerRepoPath": null,
+    "compilerCliPath": null,
+    "compilerCommand": null,
+    "compilerTimeoutMs": 30000,
+    "compilerTempRoot": null
+  }
 }
