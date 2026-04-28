@@ -20,6 +20,28 @@ function asStringArray(value: unknown): string[] {
   return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
 }
 
+function asIdArray(value: unknown, key: string): string[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  const results: string[] = [];
+  for (const item of value) {
+    if (typeof item === "string") {
+      results.push(item);
+      continue;
+    }
+    if (item && typeof item === "object") {
+      const candidate = (item as Record<string, unknown>)[key];
+      if (typeof candidate === "string") {
+        results.push(candidate);
+      }
+    }
+  }
+
+  return results;
+}
+
 function buildLines(bridgeResult: Record<string, any>): RelationMatrixLine[] {
   const lines: RelationMatrixLine[] = [];
   const runtimeSpec = bridgeResult.runtimeSpec ?? {};
@@ -30,7 +52,8 @@ function buildLines(bridgeResult: Record<string, any>): RelationMatrixLine[] {
 
   lines.push({ line_kind: "node_state", from: sleeveId, states: ["[A]"] });
 
-  for (const overlay of asStringArray(runtimeSpec.overlays)) {
+  const overlayList = asIdArray(runtimeSpec.overlays, "overlay_id");
+  for (const overlay of overlayList) {
     lines.push({ line_kind: "relation", from: sleeveId, relation_code: "-O->", to: overlay, states: ["[A]"] });
     if (route) {
       lines.push({ line_kind: "relation", from: overlay, relation_code: "-F->", to: route, states: ["[GO]"] });
@@ -42,17 +65,22 @@ function buildLines(bridgeResult: Record<string, any>): RelationMatrixLine[] {
   }
 
   const blocks = asStringArray(runtimeSpec.active_neoblocks);
+  const attachStack = asStringArray(runtimeSpec.active_neostacks)[0] ?? sleeveId;
   for (let i = 0; i < blocks.length; i++) {
     const current = blocks[i]!;
     const next = blocks[i + 1];
     lines.push({ line_kind: "node_state", from: current, states: ["[A]"] });
+    if (i === 0) {
+      lines.push({ line_kind: "relation", from: attachStack, relation_code: "-V->", to: current, states: ["[A]"] });
+    }
     if (next) {
       lines.push({ line_kind: "relation", from: current, relation_code: "-H-", to: next, states: ["[A]"] });
     }
   }
 
-  for (const capability of asStringArray(runtimeSpec.capabilities)) {
-    const attachFrom = asStringArray(runtimeSpec.overlays)[0] ?? sleeveId;
+  const capabilityList = asIdArray(runtimeSpec.capabilities, "capability_id");
+  for (const capability of capabilityList) {
+    const attachFrom = overlayList[0] ?? sleeveId;
     lines.push({ line_kind: "relation", from: attachFrom, relation_code: "-C-", to: capability, states: ["[VISIBLE]"] });
   }
 
@@ -149,10 +177,10 @@ export async function emitRelationMatrix(request: RelationMatrixRequest, config?
 
   const matrixStatus = {
     route: header.route,
-    overlayCount: asStringArray(runtimeSpec.overlays).length,
+    overlayCount: asIdArray(runtimeSpec.overlays, "overlay_id").length,
     neostackCount: asStringArray(runtimeSpec.active_neostacks).length,
     neoblockCount: asStringArray(runtimeSpec.active_neoblocks).length,
-    capabilityCount: asStringArray(runtimeSpec.capabilities).length,
+    capabilityCount: asIdArray(runtimeSpec.capabilities, "capability_id").length,
     diagnosticCount: asStringArray(diagnostics.errors).length + asStringArray(diagnostics.warnings).length
   };
 

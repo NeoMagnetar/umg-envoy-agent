@@ -100,10 +100,13 @@ export interface LoadedSleeveFile {
       bundle_ids?: string[];
       overlay_ids?: string[];
       schema_ids?: string[];
+      capability_ids?: string[];
+      toolpack_ids?: string[];
       [key: string]: unknown;
     };
     composition?: {
       neostack_ids?: string[];
+      neoblock_ids?: string[];
       bundle_ids?: string[];
       overlay_ids?: string[];
       local_refs?: unknown[];
@@ -135,9 +138,11 @@ export interface SleeveValidationResult {
 }
 
 export interface ArtifactResolutionEntry {
-  artifactType: "sleeve" | "neostack" | "neoblock" | "overlay" | "bundle" | "schema";
+  artifactType: "sleeve" | "neostack" | "neoblock" | "overlay" | "bundle" | "schema" | "capability" | "toolpack";
   artifactId: string;
   expectedPath: string | null;
+  sourceRef?: string | null;
+  sourceReason?: string | null;
   exists: boolean;
   status: "resolved" | "missing" | "invalid";
 }
