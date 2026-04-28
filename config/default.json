@@ -11,5 +11,12 @@
     "compilerCommand": null,
     "compilerTimeoutMs": 30000,
     "compilerTempRoot": null
+  },
+  "relationMatrix": {
+    "allowRelationMatrixEmit": false,
+    "relationMatrixMode": "response-only",
+    "relationMatrixTempRoot": null,
+    "relationMatrixWritePolicy": "temp-only",
+    "relationMatrixFormat": "umg-v0.1-ascii"
   }
 }

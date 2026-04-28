@@ -9,6 +9,7 @@ import { loadSleeveFile } from "./compiler/sleeve-loader.js";
 import { validateSleeveStructure } from "./compiler/sleeve-schema-validator.js";
 import { resolveSleeveArtifacts } from "./compiler/artifact-resolver.js";
 import { runCompilerBridge } from "./compiler/compiler-bridge.js";
+import { emitRelationMatrix } from "./compiler/relation-matrix-emitter.js";
 import { parseUMGPath } from "./umg-path-parser.js";
 import { renderUMGPath } from "./umg-path-renderer.js";
 import { validateUMGPath } from "./umg-path-validator.js";
@@ -54,7 +55,8 @@ function statusPayload(config?: PluginConfig) {
       "umg_envoy_build_path",
       "umg_envoy_matrix_status",
       "umg_envoy_load_sleeve",
-      "umg_envoy_compile_ir_bridge"
+      "umg_envoy_compile_ir_bridge",
+      "umg_envoy_emit_relation_matrix"
     ]
   };
 }
@@ -232,6 +234,29 @@ function registerCliBridge(api: any, config?: PluginConfig) {
         });
         console.log(JSON.stringify(result, null, 2));
       });
+
+    root.command("emit-relation-matrix")
+      .requiredOption("--sleeve-path <path>")
+      .requiredOption("--library-root <path>")
+      .option("--compiler-repo-path <path>")
+      .option("--compiler-cli-path <path>")
+      .option("--output-dir <path>")
+      .option("--timeout-ms <number>")
+      .option("--relation-matrix-mode <mode>")
+      .action(async (opts: { sleevePath: string; libraryRoot: string; compilerRepoPath?: string; compilerCliPath?: string; outputDir?: string; timeoutMs?: string; relationMatrixMode?: string }) => {
+        const result = await emitRelationMatrix({
+          sleevePath: opts.sleevePath,
+          libraryRoot: opts.libraryRoot,
+          compilerRepoPath: opts.compilerRepoPath,
+          compilerCliPath: opts.compilerCliPath,
+          outputDir: opts.outputDir,
+          timeoutMs: opts.timeoutMs ? Number(opts.timeoutMs) : undefined,
+          allowCompilerBridge: true,
+          allowRelationMatrixEmit: true,
+          relationMatrixMode: (opts.relationMatrixMode as any) ?? "response-only"
+        }, config?.relationMatrix);
+        console.log(JSON.stringify(result, null, 2));
+      });
   }, { commands: ["umg-envoy"] });
 }
 
@@ -276,6 +301,24 @@ const entry = {
       }, { additionalProperties: false }),
       async execute(input: { sleevePath: string; libraryRoot: string; compilerRepoPath?: string; compilerCliPath?: string; outputDir?: string; timeoutMs?: number; allowCompilerBridge?: boolean }) {
         return { content: [{ type: "text", text: JSON.stringify(await runCompilerBridge({ ...input, allowCompilerBridge: input.allowCompilerBridge ?? true }), null, 2) }] };
+      }
+    }, { optional: true });
+    api.registerTool({
+      name: "umg_envoy_emit_relation_matrix",
+      description: "Emit an ASCII-safe relation matrix projection after the compiler bridge.",
+      parameters: Type.Object({
+        sleevePath: Type.String(),
+        libraryRoot: Type.String(),
+        compilerRepoPath: Type.Optional(Type.String()),
+        compilerCliPath: Type.Optional(Type.String()),
+        outputDir: Type.Optional(Type.String()),
+        timeoutMs: Type.Optional(Type.Number()),
+        allowCompilerBridge: Type.Optional(Type.Boolean()),
+        allowRelationMatrixEmit: Type.Optional(Type.Boolean()),
+        relationMatrixMode: Type.Optional(Type.Union([Type.Literal("response-only"), Type.Literal("temp-write"), Type.Literal("both")]))
+      }, { additionalProperties: false }),
+      async execute(input: { sleevePath: string; libraryRoot: string; compilerRepoPath?: string; compilerCliPath?: string; outputDir?: string; timeoutMs?: number; allowCompilerBridge?: boolean; allowRelationMatrixEmit?: boolean; relationMatrixMode?: "response-only" | "temp-write" | "both" }) {
+        return { content: [{ type: "text", text: JSON.stringify(await emitRelationMatrix({ ...input, allowCompilerBridge: input.allowCompilerBridge ?? true, allowRelationMatrixEmit: input.allowRelationMatrixEmit ?? false }, config?.relationMatrix), null, 2) }] };
       }
     }, { optional: true });
   }

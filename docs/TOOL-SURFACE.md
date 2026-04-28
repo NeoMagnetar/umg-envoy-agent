@@ -33,3 +33,12 @@ Stage 8B bridge addition:
   - captures `runtime-spec.json`, `trace.json`, and `diagnostics.json`
   - does not emit relation matrix output
   - does not mutate UMG-Block-Library or the compiler repo
+
+Stage 9B relation matrix addition:
+- `umg_envoy_emit_relation_matrix`
+  - runs after the compiler bridge
+  - returns ASCII-safe doctrine-aligned relation matrix text by default
+  - may write `relation-matrix.umg` only under Envoy-local temp output when explicitly enabled
+  - uses response-only default and temp-only write policy
+  - does not mutate UMG-Block-Library or the compiler repo
+  - does not change compiler behavior
