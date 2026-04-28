@@ -25,6 +25,10 @@
         "type": "object",
         "description": "Optional external compiler bridge configuration."
       },
+      "relationMatrix": {
+        "type": "object",
+        "description": "Optional relation matrix emission configuration."
+      },
       "debug": {
         "type": "boolean",
         "description": "Enable debug logging for the public compiler-backed package."
@@ -92,6 +96,35 @@
           }
         }
       },
+      "relationMatrix": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "allowRelationMatrixEmit": {
+            "type": "boolean",
+            "default": false
+          },
+          "relationMatrixMode": {
+            "type": "string",
+            "enum": ["response-only", "temp-write", "both"],
+            "default": "response-only"
+          },
+          "relationMatrixTempRoot": {
+            "type": ["string", "null"],
+            "default": null
+          },
+          "relationMatrixWritePolicy": {
+            "type": "string",
+            "enum": ["temp-only"],
+            "default": "temp-only"
+          },
+          "relationMatrixFormat": {
+            "type": "string",
+            "enum": ["umg-v0.1-ascii"],
+            "default": "umg-v0.1-ascii"
+          }
+        }
+      },
       "debug": {
         "type": "boolean",
         "default": false,
@@ -112,6 +145,7 @@
     "umg_envoy_render_path",
     "umg_envoy_build_path",
     "umg_envoy_matrix_status",
-    "umg_envoy_compile_ir_bridge"
+    "umg_envoy_compile_ir_bridge",
+    "umg_envoy_emit_relation_matrix"
   ]
 }
