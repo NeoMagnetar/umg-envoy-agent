@@ -1,5 +1,27 @@
 ﻿# Changelog
 
+## 0.2.3 - 2026-04-29
+
+Publication-readiness cleanup for UMG Envoy Agent.
+
+### Changed
+
+- Updated README and release-facing documentation to remove stale release-candidate framing.
+- Clarified UMG Envoy Agent as an OpenClaw-facing bridge for UMG sleeves, artifact resolution, canonical IR generation, compiler execution, and runtime output inspection.
+- Added clearer terminology for UMG, Envoy, Sleeve, MOLT, Canonical IR, Runtime Spec, Trace, Diagnostics, and Relation Matrix.
+- Improved fresh-tester guidance for understanding what ships, what does not ship, and which validation commands are maintainer-only.
+- Clarified that the E2E validation script is a repo-maintainer validation gate rather than a normal packaged runtime surface.
+
+### Package Hygiene
+
+- Reviewed package file inclusion rules for ClawHub-first publication.
+- Kept maintainer-only validation surfaces out of the published package.
+- Removed unnecessary package-surface noise where appropriate.
+
+### Publication Status
+
+- ClawHub publication remains intentionally separate from this patch until final re-audit and explicit publish authorization.
+
 ## 0.2.1 - 2026-04-26
 
 ### Fixed
@@ -68,4 +90,3 @@ UMG Envoy Agent 0.2.0 upgrades the public plugin from a path/planner-focused pac
 - public-safe bundled compiler adapter
 - not full private personal runtime
 - runtime mutation remains disabled by default
-

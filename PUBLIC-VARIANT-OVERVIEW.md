@@ -1,3 +1,6 @@
 # Public Variant Overview
 
-The 0.2.0 release is no longer only a path/planner surface. It now includes a bundled adapter that compiles public sleeve content into a documented RuntimeSpec-like object and validates the result.
+The public UMG Envoy Agent package is a compiler-backed OpenClaw code plugin with bundled public sample content, public-safe tools, and a controlled bridge into the local UMG validation lane.
+
+`v0.2.2` established the GitHub proof and release-hardening milestone.
+`v0.2.3` is the publication-cleanup follow-up focused on clearer documentation, cleaner packaging, and better fresh-tester onboarding before any separate ClawHub publication step.
