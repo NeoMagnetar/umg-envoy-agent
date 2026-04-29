@@ -42,3 +42,12 @@ Stage 9B relation matrix addition:
   - uses response-only default and temp-only write policy
   - does not mutate UMG-Block-Library or the compiler repo
   - does not change compiler behavior
+
+Stage 11B repeatable validation gate:
+- `npm run validate:umg:e2e -- --sleevePath <path> --libraryRoot <path> --compilerRepoPath <path>`
+  - runs the proven local UMG v1 E2E validation flow against explicit inputs
+  - executes both response-only and temp-write relation matrix paths
+  - asserts required route/governance, overlay, NeoStack/NeoBlock, and capability relations
+  - verifies compiler exit code `0` and confirms runtime-spec/trace/diagnostics capture
+  - confines runtime outputs to Envoy-local temp output and cleans them by default
+  - fails if Envoy, UMG-Block-Library, or umg-compiler contamination is detected
