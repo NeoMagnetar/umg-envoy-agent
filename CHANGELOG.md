@@ -1,5 +1,23 @@
 ﻿# Changelog
 
+## 0.2.5 - 2026-04-29
+
+Hardened ClawHub publication cleanup.
+
+### Changed
+
+- Prepares a clean-staged ClawHub release so the published artifact surface contains only intended public plugin files.
+- Documents that 0.2.4 proved the ClawHub publish path but shipped a broader artifact surface than intended.
+- Preserves 0.2.4 metadata polish and package description improvements.
+- Clarifies that maintainer-only scripts, local reports, source tree, and legacy draft files are not part of the hardened ClawHub artifact.
+- Keeps runtime behavior unchanged.
+
+### Validation
+
+- build/check/smoke/pack dry-run pass.
+- canonical UMG E2E validation passes.
+- staged ClawHub file inventory is explicitly audited before publish.
+
 ## 0.2.4 - 2026-04-29
 
 Metadata polish before first ClawHub publication.

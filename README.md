@@ -78,6 +78,14 @@ npm run smoke
 npm run pack:dry
 ```
 
+### Execution boundary note
+
+This is a code plugin. In normal packaged use, it loads bundled public content and exposes OpenClaw tools for inspection and validation.
+
+Optional compiler-bridge behavior may invoke a configured local compiler process through explicit configured paths. This is intended for controlled local UMG workflows, not arbitrary shell execution.
+
+Maintainer-only validation assets are not part of the hardened ClawHub artifact.
+
 ### Maintainer-only validation gate
 
 The npm script name is:
