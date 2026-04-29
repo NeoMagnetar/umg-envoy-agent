@@ -36,7 +36,7 @@ export function runCompilerSmoke(metaUrl = import.meta.url) {
     return {
         ok: errors.length === 0,
         plugin: "umg-envoy-agent",
-        version: "0.2.3",
+        version: "0.2.4",
         compilerAdapter: "available",
         contentMode: "bundled-public",
         sampleSleeves: sleeves.length,

@@ -1,5 +1,16 @@
 ﻿# Changelog
 
+## 0.2.4 - 2026-04-29
+
+Metadata polish before first ClawHub publication.
+
+### Changed
+
+- Improved package/plugin description for clearer ClawHub listing presentation.
+- Replaced stale pre-publication README wording with durable publication-status language.
+- Added package keywords for clearer discovery and tag alignment.
+- No runtime behavior changes.
+
 ## 0.2.3 - 2026-04-29
 
 Publication-readiness cleanup for UMG Envoy Agent.
