@@ -1,7 +1,7 @@
 # UMG Envoy Agent 0.2.2 Release Checklist
 
-Release candidate boundary only.
-Do not publish, tag, or create a GitHub release until this checklist is explicitly approved.
+Historical release-hardening boundary.
+This checklist reflects the pre-publication state that preceded the later GitHub release `v0.2.2`; package publication still remained separate.
 
 ## Required validation
 
@@ -34,6 +34,8 @@ Confirm pack dry-run does not include:
 - `UMG-Block-Library` contents
 - `umg-compiler` contents
 - local absolute-path artifacts
+
+`v0.2.3` handles the later publication-readiness cleanup after this historical hardening checkpoint.
 
 ## Cleanliness guard
 

@@ -1,13 +1,13 @@
 # UMG Envoy Agent 0.2.2 Release Notes
 
 Date: 2026-04-29
-Release Type: Release candidate / release-hardening patch
+Release Type: release-hardening patch (historically began as release-candidate framing before GitHub release v0.2.2)
 
 ## Summary
 
-UMG Envoy Agent 0.2.2 prepares a conservative release candidate after the Stage 10/11 UMG v1 validation hardening work.
+UMG Envoy Agent 0.2.2 captured the Stage 10/11 UMG v1 validation hardening work and served as the GitHub proof milestone for this package line.
 
-It preserves the validated external compiler bridge path, strengthens relation matrix coverage, and adds a repeatable repo-supported E2E gate so the local UMG v1 pipeline can be revalidated before any publication step.
+It preserves the validated external compiler bridge path, strengthens relation matrix coverage, and adds a repeatable repo-supported E2E gate so the local UMG v1 pipeline can be revalidated before any later package publication step.
 
 ## Included validation hardening
 
@@ -40,7 +40,8 @@ It preserves the validated external compiler bridge path, strengthens relation m
 
 ## Release boundary
 
-- package / ClawHub audit is still required before publish
+- package / ClawHub audit was still required before package publication
 - no publish was performed in this stage
-- no tag was created in this stage
-- no GitHub release was created in this stage
+- no package publication was performed in this stage
+- this document reflects the pre-publication hardening boundary even though GitHub release `v0.2.2` was later created
+- `v0.2.3` handles the follow-up publication-readiness cleanup

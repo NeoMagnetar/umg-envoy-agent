@@ -1,6 +1,6 @@
 {
   "name": "umg-envoy-agent",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Public compiler-backed UMG Envoy Agent for OpenClaw",
   "type": "module",
   "main": "dist/plugin-entry.js",
@@ -14,7 +14,6 @@
     "PUBLIC-VARIANT-OVERVIEW.md",
     "openclaw.plugin.json",
     "package.json",
-    "package-lock.json",
     "tsconfig.json"
   ],
   "scripts": {
