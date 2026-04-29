@@ -30,7 +30,7 @@ function buildNodes(sleeve, resolution) {
         }
     });
     seen.add(artifactId);
-    for (const entry of resolution.entries.filter((item) => item.status === "resolved" && item.artifactType !== "schema")) {
+    for (const entry of resolution.entries.filter((item) => item.status === "resolved" && item.artifactType !== "schema" && item.artifactType !== "capability" && item.artifactType !== "toolpack")) {
         const nodeType = entry.artifactType;
         const nodeId = artifactRefFromResolution(nodeType, entry.artifactId);
         if (seen.has(nodeId)) {
@@ -42,7 +42,9 @@ function buildNodes(sleeve, resolution) {
             artifact_ref: entry.artifactId,
             state: "resolved",
             payload: {
-                expected_path: entry.expectedPath
+                expected_path: entry.expectedPath,
+                source_reason: entry.sourceReason ?? null,
+                source_ref: entry.sourceRef ?? null
             }
         });
         seen.add(nodeId);
@@ -67,15 +69,17 @@ function buildEdges(sleeve, resolution) {
 function buildRoutes(sleeve) {
     return Array.isArray(sleeve.sleeve?.routes) ? sleeve.sleeve.routes : [];
 }
-function buildOverlays(sleeve) {
+function buildOverlays(sleeve, resolution) {
     const dependencies = sleeve.sleeve?.dependencies?.overlay_ids ?? [];
     const composition = sleeve.sleeve?.composition?.overlay_ids ?? [];
-    return uniqueStrings([...dependencies, ...composition]).map((overlayId) => ({ overlay_id: overlayId }));
+    const resolved = resolution.entries.filter((entry) => entry.artifactType === 'overlay').map((entry) => entry.artifactId);
+    return uniqueStrings([...dependencies, ...composition, ...resolved]).map((overlayId) => ({ overlay_id: overlayId }));
 }
-function buildCapabilities(sleeve) {
+function buildCapabilities(sleeve, resolution) {
     const required = sleeve.sleeve?.capabilities?.required ?? [];
     const optional = sleeve.sleeve?.capabilities?.optional ?? [];
-    return uniqueStrings([...required, ...optional]).map((capabilityId) => ({ capability_id: capabilityId }));
+    const resolved = resolution.entries.filter((entry) => entry.artifactType === 'capability').map((entry) => entry.artifactId);
+    return uniqueStrings([...required, ...optional, ...resolved]).map((capabilityId) => ({ capability_id: capabilityId }));
 }
 export function buildCanonicalIr(loadResult, libraryRoot, tempInputPath) {
     if (!loadResult.loadedSleeve || !loadResult.artifactResolution) {
@@ -106,9 +110,9 @@ export function buildCanonicalIr(loadResult, libraryRoot, tempInputPath) {
         routes: buildRoutes(sleeve),
         gates: [],
         bundles: (sleeve.sleeve?.dependencies?.bundle_ids ?? []).map((bundleId) => ({ bundle_id: bundleId })),
-        overlays: buildOverlays(sleeve),
+        overlays: buildOverlays(sleeve, resolution),
         merge_recipes: [],
-        capabilities: buildCapabilities(sleeve),
+        capabilities: buildCapabilities(sleeve, resolution),
         states: {
             default_route: sleeve.sleeve?.activation?.default_route ?? null,
             strict_capabilities: sleeve.sleeve?.activation?.strict_capabilities ?? null,
