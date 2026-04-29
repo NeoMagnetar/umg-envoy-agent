@@ -21,6 +21,7 @@
     "build": "tsc",
     "check": "tsc --noEmit",
     "smoke": "node dist/plugin-entry.js --smoke",
+    "validate:umg:e2e": "node scripts/validate-umg-e2e.mjs",
     "pack:dry": "npm pack --dry-run"
   },
   "engines": {
