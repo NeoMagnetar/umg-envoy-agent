@@ -1,8 +1,8 @@
 {
   "id": "umg-envoy-agent",
   "name": "UMG Envoy Agent",
-  "version": "0.2.3",
-  "description": "Public compiler-backed UMG Envoy Agent for OpenClaw",
+  "version": "0.2.4",
+  "description": "OpenClaw code plugin for loading, resolving, validating, and inspecting Universal Modular Generation workflows.",
   "entry": "dist/plugin-entry.js",
   "apiVersion": 1,
   "config": {

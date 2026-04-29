@@ -43,7 +43,7 @@ This package is an OpenClaw code plugin for UMG workflows. It is meant to let te
 
 - not the full `UMG-Block-Library`
 - not the full `umg-compiler` repository
-- not a published ClawHub artifact yet
+- ClawHub publication is handled as a separate release operation; check the current ClawHub listing or GitHub release notes for publication status
 - not primarily documented for raw npm-registry end-user consumption
 - not a private personal runtime package
 

@@ -1,7 +1,7 @@
 {
   "name": "umg-envoy-agent",
-  "version": "0.2.3",
-  "description": "Public compiler-backed UMG Envoy Agent for OpenClaw",
+  "version": "0.2.4",
+  "description": "OpenClaw code plugin for loading, resolving, validating, and inspecting Universal Modular Generation workflows.",
   "type": "module",
   "main": "dist/plugin-entry.js",
   "types": "dist/index.d.ts",
@@ -23,6 +23,22 @@
     "validate:umg:e2e": "node scripts/validate-umg-e2e.mjs",
     "pack:dry": "npm pack --dry-run"
   },
+  "keywords": [
+    "umg",
+    "universal-modular-generation",
+    "openclaw",
+    "code-plugin",
+    "ai-agent",
+    "agent-framework",
+    "modular-ai",
+    "structured-generation",
+    "workflow",
+    "compiler-bridge",
+    "canonical-ir",
+    "relation-matrix",
+    "runtime-spec",
+    "diagnostics"
+  ],
   "engines": {
     "node": ">=22"
   },
