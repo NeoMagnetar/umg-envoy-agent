@@ -34,7 +34,7 @@ function statusPayload(config?: PluginConfig) {
   return {
     ok: true,
     plugin: "umg-envoy-agent",
-    version: "0.2.5",
+    version: "0.2.6",
     compilerAdapter: "available",
     contentMode: cfg.contentMode,
     compilerMode: cfg.compilerMode,
@@ -139,7 +139,7 @@ function loadSleevePreview(sleevePath: string, libraryRoot: string): SleeveLoadR
 
 function registerCliBridge(api: any, config?: PluginConfig) {
   api.registerCli(({ program }: { program: any }) => {
-    const root = program.command("umg-envoy").description("Public compiler-backed UMG Envoy Agent");
+    const root = program.command("umg-envoy").description("Run UMG workflows as a modular cognitive architecture runtime inside OpenClaw.");
 
     root.command("status").action(async () => {
       console.log(JSON.stringify(statusPayload(config), null, 2));
@@ -263,11 +263,11 @@ function registerCliBridge(api: any, config?: PluginConfig) {
 const entry = {
   id: "umg-envoy-agent",
   name: "UMG Envoy Agent",
-  description: "Public compiler-backed UMG Envoy Agent for OpenClaw",
+  description: "UMG Envoy Agent is an OpenClaw code plugin that runs Universal Modular Generation workflows as a modular cognitive architecture runtime: loading UMG sleeves, resolving artifacts, compiling canonical IR, and emitting runtime specs, traces, diagnostics, and relation matrices.",
   register(api: { registerTool: (definition: any, options?: { optional?: boolean }) => void; registerCli?: (register: any, options?: { commands?: string[] }) => void }, config?: PluginConfig) {
     registerCliBridge(api, config);
 
-    api.registerTool({ name: "umg_envoy_status", description: "Report compiler-backed public package status.", parameters: Type.Object({}, { additionalProperties: false }), async execute() { return { content: [{ type: "text", text: JSON.stringify(statusPayload(config), null, 2) }] }; } }, { optional: true });
+    api.registerTool({ name: "umg_envoy_status", description: "Report UMG modular cognitive runtime status.", parameters: Type.Object({}, { additionalProperties: false }), async execute() { return { content: [{ type: "text", text: JSON.stringify(statusPayload(config), null, 2) }] }; } }, { optional: true });
     api.registerTool({ name: "umg_envoy_compiler_smoke_test", description: "Run bundled public compiler smoke tests.", parameters: Type.Object({}, { additionalProperties: false }), async execute() { return { content: [{ type: "text", text: JSON.stringify(runCompilerSmoke(import.meta.url), null, 2) }] }; } }, { optional: true });
     api.registerTool({ name: "umg_envoy_list_sleeves", description: "List bundled public sleeves.", parameters: Type.Object({}, { additionalProperties: false }), async execute() { return { content: [{ type: "text", text: JSON.stringify(loadSleeves(publicContentRoot(import.meta.url)), null, 2) }] }; } }, { optional: true });
     api.registerTool({ name: "umg_envoy_list_block_libraries", description: "Summarize bundled public block libraries.", parameters: Type.Object({}, { additionalProperties: false }), async execute() { return { content: [{ type: "text", text: JSON.stringify(summarizeBlockLibraries(publicContentRoot(import.meta.url)), null, 2) }] }; } }, { optional: true });
