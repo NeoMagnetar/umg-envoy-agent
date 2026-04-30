@@ -1,8 +1,8 @@
 {
   "id": "umg-envoy-agent",
   "name": "UMG Envoy Agent",
-  "version": "0.2.5",
-  "description": "OpenClaw code plugin for loading, resolving, validating, and inspecting Universal Modular Generation workflows.",
+  "version": "0.2.6",
+  "description": "Run UMG workflows as a modular cognitive architecture runtime inside OpenClaw.",
   "entry": "dist/plugin-entry.js",
   "apiVersion": 1,
   "config": {
@@ -31,7 +31,7 @@
       },
       "debug": {
         "type": "boolean",
-        "description": "Enable debug logging for the public compiler-backed package."
+        "description": "Enable debug logging for the UMG modular cognitive runtime package."
       },
       "defaultSleeveId": {
         "type": "string",

@@ -1,5 +1,5 @@
 param(
-  [string]$StageRoot = "C:\.openclaw\workspace\umg-envoy-agent-publish-stage\umg-envoy-agent-0.2.5"
+  [string]$StageRoot = "C:\.openclaw\workspace\umg-envoy-agent-publish-stage\umg-envoy-agent-0.2.6"
 )
 
 $ErrorActionPreference = 'Stop'

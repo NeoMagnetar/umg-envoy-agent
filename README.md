@@ -1,6 +1,6 @@
-# UMG Envoy Agent v0.2.3
+# UMG Envoy Agent v0.2.6
 
-UMG Envoy Agent is an OpenClaw code plugin for UMG workflows. It packages a public-safe, compiler-backed Envoy surface with bundled sample content, local validation tools, and a controlled bridge into the UMG compilation lane.
+UMG Envoy Agent is an OpenClaw code plugin that runs Universal Modular Generation workflows as a modular cognitive architecture runtime: loading UMG sleeves, resolving artifacts, compiling canonical IR, and emitting runtime specs, traces, diagnostics, and relation matrices.
 
 ## What UMG Envoy Agent is
 
@@ -37,7 +37,7 @@ In UMG terminology, an Envoy is an agent-like carrier. The word Agent is include
 
 ### What this plugin is
 
-This package is an OpenClaw code plugin for UMG workflows. It is meant to let testers and maintainers inspect bundled public UMG content, run local smoke checks, and exercise the public compiler-backed Envoy surface without shipping private roots or private runtime state.
+This package is an OpenClaw code plugin for running Universal Modular Generation as a modular cognitive architecture runtime. It is meant to let testers and maintainers inspect bundled public UMG content, run local smoke checks, and exercise the public UMG runtime surface without shipping private roots or private runtime state.
 
 ### What this plugin is not
 

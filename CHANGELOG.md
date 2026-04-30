@@ -1,5 +1,21 @@
 ﻿# Changelog
 
+## 0.2.6 - 2026-04-29
+
+ClawHub latest-tag correction release.
+
+### Fixed
+
+- Ensures the ClawHub publish tag set includes the reserved `latest` tag explicitly.
+- Corrects the release-process issue where custom semantic tags replaced the default `latest` tag.
+- Preserves the hardened v0.2.5 artifact surface and runtime behavior.
+
+### Notes
+
+- v0.2.5 remains the hardened artifact milestone.
+- v0.2.6 is the intended package-level latest/default ClawHub release.
+- No runtime/compiler/relation/artifact-resolver behavior changes.
+
 ## 0.2.5 - 2026-04-29
 
 Hardened ClawHub publication cleanup.
