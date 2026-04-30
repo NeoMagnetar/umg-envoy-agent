@@ -1,6 +1,6 @@
 {
   "name": "umg-envoy-agent",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "OpenClaw code plugin for running Universal Modular Generation as a modular cognitive architecture runtime.",
   "type": "module",
   "main": "dist/plugin-entry.js",
@@ -51,7 +51,7 @@
       "minGatewayVersion": "2026.3.23-1"
     },
     "install": {
-      "minHostVersion": ">=2026.3.23-1"
+      "minHostVersion": ">=2026.3.23"
     },
     "build": {
       "openclawVersion": "2026.3.23-1",

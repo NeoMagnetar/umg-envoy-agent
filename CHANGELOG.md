@@ -1,5 +1,20 @@
 ﻿# Changelog
 
+## 0.2.8
+
+Install metadata validation correction release.
+
+### Fixed
+
+- Corrects `openclaw.install.minHostVersion` to the OpenClaw installer-required semver floor format `>=2026.3.23`.
+- Preserves `openclaw.compat.pluginApi` as `>=1.2.0`.
+- Preserves runtime, compiler bridge, artifact resolver, relation matrix, sleeve, block, NeoBlock, and NeoStack behavior.
+
+### Notes
+
+- This release exists because `0.2.7` fixed the plugin API version axis but still used `>=2026.3.23-1` in `install.minHostVersion`, which the installer rejects.
+- No runtime behavior changes are included.
+
 ## 0.2.7 - 2026-04-30
 
 Compatibility metadata correction release.
