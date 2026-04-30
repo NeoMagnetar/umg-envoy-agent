@@ -1,5 +1,5 @@
 param(
-  [string]$StageRoot = "C:\.openclaw\workspace\umg-envoy-agent-publish-stage\umg-envoy-agent-0.2.6"
+  [string]$StageRoot = "C:\.openclaw\workspace\umg-envoy-agent-publish-stage\umg-envoy-agent-0.2.7"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -19,7 +19,7 @@ Copy-Item (Join-Path $repoRoot 'openclaw.plugin.json') $StageRoot
 Copy-Item (Join-Path $repoRoot 'README.md') $StageRoot
 Copy-Item (Join-Path $repoRoot 'dist\*') (Join-Path $StageRoot 'dist') -Recurse
 Copy-Item (Join-Path $repoRoot 'public-content\*') (Join-Path $StageRoot 'public-content') -Recurse
-Copy-Item (Join-Path $repoRoot 'docs\RELEASE-NOTES-0.2.5.md') (Join-Path $StageRoot 'docs')
+Copy-Item (Join-Path $repoRoot 'docs\RELEASE-NOTES-0.2.7.md') (Join-Path $StageRoot 'docs')
 
 $contractDoc = Join-Path $repoRoot 'docs\COMPILER-CONTRACT.md'
 if (Test-Path $contractDoc) {

@@ -32,7 +32,7 @@ export function runCompilerSmoke(metaUrl = import.meta.url) {
   return {
     ok: errors.length === 0,
     plugin: "umg-envoy-agent",
-    version: "0.2.6",
+    version: "0.2.7",
     compilerAdapter: "available",
     contentMode: "bundled-public",
     sampleSleeves: sleeves.length,
