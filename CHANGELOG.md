@@ -1,5 +1,21 @@
 ﻿# Changelog
 
+## 0.2.7 - 2026-04-30
+
+Compatibility metadata correction release.
+
+### Fixed
+
+- Corrects `openclaw.compat.pluginApi` from the OpenClaw host/build version axis to the plugin API semver axis.
+- Adds/uses `openclaw.install.minHostVersion` for host-version gating.
+- Allows compatible OpenClaw runtimes exposing plugin API `1.2.0` to pass the install compatibility gate.
+
+### Notes
+
+- No runtime/compiler/relation/artifact-resolver behavior changes.
+- v0.2.7 preserves the hardened ClawHub package surface introduced in v0.2.5/v0.2.6.
+- v0.2.7 remains the intended ClawHub latest/default release after publication.
+
 ## 0.2.6 - 2026-04-29
 
 ClawHub latest-tag correction release.
