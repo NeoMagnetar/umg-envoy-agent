@@ -1,4 +1,4 @@
-# UMG Envoy Agent v0.2.7
+# UMG Envoy Agent v0.2.8
 
 UMG Envoy Agent is an OpenClaw code plugin that runs Universal Modular Generation workflows as a modular cognitive architecture runtime: loading UMG sleeves, resolving artifacts, compiling canonical IR, and emitting runtime specs, traces, diagnostics, and relation matrices.
 
