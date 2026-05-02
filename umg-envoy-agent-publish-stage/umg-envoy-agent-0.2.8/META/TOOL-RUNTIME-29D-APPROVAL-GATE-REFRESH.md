@@ -12,8 +12,7 @@ TOOL-RUNTIME-29D refreshes the approval gate artifacts so they reference the cur
 - current final local SHA-256: `389417497433B3A71B09BFD528ACCE3A453CEE98488DDD1D7A74CB7A7A78AEBC`
 
 ## Stale candidate identity
-The following hash is now stale and must not be used for approval or publish wording:
-- `016951EBB535CB93032D5BD0979A06227B5AC6DB98EC79D48EAAA40614CEC418`
+A prior pre-polish candidate hash existed before the final docs/package-content hygiene refresh. That older identity is historical only and must not be used for approval or publish wording.
 
 ## Refresh actions completed
 - re-verified current local SHA-256

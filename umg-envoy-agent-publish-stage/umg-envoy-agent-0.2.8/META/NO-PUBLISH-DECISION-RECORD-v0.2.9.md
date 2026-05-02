@@ -6,7 +6,7 @@ The metadata consistency blockers have been corrected, but publish remains on ho
 ## What is now true
 - public bridge/process-execution surface appears removed from the packed candidate
 - local packed artifact exists
-- final local SHA-256 was recorded: `016951EBB535CB93032D5BD0979A06227B5AC6DB98EC79D48EAAA40614CEC418`
+- final local SHA-256 was recorded: `389417497433B3A71B09BFD528ACCE3A453CEE98488DDD1D7A74CB7A7A78AEBC`
 - public-surface validation passed with `PUBLIC_SURFACE_OK`
 - packed metadata now aligns to `0.2.9`
 
