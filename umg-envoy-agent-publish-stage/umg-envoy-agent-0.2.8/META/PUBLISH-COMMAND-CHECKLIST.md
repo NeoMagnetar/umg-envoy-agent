@@ -6,7 +6,7 @@ This phase does not run these commands.
 ## Before any publish/upload command
 - [ ] Confirm user explicitly approved publish/upload
 - [ ] Confirm candidate artifact path is correct
-- [ ] Confirm candidate SHA-256 is `016951EBB535CB93032D5BD0979A06227B5AC6DB98EC79D48EAAA40614CEC418`
+- [ ] Confirm candidate SHA-256 is `389417497433B3A71B09BFD528ACCE3A453CEE98488DDD1D7A74CB7A7A78AEBC`
 - [ ] Confirm branch is `fix/public-envoy-surface-v0.2.9`
 - [ ] Confirm no-publish hold is being intentionally lifted by user approval only
 

@@ -8,6 +8,7 @@ Use this checklist if a later explicitly approved upload/publish attempt is inte
 - [ ] uploaded artifact identity appears inconsistent
 - [ ] post-upload evidence immediately shows a new blocking concern
 - [ ] wrong artifact/path/hash is about to be used
+- [ ] stale pre-polish hash is being referenced instead of the current final candidate SHA-256 `389417497433B3A71B09BFD528ACCE3A453CEE98488DDD1D7A74CB7A7A78AEBC`
 
 ## Abort actions
 - [ ] stop further publish/upload actions

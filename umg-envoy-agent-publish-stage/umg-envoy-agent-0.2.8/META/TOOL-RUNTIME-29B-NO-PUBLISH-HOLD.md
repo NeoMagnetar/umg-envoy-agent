@@ -17,4 +17,4 @@ The purpose of TOOL-RUNTIME-29B/29C was local audit, dry-run validation, and pac
 It does not lift the explicit approval gate.
 
 ## Current recommendation
-The candidate appears strong enough to return to the explicit approval gate with the added note that the local consumer install/dry-run audit succeeded and package docs hygiene is now cleaned up.
+The candidate appears strong enough to return to the explicit approval gate with the added note that the local consumer install/dry-run audit succeeded, package docs hygiene is now cleaned up, and the refreshed final candidate hash must be used for any future approval wording: `389417497433B3A71B09BFD528ACCE3A453CEE98488DDD1D7A74CB7A7A78AEBC`.
