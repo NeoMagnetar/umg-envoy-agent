@@ -1,0 +1,76 @@
+{
+  "id": "umg-envoy-agent",
+  "name": "UMG Envoy Agent",
+  "version": "0.2.9",
+  "description": "Run bundled-adapter public UMG workflows as a public-safe modular cognitive architecture runtime inside OpenClaw.",
+  "entry": "dist/plugin-entry.js",
+  "apiVersion": 1,
+  "config": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "allowRuntimeWrites": {
+        "type": "boolean",
+        "description": "Keep runtime mutation disabled by default in the public package."
+      },
+      "contentMode": {
+        "type": "string",
+        "description": "Content loading mode for the public package."
+      },
+      "compilerMode": {
+        "type": "string",
+        "description": "Compiler adapter mode for the public bundled-adapter package."
+      },
+      "debug": {
+        "type": "boolean",
+        "description": "Enable debug logging for the UMG modular cognitive runtime package."
+      },
+      "defaultSleeveId": {
+        "type": "string",
+        "description": "Optional default bundled public sleeve id."
+      }
+    }
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "allowRuntimeWrites": {
+        "type": "boolean",
+        "default": false,
+        "description": "Allow runtime write operations. Disabled by default for public release."
+      },
+      "contentMode": {
+        "type": "string",
+        "enum": ["bundled-public"],
+        "default": "bundled-public",
+        "description": "Use bundled public sample sleeves and blocks."
+      },
+      "compilerMode": {
+        "type": "string",
+        "enum": ["bundled-adapter"],
+        "default": "bundled-adapter",
+        "description": "Use the bundled public compiler adapter only in the public package."
+      },
+      "debug": {
+        "type": "boolean",
+        "default": false,
+        "description": "Enable debug output."
+      }
+    }
+  },
+  "tools": [
+    "umg_envoy_status",
+    "umg_envoy_compiler_smoke_test",
+    "umg_envoy_list_sleeves",
+    "umg_envoy_list_block_libraries",
+    "umg_envoy_compile_sleeve",
+    "umg_envoy_validate_runtime_output",
+    "umg_envoy_compare_sleeves",
+    "umg_envoy_parse_path",
+    "umg_envoy_validate_path",
+    "umg_envoy_render_path",
+    "umg_envoy_build_path",
+    "umg_envoy_matrix_status"
+  ]
+}

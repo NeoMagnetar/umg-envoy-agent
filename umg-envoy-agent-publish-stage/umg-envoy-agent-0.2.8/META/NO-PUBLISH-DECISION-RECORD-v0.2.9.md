@@ -1,29 +1,24 @@
-# No-Publish Decision Record — v0.2.9 Candidate
+# No-Publish Hold Record — v0.2.9 Candidate
 
-## Decision
-Do not publish the current staged `v0.2.9` candidate yet.
+## Current hold posture
+The metadata consistency blockers have been corrected, but publish remains on hold until explicit user approval is given and any external ClawHub review/upload step is intentionally chosen.
 
-## Reason
-The core dangerous-exec public surface appears corrected, but the packed candidate still contains stale metadata and description inconsistencies that would make a publish approval review sloppy and potentially misleading.
-
-## Specifically
-- `openclaw.plugin.json` still says `0.2.8`
-- packed top-level config metadata still mentions removed public surfaces
-- packed `dist/plugin-entry.js` still reports `0.2.8`
-- packed description language still overstates the corrected public package boundary
-
-## What is good
+## What is now true
 - public bridge/process-execution surface appears removed from the packed candidate
 - local packed artifact exists
-- local SHA-256 was recorded
-- validation passed with `PUBLIC_SURFACE_OK`
+- final local SHA-256 was recorded: `016951EBB535CB93032D5BD0979A06227B5AC6DB98EC79D48EAAA40614CEC418`
+- public-surface validation passed with `PUBLIC_SURFACE_OK`
+- packed metadata now aligns to `0.2.9`
 
-## What must happen before approval review
-- metadata consistency cleanup
-- re-pack candidate
-- re-review packed contents
-- re-run public-surface validation
+## Why hold still remains
+- no explicit user publish approval has been given in this phase
+- no ClawHub upload/refresh/clearance result has been recorded for the corrected `0.2.9` candidate
+- Step 9 remains prohibited until explicit approval is given later
+
+## Correct next step
+- present candidate for explicit user approval review
+- if approved later, decide whether to upload/publish in a separate intentional phase
 
 ## Boundary reminder
 This record does not authorize publish.
-It preserves the rule that explicit approval is still required even after the candidate is corrected.
+It preserves the rule that Step 9 remains blocked until explicit approval is given.
