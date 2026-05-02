@@ -4,7 +4,7 @@
 
 A clean temporary local consumer project was created and the corrected public `umg-envoy-agent` `v0.2.9` candidate was installed from the local `.tgz` with scripts disabled.
 
-The installed dependency was then inspected as a real consumer package surface.
+The installed dependency was inspected as a real consumer package surface and later re-audited after the TOOL-RUNTIME-29C documentation hygiene pass.
 
 ## Consumer audit project
 - path: `C:\.openclaw\workspace\tmp-umg-envoy-consumer-audit`
@@ -14,7 +14,7 @@ The installed dependency was then inspected as a real consumer package surface.
 - package: `umg-envoy-agent`
 - version: `0.2.9`
 - artifact: `umg-envoy-agent-0.2.9.tgz`
-- final local SHA-256: `016951EBB535CB93032D5BD0979A06227B5AC6DB98EC79D48EAAA40614CEC418`
+- current local SHA-256 after docs hygiene refresh: `389417497433B3A71B09BFD528ACCE3A453CEE98488DDD1D7A74CB7A7A78AEBC`
 
 ## Installed package metadata findings
 ### package.json
@@ -44,6 +44,10 @@ Notably absent from installed package contents:
 - `dist/compiler/relation-matrix-emitter.js`
 - `dist/compiler/relation-matrix-emitter.d.ts`
 
+Installed docs now include:
+- `docs/RELEASE-NOTES-0.2.8.md` (historical)
+- `docs/RELEASE-NOTES-0.2.9.md`
+
 ## Forbidden surface search
 Searches against installed public `dist` and `openclaw.plugin.json` found no matches for:
 - `node:child_process`
@@ -62,14 +66,7 @@ A safe `npm publish --dry-run` was run from the installed package copy.
 Observed:
 - dry-run succeeded
 - package name/version resolved as `umg-envoy-agent@0.2.9`
-- tarball details reported 56 total files
 - no real upload occurred
-
-## Minor follow-up note
-One non-blocking polish item remains visible in the installed package surface:
-- `docs/RELEASE-NOTES-0.2.8.md` still ships under a `0.2.9` package
-
-This is a documentation naming consistency issue, not a dangerous-exec or public-surface regression.
 
 ## Audit conclusion
 The corrected `0.2.9` candidate behaves like a coherent local consumer package in install and dry-run inspection.

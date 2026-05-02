@@ -12,10 +12,10 @@ In UMG terminology, an Envoy is an agent-like carrier. The word Agent is include
 
 ## Publication status
 
-- `v0.2.2` was the GitHub proof milestone and release-hardening checkpoint.
-- `v0.2.3` is a publication-cleanup patch focused on docs, packaging clarity, and fresh-tester onboarding.
-- ClawHub publication is intentionally handled as a separate final release operation after cleanup, validation, re-audit, and explicit publish authorization.
-- Raw npm publication is not the primary documented user path for this package at this stage.
+- earlier package lines included proof, cleanup, and packaging-hardening milestones before the current public-surface correction lane
+- `v0.2.9` is the current corrected public candidate under review in this workspace lane
+- ClawHub publication is intentionally handled as a separate final release operation after cleanup, validation, re-audit, and explicit publish authorization
+- raw npm publication is not the primary documented user path for this package at this stage
 
 ## What it does
 
@@ -94,7 +94,7 @@ npm run pack:dry
 
 This is a code plugin. In normal packaged use, it loads bundled public content and exposes OpenClaw tools for inspection and validation.
 
-Optional compiler-bridge behavior may invoke a configured local compiler process through explicit configured paths. This is intended for controlled local UMG workflows, not arbitrary shell execution.
+The public package does not ship external compiler process bridge behavior. Advanced bridge workflows remain part of preserved broader dev/local lanes rather than the public package surface.
 
 Maintainer-only validation assets are not part of the hardened ClawHub artifact.
 
@@ -178,10 +178,10 @@ Runtime outputs remain temp-only and are not intended for commit.
 
 ClawHub publication is the intended first public plugin path for this package line. That publication step remains intentionally separate from this patch.
 
-Future maintainer reference only, not to run during Stage 14D:
+Future maintainer reference only, not to run without explicit approval during the current approval-gated lane:
 
 ```text
-clawhub package publish <path> --family code-plugin --name umg-envoy-agent --display-name "UMG Envoy Agent" --version 0.2.3 ...
+clawhub package publish <path> --family code-plugin --name umg-envoy-agent --display-name "UMG Envoy Agent" --version 0.2.9 ...
 ```
 
 ## Entry point
