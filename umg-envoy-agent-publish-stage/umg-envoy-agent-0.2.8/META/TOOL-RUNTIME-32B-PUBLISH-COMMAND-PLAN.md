@@ -15,8 +15,9 @@ Use the verified tarball identity as the approval source of truth.
 
 ## Provenance prerequisite
 Before a future publish command is executed:
-- verify or push the `fix/v0.2.10-packaging-hygiene` commit to the source repo
-- confirm the remote source commit URL resolves in `NeoMagnetar/umg-envoy-agent`
+- push `fix/v0.2.10-packaging-hygiene` to `origin` because it is not remotely present yet
+- confirm the exact intended remote commit URL resolves in `NeoMagnetar/umg-envoy-agent`
+- use the packaging candidate commit `d373678b5cd3f5c6d83c9c7c11668e148c2bda2d` as the preferred publish provenance anchor unless a later explicitly approved gate refresh changes the source sha
 - then use the matching `--source-repo`, `--source-commit`, `--source-ref`, and `--source-path` values
 
 ## Planned command shape
