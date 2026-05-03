@@ -8,7 +8,7 @@ Do not publish yet.
 
 ## Why hold remains
 - no explicit user approval has been given for `v0.2.10`
-- remote source-commit reachability has now been checked and failed for this branch in this phase: `fix/v0.2.10-packaging-hygiene` is not present on `origin`, and candidate commits `d373678` / `f8b7a74` are not remotely reachable yet
+- explicit user approval for `v0.2.10` has still not been given, even though remote branch and commit provenance are now established for `fix/v0.2.10-packaging-hygiene`
 - ClawPack publish should use the verified tarball identity, not the working folder state
 
 ## Current tarball source of truth

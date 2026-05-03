@@ -31,19 +31,24 @@ This candidate is prepared for explicit approval review only.
 It is not publish-authorized in this phase.
 
 ## Provenance note
-The tarball and branch/commit state are verified locally.
-Remote provenance verification was attempted for branch `fix/v0.2.10-packaging-hygiene` in `NeoMagnetar/umg-envoy-agent` and failed: the branch is not present on `origin`, and the candidate commits are not remotely reachable at this time.
+The tarball and branch/commit state are verified locally, and remote provenance is now established for the current branch head.
 
-Verified local-only commits:
+Verified commit chain:
 - packaging candidate commit: `d373678b5cd3f5c6d83c9c7c11668e148c2bda2d` (`d373678`) — Prepare clean v0.2.10 packaging candidate
 - approval-gate commit: `f8b7a74d25a3816e686adaa13cabff73a2fbc48f` (`f8b7a74`) — Add TOOL-RUNTIME-32B approval gate
+- remote provenance finalization commit: `1c9d2094038d73c596d4742f2ffb471ceddce003` (`1c9d209`) — Refresh v0.2.10 provenance approval gate
 
-Remote verification results during TOOL-RUNTIME-32C:
-- `git ls-remote origin fix/v0.2.10-packaging-hygiene` returned no matching ref
-- GitHub branch API returned `404 Branch not found`
-- GitHub commit API returned `422 No commit found` for both candidate commit shas
+Verified remote provenance during TOOL-RUNTIME-32D:
+- remote branch: `https://github.com/NeoMagnetar/umg-envoy-agent/tree/fix/v0.2.10-packaging-hygiene`
+- remote commit HTML URL: `https://github.com/NeoMagnetar/umg-envoy-agent/commit/1c9d2094038d73c596d4742f2ffb471ceddce003`
+- remote commit API URL: `https://api.github.com/repos/NeoMagnetar/umg-envoy-agent/commits/1c9d2094038d73c596d4742f2ffb471ceddce003`
+- `git ls-remote origin fix/v0.2.10-packaging-hygiene` resolved to `1c9d2094038d73c596d4742f2ffb471ceddce003`
 
-That means source provenance is not yet satisfied for publish. A later publish phase must first push the branch (or otherwise establish remote reachability), then verify the exact commit URL before any upload attempt.
+Important provenance interpretation:
+- the tarball hash remains the source-of-truth identity for the package artifact
+- the exact current remote branch HEAD is `1c9d2094038d73c596d4742f2ffb471ceddce003`
+- the clean packaging candidate commit remains `d373678b5cd3f5c6d83c9c7c11668e148c2bda2d`
+- any future publish command must intentionally choose which verified remote commit to cite as `--source-commit`
 
 ## Final rule
 Use the tarball as the publish source of truth, not the working folder.
