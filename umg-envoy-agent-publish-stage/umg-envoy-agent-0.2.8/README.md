@@ -1,4 +1,4 @@
-# UMG Envoy Agent v0.2.9
+# UMG Envoy Agent v0.2.10
 
 UMG Envoy Agent is an OpenClaw code plugin for bundled-adapter public UMG workflows: loading bundled public sleeves, resolving artifacts, validating runtime outputs, and providing public-safe diagnostics and inspection surfaces.
 
@@ -12,8 +12,8 @@ In UMG terminology, an Envoy is an agent-like carrier. The word Agent is include
 
 ## Publication status
 
-- earlier package lines included proof, cleanup, and packaging-hardening milestones before the current public-surface correction lane
-- `v0.2.9` is the current corrected public candidate under review in this workspace lane
+- earlier package lines included proof, cleanup, and packaging-hardening milestones before the current packaging-hygiene lane
+- `v0.2.10` is the current clean packaging candidate under review in this workspace lane
 - ClawHub publication is intentionally handled as a separate final release operation after cleanup, validation, re-audit, and explicit publish authorization
 - raw npm publication is not the primary documented user path for this package at this stage
 

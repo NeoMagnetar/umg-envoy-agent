@@ -1,0 +1,75 @@
+{
+  "name": "umg-envoy-agent",
+  "version": "0.2.10",
+  "description": "OpenClaw code plugin for running Universal Modular Generation as a modular cognitive architecture runtime.",
+  "files": [
+    "dist",
+    "docs",
+    "public-content",
+    "README.md",
+    "PUBLIC-VARIANT-README.md",
+    "PUBLIC-VARIANT-OVERVIEW.md",
+    "openclaw.plugin.json",
+    "package.json",
+    "tsconfig.json"
+  ],
+  "type": "module",
+  "main": "dist/plugin-entry.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "check": "tsc --noEmit",
+    "smoke": "node dist/plugin-entry.js --smoke",
+    "validate:umg:e2e": "node scripts/validate-umg-e2e.mjs",
+    "validate:public-surface": "powershell -NoProfile -ExecutionPolicy Bypass -File ./docs/validate-public-surface.ps1",
+    "pack:dry": "npm pack --dry-run"
+  },
+  "keywords": [
+    "umg",
+    "universal-modular-generation",
+    "openclaw",
+    "code-plugin",
+    "ai-agent",
+    "agent-framework",
+    "modular-ai",
+    "structured-generation",
+    "workflow",
+    "compiler-bridge",
+    "canonical-ir",
+    "relation-matrix",
+    "runtime-spec",
+    "diagnostics"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "openclaw": {
+    "extensions": [
+      "./dist/plugin-entry.js"
+    ],
+    "compat": {
+      "pluginApi": ">=1.2.0",
+      "minGatewayVersion": "2026.3.23-1"
+    },
+    "install": {
+      "minHostVersion": ">=2026.3.23"
+    },
+    "build": {
+      "openclawVersion": "2026.3.23-1",
+      "pluginSdkVersion": "2026.3.23-1"
+    }
+  },
+  "dependencies": {
+    "@sinclair/typebox": "^0.34.41",
+    "umg-envoy-agent": "file:umg-envoy-agent-0.2.10.tgz"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.8.3"
+  },
+  "directories": {
+    "doc": "docs"
+  },
+  "author": "",
+  "license": "ISC"
+}

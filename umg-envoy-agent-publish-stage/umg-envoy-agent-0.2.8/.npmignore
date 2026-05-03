@@ -1,0 +1,10 @@
+# Defensive ignore layer for public package hygiene.
+# The package.json files allowlist is the primary control.
+
+META/
+_inspect_*/
+*.tgz
+tmp-umg-envoy-consumer-audit/
+*.log
+.git/
+.gitignore

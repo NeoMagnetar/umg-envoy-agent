@@ -1,7 +1,7 @@
 {
   "id": "umg-envoy-agent",
   "name": "UMG Envoy Agent",
-  "version": "0.2.9",
+  "version": "0.2.10",
   "description": "Run bundled-adapter public UMG workflows as a public-safe modular cognitive architecture runtime inside OpenClaw.",
   "entry": "dist/plugin-entry.js",
   "apiVersion": 1,
