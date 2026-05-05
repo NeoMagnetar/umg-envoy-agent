@@ -4,6 +4,7 @@ import type { DiscoveryMethod, NormalizedArtifact } from "./block-library-config
 import type { UMGResolver } from "./resolver.js";
 import { readJsonLoose } from "./utils.js";
 import { classifyRelationship, pickCanonicalDescription, pickCanonicalTitle, type DuplicateRelationshipGroup } from "./canonicalize.js";
+import { extractManifestArtifactReferences } from "./manifest-extract.js";
 
 const MANIFEST_FILES = [
   "molt-block-library-index.json",
@@ -36,6 +37,15 @@ export interface BuildRegistryResult {
     fallback_only_core_artifacts: number;
     human_support_docs: number;
   };
+  core_ai_provenance: {
+    core_ai_total: number;
+    core_ai_manifest_backed: number;
+    core_ai_index_backed: number;
+    core_ai_generated_index_backed: number;
+    core_ai_fallback_only: number;
+    core_ai_manifest_coverage_percent: number;
+    core_ai_declared_coverage_percent: number;
+  };
   warnings: string[];
 }
 
@@ -45,10 +55,12 @@ export function buildRegistry(resolver: UMGResolver): BuildRegistryResult {
   const duplicate_report: BuildRegistryResult["duplicate_report"] = [];
   const artifacts: NormalizedArtifact[] = [];
   const support_artifacts: NormalizedArtifact[] = [];
+  const declaredArtifactKeys = new Set<string>();
+  const declaredArtifactIds = new Set<string>();
 
   for (const source of resolver.getSources()) {
     if (!fs.existsSync(source.resolvedPath)) continue;
-    const manifestArtifacts = loadManifestArtifacts(source.resolvedPath, source.name, source.canonical, warnings, (count) => { malformed_manifest_entries += count; });
+    const manifestArtifacts = loadManifestArtifacts(source.resolvedPath, source.name, source.canonical, warnings, declaredArtifactKeys, declaredArtifactIds, (count) => { malformed_manifest_entries += count; });
     artifacts.push(...manifestArtifacts.filter((artifact) => !artifact.support_only));
     support_artifacts.push(...manifestArtifacts.filter((artifact) => artifact.support_only));
 
@@ -61,6 +73,12 @@ export function buildRegistry(resolver: UMGResolver): BuildRegistryResult {
   const deduped = dedupeArtifacts(artifacts, warnings, duplicate_report);
   const dedupedSupport = dedupeArtifacts(support_artifacts, warnings, []);
   const counts = countArtifacts(deduped, dedupedSupport, duplicate_report.length, warnings.length);
+  const coreAiArtifacts = deduped.filter((artifact) => artifact.source.source_kind === 'ai_machine');
+  const core_ai_total = coreAiArtifacts.length;
+  const core_ai_manifest_backed = coreAiArtifacts.filter((artifact) => artifact.source.discovery_method === 'manifest' || declaredArtifactIds.has(artifact.id)).length;
+  const core_ai_index_backed = coreAiArtifacts.filter((artifact) => artifact.source.discovery_method === 'index').length;
+  const core_ai_generated_index_backed = coreAiArtifacts.filter((artifact) => artifact.source.discovery_method === 'generated').length;
+  const core_ai_fallback_only = coreAiArtifacts.filter((artifact) => artifact.source.discovery_method === 'fallback_walk' && !declaredArtifactIds.has(artifact.id)).length;
   return {
     artifacts: deduped,
     support_artifacts: dedupedSupport,
@@ -69,14 +87,23 @@ export function buildRegistry(resolver: UMGResolver): BuildRegistryResult {
     warnings_summary: {
       duplicate_id_groups: duplicate_report.length,
       malformed_manifest_entries,
-      fallback_only_core_artifacts: deduped.filter((artifact) => artifact.source.discovery_method === 'fallback_walk' && artifact.source.source_kind === 'ai_machine').length,
+      fallback_only_core_artifacts: core_ai_fallback_only,
       human_support_docs: dedupedSupport.length
+    },
+    core_ai_provenance: {
+      core_ai_total,
+      core_ai_manifest_backed,
+      core_ai_index_backed,
+      core_ai_generated_index_backed,
+      core_ai_fallback_only,
+      core_ai_manifest_coverage_percent: core_ai_total > 0 ? Number(((core_ai_manifest_backed / core_ai_total) * 100).toFixed(2)) : 0,
+      core_ai_declared_coverage_percent: core_ai_total > 0 ? Number((((core_ai_manifest_backed + core_ai_index_backed + core_ai_generated_index_backed) / core_ai_total) * 100).toFixed(2)) : 0
     },
     warnings
   };
 }
 
-function loadManifestArtifacts(root: string, sourceName: string, canonical: boolean, warnings: string[], onMalformed?: (count: number) => void): NormalizedArtifact[] {
+function loadManifestArtifacts(root: string, sourceName: string, canonical: boolean, warnings: string[], declaredArtifactKeys: Set<string>, declaredArtifactIds: Set<string>, onMalformed?: (count: number) => void): NormalizedArtifact[] {
   const manifestDir = path.join(root, "AI", "MANIFESTS");
   if (!fs.existsSync(manifestDir)) return [];
   const artifacts: NormalizedArtifact[] = [];
@@ -86,7 +113,8 @@ function loadManifestArtifacts(root: string, sourceName: string, canonical: bool
     if (!fs.existsSync(filePath)) continue;
     try {
       const raw = readJsonLoose(fs.readFileSync(filePath, "utf8")) as unknown;
-      artifacts.push(...normalizeManifestPayload(filePath, raw, sourceName, canonical, fileName.includes('index') || fileName.includes('catalog') ? "index" : "manifest", warnings, onMalformed));
+      const discoveryMethod = fileName.includes('index') || fileName.includes('catalog') ? "index" : "manifest";
+      artifacts.push(...normalizeManifestPayload(filePath, raw, sourceName, canonical, discoveryMethod, warnings, declaredArtifactKeys, declaredArtifactIds, onMalformed));
     } catch (error) {
       warnings.push(`Failed to read manifest ${filePath}: ${String(error)}`);
     }
@@ -95,8 +123,34 @@ function loadManifestArtifacts(root: string, sourceName: string, canonical: bool
   return artifacts;
 }
 
-function normalizeManifestPayload(filePath: string, raw: unknown, sourceName: string, canonical: boolean, discovery_method: DiscoveryMethod, warnings: string[], onMalformed?: (count: number) => void): NormalizedArtifact[] {
+function normalizeManifestPayload(filePath: string, raw: unknown, sourceName: string, canonical: boolean, discovery_method: DiscoveryMethod, warnings: string[], declaredArtifactKeys: Set<string>, declaredArtifactIds: Set<string>, onMalformed?: (count: number) => void): NormalizedArtifact[] {
   const results: NormalizedArtifact[] = [];
+  const references = extractManifestArtifactReferences(raw, filePath);
+
+  for (const reference of references) {
+    if (reference.id) declaredArtifactIds.add(reference.id);
+    const resolved = resolveDeclaredArtifact(reference.path, filePath, sourceName, canonical, discovery_method, declaredArtifactKeys, warnings);
+    if (resolved) {
+      results.push(resolved);
+      continue;
+    }
+
+    if (reference.id || reference.kind || reference.title || reference.description) {
+      const pseudo = normalizeRecord(filePath, {
+        id: reference.id,
+        kind: reference.kind,
+        title: reference.title,
+        description: reference.description
+      }, sourceName, canonical, discovery_method);
+      pseudo.source.path = filePath;
+      results.push(pseudo);
+    }
+  }
+
+  if (results.length > 0) {
+    return results;
+  }
+
   const arrays = Array.isArray(raw)
     ? [raw]
     : [
@@ -257,6 +311,35 @@ function extractMarkdownTitle(markdown: string): string | undefined {
 
 function firstParagraph(markdown: string): string {
   return markdown.split(/\r?\n\r?\n/).map((part) => part.trim()).find(Boolean) ?? "";
+}
+
+function resolveDeclaredArtifact(referencePath: string | undefined, sourceManifestPath: string, sourceName: string, canonical: boolean, discoveryMethod: DiscoveryMethod, declaredArtifactKeys: Set<string>, warnings: string[]): NormalizedArtifact | null {
+  if (!referencePath) return null;
+  const resolvedPath = candidateDeclaredPaths(referencePath, sourceManifestPath).find((candidate) => fs.existsSync(candidate));
+  if (!resolvedPath) return null;
+  try {
+    const raw = readJsonLoose(fs.readFileSync(resolvedPath, 'utf8')) as Record<string, unknown>;
+    const artifact = normalizeRecord(resolvedPath, raw, sourceName, canonical, discoveryMethod === 'fallback_walk' ? 'generated' : discoveryMethod);
+    artifact.source.path = resolvedPath;
+    declaredArtifactKeys.add(`${artifact.id}::${resolvedPath}`);
+    return artifact;
+  } catch (error) {
+    warnings.push(`Failed to resolve declared artifact path ${referencePath} from ${sourceManifestPath}: ${String(error)}`);
+    return null;
+  }
+}
+
+function candidateDeclaredPaths(referencePath: string, sourceManifestPath: string): string[] {
+  const normalized = referencePath.replaceAll('/', path.sep).replaceAll('\\', path.sep);
+  const sourceRoot = path.resolve(path.dirname(sourceManifestPath), '..');
+  const candidates = [
+    path.resolve(sourceRoot, normalized),
+    path.resolve(sourceRoot, normalized.replace(`blocks${path.sep}library${path.sep}neostacks`, `AI${path.sep}NEOSTACKS${path.sep}categories`)),
+    path.resolve(sourceRoot, normalized.replace(`blocks${path.sep}library${path.sep}neoblocks`, `AI${path.sep}NEOBLOCKS${path.sep}categories`)),
+    path.resolve(sourceRoot, normalized.replace(`blocks${path.sep}library${path.sep}molt-extracted`, `AI${path.sep}MOLT-BLOCKS`)),
+    path.resolve(path.dirname(sourceManifestPath), normalized)
+  ];
+  return [...new Set(candidates)];
 }
 
 function asStringArray(value: unknown): string[] {

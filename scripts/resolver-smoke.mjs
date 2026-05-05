@@ -16,7 +16,8 @@ console.log(JSON.stringify({
   canonical_count: registry.counts.canonical_count,
   human_support_count: registry.counts.human_support_count,
   discovery: registry.counts.by_discovery_method,
-  first_hit: hits[0] ?? null,
+  core_ai_provenance: registry.core_ai_provenance,
+  first_hit: hits.runtime_results?.[0] ?? null,
   duplicate_count: registry.counts.duplicate_count,
   warning_count: registry.counts.warning_count
 }, null, 2));

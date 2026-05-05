@@ -25,5 +25,6 @@ console.log(JSON.stringify({
   support_artifact_count: registry.support_artifacts.length,
   duplicate_report: registry.duplicate_report.slice(0, 25),
   warnings_summary: registry.warnings_summary,
+  core_ai_provenance: registry.core_ai_provenance,
   warnings: registry.warnings.slice(0, 25)
 }, null, 2));

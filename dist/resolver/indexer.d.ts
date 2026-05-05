@@ -23,6 +23,15 @@ export interface BuildRegistryResult {
         fallback_only_core_artifacts: number;
         human_support_docs: number;
     };
+    core_ai_provenance: {
+        core_ai_total: number;
+        core_ai_manifest_backed: number;
+        core_ai_index_backed: number;
+        core_ai_generated_index_backed: number;
+        core_ai_fallback_only: number;
+        core_ai_manifest_coverage_percent: number;
+        core_ai_declared_coverage_percent: number;
+    };
     warnings: string[];
 }
 export declare function buildRegistry(resolver: UMGResolver): BuildRegistryResult;
