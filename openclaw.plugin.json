@@ -156,6 +156,7 @@
     "umg_envoy_approval_list",
     "umg_envoy_approval_get",
     "umg_envoy_approval_decide",
-    "umg_envoy_approval_resume_prepare"
+    "umg_envoy_approval_resume_prepare",
+    "umg_envoy_approval_resume_execute"
   ]
 }

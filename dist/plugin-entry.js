@@ -17,6 +17,7 @@ import { buildPublicPath } from "./public-path-builder.js";
 import { invokeLangChainBridge, filterTools } from "./langchain-bridge-adapter.js";
 import { runMinimalLangChainAgent } from "./langchain-agent-wrapper.js";
 import { createApprovalResumeContract } from "./approval-resume-contract.js";
+import { executeApprovalResume } from "./approval-resume-executor.js";
 import { decideApprovalCheckpoint, getApprovalCheckpoint, listApprovalCheckpoints } from "./approval-store.js";
 import { loadNeostackFile } from "./compiler/neostack-loader.js";
 import { resolveNeostackArtifacts, validateNeostackStructure } from "./compiler/neostack-validator.js";
@@ -161,7 +162,10 @@ function createPhase2Executor(pluginConfig) {
             if (toolName === "umg_envoy_status") {
                 return statusPayload(pluginConfig);
             }
-            throw new Error(`Tool is not bound for Phase 2 execution: ${toolName}`);
+            if (toolName === "umg_envoy_matrix_status") {
+                return getCompilerMatrixStatus(import.meta.url);
+            }
+            throw new Error(`Tool is not bound for Phase 2/4.2 execution: ${toolName}`);
         }
     };
 }
@@ -348,6 +352,21 @@ function registerCliBridge(api, config) {
             }
             console.log(JSON.stringify({ ok: true, contract: createApprovalResumeContract(record) }, null, 2));
         });
+        root.command("approval-resume-execute")
+            .requiredOption("--approval-id <id>")
+            .option("--execute")
+            .action(async (opts) => {
+            const record = getApprovalCheckpoint(opts.approvalId);
+            if (!record) {
+                console.log(JSON.stringify({ ok: false, status: "resume_execution_blocked", executed: false, error: "approval checkpoint not found" }, null, 2));
+                return;
+            }
+            if (!opts.execute) {
+                console.log(JSON.stringify({ ok: false, status: "resume_execution_blocked", executed: false, error: "explicit --execute flag is required" }, null, 2));
+                return;
+            }
+            console.log(JSON.stringify(await executeApprovalResume(record, createPhase2Executor(config)), null, 2));
+        });
     }, { commands: ["umg-envoy"] });
 }
 const entry = {
@@ -520,6 +539,21 @@ const entry = {
                     return { content: [{ type: "text", text: JSON.stringify({ ok: false, error: `approval checkpoint is not resumable: ${record.status}` }, null, 2) }] };
                 }
                 return { content: [{ type: "text", text: JSON.stringify({ ok: true, contract: createApprovalResumeContract(record) }, null, 2) }] };
+            }
+        }, { optional: true });
+        api.registerTool({
+            name: "umg_envoy_approval_resume_execute",
+            description: "Execute exactly one allowlisted harmless approval-resume tool path with idempotency protection.",
+            parameters: Type.Object({ approvalId: Type.String(), execute: Type.Optional(Type.Boolean()) }, { additionalProperties: false }),
+            async execute(input) {
+                const record = getApprovalCheckpoint(input.approvalId);
+                if (!record) {
+                    return { content: [{ type: "text", text: JSON.stringify({ ok: false, status: "resume_execution_blocked", executed: false, error: "approval checkpoint not found" }, null, 2) }] };
+                }
+                if (!input.execute) {
+                    return { content: [{ type: "text", text: JSON.stringify({ ok: false, status: "resume_execution_blocked", executed: false, error: "explicit execute=true is required" }, null, 2) }] };
+                }
+                return { content: [{ type: "text", text: JSON.stringify(await executeApprovalResume(record, createPhase2Executor(config)), null, 2) }] };
             }
         }, { optional: true });
     }
