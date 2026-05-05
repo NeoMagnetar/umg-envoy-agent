@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import path from "node:path";
 import { Type } from "@sinclair/typebox";
 import { compileSleeveById } from "./compiler/compiler-adapter.js";
 import { runCompilerSmoke } from "./compiler/compiler-smoke.js";
@@ -24,6 +25,10 @@ import { discoverMcpTools, listMcpServers } from "./mcp-bridge-scaffold.js";
 import { createMcpToolCandidate } from "./mcp-tool-candidate.js";
 import { classifyMcpToolCandidate } from "./mcp-permission-mapper.js";
 import { createMcpCapabilitySummary } from "./mcp-capability-summary.js";
+import { loadBlockLibraryConfig } from "./resolver/block-library-config.js";
+import { UMGResolver } from "./resolver/resolver.js";
+import { buildRegistry } from "./resolver/indexer.js";
+import { searchRegistry } from "./resolver/search.js";
 import { loadNeostackFile } from "./compiler/neostack-loader.js";
 import { resolveNeostackArtifacts, validateNeostackStructure } from "./compiler/neostack-validator.js";
 import type { CompilerInputPreview, LangChainBridgePayload, PluginConfig, SleeveLoadResult, NeostackLoadResult } from "./types.js";
@@ -38,11 +43,26 @@ function effectiveConfig(config?: PluginConfig) {
   };
 }
 
+function resolverFoundationStatus() {
+  const config = loadBlockLibraryConfig();
+  const resolver = new UMGResolver(config, path.dirname(new URL(import.meta.url).pathname));
+  const registry = buildRegistry(resolver);
+  return {
+    config,
+    status: resolver.status(),
+    registryCounts: registry.counts,
+    warnings: registry.warnings,
+    sampleArtifactCount: registry.artifacts.filter((artifact) => artifact.source.source_kind === "sample").length,
+    totalArtifacts: registry.artifacts.length
+  };
+}
+
 function statusPayload(config?: PluginConfig) {
   const cfg = effectiveConfig(config);
   const root = publicContentRoot(import.meta.url);
   const sleeves = loadSleeves(root);
   const libraries = summarizeBlockLibraries(root);
+  const resolverStatus = resolverFoundationStatus();
   return {
     ok: true,
     plugin: "umg-envoy-agent",
@@ -53,6 +73,7 @@ function statusPayload(config?: PluginConfig) {
     allowRuntimeWrites: Boolean(cfg.allowRuntimeWrites),
     sampleSleeves: sleeves.length,
     sampleBlocks: libraries.totalBlocks,
+    resolverFoundation: resolverStatus,
     supportedTools: [
       "umg_envoy_status",
       "umg_envoy_compiler_smoke_test",
@@ -74,7 +95,9 @@ function statusPayload(config?: PluginConfig) {
       "umg_envoy_neostack_invoke",
       "umg_envoy_neostack_trace",
       "umg_envoy_neostack_list_tools",
-      "umg_envoy_neostack_permission_check"
+      "umg_envoy_neostack_permission_check",
+      "umg_envoy_library_status",
+      "umg_envoy_library_search"
     ]
   };
 }
@@ -480,6 +503,35 @@ function registerCliBridge(api: any, config?: PluginConfig) {
         const summaries = discovered.discovered.map((entry) => createMcpCapabilitySummary(entry.metadata));
         console.log(JSON.stringify({ source: loaded.source, sourceType: loaded.sourceType, summaries: summaries.map((item) => item.summary), trace: [...loaded.trace, ...discovered.trace, ...summaries.flatMap((item) => item.trace)] }, null, 2));
       });
+
+    root.command("library-status")
+      .action(async () => {
+        console.log(JSON.stringify(resolverFoundationStatus(), null, 2));
+      });
+
+    root.command("library-search")
+      .option("--text <text>")
+      .option("--kind <kind>")
+      .option("--tag <tag>")
+      .option("--domain <domain>")
+      .option("--capability <capability>")
+      .option("--status <status>")
+      .option("--limit <number>")
+      .action(async (opts: { text?: string; kind?: string; tag?: string; domain?: string; capability?: string; status?: string; limit?: string }) => {
+        const config = loadBlockLibraryConfig();
+        const resolver = new UMGResolver(config, path.dirname(new URL(import.meta.url).pathname));
+        const registry = buildRegistry(resolver);
+        const hits = searchRegistry(registry.artifacts, {
+          text: opts.text,
+          kinds: opts.kind ? [opts.kind] : undefined,
+          tags: opts.tag ? [opts.tag] : undefined,
+          domains: opts.domain ? [opts.domain] : undefined,
+          capabilities: opts.capability ? [opts.capability] : undefined,
+          status: opts.status ? [opts.status] : undefined,
+          limit: opts.limit ? Number(opts.limit) : undefined
+        });
+        console.log(JSON.stringify({ status: resolver.status(), counts: registry.counts, hits }, null, 2));
+      });
   }, { commands: ["umg-envoy"] });
 }
 
@@ -740,6 +792,34 @@ const entry = {
         const discovered = await discoverMcpTools(loaded.config, input.serverId);
         const summaries = discovered.discovered.map((entry) => createMcpCapabilitySummary(entry.metadata));
         return { content: [{ type: "text", text: JSON.stringify({ source: loaded.source, sourceType: loaded.sourceType, summaries: summaries.map((item) => item.summary), trace: [...loaded.trace, ...discovered.trace, ...summaries.flatMap((item) => item.trace)] }, null, 2) }] };
+      }
+    }, { optional: true });
+    api.registerTool({
+      name: "umg_envoy_library_status",
+      description: "Report UMG block-library resolver status, source mode, counts, and warnings.",
+      parameters: Type.Object({}, { additionalProperties: false }),
+      async execute() {
+        return { content: [{ type: "text", text: JSON.stringify(resolverFoundationStatus(), null, 2) }] };
+      }
+    }, { optional: true });
+    api.registerTool({
+      name: "umg_envoy_library_search",
+      description: "Search the normalized UMG registry by text, kind, tag, domain, capability, and status.",
+      parameters: Type.Object({ text: Type.Optional(Type.String()), kind: Type.Optional(Type.String()), tag: Type.Optional(Type.String()), domain: Type.Optional(Type.String()), capability: Type.Optional(Type.String()), status: Type.Optional(Type.String()), limit: Type.Optional(Type.Number()) }, { additionalProperties: false }),
+      async execute(input: { text?: string; kind?: string; tag?: string; domain?: string; capability?: string; status?: string; limit?: number }) {
+        const config = loadBlockLibraryConfig();
+        const resolver = new UMGResolver(config, path.dirname(new URL(import.meta.url).pathname));
+        const registry = buildRegistry(resolver);
+        const hits = searchRegistry(registry.artifacts, {
+          text: input.text,
+          kinds: input.kind ? [input.kind] : undefined,
+          tags: input.tag ? [input.tag] : undefined,
+          domains: input.domain ? [input.domain] : undefined,
+          capabilities: input.capability ? [input.capability] : undefined,
+          status: input.status ? [input.status] : undefined,
+          limit: input.limit
+        });
+        return { content: [{ type: "text", text: JSON.stringify({ status: resolver.status(), counts: registry.counts, hits }, null, 2) }] };
       }
     }, { optional: true });
   }
