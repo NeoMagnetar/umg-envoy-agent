@@ -14,7 +14,10 @@ import { parseUMGPath } from "./umg-path-parser.js";
 import { renderUMGPath } from "./umg-path-renderer.js";
 import { validateUMGPath } from "./umg-path-validator.js";
 import { buildPublicPath } from "./public-path-builder.js";
-import type { CompilerInputPreview, PluginConfig, SleeveLoadResult } from "./types.js";
+import { invokeLangChainBridge, filterTools } from "./langchain-bridge-adapter.js";
+import { loadNeostackFile } from "./compiler/neostack-loader.js";
+import { resolveNeostackArtifacts, validateNeostackStructure } from "./compiler/neostack-validator.js";
+import type { CompilerInputPreview, LangChainBridgePayload, PluginConfig, SleeveLoadResult, NeostackLoadResult } from "./types.js";
 
 function effectiveConfig(config?: PluginConfig) {
   return {
@@ -56,7 +59,13 @@ function statusPayload(config?: PluginConfig) {
       "umg_envoy_matrix_status",
       "umg_envoy_load_sleeve",
       "umg_envoy_compile_ir_bridge",
-      "umg_envoy_emit_relation_matrix"
+      "umg_envoy_emit_relation_matrix",
+      "umg_envoy_neostack_inspect",
+      "umg_envoy_neostack_validate",
+      "umg_envoy_neostack_invoke",
+      "umg_envoy_neostack_trace",
+      "umg_envoy_neostack_list_tools",
+      "umg_envoy_neostack_permission_check"
     ]
   };
 }
@@ -132,6 +141,26 @@ function loadSleevePreview(sleevePath: string, libraryRoot: string): SleeveLoadR
     validation,
     artifactResolution,
     compilerInputPreview,
+    warnings: [...loaded.warnings, ...validation.warnings, ...artifactResolution.warnings],
+    errors: [...loaded.errors, ...validation.errors, ...artifactResolution.errors]
+  };
+}
+
+function loadNeostackPreview(libraryRoot: string, neostackId: string): NeostackLoadResult {
+  const loaded = loadNeostackFile({ libraryRoot, neostackId });
+  if (!loaded.ok || !loaded.loadedNeostack) {
+    return loaded;
+  }
+
+  const validation = validateNeostackStructure(loaded.loadedNeostack);
+  const artifactResolution = resolveNeostackArtifacts(libraryRoot, loaded.loadedNeostack);
+
+  return {
+    ok: loaded.ok && validation.ok && artifactResolution.ok,
+    neostackPath: loaded.neostackPath,
+    loadedNeostack: loaded.loadedNeostack,
+    validation,
+    artifactResolution,
     warnings: [...loaded.warnings, ...validation.warnings, ...artifactResolution.warnings],
     errors: [...loaded.errors, ...validation.errors, ...artifactResolution.errors]
   };
@@ -257,6 +286,27 @@ function registerCliBridge(api: any, config?: PluginConfig) {
         }, config?.relationMatrix);
         console.log(JSON.stringify(result, null, 2));
       });
+
+    root.command("neostack-inspect")
+      .requiredOption("--library-root <path>")
+      .requiredOption("--neostack-id <id>")
+      .action(async (opts: { libraryRoot: string; neostackId: string }) => {
+        console.log(JSON.stringify(loadNeostackPreview(opts.libraryRoot, opts.neostackId), null, 2));
+      });
+
+    root.command("neostack-validate")
+      .requiredOption("--library-root <path>")
+      .requiredOption("--neostack-id <id>")
+      .action(async (opts: { libraryRoot: string; neostackId: string }) => {
+        const result = loadNeostackPreview(opts.libraryRoot, opts.neostackId);
+        console.log(JSON.stringify({ ok: result.ok, validation: result.validation, artifactResolution: result.artifactResolution, warnings: result.warnings, errors: result.errors }, null, 2));
+      });
+
+    root.command("neostack-invoke")
+      .requiredOption("--payload-file <path>")
+      .action(async (opts: { payloadFile: string }) => {
+        console.log(JSON.stringify(await invokeLangChainBridge(JSON.parse(fs.readFileSync(opts.payloadFile, "utf8")) as LangChainBridgePayload), null, 2));
+      });
   }, { commands: ["umg-envoy"] });
 }
 
@@ -319,6 +369,58 @@ const entry = {
       }, { additionalProperties: false }),
       async execute(input: { sleevePath: string; libraryRoot: string; compilerRepoPath?: string; compilerCliPath?: string; outputDir?: string; timeoutMs?: number; allowCompilerBridge?: boolean; allowRelationMatrixEmit?: boolean; relationMatrixMode?: "response-only" | "temp-write" | "both" }) {
         return { content: [{ type: "text", text: JSON.stringify(await emitRelationMatrix({ ...input, allowCompilerBridge: input.allowCompilerBridge ?? true, allowRelationMatrixEmit: input.allowRelationMatrixEmit ?? false }, config?.relationMatrix), null, 2) }] };
+      }
+    }, { optional: true });
+    api.registerTool({
+      name: "umg_envoy_neostack_inspect",
+      description: "Load and inspect a NeoStack from the UMG Block Library.",
+      parameters: Type.Object({ libraryRoot: Type.String(), neostackId: Type.String() }, { additionalProperties: false }),
+      async execute(input: { libraryRoot: string; neostackId: string }) {
+        return { content: [{ type: "text", text: JSON.stringify(loadNeostackPreview(input.libraryRoot, input.neostackId), null, 2) }] };
+      }
+    }, { optional: true });
+    api.registerTool({
+      name: "umg_envoy_neostack_validate",
+      description: "Validate a NeoStack structure and referenced neoblocks.",
+      parameters: Type.Object({ libraryRoot: Type.String(), neostackId: Type.String() }, { additionalProperties: false }),
+      async execute(input: { libraryRoot: string; neostackId: string }) {
+        const result = loadNeostackPreview(input.libraryRoot, input.neostackId);
+        return { content: [{ type: "text", text: JSON.stringify({ ok: result.ok, validation: result.validation, artifactResolution: result.artifactResolution, warnings: result.warnings, errors: result.errors }, null, 2) }] };
+      }
+    }, { optional: true });
+    api.registerTool({
+      name: "umg_envoy_neostack_invoke",
+      description: "Dry-run invoke the LangChain Bridge NeoStack payload. Safe by default; does not execute external tools.",
+      parameters: Type.Object({ payload: Type.Any() }, { additionalProperties: false }),
+      async execute(input: { payload: LangChainBridgePayload }) {
+        return { content: [{ type: "text", text: JSON.stringify(await invokeLangChainBridge(input.payload), null, 2) }] };
+      }
+    }, { optional: true });
+    api.registerTool({
+      name: "umg_envoy_neostack_trace",
+      description: "Return trace events from a dry-run LangChain Bridge NeoStack invocation.",
+      parameters: Type.Object({ payload: Type.Any() }, { additionalProperties: false }),
+      async execute(input: { payload: LangChainBridgePayload }) {
+        const result = await invokeLangChainBridge(input.payload);
+        return { content: [{ type: "text", text: JSON.stringify({ ok: true, neostack_id: result.neostack_id, trace_events: result.trace_events, warnings: result.warnings, errors: result.errors }, null, 2) }] };
+      }
+    }, { optional: true });
+    api.registerTool({
+      name: "umg_envoy_neostack_list_tools",
+      description: "List declared tool definitions and permission decisions for a LangChain Bridge payload.",
+      parameters: Type.Object({ payload: Type.Any() }, { additionalProperties: false }),
+      async execute(input: { payload: LangChainBridgePayload }) {
+        const filtered = filterTools(input.payload);
+        return { content: [{ type: "text", text: JSON.stringify({ ok: true, neostack_id: input.payload.neostack_id, tool_definitions: input.payload.tools?.definitions ?? [], decisions: filtered.decisions, trace_events: filtered.events }, null, 2) }] };
+      }
+    }, { optional: true });
+    api.registerTool({
+      name: "umg_envoy_neostack_permission_check",
+      description: "Run permission filtering only for a LangChain Bridge payload.",
+      parameters: Type.Object({ payload: Type.Any() }, { additionalProperties: false }),
+      async execute(input: { payload: LangChainBridgePayload }) {
+        const filtered = filterTools(input.payload);
+        return { content: [{ type: "text", text: JSON.stringify({ ok: true, neostack_id: input.payload.neostack_id, decisions: filtered.decisions, trace_events: filtered.events }, null, 2) }] };
       }
     }, { optional: true });
   }
