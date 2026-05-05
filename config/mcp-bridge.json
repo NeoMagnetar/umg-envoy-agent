@@ -1,0 +1,19 @@
+{
+  "mcp_bridge": {
+    "enabled": true,
+    "mode": "metadata_only",
+    "execution_enabled": false,
+    "langchain_exposure_enabled": false,
+    "servers": [
+      {
+        "server_id": "local_example_server",
+        "label": "Local Example Server",
+        "transport": "stdio",
+        "command": "node",
+        "args": ["server.js"],
+        "enabled": false,
+        "metadata_only": true
+      }
+    ]
+  }
+}

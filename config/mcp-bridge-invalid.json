@@ -1,0 +1,14 @@
+{
+  "mcp_bridge": {
+    "enabled": true,
+    "mode": "metadata_only",
+    "execution_enabled": true,
+    "langchain_exposure_enabled": true,
+    "servers": [
+      {
+        "server_id": "bad_server",
+        "transport": "bogus"
+      }
+    ]
+  }
+}

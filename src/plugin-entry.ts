@@ -19,7 +19,7 @@ import { runMinimalLangChainAgent } from "./langchain-agent-wrapper.js";
 import { createApprovalResumeContract } from "./approval-resume-contract.js";
 import { executeApprovalResume } from "./approval-resume-executor.js";
 import { decideApprovalCheckpoint, getApprovalCheckpoint, listApprovalCheckpoints } from "./approval-store.js";
-import { validateMcpBridgeConfig } from "./mcp-bridge-config.js";
+import { loadMcpBridgeConfig, validateMcpBridgeConfig } from "./mcp-bridge-config.js";
 import { discoverMcpTools, listMcpServers } from "./mcp-bridge-scaffold.js";
 import { createMcpToolCandidate } from "./mcp-tool-candidate.js";
 import { classifyMcpToolCandidate } from "./mcp-permission-mapper.js";
@@ -171,21 +171,6 @@ function loadNeostackPreview(libraryRoot: string, neostackId: string): NeostackL
     artifactResolution,
     warnings: [...loaded.warnings, ...validation.warnings, ...artifactResolution.warnings],
     errors: [...loaded.errors, ...validation.errors, ...artifactResolution.errors]
-  };
-}
-
-function defaultMcpConfig() {
-  return {
-    servers: [
-      {
-        server_id: "local_example_server",
-        transport: "stdio",
-        command: "example-mcp-server",
-        args: [],
-        enabled: true
-      }
-    ],
-    executionEnabled: false as const
   };
 }
 
@@ -425,39 +410,60 @@ function registerCliBridge(api: any, config?: PluginConfig) {
     root.command("mcp-config-validate")
       .option("--config-file <path>")
       .action(async (opts: { configFile?: string }) => {
-        const config = opts.configFile ? JSON.parse(fs.readFileSync(opts.configFile, "utf8")) : defaultMcpConfig();
-        console.log(JSON.stringify(validateMcpBridgeConfig(config), null, 2));
+        if (opts.configFile) {
+          console.log(JSON.stringify(loadMcpBridgeConfig(opts.configFile), null, 2));
+          return;
+        }
+        console.log(JSON.stringify(loadMcpBridgeConfig(), null, 2));
       });
 
     root.command("mcp-server-list")
       .option("--config-file <path>")
       .action(async (opts: { configFile?: string }) => {
-        const config = opts.configFile ? JSON.parse(fs.readFileSync(opts.configFile, "utf8")) : defaultMcpConfig();
-        console.log(JSON.stringify(listMcpServers(config), null, 2));
+        const loaded = loadMcpBridgeConfig(opts.configFile);
+        if (!loaded.ok || !loaded.config) {
+          console.log(JSON.stringify(loaded, null, 2));
+          return;
+        }
+        console.log(JSON.stringify({ source: loaded.source, sourceType: loaded.sourceType, ...listMcpServers(loaded.config), trace: [...loaded.trace, ...listMcpServers(loaded.config).trace] }, null, 2));
       });
 
     root.command("mcp-tool-discover")
       .option("--config-file <path>")
       .option("--server-id <id>")
       .action(async (opts: { configFile?: string; serverId?: string }) => {
-        const config = opts.configFile ? JSON.parse(fs.readFileSync(opts.configFile, "utf8")) : defaultMcpConfig();
-        console.log(JSON.stringify(discoverMcpTools(config, opts.serverId), null, 2));
+        const loaded = loadMcpBridgeConfig(opts.configFile);
+        if (!loaded.ok || !loaded.config) {
+          console.log(JSON.stringify(loaded, null, 2));
+          return;
+        }
+        const discovered = discoverMcpTools(loaded.config, opts.serverId);
+        console.log(JSON.stringify({ source: loaded.source, sourceType: loaded.sourceType, discovered: discovered.discovered, trace: [...loaded.trace, ...discovered.trace] }, null, 2));
       });
 
     root.command("mcp-tool-classify")
       .option("--config-file <path>")
       .option("--server-id <id>")
       .action(async (opts: { configFile?: string; serverId?: string }) => {
-        const config = opts.configFile ? JSON.parse(fs.readFileSync(opts.configFile, "utf8")) : defaultMcpConfig();
-        const discovered = discoverMcpTools(config, opts.serverId);
-        const candidates = discovered.discovered.flatMap((entry) => entry.tools.map((tool) => ({
-          candidate: createMcpToolCandidate(entry.server.server_id, tool),
-          trace: [
-            { event_type: "MCP_TOOL_CANDIDATE_CREATED", timestamp_utc: new Date().toISOString(), message: "MCP tool candidate created.", data: { server_id: entry.server.server_id, tool_name: tool.tool_name } }
-          ]
-        })));
-        const classified = candidates.map((item) => ({ ...classifyMcpToolCandidate(item.candidate), trace: [...item.trace, ...classifyMcpToolCandidate(item.candidate).trace] }));
-        console.log(JSON.stringify({ candidates: classified, trace: discovered.trace }, null, 2));
+        const loaded = loadMcpBridgeConfig(opts.configFile);
+        if (!loaded.ok || !loaded.config) {
+          console.log(JSON.stringify(loaded, null, 2));
+          return;
+        }
+        const discovered = discoverMcpTools(loaded.config, opts.serverId);
+        const candidates = discovered.discovered.flatMap((entry) => entry.tools.map((tool) => {
+          const candidate = createMcpToolCandidate(entry.server.server_id, tool);
+          const classified = classifyMcpToolCandidate(candidate);
+          return {
+            candidate,
+            classification: classified.classification,
+            trace: [
+              { event_type: "MCP_TOOL_CANDIDATE_CREATED", timestamp_utc: new Date().toISOString(), message: "MCP tool candidate created.", data: { server_id: entry.server.server_id, tool_name: tool.tool_name } },
+              ...classified.trace
+            ]
+          };
+        }));
+        console.log(JSON.stringify({ source: loaded.source, sourceType: loaded.sourceType, candidates, trace: [...loaded.trace, ...discovered.trace] }, null, 2));
       });
   }, { commands: ["umg-envoy"] });
 }
@@ -649,34 +655,49 @@ const entry = {
     }, { optional: true });
     api.registerTool({
       name: "umg_envoy_mcp_config_validate",
-      description: "Validate MCP bridge configuration without starting servers or executing tools.",
-      parameters: Type.Object({ config: Type.Optional(Type.Any()) }, { additionalProperties: false }),
-      async execute(input: { config?: unknown }) {
-        return { content: [{ type: "text", text: JSON.stringify(validateMcpBridgeConfig(input.config ?? defaultMcpConfig()), null, 2) }] };
+      description: "Resolve and validate MCP bridge configuration without starting servers or executing tools.",
+      parameters: Type.Object({ configPath: Type.Optional(Type.String()), config: Type.Optional(Type.Any()) }, { additionalProperties: false }),
+      async execute(input: { configPath?: string; config?: unknown }) {
+        const result = input.config ? validateMcpBridgeConfig(input.config) : loadMcpBridgeConfig(input.configPath);
+        return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
       }
     }, { optional: true });
     api.registerTool({
       name: "umg_envoy_mcp_server_list",
-      description: "List MCP server registry metadata.",
-      parameters: Type.Object({ config: Type.Optional(Type.Any()) }, { additionalProperties: false }),
-      async execute(input: { config?: any }) {
-        return { content: [{ type: "text", text: JSON.stringify(listMcpServers(input.config ?? defaultMcpConfig()), null, 2) }] };
+      description: "List MCP server registry metadata from the selected config source.",
+      parameters: Type.Object({ configPath: Type.Optional(Type.String()) }, { additionalProperties: false }),
+      async execute(input: { configPath?: string }) {
+        const loaded = loadMcpBridgeConfig(input.configPath);
+        if (!loaded.ok || !loaded.config) {
+          return { content: [{ type: "text", text: JSON.stringify(loaded, null, 2) }] };
+        }
+        const listed = listMcpServers(loaded.config);
+        return { content: [{ type: "text", text: JSON.stringify({ source: loaded.source, sourceType: loaded.sourceType, servers: listed.servers, trace: [...loaded.trace, ...listed.trace] }, null, 2) }] };
       }
     }, { optional: true });
     api.registerTool({
       name: "umg_envoy_mcp_tool_discover",
       description: "Discover MCP tool metadata only. Does not execute tools or expose them to LangChain.",
-      parameters: Type.Object({ config: Type.Optional(Type.Any()), serverId: Type.Optional(Type.String()) }, { additionalProperties: false }),
-      async execute(input: { config?: any; serverId?: string }) {
-        return { content: [{ type: "text", text: JSON.stringify(discoverMcpTools(input.config ?? defaultMcpConfig(), input.serverId), null, 2) }] };
+      parameters: Type.Object({ configPath: Type.Optional(Type.String()), serverId: Type.Optional(Type.String()) }, { additionalProperties: false }),
+      async execute(input: { configPath?: string; serverId?: string }) {
+        const loaded = loadMcpBridgeConfig(input.configPath);
+        if (!loaded.ok || !loaded.config) {
+          return { content: [{ type: "text", text: JSON.stringify(loaded, null, 2) }] };
+        }
+        const discovered = discoverMcpTools(loaded.config, input.serverId);
+        return { content: [{ type: "text", text: JSON.stringify({ source: loaded.source, sourceType: loaded.sourceType, discovered: discovered.discovered, trace: [...loaded.trace, ...discovered.trace] }, null, 2) }] };
       }
     }, { optional: true });
     api.registerTool({
       name: "umg_envoy_mcp_tool_classify",
       description: "Map discovered MCP tool metadata into blocked-by-default UMG tool candidates.",
-      parameters: Type.Object({ config: Type.Optional(Type.Any()), serverId: Type.Optional(Type.String()) }, { additionalProperties: false }),
-      async execute(input: { config?: any; serverId?: string }) {
-        const discovered = discoverMcpTools(input.config ?? defaultMcpConfig(), input.serverId);
+      parameters: Type.Object({ configPath: Type.Optional(Type.String()), serverId: Type.Optional(Type.String()) }, { additionalProperties: false }),
+      async execute(input: { configPath?: string; serverId?: string }) {
+        const loaded = loadMcpBridgeConfig(input.configPath);
+        if (!loaded.ok || !loaded.config) {
+          return { content: [{ type: "text", text: JSON.stringify(loaded, null, 2) }] };
+        }
+        const discovered = discoverMcpTools(loaded.config, input.serverId);
         const candidates = discovered.discovered.flatMap((entry) => entry.tools.map((tool) => {
           const candidate = createMcpToolCandidate(entry.server.server_id, tool);
           const classified = classifyMcpToolCandidate(candidate);
@@ -689,7 +710,7 @@ const entry = {
             ]
           };
         }));
-        return { content: [{ type: "text", text: JSON.stringify({ candidates, trace: discovered.trace }, null, 2) }] };
+        return { content: [{ type: "text", text: JSON.stringify({ source: loaded.source, sourceType: loaded.sourceType, candidates, trace: [...loaded.trace, ...discovered.trace] }, null, 2) }] };
       }
     }, { optional: true });
   }
