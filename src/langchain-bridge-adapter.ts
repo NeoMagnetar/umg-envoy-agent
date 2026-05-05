@@ -1,3 +1,5 @@
+import { createApprovalCheckpoint } from "./approval-checkpoint.js";
+
 export type PermissionLevel = "read_only" | "draft_only" | "safe_execute" | "approval_required" | "blocked";
 export type RiskClass = "low" | "medium" | "high" | "destructive" | "sensitive";
 export type BridgeMode = "direct_openclaw_tool_bridge" | "mcp_adapter_bridge" | "mock_test_bridge";
@@ -50,6 +52,29 @@ export interface BridgeToolExecutor {
 export interface LangChainBridgeInvokeOptions {
   executor?: BridgeToolExecutor;
   agentRunner?: (payload: LangChainBridgePayload, approvedTools: ToolDefinition[], executor: BridgeToolExecutor) => Promise<{ ok: boolean; output?: unknown; traceEvents: TraceEvent[]; warnings: string[]; errors: string[]; status?: string; reason?: string; provider?: string; missing?: string[]; executed?: boolean; tools_exposed_to_agent?: string[]; message?: string }>;
+}
+
+export interface ApprovalCheckpointShape {
+  approval_id: string;
+  status: string;
+  neostack_id: string;
+  sleeve_id: string;
+  tool: {
+    tool_id: string;
+    tool_name: string;
+    permission_level: string;
+    risk_class: string;
+  };
+  requested_action: {
+    summary: string;
+    input_preview: Record<string, unknown>;
+  };
+  policy: {
+    reason: string;
+    may_execute_without_approval: false;
+    allowed_decisions: Array<"approve" | "deny" | "edit">;
+  };
+  trace: TraceEvent[];
 }
 
 function event(payload: Partial<LangChainBridgePayload>, event_type: string, message: string, data: Record<string, unknown> = {}, tool_id: string | null = null): TraceEvent {
@@ -127,12 +152,18 @@ export async function invokeLangChainBridge(payload: LangChainBridgePayload, opt
   const allowed_tools = decisions.filter(d => d.decision === "allow").map(d => d.tool);
   const approval_requests = decisions.filter(d => d.decision === "approval_required");
   const denied_tools = decisions.filter(d => d.decision === "deny");
+  const approval_checkpoints = approval_requests.map((item) => createApprovalCheckpoint(payload, item.tool));
   const execution_results: Array<Record<string, unknown>> = [];
   const warnings: string[] = [];
   const errors: string[] = [];
 
-  for (const item of approval_requests) {
-    trace_events.push(event(payload, "TOOL_EXECUTION_SKIPPED_APPROVAL_REQUIRED", "Tool execution skipped because approval is required.", { tool_name: item.tool.tool_name }, item.tool.tool_id));
+  for (let i = 0; i < approval_requests.length; i++) {
+    const item = approval_requests[i];
+    const checkpoint = approval_checkpoints[i];
+    trace_events.push(event(payload, "TOOL_EXECUTION_SKIPPED_APPROVAL_REQUIRED", "Tool execution skipped because approval is required.", { tool_name: item.tool.tool_name, approval_id: checkpoint?.approval_id ?? null }, item.tool.tool_id));
+    if (checkpoint) {
+      trace_events.push(...checkpoint.trace);
+    }
   }
 
   for (const item of denied_tools) {
@@ -153,6 +184,7 @@ export async function invokeLangChainBridge(payload: LangChainBridgePayload, opt
       result: "LangChain Bridge payload validated. Tools filtered. Bind real LangChain/OpenClaw runtime to execute.",
       allowed_tools,
       approval_requests,
+      approval_checkpoints,
       denied_tools,
       execution_results,
       trace_events,
@@ -175,6 +207,7 @@ export async function invokeLangChainBridge(payload: LangChainBridgePayload, opt
         result: "LangChain agent execution is unavailable.",
         allowed_tools,
         approval_requests,
+        approval_checkpoints,
         denied_tools,
         execution_results,
         trace_events,
@@ -206,6 +239,7 @@ export async function invokeLangChainBridge(payload: LangChainBridgePayload, opt
       result: agentResult.ok ? "Phase 3 LangChain agent execution completed." : "Phase 3 LangChain agent execution failed.",
       allowed_tools,
       approval_requests,
+      approval_checkpoints,
       denied_tools,
       execution_results,
       trace_events,
@@ -250,6 +284,7 @@ export async function invokeLangChainBridge(payload: LangChainBridgePayload, opt
     result: execution_results.length > 0 ? "Phase 2 read-only tool execution completed." : "No executable Phase 2 tools were run.",
     allowed_tools,
     approval_requests,
+    approval_checkpoints,
     denied_tools,
     execution_results,
     trace_events,

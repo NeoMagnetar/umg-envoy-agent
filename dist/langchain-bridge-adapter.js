@@ -1,3 +1,4 @@
+import { createApprovalCheckpoint } from "./approval-checkpoint.js";
 export const NEOSTACK_ID = "NS.UMG.LANGCHAIN_BRIDGE.v0.1";
 function event(payload, event_type, message, data = {}, tool_id = null) {
     return {
@@ -70,11 +71,17 @@ export async function invokeLangChainBridge(payload, options) {
     const allowed_tools = decisions.filter(d => d.decision === "allow").map(d => d.tool);
     const approval_requests = decisions.filter(d => d.decision === "approval_required");
     const denied_tools = decisions.filter(d => d.decision === "deny");
+    const approval_checkpoints = approval_requests.map((item) => createApprovalCheckpoint(payload, item.tool));
     const execution_results = [];
     const warnings = [];
     const errors = [];
-    for (const item of approval_requests) {
-        trace_events.push(event(payload, "TOOL_EXECUTION_SKIPPED_APPROVAL_REQUIRED", "Tool execution skipped because approval is required.", { tool_name: item.tool.tool_name }, item.tool.tool_id));
+    for (let i = 0; i < approval_requests.length; i++) {
+        const item = approval_requests[i];
+        const checkpoint = approval_checkpoints[i];
+        trace_events.push(event(payload, "TOOL_EXECUTION_SKIPPED_APPROVAL_REQUIRED", "Tool execution skipped because approval is required.", { tool_name: item.tool.tool_name, approval_id: checkpoint?.approval_id ?? null }, item.tool.tool_id));
+        if (checkpoint) {
+            trace_events.push(...checkpoint.trace);
+        }
     }
     for (const item of denied_tools) {
         trace_events.push(event(payload, "TOOL_EXECUTION_DENIED", "Tool execution denied by permission filter.", { tool_name: item.tool.tool_name }, item.tool.tool_id));
@@ -92,6 +99,7 @@ export async function invokeLangChainBridge(payload, options) {
             result: "LangChain Bridge payload validated. Tools filtered. Bind real LangChain/OpenClaw runtime to execute.",
             allowed_tools,
             approval_requests,
+            approval_checkpoints,
             denied_tools,
             execution_results,
             trace_events,
@@ -113,6 +121,7 @@ export async function invokeLangChainBridge(payload, options) {
                 result: "LangChain agent execution is unavailable.",
                 allowed_tools,
                 approval_requests,
+                approval_checkpoints,
                 denied_tools,
                 execution_results,
                 trace_events,
@@ -143,6 +152,7 @@ export async function invokeLangChainBridge(payload, options) {
             result: agentResult.ok ? "Phase 3 LangChain agent execution completed." : "Phase 3 LangChain agent execution failed.",
             allowed_tools,
             approval_requests,
+            approval_checkpoints,
             denied_tools,
             execution_results,
             trace_events,
@@ -182,6 +192,7 @@ export async function invokeLangChainBridge(payload, options) {
         result: execution_results.length > 0 ? "Phase 2 read-only tool execution completed." : "No executable Phase 2 tools were run.",
         allowed_tools,
         approval_requests,
+        approval_checkpoints,
         denied_tools,
         execution_results,
         trace_events,

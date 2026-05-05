@@ -89,11 +89,33 @@ export interface LangChainBridgeInvokeOptions {
         message?: string;
     }>;
 }
+export interface ApprovalCheckpointShape {
+    approval_id: string;
+    status: string;
+    neostack_id: string;
+    sleeve_id: string;
+    tool: {
+        tool_id: string;
+        tool_name: string;
+        permission_level: string;
+        risk_class: string;
+    };
+    requested_action: {
+        summary: string;
+        input_preview: Record<string, unknown>;
+    };
+    policy: {
+        reason: string;
+        may_execute_without_approval: false;
+        allowed_decisions: Array<"approve" | "deny" | "edit">;
+    };
+    trace: TraceEvent[];
+}
 export declare function validatePayload(payload: LangChainBridgePayload): TraceEvent[];
 export declare function filterTools(payload: LangChainBridgePayload): {
     decisions: {
         tool: ToolDefinition;
-        decision: "approval_required" | "allow" | "deny";
+        decision: "approval_required" | "deny" | "allow";
         reason: string;
     }[];
     events: TraceEvent[];
@@ -106,12 +128,13 @@ export declare function invokeLangChainBridge(payload: LangChainBridgePayload, o
     allowed_tools: ToolDefinition[];
     approval_requests: {
         tool: ToolDefinition;
-        decision: "approval_required" | "allow" | "deny";
+        decision: "approval_required" | "deny" | "allow";
         reason: string;
     }[];
+    approval_checkpoints: import("./approval-checkpoint.js").ApprovalCheckpoint[];
     denied_tools: {
         tool: ToolDefinition;
-        decision: "approval_required" | "allow" | "deny";
+        decision: "approval_required" | "deny" | "allow";
         reason: string;
     }[];
     execution_results: Record<string, unknown>[];
@@ -142,12 +165,13 @@ export declare function invokeLangChainBridge(payload: LangChainBridgePayload, o
     allowed_tools: ToolDefinition[];
     approval_requests: {
         tool: ToolDefinition;
-        decision: "approval_required" | "allow" | "deny";
+        decision: "approval_required" | "deny" | "allow";
         reason: string;
     }[];
+    approval_checkpoints: import("./approval-checkpoint.js").ApprovalCheckpoint[];
     denied_tools: {
         tool: ToolDefinition;
-        decision: "approval_required" | "allow" | "deny";
+        decision: "approval_required" | "deny" | "allow";
         reason: string;
     }[];
     execution_results: Record<string, unknown>[];
