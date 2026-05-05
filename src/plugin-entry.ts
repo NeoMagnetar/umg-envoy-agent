@@ -23,6 +23,7 @@ import { loadMcpBridgeConfig, validateMcpBridgeConfig } from "./mcp-bridge-confi
 import { discoverMcpTools, listMcpServers } from "./mcp-bridge-scaffold.js";
 import { createMcpToolCandidate } from "./mcp-tool-candidate.js";
 import { classifyMcpToolCandidate } from "./mcp-permission-mapper.js";
+import { createMcpCapabilitySummary } from "./mcp-capability-summary.js";
 import { loadNeostackFile } from "./compiler/neostack-loader.js";
 import { resolveNeostackArtifacts, validateNeostackStructure } from "./compiler/neostack-validator.js";
 import type { CompilerInputPreview, LangChainBridgePayload, PluginConfig, SleeveLoadResult, NeostackLoadResult } from "./types.js";
@@ -437,7 +438,7 @@ function registerCliBridge(api: any, config?: PluginConfig) {
           console.log(JSON.stringify(loaded, null, 2));
           return;
         }
-        const discovered = discoverMcpTools(loaded.config, opts.serverId);
+        const discovered = await discoverMcpTools(loaded.config, opts.serverId);
         console.log(JSON.stringify({ source: loaded.source, sourceType: loaded.sourceType, discovered: discovered.discovered, trace: [...loaded.trace, ...discovered.trace] }, null, 2));
       });
 
@@ -450,8 +451,8 @@ function registerCliBridge(api: any, config?: PluginConfig) {
           console.log(JSON.stringify(loaded, null, 2));
           return;
         }
-        const discovered = discoverMcpTools(loaded.config, opts.serverId);
-        const candidates = discovered.discovered.flatMap((entry) => entry.tools.map((tool) => {
+        const discovered = await discoverMcpTools(loaded.config, opts.serverId);
+        const candidates = discovered.discovered.flatMap((entry) => entry.metadata.tools.map((tool) => {
           const candidate = createMcpToolCandidate(entry.server.server_id, tool);
           const classified = classifyMcpToolCandidate(candidate);
           return {
@@ -464,6 +465,20 @@ function registerCliBridge(api: any, config?: PluginConfig) {
           };
         }));
         console.log(JSON.stringify({ source: loaded.source, sourceType: loaded.sourceType, candidates, trace: [...loaded.trace, ...discovered.trace] }, null, 2));
+      });
+
+    root.command("mcp-capability-summary")
+      .option("--config-file <path>")
+      .option("--server-id <id>")
+      .action(async (opts: { configFile?: string; serverId?: string }) => {
+        const loaded = loadMcpBridgeConfig(opts.configFile);
+        if (!loaded.ok || !loaded.config) {
+          console.log(JSON.stringify(loaded, null, 2));
+          return;
+        }
+        const discovered = await discoverMcpTools(loaded.config, opts.serverId);
+        const summaries = discovered.discovered.map((entry) => createMcpCapabilitySummary(entry.metadata));
+        console.log(JSON.stringify({ source: loaded.source, sourceType: loaded.sourceType, summaries: summaries.map((item) => item.summary), trace: [...loaded.trace, ...discovered.trace, ...summaries.flatMap((item) => item.trace)] }, null, 2));
       });
   }, { commands: ["umg-envoy"] });
 }
@@ -677,14 +692,14 @@ const entry = {
     }, { optional: true });
     api.registerTool({
       name: "umg_envoy_mcp_tool_discover",
-      description: "Discover MCP tool metadata only. Does not execute tools or expose them to LangChain.",
+      description: "Discover MCP tool/resource/prompt metadata only. Does not execute tools or expose them to LangChain.",
       parameters: Type.Object({ configPath: Type.Optional(Type.String()), serverId: Type.Optional(Type.String()) }, { additionalProperties: false }),
       async execute(input: { configPath?: string; serverId?: string }) {
         const loaded = loadMcpBridgeConfig(input.configPath);
         if (!loaded.ok || !loaded.config) {
           return { content: [{ type: "text", text: JSON.stringify(loaded, null, 2) }] };
         }
-        const discovered = discoverMcpTools(loaded.config, input.serverId);
+        const discovered = await discoverMcpTools(loaded.config, input.serverId);
         return { content: [{ type: "text", text: JSON.stringify({ source: loaded.source, sourceType: loaded.sourceType, discovered: discovered.discovered, trace: [...loaded.trace, ...discovered.trace] }, null, 2) }] };
       }
     }, { optional: true });
@@ -697,8 +712,8 @@ const entry = {
         if (!loaded.ok || !loaded.config) {
           return { content: [{ type: "text", text: JSON.stringify(loaded, null, 2) }] };
         }
-        const discovered = discoverMcpTools(loaded.config, input.serverId);
-        const candidates = discovered.discovered.flatMap((entry) => entry.tools.map((tool) => {
+        const discovered = await discoverMcpTools(loaded.config, input.serverId);
+        const candidates = discovered.discovered.flatMap((entry) => entry.metadata.tools.map((tool) => {
           const candidate = createMcpToolCandidate(entry.server.server_id, tool);
           const classified = classifyMcpToolCandidate(candidate);
           return {
@@ -711,6 +726,20 @@ const entry = {
           };
         }));
         return { content: [{ type: "text", text: JSON.stringify({ source: loaded.source, sourceType: loaded.sourceType, candidates, trace: [...loaded.trace, ...discovered.trace] }, null, 2) }] };
+      }
+    }, { optional: true });
+    api.registerTool({
+      name: "umg_envoy_mcp_capability_summary",
+      description: "Return MCP capability summary for configured servers in metadata-only mode.",
+      parameters: Type.Object({ configPath: Type.Optional(Type.String()), serverId: Type.Optional(Type.String()) }, { additionalProperties: false }),
+      async execute(input: { configPath?: string; serverId?: string }) {
+        const loaded = loadMcpBridgeConfig(input.configPath);
+        if (!loaded.ok || !loaded.config) {
+          return { content: [{ type: "text", text: JSON.stringify(loaded, null, 2) }] };
+        }
+        const discovered = await discoverMcpTools(loaded.config, input.serverId);
+        const summaries = discovered.discovered.map((entry) => createMcpCapabilitySummary(entry.metadata));
+        return { content: [{ type: "text", text: JSON.stringify({ source: loaded.source, sourceType: loaded.sourceType, summaries: summaries.map((item) => item.summary), trace: [...loaded.trace, ...discovered.trace, ...summaries.flatMap((item) => item.trace)] }, null, 2) }] };
       }
     }, { optional: true });
   }

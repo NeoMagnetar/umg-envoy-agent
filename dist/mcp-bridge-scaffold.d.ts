@@ -1,5 +1,5 @@
 import type { McpBridgeConfig, McpServerConfig } from "./mcp-bridge-config.js";
-import type { McpToolMetadata } from "./mcp-tool-candidate.js";
+import { normalizeMcpMetadata } from "./mcp-metadata-normalizer.js";
 export declare function listMcpServers(config: McpBridgeConfig): {
     servers: {
         server_id: string;
@@ -15,10 +15,10 @@ export declare function listMcpServers(config: McpBridgeConfig): {
         };
     }[];
 };
-export declare function discoverMcpTools(config: McpBridgeConfig, serverId?: string): {
+export declare function discoverMcpTools(config: McpBridgeConfig, serverId?: string): Promise<{
     discovered: {
         server: Pick<McpServerConfig, "server_id" | "transport">;
-        tools: McpToolMetadata[];
+        metadata: ReturnType<typeof normalizeMcpMetadata>;
     }[];
     trace: Record<string, unknown>[];
-};
+}>;

@@ -1,20 +1,6 @@
 import type { McpBridgeConfig, McpServerConfig } from "./mcp-bridge-config.js";
-import type { McpToolMetadata } from "./mcp-tool-candidate.js";
-
-const MOCK_DISCOVERY_REGISTRY: Record<string, McpToolMetadata[]> = {
-  local_example_server: [
-    {
-      tool_name: "example_lookup",
-      description: "Example metadata-only MCP lookup tool.",
-      input_schema: { type: "object", properties: { query: { type: "string" } }, additionalProperties: false }
-    },
-    {
-      tool_name: "example_status",
-      description: "Example metadata-only MCP status tool.",
-      input_schema: { type: "object", properties: {}, additionalProperties: false }
-    }
-  ]
-};
+import { normalizeMcpMetadata } from "./mcp-metadata-normalizer.js";
+import { selectMcpMetadataAdapter } from "./mcp-metadata-adapter.js";
 
 export function listMcpServers(config: McpBridgeConfig) {
   return {
@@ -29,21 +15,23 @@ export function listMcpServers(config: McpBridgeConfig) {
   };
 }
 
-export function discoverMcpTools(config: McpBridgeConfig, serverId?: string) {
+export async function discoverMcpTools(config: McpBridgeConfig, serverId?: string) {
   const trace: Array<Record<string, unknown>> = [
     { event_type: "MCP_SERVER_DISCOVERY_STARTED", timestamp_utc: new Date().toISOString(), message: "MCP server discovery started.", data: { server_id: serverId ?? null } }
   ];
 
   const servers = serverId ? config.servers.filter((server) => server.server_id === serverId) : config.servers;
-  const discovered = [] as Array<{ server: Pick<McpServerConfig, "server_id" | "transport">; tools: McpToolMetadata[] }>;
+  const discovered = [] as Array<{ server: Pick<McpServerConfig, "server_id" | "transport">; metadata: ReturnType<typeof normalizeMcpMetadata> }>;
 
   for (const server of servers) {
-    const tools = MOCK_DISCOVERY_REGISTRY[server.server_id] ?? [];
-    trace.push({ event_type: "MCP_SERVER_DISCOVERY_SUCCEEDED", timestamp_utc: new Date().toISOString(), message: "MCP server discovery succeeded.", data: { server_id: server.server_id, tool_count: tools.length } });
-    for (const tool of tools) {
+    const adapter = selectMcpMetadataAdapter(server);
+    const raw = await adapter.probe(server);
+    const normalized = normalizeMcpMetadata(raw);
+    trace.push({ event_type: "MCP_SERVER_DISCOVERY_SUCCEEDED", timestamp_utc: new Date().toISOString(), message: "MCP server discovery succeeded.", data: { server_id: server.server_id, tool_count: normalized.tools.length, resource_count: normalized.resources.length, prompt_count: normalized.prompts.length } });
+    for (const tool of normalized.tools) {
       trace.push({ event_type: "MCP_TOOL_METADATA_DISCOVERED", timestamp_utc: new Date().toISOString(), message: "MCP tool metadata discovered.", data: { server_id: server.server_id, tool_name: tool.tool_name } });
     }
-    discovered.push({ server: { server_id: server.server_id, transport: server.transport }, tools });
+    discovered.push({ server: { server_id: server.server_id, transport: server.transport }, metadata: normalized });
   }
 
   if (servers.length === 0) {

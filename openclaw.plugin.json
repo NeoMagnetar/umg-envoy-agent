@@ -161,6 +161,7 @@
     "umg_envoy_mcp_config_validate",
     "umg_envoy_mcp_server_list",
     "umg_envoy_mcp_tool_discover",
-    "umg_envoy_mcp_tool_classify"
+    "umg_envoy_mcp_tool_classify",
+    "umg_envoy_mcp_capability_summary"
   ]
 }
