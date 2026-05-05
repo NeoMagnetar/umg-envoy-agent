@@ -10,10 +10,8 @@ export interface RegistrySearchQuery {
   limit?: number;
 }
 
-export function searchRegistry(artifacts: NormalizedArtifact[], query: RegistrySearchQuery) {
+function scoreArtifacts(artifacts: NormalizedArtifact[], query: RegistrySearchQuery, limit: number) {
   const text = (query.text ?? "").trim().toLowerCase();
-  const limit = query.limit ?? 20;
-
   return artifacts
     .map((artifact) => {
       let score = 0;
@@ -74,6 +72,7 @@ export function searchRegistry(artifacts: NormalizedArtifact[], query: RegistryS
       id: hit.artifact.id,
       kind: hit.artifact.kind,
       title: hit.artifact.title,
+      description: hit.artifact.description,
       score: Number((hit.score / 50).toFixed(2)),
       canonical: hit.artifact.source.canonical,
       source_kind: hit.artifact.source.source_kind,
@@ -83,4 +82,15 @@ export function searchRegistry(artifacts: NormalizedArtifact[], query: RegistryS
       reasons: hit.reasons,
       warnings: hit.warnings
     }));
+}
+
+export function searchRegistry(artifacts: NormalizedArtifact[], query: RegistrySearchQuery, supportArtifacts: NormalizedArtifact[] = []) {
+  const text = (query.text ?? "").trim().toLowerCase();
+  const limit = query.limit ?? 20;
+  const docsBias = /\b(doc|docs|readme|guide|explain|human)\b/.test(text);
+
+  const runtime_results = scoreArtifacts(artifacts, query, limit);
+  const support_results = docsBias ? scoreArtifacts(supportArtifacts, query, limit) : [];
+
+  return { runtime_results, support_results };
 }

@@ -20,12 +20,13 @@ const hits = searchRegistry(registry.artifacts, {
   capabilities: read('--capability') ? [read('--capability')] : undefined,
   status: read('--status') ? [read('--status')] : undefined,
   limit: read('--limit') ? Number(read('--limit')) : 20
-});
+}, registry.support_artifacts);
 
 console.log(JSON.stringify({
   source_mode: resolver.status().source_mode,
   counts: registry.counts,
   support_artifact_count: registry.support_artifacts.length,
   hits,
+  warnings_summary: registry.warnings_summary,
   warnings: registry.warnings.slice(0, 25)
 }, null, 2));

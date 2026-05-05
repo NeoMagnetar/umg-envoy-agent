@@ -3,6 +3,7 @@ import path from "node:path";
 import type { DiscoveryMethod, NormalizedArtifact } from "./block-library-config.js";
 import type { UMGResolver } from "./resolver.js";
 import { readJsonLoose } from "./utils.js";
+import { classifyRelationship, pickCanonicalDescription, pickCanonicalTitle, type DuplicateRelationshipGroup } from "./canonicalize.js";
 
 const MANIFEST_FILES = [
   "molt-block-library-index.json",
@@ -28,25 +29,26 @@ export interface BuildRegistryResult {
     duplicate_count: number;
     warning_count: number;
   };
-  duplicate_report: Array<{
-    duplicate_id: string;
-    kept_path: string;
-    dropped_path: string;
-    kept_reason: string;
-    dropped_reason: string;
-  }>;
+  duplicate_report: DuplicateRelationshipGroup[];
+  warnings_summary: {
+    duplicate_id_groups: number;
+    malformed_manifest_entries: number;
+    fallback_only_core_artifacts: number;
+    human_support_docs: number;
+  };
   warnings: string[];
 }
 
 export function buildRegistry(resolver: UMGResolver): BuildRegistryResult {
   const warnings: string[] = [];
+  let malformed_manifest_entries = 0;
   const duplicate_report: BuildRegistryResult["duplicate_report"] = [];
   const artifacts: NormalizedArtifact[] = [];
   const support_artifacts: NormalizedArtifact[] = [];
 
   for (const source of resolver.getSources()) {
     if (!fs.existsSync(source.resolvedPath)) continue;
-    const manifestArtifacts = loadManifestArtifacts(source.resolvedPath, source.name, source.canonical, warnings);
+    const manifestArtifacts = loadManifestArtifacts(source.resolvedPath, source.name, source.canonical, warnings, (count) => { malformed_manifest_entries += count; });
     artifacts.push(...manifestArtifacts.filter((artifact) => !artifact.support_only));
     support_artifacts.push(...manifestArtifacts.filter((artifact) => artifact.support_only));
 
@@ -58,16 +60,23 @@ export function buildRegistry(resolver: UMGResolver): BuildRegistryResult {
 
   const deduped = dedupeArtifacts(artifacts, warnings, duplicate_report);
   const dedupedSupport = dedupeArtifacts(support_artifacts, warnings, []);
+  const counts = countArtifacts(deduped, dedupedSupport, duplicate_report.length, warnings.length);
   return {
     artifacts: deduped,
     support_artifacts: dedupedSupport,
-    counts: countArtifacts(deduped, dedupedSupport, duplicate_report.length, warnings.length),
+    counts,
     duplicate_report,
+    warnings_summary: {
+      duplicate_id_groups: duplicate_report.length,
+      malformed_manifest_entries,
+      fallback_only_core_artifacts: deduped.filter((artifact) => artifact.source.discovery_method === 'fallback_walk' && artifact.source.source_kind === 'ai_machine').length,
+      human_support_docs: dedupedSupport.length
+    },
     warnings
   };
 }
 
-function loadManifestArtifacts(root: string, sourceName: string, canonical: boolean, warnings: string[]): NormalizedArtifact[] {
+function loadManifestArtifacts(root: string, sourceName: string, canonical: boolean, warnings: string[], onMalformed?: (count: number) => void): NormalizedArtifact[] {
   const manifestDir = path.join(root, "AI", "MANIFESTS");
   if (!fs.existsSync(manifestDir)) return [];
   const artifacts: NormalizedArtifact[] = [];
@@ -77,7 +86,7 @@ function loadManifestArtifacts(root: string, sourceName: string, canonical: bool
     if (!fs.existsSync(filePath)) continue;
     try {
       const raw = readJsonLoose(fs.readFileSync(filePath, "utf8")) as unknown;
-      artifacts.push(...normalizeManifestPayload(filePath, raw, sourceName, canonical, fileName.includes('index') || fileName.includes('catalog') ? "index" : "manifest", warnings));
+      artifacts.push(...normalizeManifestPayload(filePath, raw, sourceName, canonical, fileName.includes('index') || fileName.includes('catalog') ? "index" : "manifest", warnings, onMalformed));
     } catch (error) {
       warnings.push(`Failed to read manifest ${filePath}: ${String(error)}`);
     }
@@ -86,7 +95,7 @@ function loadManifestArtifacts(root: string, sourceName: string, canonical: bool
   return artifacts;
 }
 
-function normalizeManifestPayload(filePath: string, raw: unknown, sourceName: string, canonical: boolean, discovery_method: DiscoveryMethod, warnings: string[]): NormalizedArtifact[] {
+function normalizeManifestPayload(filePath: string, raw: unknown, sourceName: string, canonical: boolean, discovery_method: DiscoveryMethod, warnings: string[], onMalformed?: (count: number) => void): NormalizedArtifact[] {
   const results: NormalizedArtifact[] = [];
   const arrays = Array.isArray(raw)
     ? [raw]
@@ -111,6 +120,7 @@ function normalizeManifestPayload(filePath: string, raw: unknown, sourceName: st
     for (const item of array) {
       if (!item || typeof item !== "object") {
         warnings.push(`Skipped non-object manifest item in ${filePath}`);
+        onMalformed?.(1);
         continue;
       }
       results.push(normalizeRecord(filePath, item as Record<string, unknown>, sourceName, canonical, discovery_method));
@@ -161,26 +171,8 @@ function normalizeRecord(filePath: string, raw: Record<string, unknown>, sourceN
   const id = String(raw.id ?? raw.artifact_id ?? (explicitId || undefined) ?? raw.block_id ?? raw.neoblock_id ?? raw.neostack_id ?? raw.sleeve_id ?? stableId(filePath));
   const metadata = raw.metadata && typeof raw.metadata === "object" ? raw.metadata as Record<string, unknown> : {};
   const manifest = raw.manifest && typeof raw.manifest === "object" ? raw.manifest as Record<string, unknown> : {};
-  const title = firstString([
-    raw.title,
-    raw.name,
-    raw.label,
-    raw.display_name,
-    raw.summary,
-    metadata.title,
-    metadata.name,
-    manifest.title,
-    typeof raw.markdown === 'string' ? extractMarkdownTitle(raw.markdown) : undefined,
-    path.basename(filePath)
-  ]);
-  const description = firstString([
-    raw.description,
-    raw.summary,
-    metadata.description,
-    manifest.description,
-    typeof raw.markdown === 'string' ? firstParagraph(raw.markdown) : undefined,
-    ""
-  ]);
+  const title = pickCanonicalTitle(raw, filePath, id);
+  const description = pickCanonicalDescription(raw, typeof raw.markdown === 'string' ? firstParagraph(raw.markdown) : undefined);
   const status = typeof raw.status === "string" ? raw.status : inferStatus(filePath);
   const canonical_status = source_kind === "human_readable"
     ? "non_canonical"
@@ -267,13 +259,6 @@ function firstParagraph(markdown: string): string {
   return markdown.split(/\r?\n\r?\n/).map((part) => part.trim()).find(Boolean) ?? "";
 }
 
-function firstString(values: unknown[]): string {
-  for (const value of values) {
-    if (typeof value === "string" && value.trim()) return value.trim();
-  }
-  return "";
-}
-
 function asStringArray(value: unknown): string[] {
   if (!value) return [];
   if (Array.isArray(value)) return value.map(String).filter(Boolean);
@@ -296,23 +281,56 @@ function walkFiles(root: string): string[] {
 
 function dedupeArtifacts(artifacts: NormalizedArtifact[], warnings: string[], duplicate_report: BuildRegistryResult["duplicate_report"]): NormalizedArtifact[] {
   const seen = new Map<string, NormalizedArtifact>();
+  const grouped = new Map<string, DuplicateRelationshipGroup>();
   for (const artifact of artifacts) {
     if (!seen.has(artifact.id)) {
       seen.set(artifact.id, artifact);
+      grouped.set(artifact.id, {
+        duplicate_id: artifact.id,
+        canonical_kept: {
+          relationship: classifyRelationship(artifact),
+          reason: precedenceReason(artifact),
+          path: artifact.source.path,
+          source_kind: artifact.source.source_kind,
+          discovery_method: artifact.source.discovery_method
+        },
+        related_entries: []
+      });
       continue;
     }
     const existing = seen.get(artifact.id)!;
     const existingRank = artifactPrecedence(existing);
     const nextRank = artifactPrecedence(artifact);
+    const group = grouped.get(artifact.id)!;
     if (nextRank > existingRank) {
       seen.set(artifact.id, artifact);
       warnings.push(`Duplicate artifact id ${artifact.id}; replaced lower-precedence source.`);
-      duplicate_report.push({ duplicate_id: artifact.id, kept_path: artifact.source.path, dropped_path: existing.source.path, kept_reason: precedenceReason(artifact), dropped_reason: precedenceReason(existing) });
+      group.related_entries.push({
+        relationship: classifyRelationship(existing),
+        reason: precedenceReason(existing),
+        path: existing.source.path,
+        source_kind: existing.source.source_kind,
+        discovery_method: existing.source.discovery_method
+      });
+      group.canonical_kept = {
+        relationship: classifyRelationship(artifact),
+        reason: precedenceReason(artifact),
+        path: artifact.source.path,
+        source_kind: artifact.source.source_kind,
+        discovery_method: artifact.source.discovery_method
+      };
     } else {
       warnings.push(`Duplicate artifact id ${artifact.id}; kept existing source ${existing.source.path}.`);
-      duplicate_report.push({ duplicate_id: artifact.id, kept_path: existing.source.path, dropped_path: artifact.source.path, kept_reason: precedenceReason(existing), dropped_reason: precedenceReason(artifact) });
+      group.related_entries.push({
+        relationship: classifyRelationship(artifact),
+        reason: precedenceReason(artifact),
+        path: artifact.source.path,
+        source_kind: artifact.source.source_kind,
+        discovery_method: artifact.source.discovery_method
+      });
     }
   }
+  duplicate_report.push(...[...grouped.values()].filter((group) => group.related_entries.length > 0));
   return [...seen.values()];
 }
 

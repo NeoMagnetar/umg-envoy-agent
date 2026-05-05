@@ -1,6 +1,5 @@
-export function searchRegistry(artifacts, query) {
+function scoreArtifacts(artifacts, query, limit) {
     const text = (query.text ?? "").trim().toLowerCase();
-    const limit = query.limit ?? 20;
     return artifacts
         .map((artifact) => {
         let score = 0;
@@ -57,6 +56,7 @@ export function searchRegistry(artifacts, query) {
         id: hit.artifact.id,
         kind: hit.artifact.kind,
         title: hit.artifact.title,
+        description: hit.artifact.description,
         score: Number((hit.score / 50).toFixed(2)),
         canonical: hit.artifact.source.canonical,
         source_kind: hit.artifact.source.source_kind,
@@ -66,4 +66,12 @@ export function searchRegistry(artifacts, query) {
         reasons: hit.reasons,
         warnings: hit.warnings
     }));
+}
+export function searchRegistry(artifacts, query, supportArtifacts = []) {
+    const text = (query.text ?? "").trim().toLowerCase();
+    const limit = query.limit ?? 20;
+    const docsBias = /\b(doc|docs|readme|guide|explain|human)\b/.test(text);
+    const runtime_results = scoreArtifacts(artifacts, query, limit);
+    const support_results = docsBias ? scoreArtifacts(supportArtifacts, query, limit) : [];
+    return { runtime_results, support_results };
 }

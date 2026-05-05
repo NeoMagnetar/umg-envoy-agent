@@ -542,8 +542,8 @@ function registerCliBridge(api: any, config?: PluginConfig) {
           capabilities: opts.capability ? [opts.capability] : undefined,
           status: opts.status ? [opts.status] : undefined,
           limit: opts.limit ? Number(opts.limit) : undefined
-        });
-        console.log(JSON.stringify({ source_mode: resolver.status().source_mode, counts: registry.counts, support_artifact_count: registry.support_artifacts.length, hits, warnings: registry.warnings.slice(0, 25) }, null, 2));
+        }, registry.support_artifacts);
+        console.log(JSON.stringify({ source_mode: resolver.status().source_mode, counts: registry.counts, support_artifact_count: registry.support_artifacts.length, hits, warnings_summary: registry.warnings_summary, warnings: registry.warnings.slice(0, 25) }, null, 2));
       });
   }, { commands: ["umg-envoy"] });
 }
@@ -831,8 +831,8 @@ const entry = {
           capabilities: input.capability ? [input.capability] : undefined,
           status: input.status ? [input.status] : undefined,
           limit: input.limit
-        });
-        return { content: [{ type: "text", text: JSON.stringify({ source_mode: resolver.status().source_mode, counts: registry.counts, support_artifact_count: registry.support_artifacts.length, hits, warnings: registry.warnings.slice(0, 25) }, null, 2) }] };
+        }, registry.support_artifacts);
+        return { content: [{ type: "text", text: JSON.stringify({ source_mode: resolver.status().source_mode, counts: registry.counts, support_artifact_count: registry.support_artifacts.length, hits, warnings_summary: registry.warnings_summary, warnings: registry.warnings.slice(0, 25) }, null, 2) }] };
       }
     }, { optional: true });
   }

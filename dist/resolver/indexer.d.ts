@@ -1,5 +1,6 @@
 import type { NormalizedArtifact } from "./block-library-config.js";
 import type { UMGResolver } from "./resolver.js";
+import { type DuplicateRelationshipGroup } from "./canonicalize.js";
 export interface BuildRegistryResult {
     artifacts: NormalizedArtifact[];
     support_artifacts: NormalizedArtifact[];
@@ -15,13 +16,13 @@ export interface BuildRegistryResult {
         duplicate_count: number;
         warning_count: number;
     };
-    duplicate_report: Array<{
-        duplicate_id: string;
-        kept_path: string;
-        dropped_path: string;
-        kept_reason: string;
-        dropped_reason: string;
-    }>;
+    duplicate_report: DuplicateRelationshipGroup[];
+    warnings_summary: {
+        duplicate_id_groups: number;
+        malformed_manifest_entries: number;
+        fallback_only_core_artifacts: number;
+        human_support_docs: number;
+    };
     warnings: string[];
 }
 export declare function buildRegistry(resolver: UMGResolver): BuildRegistryResult;
