@@ -157,6 +157,10 @@
     "umg_envoy_approval_get",
     "umg_envoy_approval_decide",
     "umg_envoy_approval_resume_prepare",
-    "umg_envoy_approval_resume_execute"
+    "umg_envoy_approval_resume_execute",
+    "umg_envoy_mcp_config_validate",
+    "umg_envoy_mcp_server_list",
+    "umg_envoy_mcp_tool_discover",
+    "umg_envoy_mcp_tool_classify"
   ]
 }
