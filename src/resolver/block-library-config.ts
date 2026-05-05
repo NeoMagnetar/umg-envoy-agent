@@ -3,7 +3,7 @@ import path from "node:path";
 
 export type SourceMode = "SAMPLE_MODE" | "FULL_LIBRARY_MODE" | "MIXED_MODE" | "NO_LIBRARY_MODE";
 export type VisibilityMode = "silent" | "compact" | "developer" | "debug" | "audit";
-export type DiscoveryMethod = "manifest" | "index" | "fallback_walk" | "generated";
+export type DiscoveryMethod = "manifest" | "index" | "generated_index" | "fallback_walk" | "generated";
 export type ArtifactKind = "molt_block" | "neoblock" | "neostack" | "sleeve" | "tool" | "capability" | "domain" | "manifest" | "schema";
 export type SourceKind = "ai_machine" | "human_readable" | "package_lane" | "sample" | "draft" | "unknown";
 

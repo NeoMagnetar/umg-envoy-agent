@@ -31,6 +31,12 @@ export interface BuildRegistryResult {
         core_ai_fallback_only: number;
         core_ai_manifest_coverage_percent: number;
         core_ai_declared_coverage_percent: number;
+        core_ai_generated_index_coverage_percent: number;
+    };
+    approved_lane_metrics: {
+        approved_lane_artifacts_total: number;
+        approved_lane_artifacts_generated_indexed: number;
+        unknown_fallback_artifacts_total: number;
     };
     warnings: string[];
 }

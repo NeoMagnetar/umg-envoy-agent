@@ -5,6 +5,7 @@ import type { UMGResolver } from "./resolver.js";
 import { readJsonLoose } from "./utils.js";
 import { classifyRelationship, pickCanonicalDescription, pickCanonicalTitle, type DuplicateRelationshipGroup } from "./canonicalize.js";
 import { extractManifestArtifactReferences } from "./manifest-extract.js";
+import { classifyApprovedGeneratedIndexLane, generatedCanonicalStatus, generatedSourceKind } from "./generated-index.js";
 
 const MANIFEST_FILES = [
   "molt-block-library-index.json",
@@ -45,6 +46,12 @@ export interface BuildRegistryResult {
     core_ai_fallback_only: number;
     core_ai_manifest_coverage_percent: number;
     core_ai_declared_coverage_percent: number;
+    core_ai_generated_index_coverage_percent: number;
+  };
+  approved_lane_metrics: {
+    approved_lane_artifacts_total: number;
+    approved_lane_artifacts_generated_indexed: number;
+    unknown_fallback_artifacts_total: number;
   };
   warnings: string[];
 }
@@ -74,11 +81,13 @@ export function buildRegistry(resolver: UMGResolver): BuildRegistryResult {
   const dedupedSupport = dedupeArtifacts(support_artifacts, warnings, []);
   const counts = countArtifacts(deduped, dedupedSupport, duplicate_report.length, warnings.length);
   const coreAiArtifacts = deduped.filter((artifact) => artifact.source.source_kind === 'ai_machine');
+  const approvedLaneArtifacts = deduped.filter((artifact) => classifyApprovedGeneratedIndexLane(artifact.source.path) !== null);
+  const unknownFallbackArtifacts = deduped.filter((artifact) => artifact.source.discovery_method === 'fallback_walk' && classifyApprovedGeneratedIndexLane(artifact.source.path) === null);
   const core_ai_total = coreAiArtifacts.length;
-  const core_ai_manifest_backed = coreAiArtifacts.filter((artifact) => artifact.source.discovery_method === 'manifest' || declaredArtifactIds.has(artifact.id)).length;
+  const core_ai_manifest_backed = coreAiArtifacts.filter((artifact) => artifact.source.discovery_method === 'manifest').length;
   const core_ai_index_backed = coreAiArtifacts.filter((artifact) => artifact.source.discovery_method === 'index').length;
-  const core_ai_generated_index_backed = coreAiArtifacts.filter((artifact) => artifact.source.discovery_method === 'generated').length;
-  const core_ai_fallback_only = coreAiArtifacts.filter((artifact) => artifact.source.discovery_method === 'fallback_walk' && !declaredArtifactIds.has(artifact.id)).length;
+  const core_ai_generated_index_backed = coreAiArtifacts.filter((artifact) => artifact.source.discovery_method === 'generated_index').length;
+  const core_ai_fallback_only = coreAiArtifacts.filter((artifact) => artifact.source.discovery_method === 'fallback_walk').length;
   return {
     artifacts: deduped,
     support_artifacts: dedupedSupport,
@@ -97,7 +106,13 @@ export function buildRegistry(resolver: UMGResolver): BuildRegistryResult {
       core_ai_generated_index_backed,
       core_ai_fallback_only,
       core_ai_manifest_coverage_percent: core_ai_total > 0 ? Number(((core_ai_manifest_backed / core_ai_total) * 100).toFixed(2)) : 0,
-      core_ai_declared_coverage_percent: core_ai_total > 0 ? Number((((core_ai_manifest_backed + core_ai_index_backed + core_ai_generated_index_backed) / core_ai_total) * 100).toFixed(2)) : 0
+      core_ai_declared_coverage_percent: core_ai_total > 0 ? Number((((core_ai_manifest_backed + core_ai_index_backed + core_ai_generated_index_backed) / core_ai_total) * 100).toFixed(2)) : 0,
+      core_ai_generated_index_coverage_percent: core_ai_total > 0 ? Number(((core_ai_generated_index_backed / core_ai_total) * 100).toFixed(2)) : 0
+    },
+    approved_lane_metrics: {
+      approved_lane_artifacts_total: approvedLaneArtifacts.length,
+      approved_lane_artifacts_generated_indexed: approvedLaneArtifacts.filter((artifact) => artifact.source.discovery_method === 'generated_index').length,
+      unknown_fallback_artifacts_total: unknownFallbackArtifacts.length
     },
     warnings
   };
@@ -208,7 +223,19 @@ function walkFallbackArtifacts(root: string, sourceName: string, canonical: bool
       if (!lower.endsWith(".json") && !lower.endsWith(".md")) continue;
       try {
         const raw = lower.endsWith(".json") ? readJsonLoose(fs.readFileSync(filePath, "utf8")) as unknown : { markdown: fs.readFileSync(filePath, "utf8") };
-        artifacts.push(normalizeRecord(filePath, raw as Record<string, unknown>, sourceName, canonical, "fallback_walk"));
+        const normalized = normalizeRecord(filePath, raw as Record<string, unknown>, sourceName, canonical, "fallback_walk");
+        const lane = classifyApprovedGeneratedIndexLane(filePath);
+        if (lane && normalized.source.source_kind !== 'human_readable') {
+          normalized.source.discovery_method = 'generated_index';
+          const laneSourceKind = generatedSourceKind(lane);
+          if (laneSourceKind !== 'schema_or_manifest') {
+            normalized.source.source_kind = laneSourceKind;
+          }
+          normalized.source.canonical_status = generatedCanonicalStatus(lane);
+          normalized.source.canonical = normalized.source.canonical_status === 'canonical';
+          (normalized as unknown as Record<string, unknown>).generated_from_lane = lane;
+        }
+        artifacts.push(normalized);
       } catch (error) {
         warnings.push(`Failed to normalize fallback file ${filePath}: ${String(error)}`);
       }
