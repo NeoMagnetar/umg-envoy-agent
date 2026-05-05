@@ -62,6 +62,35 @@ export async function runMinimalLangChainAgent(payload: LangChainBridgePayload, 
     const { tools, traceEvents: toolTraceEvents } = adaptApprovedToolsToLangChain(payload, approvedTools, executor);
     traceEvents.push(...toolTraceEvents);
 
+    if (readiness.provider === "mock") {
+      traceEvents.push(event(payload, "LANGCHAIN_AGENT_CREATE_STARTED", "Mock LangChain agent creation started.", { adapted_tool_count: approvedTools.length }));
+      traceEvents.push(event(payload, "LANGCHAIN_AGENT_CREATE_SUCCEEDED", "Mock LangChain agent creation succeeded.", { adapted_tool_count: approvedTools.length }));
+      traceEvents.push(event(payload, "LANGCHAIN_AGENT_INVOKE_STARTED", "Mock LangChain agent invoke started.", { user_intent: payload.task.user_intent }));
+      const firstTool = approvedTools[0];
+      const toolOutput = firstTool ? await executor.execute(firstTool.tool_name, {}) : null;
+      const output = {
+        provider: "mock",
+        mode: "agent_execute",
+        summary: firstTool ? `Mock agent called ${firstTool.tool_name} successfully.` : "Mock agent had no approved tools to call.",
+        tool_output: toolOutput
+      };
+      traceEvents.push(event(payload, "LANGCHAIN_AGENT_INVOKE_SUCCEEDED", "Mock LangChain agent invoke succeeded."));
+      traceEvents.push(event(payload, "LANGCHAIN_AGENT_OUTPUT_RECEIVED", "Mock LangChain agent output received."));
+
+      return {
+        ok: true,
+        output,
+        status: "agent_execution_complete",
+        provider: readiness.provider,
+        missing: [],
+        executed: true,
+        tools_exposed_to_agent: approvedTools.map((tool) => tool.tool_name),
+        traceEvents,
+        warnings,
+        errors
+      };
+    }
+
     traceEvents.push(event(payload, "LANGCHAIN_AGENT_CREATE_STARTED", "LangChain createAgent started.", { adapted_tool_count: approvedTools.length }));
     const agent = createAgent({
       model: payload.provider?.model ?? "openai:gpt-4.1-mini",
