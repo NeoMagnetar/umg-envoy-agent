@@ -16,6 +16,8 @@ import { validateUMGPath } from "./umg-path-validator.js";
 import { buildPublicPath } from "./public-path-builder.js";
 import { invokeLangChainBridge, filterTools } from "./langchain-bridge-adapter.js";
 import { runMinimalLangChainAgent } from "./langchain-agent-wrapper.js";
+import { createApprovalResumeContract } from "./approval-resume-contract.js";
+import { decideApprovalCheckpoint, getApprovalCheckpoint, listApprovalCheckpoints } from "./approval-store.js";
 import { loadNeostackFile } from "./compiler/neostack-loader.js";
 import { resolveNeostackArtifacts, validateNeostackStructure } from "./compiler/neostack-validator.js";
 function effectiveConfig(config) {
@@ -295,6 +297,57 @@ function registerCliBridge(api, config) {
                 payload.invoke_mode = payload.invoke_mode ?? "dry_run";
             console.log(JSON.stringify(await invokeLangChainBridge(payload, { executor: opts.execute || opts.agentExecute ? createPhase2Executor(config) : undefined, agentRunner: opts.agentExecute ? runMinimalLangChainAgent : undefined }), null, 2));
         });
+        root.command("approval-list")
+            .option("--status <status>")
+            .action(async (opts) => {
+            console.log(JSON.stringify(listApprovalCheckpoints(opts.status), null, 2));
+        });
+        root.command("approval-get")
+            .requiredOption("--approval-id <id>")
+            .action(async (opts) => {
+            const record = getApprovalCheckpoint(opts.approvalId);
+            console.log(JSON.stringify(record ?? { ok: false, error: "approval checkpoint not found" }, null, 2));
+        });
+        root.command("approval-decide")
+            .requiredOption("--approval-id <id>")
+            .requiredOption("--decision <decision>")
+            .requiredOption("--decided-by <who>")
+            .option("--reason <text>")
+            .option("--edited-input-file <path>")
+            .action(async (opts) => {
+            const existing = getApprovalCheckpoint(opts.approvalId);
+            if (!existing) {
+                console.log(JSON.stringify({ ok: false, error: "approval checkpoint not found", trace: [] }, null, 2));
+                return;
+            }
+            const trace = [
+                { event_type: "APPROVAL_DECISION_RECEIVED", timestamp_utc: new Date().toISOString(), sleeve_id: existing.sleeve_id, neostack_id: existing.neostack_id, tool_id: existing.tool.tool_id, message: "Approval decision received.", data: { approval_id: opts.approvalId, decision: opts.decision } }
+            ];
+            const editedInput = opts.editedInputFile ? JSON.parse(fs.readFileSync(opts.editedInputFile, "utf8")) : null;
+            const result = decideApprovalCheckpoint({ approval_id: opts.approvalId, decision: opts.decision, decided_by: opts.decidedBy, reason: opts.reason, edited_input: editedInput, execute_now: false });
+            if (!result.ok || !result.record) {
+                trace.push({ event_type: "APPROVAL_DECISION_REJECTED", timestamp_utc: new Date().toISOString(), sleeve_id: existing.sleeve_id, neostack_id: existing.neostack_id, tool_id: existing.tool.tool_id, message: "Approval decision rejected.", data: { approval_id: opts.approvalId, error: result.error ?? "invalid approval transition" } });
+                console.log(JSON.stringify({ ok: false, error: result.error, trace }, null, 2));
+                return;
+            }
+            trace.push({ event_type: "APPROVAL_DECISION_VALIDATED", timestamp_utc: new Date().toISOString(), sleeve_id: result.record.sleeve_id, neostack_id: result.record.neostack_id, tool_id: result.record.tool.tool_id, message: "Approval decision validated.", data: { approval_id: opts.approvalId, decision: opts.decision } });
+            trace.push({ event_type: "APPROVAL_STATE_TRANSITIONED", timestamp_utc: new Date().toISOString(), sleeve_id: result.record.sleeve_id, neostack_id: result.record.neostack_id, tool_id: result.record.tool.tool_id, message: "Approval state transitioned.", data: { approval_id: opts.approvalId, status: result.record.status } });
+            console.log(JSON.stringify({ ok: true, record: result.record, trace }, null, 2));
+        });
+        root.command("approval-resume-prepare")
+            .requiredOption("--approval-id <id>")
+            .action(async (opts) => {
+            const record = getApprovalCheckpoint(opts.approvalId);
+            if (!record) {
+                console.log(JSON.stringify({ ok: false, error: "approval checkpoint not found" }, null, 2));
+                return;
+            }
+            if (!["approval_granted", "approval_edited"].includes(record.status)) {
+                console.log(JSON.stringify({ ok: false, error: `approval checkpoint is not resumable: ${record.status}` }, null, 2));
+                return;
+            }
+            console.log(JSON.stringify({ ok: true, contract: createApprovalResumeContract(record) }, null, 2));
+        });
     }, { commands: ["umg-envoy"] });
 }
 const entry = {
@@ -414,6 +467,59 @@ const entry = {
             async execute(input) {
                 const filtered = filterTools(input.payload);
                 return { content: [{ type: "text", text: JSON.stringify({ ok: true, neostack_id: input.payload.neostack_id, decisions: filtered.decisions, trace_events: filtered.events }, null, 2) }] };
+            }
+        }, { optional: true });
+        api.registerTool({
+            name: "umg_envoy_approval_list",
+            description: "List stored approval checkpoints.",
+            parameters: Type.Object({ status: Type.Optional(Type.String()) }, { additionalProperties: false }),
+            async execute(input) {
+                return { content: [{ type: "text", text: JSON.stringify(listApprovalCheckpoints(input.status), null, 2) }] };
+            }
+        }, { optional: true });
+        api.registerTool({
+            name: "umg_envoy_approval_get",
+            description: "Get one stored approval checkpoint by approval_id.",
+            parameters: Type.Object({ approvalId: Type.String() }, { additionalProperties: false }),
+            async execute(input) {
+                return { content: [{ type: "text", text: JSON.stringify(getApprovalCheckpoint(input.approvalId) ?? { ok: false, error: "approval checkpoint not found" }, null, 2) }] };
+            }
+        }, { optional: true });
+        api.registerTool({
+            name: "umg_envoy_approval_decide",
+            description: "Record an approval decision without executing the underlying tool.",
+            parameters: Type.Object({ approvalId: Type.String(), decision: Type.Union([Type.Literal("approve"), Type.Literal("deny"), Type.Literal("edit")]), decidedBy: Type.String(), editedInput: Type.Optional(Type.Any()), reason: Type.Optional(Type.String()) }, { additionalProperties: false }),
+            async execute(input) {
+                const existing = getApprovalCheckpoint(input.approvalId);
+                if (!existing) {
+                    return { content: [{ type: "text", text: JSON.stringify({ ok: false, error: "approval checkpoint not found", trace: [] }, null, 2) }] };
+                }
+                const trace = [
+                    { event_type: "APPROVAL_DECISION_RECEIVED", timestamp_utc: new Date().toISOString(), sleeve_id: existing.sleeve_id, neostack_id: existing.neostack_id, tool_id: existing.tool.tool_id, message: "Approval decision received.", data: { approval_id: input.approvalId, decision: input.decision } }
+                ];
+                const result = decideApprovalCheckpoint({ approval_id: input.approvalId, decision: input.decision, decided_by: input.decidedBy, edited_input: input.editedInput ?? null, reason: input.reason, execute_now: false });
+                if (!result.ok || !result.record) {
+                    trace.push({ event_type: "APPROVAL_DECISION_REJECTED", timestamp_utc: new Date().toISOString(), sleeve_id: existing.sleeve_id, neostack_id: existing.neostack_id, tool_id: existing.tool.tool_id, message: "Approval decision rejected.", data: { approval_id: input.approvalId, error: result.error ?? "invalid approval transition" } });
+                    return { content: [{ type: "text", text: JSON.stringify({ ok: false, error: result.error, trace }, null, 2) }] };
+                }
+                trace.push({ event_type: "APPROVAL_DECISION_VALIDATED", timestamp_utc: new Date().toISOString(), sleeve_id: result.record.sleeve_id, neostack_id: result.record.neostack_id, tool_id: result.record.tool.tool_id, message: "Approval decision validated.", data: { approval_id: input.approvalId, decision: input.decision } });
+                trace.push({ event_type: "APPROVAL_STATE_TRANSITIONED", timestamp_utc: new Date().toISOString(), sleeve_id: result.record.sleeve_id, neostack_id: result.record.neostack_id, tool_id: result.record.tool.tool_id, message: "Approval state transitioned.", data: { approval_id: input.approvalId, status: result.record.status } });
+                return { content: [{ type: "text", text: JSON.stringify({ ok: true, record: result.record, trace }, null, 2) }] };
+            }
+        }, { optional: true });
+        api.registerTool({
+            name: "umg_envoy_approval_resume_prepare",
+            description: "Prepare a resume contract from an approved checkpoint without executing the tool.",
+            parameters: Type.Object({ approvalId: Type.String() }, { additionalProperties: false }),
+            async execute(input) {
+                const record = getApprovalCheckpoint(input.approvalId);
+                if (!record) {
+                    return { content: [{ type: "text", text: JSON.stringify({ ok: false, error: "approval checkpoint not found" }, null, 2) }] };
+                }
+                if (!["approval_granted", "approval_edited"].includes(record.status)) {
+                    return { content: [{ type: "text", text: JSON.stringify({ ok: false, error: `approval checkpoint is not resumable: ${record.status}` }, null, 2) }] };
+                }
+                return { content: [{ type: "text", text: JSON.stringify({ ok: true, contract: createApprovalResumeContract(record) }, null, 2) }] };
             }
         }, { optional: true });
     }

@@ -79,7 +79,47 @@ export interface ApprovalCheckpoint {
         may_execute_without_approval: false;
         allowed_decisions: Array<"approve" | "deny" | "edit">;
     };
-    trace: Array<Record<string, unknown>>;
+    trace: Array<{
+        event_type: string;
+        timestamp_utc: string;
+        sleeve_id: string;
+        neostack_id: string;
+        tool_id?: string | null;
+        message: string;
+        data?: Record<string, unknown>;
+    }>;
+}
+export interface ApprovalDecision {
+    approval_id: string;
+    decision: "approve" | "deny" | "edit";
+    decided_by: string;
+    decided_at?: string;
+    edited_input?: Record<string, unknown> | null;
+    reason?: string;
+    execute_now: false;
+}
+export interface ApprovalResumeContract {
+    resume_id: string;
+    approval_id: string;
+    status: "resume_prepared";
+    may_execute: false;
+    requires_next_phase_executor: true;
+    approved_tool: {
+        tool_id: string;
+        tool_name: string;
+        risk_class: string;
+        permission_level: string;
+    };
+    approved_input: Record<string, unknown>;
+    trace: Array<{
+        event_type: string;
+        timestamp_utc: string;
+        sleeve_id: string;
+        neostack_id: string;
+        tool_id?: string | null;
+        message: string;
+        data?: Record<string, unknown>;
+    }>;
 }
 export interface PluginConfig {
     allowRuntimeWrites?: boolean;

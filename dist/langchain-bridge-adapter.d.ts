@@ -131,7 +131,7 @@ export declare function invokeLangChainBridge(payload: LangChainBridgePayload, o
         decision: "approval_required" | "deny" | "allow";
         reason: string;
     }[];
-    approval_checkpoints: import("./approval-checkpoint.js").ApprovalCheckpoint[];
+    approval_checkpoints: import("./approval-store.js").ApprovalRecord[];
     denied_tools: {
         tool: ToolDefinition;
         decision: "approval_required" | "deny" | "allow";
@@ -168,7 +168,7 @@ export declare function invokeLangChainBridge(payload: LangChainBridgePayload, o
         decision: "approval_required" | "deny" | "allow";
         reason: string;
     }[];
-    approval_checkpoints: import("./approval-checkpoint.js").ApprovalCheckpoint[];
+    approval_checkpoints: import("./approval-store.js").ApprovalRecord[];
     denied_tools: {
         tool: ToolDefinition;
         decision: "approval_required" | "deny" | "allow";

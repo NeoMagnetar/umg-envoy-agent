@@ -1,4 +1,5 @@
 import { createApprovalCheckpoint } from "./approval-checkpoint.js";
+import { storeApprovalCheckpoint } from "./approval-store.js";
 export const NEOSTACK_ID = "NS.UMG.LANGCHAIN_BRIDGE.v0.1";
 function event(payload, event_type, message, data = {}, tool_id = null) {
     return {
@@ -71,7 +72,15 @@ export async function invokeLangChainBridge(payload, options) {
     const allowed_tools = decisions.filter(d => d.decision === "allow").map(d => d.tool);
     const approval_requests = decisions.filter(d => d.decision === "approval_required");
     const denied_tools = decisions.filter(d => d.decision === "deny");
-    const approval_checkpoints = approval_requests.map((item) => createApprovalCheckpoint(payload, item.tool));
+    const approval_checkpoints = approval_requests.map((item) => {
+        const checkpoint = createApprovalCheckpoint(payload, item.tool);
+        const stored = storeApprovalCheckpoint(checkpoint);
+        stored.trace = [
+            ...stored.trace,
+            event(payload, "APPROVAL_CHECKPOINT_STORED", "Approval checkpoint stored in the local approval store.", { approval_id: stored.approval_id }, item.tool.tool_id)
+        ];
+        return stored;
+    });
     const execution_results = [];
     const warnings = [];
     const errors = [];

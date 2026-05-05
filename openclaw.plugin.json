@@ -152,6 +152,10 @@
     "umg_envoy_neostack_invoke",
     "umg_envoy_neostack_trace",
     "umg_envoy_neostack_list_tools",
-    "umg_envoy_neostack_permission_check"
+    "umg_envoy_neostack_permission_check",
+    "umg_envoy_approval_list",
+    "umg_envoy_approval_get",
+    "umg_envoy_approval_decide",
+    "umg_envoy_approval_resume_prepare"
   ]
 }
