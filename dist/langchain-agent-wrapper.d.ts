@@ -6,5 +6,12 @@ export interface LangChainAgentExecutionResult {
     traceEvents: TraceEvent[];
     warnings: string[];
     errors: string[];
+    status?: string;
+    reason?: string;
+    provider?: string;
+    missing?: string[];
+    executed?: boolean;
+    tools_exposed_to_agent?: string[];
+    message?: string;
 }
 export declare function runMinimalLangChainAgent(payload: LangChainBridgePayload, approvedTools: ToolDefinition[], executor: BridgeToolExecutor): Promise<LangChainAgentExecutionResult>;

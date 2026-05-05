@@ -123,7 +123,7 @@ export async function invokeLangChainBridge(payload, options) {
         const approvedTools = decisions.filter((item) => canExecuteInPhase2(item.tool, item.decision)).map((item) => item.tool);
         const boundExecutor = executor;
         const agentResult = await options.agentRunner(payload, approvedTools, boundExecutor);
-        execution_results.push({ mode: "agent_execute", status: agentResult.ok ? "succeeded" : "failed", output: agentResult.output ?? null });
+        execution_results.push({ mode: "agent_execute", status: agentResult.status ?? (agentResult.ok ? "succeeded" : "failed"), output: agentResult.output ?? null, reason: agentResult.reason ?? null, provider: agentResult.provider ?? null, missing: agentResult.missing ?? [], executed: agentResult.executed ?? false, tools_exposed_to_agent: agentResult.tools_exposed_to_agent ?? [] });
         trace_events.push(...agentResult.traceEvents);
         warnings.push(...agentResult.warnings);
         errors.push(...agentResult.errors);
@@ -131,7 +131,15 @@ export async function invokeLangChainBridge(payload, options) {
         return {
             neostack_id: NEOSTACK_ID,
             sleeve_id: payload.sleeve_id,
-            status: agentResult.ok ? "agent_execution_complete" : "agent_execution_failed",
+            ok: agentResult.ok,
+            mode: "agent_execute",
+            status: agentResult.status ?? (agentResult.ok ? "agent_execution_complete" : "agent_execution_failed"),
+            reason: agentResult.reason,
+            provider: agentResult.provider,
+            missing: agentResult.missing ?? [],
+            executed: agentResult.executed ?? false,
+            tools_exposed_to_agent: agentResult.tools_exposed_to_agent ?? approvedTools.map((tool) => tool.tool_name),
+            message: agentResult.message ?? (agentResult.ok ? "Phase 3 LangChain agent execution completed." : "Phase 3 LangChain agent execution failed."),
             result: agentResult.ok ? "Phase 3 LangChain agent execution completed." : "Phase 3 LangChain agent execution failed.",
             allowed_tools,
             approval_requests,

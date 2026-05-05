@@ -80,6 +80,13 @@ export interface LangChainBridgeInvokeOptions {
         traceEvents: TraceEvent[];
         warnings: string[];
         errors: string[];
+        status?: string;
+        reason?: string;
+        provider?: string;
+        missing?: string[];
+        executed?: boolean;
+        tools_exposed_to_agent?: string[];
+        message?: string;
     }>;
 }
 export declare function validatePayload(payload: LangChainBridgePayload): TraceEvent[];
@@ -95,6 +102,42 @@ export declare function invokeLangChainBridge(payload: LangChainBridgePayload, o
     neostack_id: string;
     sleeve_id: string;
     status: string;
+    result: string;
+    allowed_tools: ToolDefinition[];
+    approval_requests: {
+        tool: ToolDefinition;
+        decision: "approval_required" | "allow" | "deny";
+        reason: string;
+    }[];
+    denied_tools: {
+        tool: ToolDefinition;
+        decision: "approval_required" | "allow" | "deny";
+        reason: string;
+    }[];
+    execution_results: Record<string, unknown>[];
+    trace_events: TraceEvent[];
+    warnings: string[];
+    errors: string[];
+    ok?: undefined;
+    mode?: undefined;
+    reason?: undefined;
+    provider?: undefined;
+    missing?: undefined;
+    executed?: undefined;
+    tools_exposed_to_agent?: undefined;
+    message?: undefined;
+} | {
+    neostack_id: string;
+    sleeve_id: string;
+    ok: boolean;
+    mode: string;
+    status: string;
+    reason: string | undefined;
+    provider: string | undefined;
+    missing: string[];
+    executed: boolean;
+    tools_exposed_to_agent: string[];
+    message: string;
     result: string;
     allowed_tools: ToolDefinition[];
     approval_requests: {

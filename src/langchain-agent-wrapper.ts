@@ -1,6 +1,7 @@
 import { createAgent } from "langchain";
 import type { BridgeToolExecutor, ToolDefinition, TraceEvent } from "./langchain-bridge-adapter.js";
 import { adaptApprovedToolsToLangChain } from "./langchain-tool-adapter.js";
+import { checkLangChainProviderReadiness } from "./langchain-provider-readiness.js";
 import type { LangChainBridgePayload } from "./types.js";
 
 function event(payload: Partial<LangChainBridgePayload>, event_type: string, message: string, data: Record<string, unknown> = {}, tool_id: string | null = null): TraceEvent {
@@ -21,6 +22,13 @@ export interface LangChainAgentExecutionResult {
   traceEvents: TraceEvent[];
   warnings: string[];
   errors: string[];
+  status?: string;
+  reason?: string;
+  provider?: string;
+  missing?: string[];
+  executed?: boolean;
+  tools_exposed_to_agent?: string[];
+  message?: string;
 }
 
 export async function runMinimalLangChainAgent(payload: LangChainBridgePayload, approvedTools: ToolDefinition[], executor: BridgeToolExecutor): Promise<LangChainAgentExecutionResult> {
@@ -29,12 +37,34 @@ export async function runMinimalLangChainAgent(payload: LangChainBridgePayload, 
   const errors: string[] = [];
 
   try {
+    const { readiness, traceEvents: readinessTraceEvents } = checkLangChainProviderReadiness(payload);
+    traceEvents.push(...readinessTraceEvents);
+
+    const approvedToolNames = approvedTools.map((tool) => tool.tool_name);
+    if (!readiness.ok || !readiness.canInvokeModel) {
+      return {
+        ok: false,
+        status: "agent_runtime_unavailable",
+        reason: readiness.reason,
+        provider: readiness.provider,
+        missing: readiness.missing,
+        executed: false,
+        tools_exposed_to_agent: approvedToolNames,
+        message: readiness.provider === "openai"
+          ? "LangChain agent mode is configured, but OpenAI model credentials are not available in this environment."
+          : "LangChain agent mode is configured, but the selected provider is not available in this environment.",
+        traceEvents,
+        warnings,
+        errors
+      };
+    }
+
     const { tools, traceEvents: toolTraceEvents } = adaptApprovedToolsToLangChain(payload, approvedTools, executor);
     traceEvents.push(...toolTraceEvents);
 
     traceEvents.push(event(payload, "LANGCHAIN_AGENT_CREATE_STARTED", "LangChain createAgent started.", { adapted_tool_count: approvedTools.length }));
     const agent = createAgent({
-      model: "openai:gpt-4.1-mini",
+      model: payload.provider?.model ?? "openai:gpt-4.1-mini",
       tools: tools as any,
       systemPrompt: "Use only the provided approved read-only tools."
     });
@@ -48,6 +78,11 @@ export async function runMinimalLangChainAgent(payload: LangChainBridgePayload, 
     return {
       ok: true,
       output,
+      status: "agent_execution_complete",
+      provider: payload.provider?.preferred ?? payload.provider?.model?.split(":")[0] ?? "openai",
+      missing: [],
+      executed: true,
+      tools_exposed_to_agent: approvedTools.map((tool) => tool.tool_name),
       traceEvents,
       warnings,
       errors
@@ -59,6 +94,11 @@ export async function runMinimalLangChainAgent(payload: LangChainBridgePayload, 
     traceEvents.push(event(payload, phase, phase === "LANGCHAIN_AGENT_CREATE_FAILED" ? "LangChain createAgent failed." : "LangChain agent invoke failed.", { error: message }));
     return {
       ok: false,
+      status: "agent_execution_failed",
+      provider: payload.provider?.preferred ?? payload.provider?.model?.split(":")[0] ?? "openai",
+      missing: [],
+      executed: false,
+      tools_exposed_to_agent: approvedTools.map((tool) => tool.tool_name),
       traceEvents,
       warnings,
       errors
