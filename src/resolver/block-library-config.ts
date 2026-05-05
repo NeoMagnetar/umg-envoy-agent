@@ -3,7 +3,7 @@ import path from "node:path";
 
 export type SourceMode = "SAMPLE_MODE" | "FULL_LIBRARY_MODE" | "MIXED_MODE" | "NO_LIBRARY_MODE";
 export type VisibilityMode = "silent" | "compact" | "developer" | "debug" | "audit";
-export type DiscoveryMethod = "manifest" | "fallback_walk";
+export type DiscoveryMethod = "manifest" | "index" | "fallback_walk" | "generated";
 export type ArtifactKind = "molt_block" | "neoblock" | "neostack" | "sleeve" | "tool" | "capability" | "domain" | "manifest" | "schema";
 export type SourceKind = "ai_machine" | "human_readable" | "package_lane" | "sample" | "draft" | "unknown";
 
@@ -40,12 +40,16 @@ export interface NormalizedArtifact {
   capabilities: string[];
   tags: string[];
   status: string;
+  runtime_selectable?: boolean;
+  support_only?: boolean;
+  search_penalty?: boolean;
   source: {
     source_name?: string;
     repo?: string;
     path: string;
     source_kind: SourceKind;
     canonical: boolean;
+    canonical_status: "canonical" | "non_canonical" | "sample" | "draft" | "unknown";
     discovery_method: DiscoveryMethod;
   };
   raw?: unknown;

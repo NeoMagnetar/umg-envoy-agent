@@ -1,7 +1,7 @@
 import type { BlockLibraryConfig, LibrarySourceConfig, SourceMode } from "./block-library-config.js";
 export interface ResolverStatus {
     source_mode: SourceMode;
-    sources: Array<{
+    configured_sources: Array<{
         name: string;
         path: string;
         exists: boolean;
@@ -9,6 +9,8 @@ export interface ResolverStatus {
         priority: number;
         sample_like: boolean;
     }>;
+    existing_sources: string[];
+    missing_sources: string[];
     warnings: string[];
 }
 export declare class UMGResolver {

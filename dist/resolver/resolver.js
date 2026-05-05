@@ -37,7 +37,13 @@ export class UMGResolver {
         const warnings = sources
             .filter((source) => !source.exists)
             .map((source) => `Missing configured source: ${source.name} at ${source.path}`);
-        return { source_mode, sources, warnings };
+        return {
+            source_mode,
+            configured_sources: sources,
+            existing_sources: sources.filter((source) => source.exists).map((source) => source.path),
+            missing_sources: sources.filter((source) => !source.exists).map((source) => source.path),
+            warnings
+        };
     }
 }
 export function resolveSourcePath(sourcePath, pluginRoot) {

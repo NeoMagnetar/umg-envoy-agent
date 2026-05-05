@@ -4,7 +4,7 @@ import type { BlockLibraryConfig, LibrarySourceConfig, SourceMode } from "./bloc
 
 export interface ResolverStatus {
   source_mode: SourceMode;
-  sources: Array<{
+  configured_sources: Array<{
     name: string;
     path: string;
     exists: boolean;
@@ -12,6 +12,8 @@ export interface ResolverStatus {
     priority: number;
     sample_like: boolean;
   }>;
+  existing_sources: string[];
+  missing_sources: string[];
   warnings: string[];
 }
 
@@ -50,7 +52,13 @@ export class UMGResolver {
       .filter((source) => !source.exists)
       .map((source) => `Missing configured source: ${source.name} at ${source.path}`);
 
-    return { source_mode, sources, warnings };
+    return {
+      source_mode,
+      configured_sources: sources,
+      existing_sources: sources.filter((source) => source.exists).map((source) => source.path),
+      missing_sources: sources.filter((source) => !source.exists).map((source) => source.path),
+      warnings
+    };
   }
 }
 

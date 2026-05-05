@@ -56,14 +56,31 @@ export function searchRegistry(artifacts: NormalizedArtifact[], query: RegistryS
         }
       }
 
-      if (artifact.source.source_kind === "human_readable") {
+      if (artifact.source.canonical) {
+        score += 4;
+        reasons.push("canonical source");
+      }
+      if (artifact.search_penalty) {
         score -= 5;
         reasons.push("penalty:human_non_canonical");
       }
 
-      return { artifact, score, reasons };
+      return { artifact, score, reasons, warnings: artifact.support_only ? ["support_only_non_runtime_selectable"] : [] };
     })
     .filter((hit) => hit.score > 0 || (!text && !query.kinds && !query.domains && !query.capabilities && !query.tags && !query.status))
     .sort((a, b) => b.score - a.score)
-    .slice(0, limit);
+    .slice(0, limit)
+    .map((hit) => ({
+      id: hit.artifact.id,
+      kind: hit.artifact.kind,
+      title: hit.artifact.title,
+      score: Number((hit.score / 50).toFixed(2)),
+      canonical: hit.artifact.source.canonical,
+      source_kind: hit.artifact.source.source_kind,
+      discovery_method: hit.artifact.source.discovery_method,
+      status: hit.artifact.status,
+      path: hit.artifact.source.path,
+      reasons: hit.reasons,
+      warnings: hit.warnings
+    }));
 }
