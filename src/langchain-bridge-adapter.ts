@@ -42,6 +42,10 @@ export interface TraceEvent {
   data?: Record<string, unknown>;
 }
 
+export interface BridgeToolExecutor {
+  execute(toolName: string, payload: Record<string, unknown>): Promise<unknown>;
+}
+
 function event(payload: Partial<LangChainBridgePayload>, event_type: string, message: string, data: Record<string, unknown> = {}, tool_id: string | null = null): TraceEvent {
   return {
     event_type,
@@ -89,24 +93,103 @@ export function filterTools(payload: LangChainBridgePayload) {
   return { decisions, events };
 }
 
-export async function invokeLangChainBridge(payload: LangChainBridgePayload) {
-  const trace_events: TraceEvent[] = [event(payload, "NEOSTACK_LOADED", "UMG LangChain Bridge loaded.")];
+const PHASE2_ALLOWLIST = new Set(["umg_envoy_status"]);
+
+function canExecuteInPhase2(tool: ToolDefinition, decision: "allow" | "approval_required" | "deny") {
+  return decision === "allow"
+    && tool.tool_name === "umg_envoy_status"
+    && PHASE2_ALLOWLIST.has(tool.tool_name)
+    && tool.permission_level === "read_only"
+    && tool.risk_class === "low";
+}
+
+export async function invokeLangChainBridge(payload: LangChainBridgePayload, executor?: BridgeToolExecutor) {
+  const trace_events: TraceEvent[] = [event(payload, "NEOSTACK_LOADED", "UMG LangChain Bridge loaded."), event(payload, "NEOSTACK_INVOKE_RECEIVED", "NeoStack invoke request received.", { call_mode: payload.call_mode, bridge_mode: payload.bridge_mode })];
   trace_events.push(...validatePayload(payload));
   const { decisions, events } = filterTools(payload);
   trace_events.push(...events);
-  trace_events.push(event(payload, "PROVIDER_SELECTED", "Provider selection placeholder emitted. Bind to LangChain provider adapter in runtime.", payload.provider));
-  trace_events.push(event(payload, "AGENT_OR_GRAPH_CREATED", "Execution runtime placeholder emitted. Bind to create_agent or LangGraph graph runtime as needed.", { call_mode: payload.call_mode, bridge_mode: payload.bridge_mode }));
-  trace_events.push(event(payload, "FINAL_RESULT_RETURNED", "Dry-run runtime result returned; no external tool was executed by this adapter skeleton."));
+
+  for (const decision of decisions) {
+    trace_events.push(event(payload, "TOOL_PERMISSION_CLASSIFIED", `Tool ${decision.tool.tool_name} classified as ${decision.decision}.`, {
+      tool_name: decision.tool.tool_name,
+      decision: decision.decision,
+      permission_level: decision.tool.permission_level,
+      risk_class: decision.tool.risk_class
+    }, decision.tool.tool_id));
+  }
+
+  const allowed_tools = decisions.filter(d => d.decision === "allow").map(d => d.tool);
+  const approval_requests = decisions.filter(d => d.decision === "approval_required");
+  const denied_tools = decisions.filter(d => d.decision === "deny");
+  const execution_results: Array<Record<string, unknown>> = [];
+  const warnings: string[] = [];
+  const errors: string[] = [];
+
+  for (const item of approval_requests) {
+    trace_events.push(event(payload, "TOOL_EXECUTION_SKIPPED_APPROVAL_REQUIRED", "Tool execution skipped because approval is required.", { tool_name: item.tool.tool_name }, item.tool.tool_id));
+  }
+
+  for (const item of denied_tools) {
+    trace_events.push(event(payload, "TOOL_EXECUTION_DENIED", "Tool execution denied by permission filter.", { tool_name: item.tool.tool_name }, item.tool.tool_id));
+  }
+
+  if (payload.call_mode === "validation_only" || !executor) {
+    trace_events.push(event(payload, "PROVIDER_SELECTED", "Provider selection placeholder emitted. Bind to LangChain provider adapter in runtime.", payload.provider));
+    trace_events.push(event(payload, "AGENT_OR_GRAPH_CREATED", "Execution runtime placeholder emitted. Bind to create_agent or LangGraph graph runtime as needed.", { call_mode: payload.call_mode, bridge_mode: payload.bridge_mode }));
+    trace_events.push(event(payload, "NEOSTACK_INVOKE_COMPLETED", "Dry-run NeoStack invocation completed without executing external tools."));
+    return {
+      neostack_id: NEOSTACK_ID,
+      sleeve_id: payload.sleeve_id,
+      status: "dry_run_ready",
+      result: "LangChain Bridge payload validated. Tools filtered. Bind real LangChain/OpenClaw runtime to execute.",
+      allowed_tools,
+      approval_requests,
+      denied_tools,
+      execution_results,
+      trace_events,
+      warnings: ["This adapter is safe-by-default and does not execute tools until OpenClaw/LangChain bindings are attached."],
+      errors
+    };
+  }
+
+  for (const item of decisions) {
+    const tool = item.tool;
+    if (!canExecuteInPhase2(tool, item.decision)) {
+      if (item.decision === "allow") {
+        warnings.push(`Allowed tool is not executable in Phase 2: ${tool.tool_name}`);
+        trace_events.push(event(payload, "TOOL_EXECUTION_DENIED", "Allowed tool is outside the hardcoded Phase 2 execution allowlist or safety envelope.", { tool_name: tool.tool_name }, tool.tool_id));
+      }
+      continue;
+    }
+
+    trace_events.push(event(payload, "TOOL_EXECUTION_ALLOWED", "Tool execution allowed by Phase 2 read-only binding policy.", { tool_name: tool.tool_name }, tool.tool_id));
+    trace_events.push(event(payload, "TOOL_EXECUTION_STARTED", "Tool execution started.", { tool_name: tool.tool_name }, tool.tool_id));
+
+    try {
+      const output = await executor.execute(tool.tool_name, {});
+      execution_results.push({ tool_name: tool.tool_name, tool_id: tool.tool_id, status: "succeeded", output });
+      trace_events.push(event(payload, "TOOL_EXECUTION_SUCCEEDED", "Tool execution succeeded.", { tool_name: tool.tool_name }, tool.tool_id));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      execution_results.push({ tool_name: tool.tool_name, tool_id: tool.tool_id, status: "failed", error: message });
+      errors.push(`Tool execution failed for ${tool.tool_name}: ${message}`);
+      trace_events.push(event(payload, "TOOL_EXECUTION_FAILED", "Tool execution failed.", { tool_name: tool.tool_name, error: message }, tool.tool_id));
+    }
+  }
+
+  trace_events.push(event(payload, "NEOSTACK_INVOKE_COMPLETED", "NeoStack invocation completed.", { executed_count: execution_results.length }));
+
   return {
     neostack_id: NEOSTACK_ID,
     sleeve_id: payload.sleeve_id,
-    status: "dry_run_ready",
-    result: "LangChain Bridge payload validated. Tools filtered. Bind real LangChain/OpenClaw runtime to execute.",
-    allowed_tools: decisions.filter(d => d.decision === "allow").map(d => d.tool),
-    approval_requests: decisions.filter(d => d.decision === "approval_required"),
-    denied_tools: decisions.filter(d => d.decision === "deny"),
+    status: errors.length === 0 ? "execution_complete" : "execution_failed",
+    result: execution_results.length > 0 ? "Phase 2 read-only tool execution completed." : "No executable Phase 2 tools were run.",
+    allowed_tools,
+    approval_requests,
+    denied_tools,
+    execution_results,
     trace_events,
-    warnings: ["This adapter is safe-by-default and does not execute tools until OpenClaw/LangChain bindings are attached."],
-    errors: []
+    warnings,
+    errors
   };
 }

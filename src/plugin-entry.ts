@@ -166,6 +166,17 @@ function loadNeostackPreview(libraryRoot: string, neostackId: string): NeostackL
   };
 }
 
+function createPhase2Executor(pluginConfig?: PluginConfig): { execute(toolName: string, payload: Record<string, unknown>): Promise<unknown> } {
+  return {
+    async execute(toolName: string, _payload: Record<string, unknown>) {
+      if (toolName === "umg_envoy_status") {
+        return statusPayload(pluginConfig);
+      }
+      throw new Error(`Tool is not bound for Phase 2 execution: ${toolName}`);
+    }
+  };
+}
+
 function registerCliBridge(api: any, config?: PluginConfig) {
   api.registerCli(({ program }: { program: any }) => {
     const root = program.command("umg-envoy").description("Run UMG workflows as a modular cognitive architecture runtime inside OpenClaw.");
@@ -304,8 +315,10 @@ function registerCliBridge(api: any, config?: PluginConfig) {
 
     root.command("neostack-invoke")
       .requiredOption("--payload-file <path>")
-      .action(async (opts: { payloadFile: string }) => {
-        console.log(JSON.stringify(await invokeLangChainBridge(JSON.parse(fs.readFileSync(opts.payloadFile, "utf8")) as LangChainBridgePayload), null, 2));
+      .option("--execute")
+      .action(async (opts: { payloadFile: string; execute?: boolean }) => {
+        const payload = JSON.parse(fs.readFileSync(opts.payloadFile, "utf8")) as LangChainBridgePayload;
+        console.log(JSON.stringify(await invokeLangChainBridge(payload, opts.execute ? createPhase2Executor(config) : undefined), null, 2));
       });
   }, { commands: ["umg-envoy"] });
 }
@@ -390,10 +403,10 @@ const entry = {
     }, { optional: true });
     api.registerTool({
       name: "umg_envoy_neostack_invoke",
-      description: "Dry-run invoke the LangChain Bridge NeoStack payload. Safe by default; does not execute external tools.",
-      parameters: Type.Object({ payload: Type.Any() }, { additionalProperties: false }),
-      async execute(input: { payload: LangChainBridgePayload }) {
-        return { content: [{ type: "text", text: JSON.stringify(await invokeLangChainBridge(input.payload), null, 2) }] };
+      description: "Invoke the LangChain Bridge NeoStack. Dry-run by default; optional Phase 2 read-only execution supports only hardcoded safe tools.",
+      parameters: Type.Object({ payload: Type.Any(), execute: Type.Optional(Type.Boolean()) }, { additionalProperties: false }),
+      async execute(input: { payload: LangChainBridgePayload; execute?: boolean }) {
+        return { content: [{ type: "text", text: JSON.stringify(await invokeLangChainBridge(input.payload, input.execute ? createPhase2Executor(config) : undefined), null, 2) }] };
       }
     }, { optional: true });
     api.registerTool({

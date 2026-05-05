@@ -152,6 +152,16 @@ function loadNeostackPreview(libraryRoot, neostackId) {
         errors: [...loaded.errors, ...validation.errors, ...artifactResolution.errors]
     };
 }
+function createPhase2Executor(pluginConfig) {
+    return {
+        async execute(toolName, _payload) {
+            if (toolName === "umg_envoy_status") {
+                return statusPayload(pluginConfig);
+            }
+            throw new Error(`Tool is not bound for Phase 2 execution: ${toolName}`);
+        }
+    };
+}
 function registerCliBridge(api, config) {
     api.registerCli(({ program }) => {
         const root = program.command("umg-envoy").description("Run UMG workflows as a modular cognitive architecture runtime inside OpenClaw.");
@@ -272,8 +282,10 @@ function registerCliBridge(api, config) {
         });
         root.command("neostack-invoke")
             .requiredOption("--payload-file <path>")
+            .option("--execute")
             .action(async (opts) => {
-            console.log(JSON.stringify(await invokeLangChainBridge(JSON.parse(fs.readFileSync(opts.payloadFile, "utf8"))), null, 2));
+            const payload = JSON.parse(fs.readFileSync(opts.payloadFile, "utf8"));
+            console.log(JSON.stringify(await invokeLangChainBridge(payload, opts.execute ? createPhase2Executor(config) : undefined), null, 2));
         });
     }, { commands: ["umg-envoy"] });
 }
@@ -356,10 +368,10 @@ const entry = {
         }, { optional: true });
         api.registerTool({
             name: "umg_envoy_neostack_invoke",
-            description: "Dry-run invoke the LangChain Bridge NeoStack payload. Safe by default; does not execute external tools.",
-            parameters: Type.Object({ payload: Type.Any() }, { additionalProperties: false }),
+            description: "Invoke the LangChain Bridge NeoStack. Dry-run by default; optional Phase 2 read-only execution supports only hardcoded safe tools.",
+            parameters: Type.Object({ payload: Type.Any(), execute: Type.Optional(Type.Boolean()) }, { additionalProperties: false }),
             async execute(input) {
-                return { content: [{ type: "text", text: JSON.stringify(await invokeLangChainBridge(input.payload), null, 2) }] };
+                return { content: [{ type: "text", text: JSON.stringify(await invokeLangChainBridge(input.payload, input.execute ? createPhase2Executor(config) : undefined), null, 2) }] };
             }
         }, { optional: true });
         api.registerTool({

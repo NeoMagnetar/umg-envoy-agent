@@ -68,6 +68,9 @@ export interface TraceEvent {
     message: string;
     data?: Record<string, unknown>;
 }
+export interface BridgeToolExecutor {
+    execute(toolName: string, payload: Record<string, unknown>): Promise<unknown>;
+}
 export declare function validatePayload(payload: LangChainBridgePayload): TraceEvent[];
 export declare function filterTools(payload: LangChainBridgePayload): {
     decisions: {
@@ -77,7 +80,7 @@ export declare function filterTools(payload: LangChainBridgePayload): {
     }[];
     events: TraceEvent[];
 };
-export declare function invokeLangChainBridge(payload: LangChainBridgePayload): Promise<{
+export declare function invokeLangChainBridge(payload: LangChainBridgePayload, executor?: BridgeToolExecutor): Promise<{
     neostack_id: string;
     sleeve_id: string;
     status: string;
@@ -93,7 +96,8 @@ export declare function invokeLangChainBridge(payload: LangChainBridgePayload): 
         decision: "approval_required" | "allow" | "deny";
         reason: string;
     }[];
+    execution_results: Record<string, unknown>[];
     trace_events: TraceEvent[];
     warnings: string[];
-    errors: never[];
+    errors: string[];
 }>;
