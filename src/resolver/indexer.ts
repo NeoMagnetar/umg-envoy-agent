@@ -15,6 +15,7 @@ const MANIFEST_FILES = [
 
 export interface BuildRegistryResult {
   artifacts: NormalizedArtifact[];
+  support_artifacts: NormalizedArtifact[];
   counts: {
     by_kind: Record<string, number>;
     by_source_kind: Record<string, number>;
@@ -41,20 +42,26 @@ export function buildRegistry(resolver: UMGResolver): BuildRegistryResult {
   const warnings: string[] = [];
   const duplicate_report: BuildRegistryResult["duplicate_report"] = [];
   const artifacts: NormalizedArtifact[] = [];
+  const support_artifacts: NormalizedArtifact[] = [];
 
   for (const source of resolver.getSources()) {
     if (!fs.existsSync(source.resolvedPath)) continue;
     const manifestArtifacts = loadManifestArtifacts(source.resolvedPath, source.name, source.canonical, warnings);
-    artifacts.push(...manifestArtifacts);
+    artifacts.push(...manifestArtifacts.filter((artifact) => !artifact.support_only));
+    support_artifacts.push(...manifestArtifacts.filter((artifact) => artifact.support_only));
 
     const manifestPaths = new Set(manifestArtifacts.map((artifact) => path.resolve(artifact.source.path)));
-    artifacts.push(...walkFallbackArtifacts(source.resolvedPath, source.name, source.canonical, manifestPaths, warnings));
+    const fallback = walkFallbackArtifacts(source.resolvedPath, source.name, source.canonical, manifestPaths, warnings);
+    artifacts.push(...fallback.filter((artifact) => !artifact.support_only));
+    support_artifacts.push(...fallback.filter((artifact) => artifact.support_only));
   }
 
   const deduped = dedupeArtifacts(artifacts, warnings, duplicate_report);
+  const dedupedSupport = dedupeArtifacts(support_artifacts, warnings, []);
   return {
     artifacts: deduped,
-    counts: countArtifacts(deduped, duplicate_report.length, warnings.length),
+    support_artifacts: dedupedSupport,
+    counts: countArtifacts(deduped, dedupedSupport, duplicate_report.length, warnings.length),
     duplicate_report,
     warnings
   };
@@ -81,11 +88,22 @@ function loadManifestArtifacts(root: string, sourceName: string, canonical: bool
 
 function normalizeManifestPayload(filePath: string, raw: unknown, sourceName: string, canonical: boolean, discovery_method: DiscoveryMethod, warnings: string[]): NormalizedArtifact[] {
   const results: NormalizedArtifact[] = [];
-  const record = raw as Record<string, unknown>;
-  const arrays = [record.items, record.entries, record.artifacts, record.blocks, record.stacks, record.sleeves].filter(Array.isArray) as unknown[][];
+  const arrays = Array.isArray(raw)
+    ? [raw]
+    : [
+        (raw as Record<string, unknown>).items,
+        (raw as Record<string, unknown>).entries,
+        (raw as Record<string, unknown>).artifacts,
+        (raw as Record<string, unknown>).blocks,
+        (raw as Record<string, unknown>).stacks,
+        (raw as Record<string, unknown>).sleeves,
+        (raw as Record<string, unknown>).tools,
+        (raw as Record<string, unknown>).resources,
+        (raw as Record<string, unknown>).prompts
+      ].filter(Array.isArray) as unknown[][];
 
   if (arrays.length === 0) {
-    results.push(normalizeRecord(filePath, record, sourceName, canonical, discovery_method));
+    results.push(normalizeRecord(filePath, raw as Record<string, unknown>, sourceName, canonical, discovery_method));
     return results;
   }
 
@@ -113,7 +131,8 @@ function walkFallbackArtifacts(root: string, sourceName: string, canonical: bool
     path.join(root, "AI", "SCHEMAS"),
     path.join(root, "AI", "MANIFESTS"),
     path.join(root, "sleeves"),
-    path.join(root, "blocks")
+    path.join(root, "blocks"),
+    path.join(root, "HUMAN")
   ];
 
   for (const preferredRoot of preferredRoots) {
@@ -140,8 +159,28 @@ function normalizeRecord(filePath: string, raw: Record<string, unknown>, sourceN
   const kind = inferKind(filePath, raw);
   const explicitId = raw.identity && typeof raw.identity === "object" ? String((raw.identity as Record<string, unknown>).artifact_id ?? "") : "";
   const id = String(raw.id ?? raw.artifact_id ?? (explicitId || undefined) ?? raw.block_id ?? raw.neoblock_id ?? raw.neostack_id ?? raw.sleeve_id ?? stableId(filePath));
-  const title = typeof raw.title === "string" ? raw.title : typeof raw.name === "string" ? raw.name : typeof raw.label === "string" ? raw.label : typeof raw.markdown === "string" ? extractMarkdownTitle(raw.markdown) ?? path.basename(filePath) : path.basename(filePath);
-  const description = typeof raw.description === "string" ? raw.description : typeof raw.summary === "string" ? raw.summary : typeof raw.markdown === "string" ? firstParagraph(raw.markdown) : "";
+  const metadata = raw.metadata && typeof raw.metadata === "object" ? raw.metadata as Record<string, unknown> : {};
+  const manifest = raw.manifest && typeof raw.manifest === "object" ? raw.manifest as Record<string, unknown> : {};
+  const title = firstString([
+    raw.title,
+    raw.name,
+    raw.label,
+    raw.display_name,
+    raw.summary,
+    metadata.title,
+    metadata.name,
+    manifest.title,
+    typeof raw.markdown === 'string' ? extractMarkdownTitle(raw.markdown) : undefined,
+    path.basename(filePath)
+  ]);
+  const description = firstString([
+    raw.description,
+    raw.summary,
+    metadata.description,
+    manifest.description,
+    typeof raw.markdown === 'string' ? firstParagraph(raw.markdown) : undefined,
+    ""
+  ]);
   const status = typeof raw.status === "string" ? raw.status : inferStatus(filePath);
   const canonical_status = source_kind === "human_readable"
     ? "non_canonical"
@@ -228,6 +267,13 @@ function firstParagraph(markdown: string): string {
   return markdown.split(/\r?\n\r?\n/).map((part) => part.trim()).find(Boolean) ?? "";
 }
 
+function firstString(values: unknown[]): string {
+  for (const value of values) {
+    if (typeof value === "string" && value.trim()) return value.trim();
+  }
+  return "";
+}
+
 function asStringArray(value: unknown): string[] {
   if (!value) return [];
   if (Array.isArray(value)) return value.map(String).filter(Boolean);
@@ -288,7 +334,7 @@ function precedenceReason(artifact: NormalizedArtifact): string {
   return "fallback_generated_id";
 }
 
-function countArtifacts(artifacts: NormalizedArtifact[], duplicate_count: number, warning_count: number) {
+function countArtifacts(artifacts: NormalizedArtifact[], supportArtifacts: NormalizedArtifact[], duplicate_count: number, warning_count: number) {
   const by_kind: Record<string, number> = {};
   const by_source_kind: Record<string, number> = {};
   const by_status: Record<string, number> = {};
@@ -307,5 +353,6 @@ function countArtifacts(artifacts: NormalizedArtifact[], duplicate_count: number
     if (artifact.source.canonical_status === "sample") sample_count += 1;
     if (artifact.support_only) human_support_count += 1;
   }
+  human_support_count = supportArtifacts.length;
   return { by_kind, by_source_kind, by_status, by_discovery_method, canonical_count, non_canonical_count, sample_count, human_support_count, duplicate_count, warning_count };
 }

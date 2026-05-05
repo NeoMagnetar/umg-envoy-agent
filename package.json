@@ -20,6 +20,9 @@
     "build": "tsc",
     "check": "tsc --noEmit",
     "smoke": "node dist/plugin-entry.js --smoke",
+    "umg:resolver:status": "node scripts/resolver-status.mjs",
+    "umg:resolver:search": "node scripts/resolver-search.mjs",
+    "umg:resolver:smoke": "node scripts/resolver-smoke.mjs",
     "validate:umg:e2e": "node scripts/validate-umg-e2e.mjs",
     "pack:dry": "npm pack --dry-run"
   },

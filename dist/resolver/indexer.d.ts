@@ -2,6 +2,7 @@ import type { NormalizedArtifact } from "./block-library-config.js";
 import type { UMGResolver } from "./resolver.js";
 export interface BuildRegistryResult {
     artifacts: NormalizedArtifact[];
+    support_artifacts: NormalizedArtifact[];
     counts: {
         by_kind: Record<string, number>;
         by_source_kind: Record<string, number>;

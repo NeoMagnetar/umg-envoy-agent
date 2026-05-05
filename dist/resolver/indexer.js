@@ -13,18 +13,24 @@ export function buildRegistry(resolver) {
     const warnings = [];
     const duplicate_report = [];
     const artifacts = [];
+    const support_artifacts = [];
     for (const source of resolver.getSources()) {
         if (!fs.existsSync(source.resolvedPath))
             continue;
         const manifestArtifacts = loadManifestArtifacts(source.resolvedPath, source.name, source.canonical, warnings);
-        artifacts.push(...manifestArtifacts);
+        artifacts.push(...manifestArtifacts.filter((artifact) => !artifact.support_only));
+        support_artifacts.push(...manifestArtifacts.filter((artifact) => artifact.support_only));
         const manifestPaths = new Set(manifestArtifacts.map((artifact) => path.resolve(artifact.source.path)));
-        artifacts.push(...walkFallbackArtifacts(source.resolvedPath, source.name, source.canonical, manifestPaths, warnings));
+        const fallback = walkFallbackArtifacts(source.resolvedPath, source.name, source.canonical, manifestPaths, warnings);
+        artifacts.push(...fallback.filter((artifact) => !artifact.support_only));
+        support_artifacts.push(...fallback.filter((artifact) => artifact.support_only));
     }
     const deduped = dedupeArtifacts(artifacts, warnings, duplicate_report);
+    const dedupedSupport = dedupeArtifacts(support_artifacts, warnings, []);
     return {
         artifacts: deduped,
-        counts: countArtifacts(deduped, duplicate_report.length, warnings.length),
+        support_artifacts: dedupedSupport,
+        counts: countArtifacts(deduped, dedupedSupport, duplicate_report.length, warnings.length),
         duplicate_report,
         warnings
     };
@@ -50,10 +56,21 @@ function loadManifestArtifacts(root, sourceName, canonical, warnings) {
 }
 function normalizeManifestPayload(filePath, raw, sourceName, canonical, discovery_method, warnings) {
     const results = [];
-    const record = raw;
-    const arrays = [record.items, record.entries, record.artifacts, record.blocks, record.stacks, record.sleeves].filter(Array.isArray);
+    const arrays = Array.isArray(raw)
+        ? [raw]
+        : [
+            raw.items,
+            raw.entries,
+            raw.artifacts,
+            raw.blocks,
+            raw.stacks,
+            raw.sleeves,
+            raw.tools,
+            raw.resources,
+            raw.prompts
+        ].filter(Array.isArray);
     if (arrays.length === 0) {
-        results.push(normalizeRecord(filePath, record, sourceName, canonical, discovery_method));
+        results.push(normalizeRecord(filePath, raw, sourceName, canonical, discovery_method));
         return results;
     }
     for (const array of arrays) {
@@ -78,7 +95,8 @@ function walkFallbackArtifacts(root, sourceName, canonical, skipPaths, warnings)
         path.join(root, "AI", "SCHEMAS"),
         path.join(root, "AI", "MANIFESTS"),
         path.join(root, "sleeves"),
-        path.join(root, "blocks")
+        path.join(root, "blocks"),
+        path.join(root, "HUMAN")
     ];
     for (const preferredRoot of preferredRoots) {
         if (!fs.existsSync(preferredRoot))
@@ -106,8 +124,28 @@ function normalizeRecord(filePath, raw, sourceName, canonical, discovery_method)
     const kind = inferKind(filePath, raw);
     const explicitId = raw.identity && typeof raw.identity === "object" ? String(raw.identity.artifact_id ?? "") : "";
     const id = String(raw.id ?? raw.artifact_id ?? (explicitId || undefined) ?? raw.block_id ?? raw.neoblock_id ?? raw.neostack_id ?? raw.sleeve_id ?? stableId(filePath));
-    const title = typeof raw.title === "string" ? raw.title : typeof raw.name === "string" ? raw.name : typeof raw.label === "string" ? raw.label : typeof raw.markdown === "string" ? extractMarkdownTitle(raw.markdown) ?? path.basename(filePath) : path.basename(filePath);
-    const description = typeof raw.description === "string" ? raw.description : typeof raw.summary === "string" ? raw.summary : typeof raw.markdown === "string" ? firstParagraph(raw.markdown) : "";
+    const metadata = raw.metadata && typeof raw.metadata === "object" ? raw.metadata : {};
+    const manifest = raw.manifest && typeof raw.manifest === "object" ? raw.manifest : {};
+    const title = firstString([
+        raw.title,
+        raw.name,
+        raw.label,
+        raw.display_name,
+        raw.summary,
+        metadata.title,
+        metadata.name,
+        manifest.title,
+        typeof raw.markdown === 'string' ? extractMarkdownTitle(raw.markdown) : undefined,
+        path.basename(filePath)
+    ]);
+    const description = firstString([
+        raw.description,
+        raw.summary,
+        metadata.description,
+        manifest.description,
+        typeof raw.markdown === 'string' ? firstParagraph(raw.markdown) : undefined,
+        ""
+    ]);
     const status = typeof raw.status === "string" ? raw.status : inferStatus(filePath);
     const canonical_status = source_kind === "human_readable"
         ? "non_canonical"
@@ -201,6 +239,13 @@ function extractMarkdownTitle(markdown) {
 function firstParagraph(markdown) {
     return markdown.split(/\r?\n\r?\n/).map((part) => part.trim()).find(Boolean) ?? "";
 }
+function firstString(values) {
+    for (const value of values) {
+        if (typeof value === "string" && value.trim())
+            return value.trim();
+    }
+    return "";
+}
 function asStringArray(value) {
     if (!value)
         return [];
@@ -271,7 +316,7 @@ function precedenceReason(artifact) {
         return "human_markdown_generated_id";
     return "fallback_generated_id";
 }
-function countArtifacts(artifacts, duplicate_count, warning_count) {
+function countArtifacts(artifacts, supportArtifacts, duplicate_count, warning_count) {
     const by_kind = {};
     const by_source_kind = {};
     const by_status = {};
@@ -294,5 +339,6 @@ function countArtifacts(artifacts, duplicate_count, warning_count) {
         if (artifact.support_only)
             human_support_count += 1;
     }
+    human_support_count = supportArtifacts.length;
     return { by_kind, by_source_kind, by_status, by_discovery_method, canonical_count, non_canonical_count, sample_count, human_support_count, duplicate_count, warning_count };
 }
