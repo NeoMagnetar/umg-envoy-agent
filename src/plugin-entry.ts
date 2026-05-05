@@ -15,6 +15,7 @@ import { renderUMGPath } from "./umg-path-renderer.js";
 import { validateUMGPath } from "./umg-path-validator.js";
 import { buildPublicPath } from "./public-path-builder.js";
 import { invokeLangChainBridge, filterTools } from "./langchain-bridge-adapter.js";
+import { runMinimalLangChainAgent } from "./langchain-agent-wrapper.js";
 import { loadNeostackFile } from "./compiler/neostack-loader.js";
 import { resolveNeostackArtifacts, validateNeostackStructure } from "./compiler/neostack-validator.js";
 import type { CompilerInputPreview, LangChainBridgePayload, PluginConfig, SleeveLoadResult, NeostackLoadResult } from "./types.js";
@@ -316,9 +317,13 @@ function registerCliBridge(api: any, config?: PluginConfig) {
     root.command("neostack-invoke")
       .requiredOption("--payload-file <path>")
       .option("--execute")
-      .action(async (opts: { payloadFile: string; execute?: boolean }) => {
+      .option("--agent-execute")
+      .action(async (opts: { payloadFile: string; execute?: boolean; agentExecute?: boolean }) => {
         const payload = JSON.parse(fs.readFileSync(opts.payloadFile, "utf8")) as LangChainBridgePayload;
-        console.log(JSON.stringify(await invokeLangChainBridge(payload, opts.execute ? createPhase2Executor(config) : undefined), null, 2));
+        if (opts.agentExecute) payload.invoke_mode = "agent_execute";
+        else if (opts.execute) payload.invoke_mode = "direct_execute";
+        else payload.invoke_mode = payload.invoke_mode ?? "dry_run";
+        console.log(JSON.stringify(await invokeLangChainBridge(payload, { executor: opts.execute || opts.agentExecute ? createPhase2Executor(config) : undefined, agentRunner: opts.agentExecute ? runMinimalLangChainAgent : undefined }), null, 2));
       });
   }, { commands: ["umg-envoy"] });
 }
@@ -403,10 +408,14 @@ const entry = {
     }, { optional: true });
     api.registerTool({
       name: "umg_envoy_neostack_invoke",
-      description: "Invoke the LangChain Bridge NeoStack. Dry-run by default; optional Phase 2 read-only execution supports only hardcoded safe tools.",
-      parameters: Type.Object({ payload: Type.Any(), execute: Type.Optional(Type.Boolean()) }, { additionalProperties: false }),
-      async execute(input: { payload: LangChainBridgePayload; execute?: boolean }) {
-        return { content: [{ type: "text", text: JSON.stringify(await invokeLangChainBridge(input.payload, input.execute ? createPhase2Executor(config) : undefined), null, 2) }] };
+      description: "Invoke the LangChain Bridge NeoStack. Dry-run by default; supports direct execute and minimal LangChain agent execute for hardcoded safe tools only.",
+      parameters: Type.Object({ payload: Type.Any(), execute: Type.Optional(Type.Boolean()), agentExecute: Type.Optional(Type.Boolean()) }, { additionalProperties: false }),
+      async execute(input: { payload: LangChainBridgePayload; execute?: boolean; agentExecute?: boolean }) {
+        const payload = { ...input.payload };
+        if (input.agentExecute) payload.invoke_mode = "agent_execute";
+        else if (input.execute) payload.invoke_mode = "direct_execute";
+        else payload.invoke_mode = payload.invoke_mode ?? "dry_run";
+        return { content: [{ type: "text", text: JSON.stringify(await invokeLangChainBridge(payload, { executor: input.execute || input.agentExecute ? createPhase2Executor(config) : undefined, agentRunner: input.agentExecute ? runMinimalLangChainAgent : undefined }), null, 2) }] };
       }
     }, { optional: true });
     api.registerTool({

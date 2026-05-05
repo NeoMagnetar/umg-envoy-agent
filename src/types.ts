@@ -19,6 +19,7 @@ export interface ToolDefinition {
 export interface LangChainBridgePayload {
   neostack_id: "NS.UMG.LANGCHAIN_BRIDGE.v0.1";
   call_mode: "simple_agent" | "langgraph_workflow" | "rag" | "tool_bridge_only" | "validation_only";
+  invoke_mode?: "dry_run" | "direct_execute" | "agent_execute";
   bridge_mode: BridgeMode;
   sleeve_id: string;
   task: { user_intent: string; input?: unknown; constraints?: string[] };

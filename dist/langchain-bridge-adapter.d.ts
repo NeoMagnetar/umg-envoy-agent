@@ -18,6 +18,7 @@ export interface ToolDefinition {
 export interface LangChainBridgePayload {
     neostack_id: typeof NEOSTACK_ID;
     call_mode: "simple_agent" | "langgraph_workflow" | "rag" | "tool_bridge_only" | "validation_only";
+    invoke_mode?: "dry_run" | "direct_execute" | "agent_execute";
     bridge_mode: BridgeMode;
     sleeve_id: string;
     task: {
@@ -71,6 +72,16 @@ export interface TraceEvent {
 export interface BridgeToolExecutor {
     execute(toolName: string, payload: Record<string, unknown>): Promise<unknown>;
 }
+export interface LangChainBridgeInvokeOptions {
+    executor?: BridgeToolExecutor;
+    agentRunner?: (payload: LangChainBridgePayload, approvedTools: ToolDefinition[], executor: BridgeToolExecutor) => Promise<{
+        ok: boolean;
+        output?: unknown;
+        traceEvents: TraceEvent[];
+        warnings: string[];
+        errors: string[];
+    }>;
+}
 export declare function validatePayload(payload: LangChainBridgePayload): TraceEvent[];
 export declare function filterTools(payload: LangChainBridgePayload): {
     decisions: {
@@ -80,7 +91,7 @@ export declare function filterTools(payload: LangChainBridgePayload): {
     }[];
     events: TraceEvent[];
 };
-export declare function invokeLangChainBridge(payload: LangChainBridgePayload, executor?: BridgeToolExecutor): Promise<{
+export declare function invokeLangChainBridge(payload: LangChainBridgePayload, options?: LangChainBridgeInvokeOptions): Promise<{
     neostack_id: string;
     sleeve_id: string;
     status: string;
