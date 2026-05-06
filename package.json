@@ -34,6 +34,7 @@
     "umg:runtime-governed-handoff:smoke": "node scripts/runtime-governed-handoff-smoke.mjs",
     "umg:runtime-approval-checkpoint:smoke": "node scripts/runtime-approval-checkpoint-smoke.mjs",
     "umg:runtime-governed-alpha:smoke": "node scripts/runtime-governed-alpha-smoke.mjs",
+    "umg:runtime-local-readonly-inspection:smoke": "node scripts/runtime-local-readonly-inspection-smoke.mjs",
     "validate:umg:e2e": "node scripts/validate-umg-e2e.mjs",
     "pack:dry": "npm pack --dry-run"
   },

@@ -10,6 +10,14 @@ export {
   executeGovernedAlpha,
   executeGovernedAlphaMetadataOnly
 } from "./runtime-spec/governed-execution-alpha.js";
+export {
+  buildLocalReadOnlyInspectionMockResultDryRun,
+  buildLocalReadOnlyInspectionPreflightDryRun,
+  buildLocalReadOnlyInspectionScope,
+  hashLocalReadOnlyInspectionScope,
+  redactScopePath,
+  validateLocalReadOnlyInspectionScopeDryRun
+} from "./runtime-spec/local-readonly-inspection.js";
 export type {
   GovernedMetadataAlphaCandidateToolV2,
   GovernedMetadataAlphaToolV2,

@@ -4,11 +4,18 @@ export declare function stableHash(value: unknown): string;
 export declare function buildApprovalRequestDryRun(input: {
     handoff: GovernedExecutionHandoffV0;
     expiresAt?: string;
+    localReadOnlyScope?: {
+        redacted_root: string;
+        recursive: boolean;
+        max_depth: number;
+        max_items: number;
+    };
 }): ApprovalRequestV0;
 export declare function buildExecutionCheckpointRecordDryRun(input: {
     handoff: GovernedExecutionHandoffV0;
     approvalRequest?: ApprovalRequestV0;
     policyVersion?: string;
+    localInspectionScopeHash?: string;
 }): ExecutionCheckpointRecordV0;
 export declare function buildExecutionResumeReferenceDryRun(input: {
     handoff: GovernedExecutionHandoffV0;

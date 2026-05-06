@@ -1,5 +1,6 @@
 import type { ApprovalRequestV0, ExecutionCheckpointRecordV0, ExecutionResumeReferenceV0, PreflightValidationResultV0 } from "./approval-checkpoint-contract-types.js";
 import type { GovernedExecutionAlphaResultV0 } from "./governed-execution-alpha-types.js";
+import type { LocalReadOnlyInspectionMockResultV0 } from "./local-readonly-inspection.js";
 import type { GovernedExecutionHandoffV0 } from "./governed-execution-handoff-types.js";
 import type { RuntimeIRMatrixV0 } from "./ir-matrix-types.js";
 import type { RuntimeMOLTMapV0 } from "./molt-map-types.js";
@@ -15,6 +16,14 @@ export interface RuntimeDashboardOptions {
     governed_alpha_query?: string;
     governed_alpha_kind?: string;
     governed_alpha_limit?: number;
+    include_local_readonly_inspection?: boolean;
+    local_readonly_root_path?: string;
+    local_readonly_recursive?: boolean;
+    local_readonly_max_depth?: number;
+    local_readonly_max_items?: number;
+    local_readonly_include_hidden?: boolean;
+    local_readonly_include_system_paths?: boolean;
+    local_readonly_include_file_contents?: boolean;
     mode?: RuntimeVisibilityMode;
 }
 export interface RuntimeDashboardV0 {
@@ -27,6 +36,7 @@ export interface RuntimeDashboardV0 {
     resume_reference?: ExecutionResumeReferenceV0;
     preflight?: PreflightValidationResultV0;
     governed_alpha?: GovernedExecutionAlphaResultV0;
+    local_readonly_inspection?: LocalReadOnlyInspectionMockResultV0;
     execution_statement: string;
     matrix_available: boolean;
 }

@@ -84,6 +84,9 @@ export interface ExecutionCheckpointRecordV0 {
         selected_context_hash: string;
         approval_request_hash?: string;
         policy_version: string;
+        extra_hashes?: {
+            local_inspection_scope_hash?: string;
+        };
     };
     replay_guard: {
         exact_match_required: true;

@@ -14,6 +14,12 @@ export function stableHash(value: unknown): string {
 export function buildApprovalRequestDryRun(input: {
   handoff: GovernedExecutionHandoffV0;
   expiresAt?: string;
+  localReadOnlyScope?: {
+    redacted_root: string;
+    recursive: boolean;
+    max_depth: number;
+    max_items: number;
+  };
 }): ApprovalRequestV0 {
   const { handoff, expiresAt } = input;
   const approval_items: ApprovalRequestItemV0[] = handoff.approval.approval_items.map((item, index) => ({
@@ -45,13 +51,13 @@ export function buildApprovalRequestDryRun(input: {
     molt_map_id: handoff.molt_map_id,
     status,
     mode: "dry_run",
-    requested_action_summary: summarizeRequestedAction(handoff),
+    requested_action_summary: summarizeRequestedAction(handoff, input.localReadOnlyScope),
     selected_context: cloneSelectedContext(handoff),
     approval_items,
     blocked_items,
     user_visible_summary: {
       title: status === "blocked" ? "Approval blocked for future governed execution request" : status === "required" ? "Approval required for future governed execution request" : "Approval not required for this dry-run request",
-      plain_language_summary: summarizePlainLanguage(handoff, status),
+      plain_language_summary: summarizePlainLanguage(handoff, status, input.localReadOnlyScope),
       tools_requested: [...handoff.tool_plan.requested],
       risks: approval_items.map((item) => item.user_visible_risk),
       blocked_items: blocked_items.map((item) => `${item.tool_id} — ${item.reason}`),
@@ -76,6 +82,7 @@ export function buildExecutionCheckpointRecordDryRun(input: {
   handoff: GovernedExecutionHandoffV0;
   approvalRequest?: ApprovalRequestV0;
   policyVersion?: string;
+  localInspectionScopeHash?: string;
 }): ExecutionCheckpointRecordV0 {
   const { handoff, approvalRequest } = input;
   const policyVersion = input.policyVersion ?? "approval-checkpoint-contract/v0";
@@ -103,7 +110,10 @@ export function buildExecutionCheckpointRecordDryRun(input: {
       tool_plan_hash,
       selected_context_hash,
       approval_request_hash,
-      policy_version: policyVersion
+      policy_version: policyVersion,
+      extra_hashes: input.localInspectionScopeHash ? {
+        local_inspection_scope_hash: input.localInspectionScopeHash
+      } : undefined
     },
     replay_guard: {
       exact_match_required: true,
@@ -237,7 +247,10 @@ function resolveCheckpointStatus(handoff: GovernedExecutionHandoffV0): Execution
   return "draft";
 }
 
-function summarizeRequestedAction(handoff: GovernedExecutionHandoffV0): string {
+function summarizeRequestedAction(handoff: GovernedExecutionHandoffV0, localReadOnlyScope?: { redacted_root: string; recursive: boolean; max_depth: number; max_items: number; }): string {
+  if (handoff.approval.approval_items.some((item) => item.tool_id === "desktop_bridge.file_scan") && localReadOnlyScope) {
+    return `Future local read-only metadata inspection would require approval for ${localReadOnlyScope.redacted_root} (recursive:${localReadOnlyScope.recursive}, max_depth:${localReadOnlyScope.max_depth}, max_items:${localReadOnlyScope.max_items}).`;
+  }
   if (handoff.blocking.blocked_items.length > 0) {
     return `Future governed execution request is blocked for ${handoff.blocking.blocked_items.map((item) => item.tool_id).join(", ")}.`;
   }
@@ -253,8 +266,11 @@ function summarizeRequestedAction(handoff: GovernedExecutionHandoffV0): string {
   return "No future governed execution action is currently requested.";
 }
 
-function summarizePlainLanguage(handoff: GovernedExecutionHandoffV0, status: ApprovalRequestV0["status"]): string {
+function summarizePlainLanguage(handoff: GovernedExecutionHandoffV0, status: ApprovalRequestV0["status"], localReadOnlyScope?: { redacted_root: string; recursive: boolean; max_depth: number; max_items: number; }): string {
   if (status === "blocked") return "This dry-run request includes blocked tools that cannot be approved under conservative v0 governance.";
+  if (status === "required" && handoff.approval.approval_items.some((item) => item.tool_id === "desktop_bridge.file_scan") && localReadOnlyScope) {
+    return `This dry-run request would require exact-scope approval for local read-only metadata inspection of ${localReadOnlyScope.redacted_root}. File contents remain disabled; writes, deletes, shell execution, and external calls remain disallowed.`;
+  }
   if (status === "required") return "This dry-run request identified tool actions that would require explicit exact-scope approval before any future execution discussion.";
   if (handoff.tool_plan.metadata_only.length > 0) return "This dry-run request remains metadata-only and does not require approval.";
   return "This dry-run request does not currently require approval.";

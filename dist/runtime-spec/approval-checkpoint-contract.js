@@ -36,13 +36,13 @@ export function buildApprovalRequestDryRun(input) {
         molt_map_id: handoff.molt_map_id,
         status,
         mode: "dry_run",
-        requested_action_summary: summarizeRequestedAction(handoff),
+        requested_action_summary: summarizeRequestedAction(handoff, input.localReadOnlyScope),
         selected_context: cloneSelectedContext(handoff),
         approval_items,
         blocked_items,
         user_visible_summary: {
             title: status === "blocked" ? "Approval blocked for future governed execution request" : status === "required" ? "Approval required for future governed execution request" : "Approval not required for this dry-run request",
-            plain_language_summary: summarizePlainLanguage(handoff, status),
+            plain_language_summary: summarizePlainLanguage(handoff, status, input.localReadOnlyScope),
             tools_requested: [...handoff.tool_plan.requested],
             risks: approval_items.map((item) => item.user_visible_risk),
             blocked_items: blocked_items.map((item) => `${item.tool_id} — ${item.reason}`),
@@ -88,7 +88,10 @@ export function buildExecutionCheckpointRecordDryRun(input) {
             tool_plan_hash,
             selected_context_hash,
             approval_request_hash,
-            policy_version: policyVersion
+            policy_version: policyVersion,
+            extra_hashes: input.localInspectionScopeHash ? {
+                local_inspection_scope_hash: input.localInspectionScopeHash
+            } : undefined
         },
         replay_guard: {
             exact_match_required: true,
@@ -207,7 +210,10 @@ function resolveCheckpointStatus(handoff) {
         return "not_required";
     return "draft";
 }
-function summarizeRequestedAction(handoff) {
+function summarizeRequestedAction(handoff, localReadOnlyScope) {
+    if (handoff.approval.approval_items.some((item) => item.tool_id === "desktop_bridge.file_scan") && localReadOnlyScope) {
+        return `Future local read-only metadata inspection would require approval for ${localReadOnlyScope.redacted_root} (recursive:${localReadOnlyScope.recursive}, max_depth:${localReadOnlyScope.max_depth}, max_items:${localReadOnlyScope.max_items}).`;
+    }
     if (handoff.blocking.blocked_items.length > 0) {
         return `Future governed execution request is blocked for ${handoff.blocking.blocked_items.map((item) => item.tool_id).join(", ")}.`;
     }
@@ -222,9 +228,12 @@ function summarizeRequestedAction(handoff) {
     }
     return "No future governed execution action is currently requested.";
 }
-function summarizePlainLanguage(handoff, status) {
+function summarizePlainLanguage(handoff, status, localReadOnlyScope) {
     if (status === "blocked")
         return "This dry-run request includes blocked tools that cannot be approved under conservative v0 governance.";
+    if (status === "required" && handoff.approval.approval_items.some((item) => item.tool_id === "desktop_bridge.file_scan") && localReadOnlyScope) {
+        return `This dry-run request would require exact-scope approval for local read-only metadata inspection of ${localReadOnlyScope.redacted_root}. File contents remain disabled; writes, deletes, shell execution, and external calls remain disallowed.`;
+    }
     if (status === "required")
         return "This dry-run request identified tool actions that would require explicit exact-scope approval before any future execution discussion.";
     if (handoff.tool_plan.metadata_only.length > 0)
