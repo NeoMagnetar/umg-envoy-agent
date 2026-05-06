@@ -33,17 +33,19 @@ export function buildRuntimeDashboard(spec: RuntimeSpecV0, options: RuntimeDashb
   const molt_map = includeMoltMap || includeIRMatrix ? buildRuntimeMOLTMap(spec) : undefined;
   const ir_matrix = includeIRMatrix ? buildRuntimeIRMatrix({ spec, molt_map }) : undefined;
   const governed_handoff = includeGovernedHandoff ? buildGovernedExecutionHandoffDryRun({ runtimeSpec: spec, irMatrixId: ir_matrix?.matrix_id, moltMapId: molt_map?.molt_map_id }) : undefined;
-  return {
-    header: {
-      ...header,
-      matrix_available: Boolean(ir_matrix)
-    },
+  const headerWithMatrix = {
+    ...header,
+    matrix_available: Boolean(ir_matrix)
+  };
+  const dashboard: RuntimeDashboardV0 = {
+    header: headerWithMatrix,
     molt_map: includeMoltMap ? molt_map : undefined,
     ir_matrix,
     governed_handoff,
     execution_statement: "No tools executed.",
     matrix_available: Boolean(ir_matrix)
   };
+  return dashboard;
 }
 
 export function renderRuntimeDashboard(dashboard: RuntimeDashboardV0): string {
@@ -91,6 +93,13 @@ export function renderRuntimeDashboard(dashboard: RuntimeDashboardV0): string {
   }
 
   if (dashboard.governed_handoff) {
+    lines.push('', 'APPROVAL / CHECKPOINT CONTRACT');
+    lines.push(`Approval Status: ${dashboard.governed_handoff.approval.approval_status}`);
+    if (dashboard.governed_handoff.approval.approval_items.length > 0) {
+      lines.push(`Approval Items: ${dashboard.governed_handoff.approval.approval_items.map((item) => `${item.tool_id} — ${item.risk_level} risk — exact-scope approval required`).join(', ')}`);
+    }
+    lines.push(`Checkpoint: ${dashboard.governed_handoff.checkpoint.checkpoint_required ? 'required before execution' : dashboard.governed_handoff.checkpoint.checkpoint_policy}`);
+    lines.push(`Resume: ${dashboard.governed_handoff.checkpoint.resume_policy === 'resume_requires_checkpoint' ? 'requires checkpoint' : dashboard.governed_handoff.checkpoint.resume_policy}`);
     lines.push('', 'GOVERNED EXECUTION HANDOFF');
     lines.push(`Status: ${resolveHandoffStatusText(dashboard.governed_handoff)}`);
     lines.push(`Approval Required: ${dashboard.governed_handoff.approval.approval_required ? 'yes' : 'no'}`);

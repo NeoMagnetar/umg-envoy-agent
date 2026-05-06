@@ -9,7 +9,11 @@ export type RuntimeInspectionQueryType =
   | "inspect_support_docs"
   | "inspect_provenance"
   | "inspect_matrix_links"
-  | "inspect_molt_map_links";
+  | "inspect_molt_map_links"
+  | "inspect_approval"
+  | "inspect_checkpoint"
+  | "inspect_resume_guard"
+  | "inspect_invalidation_reason";
 
 export interface RuntimeInspectionRequestV0 {
   query_type: RuntimeInspectionQueryType;

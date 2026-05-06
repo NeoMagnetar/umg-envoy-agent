@@ -337,6 +337,60 @@ export function buildRuntimeIRMatrix(input: {
   }
 
   if (spec.governance.approval_required) {
+    const approvalRequestNodeId = "approval.request.pending";
+    const checkpointPolicyNodeId = "checkpoint.policy.required_before_execution";
+    const resumeGuardNodeId = "resume.guard.requires_checkpoint";
+    pushNode({
+      id: approvalRequestNodeId,
+      kind: "approval_request",
+      label: "approval_request",
+      state: "requires_approval",
+      metadata: {
+        status: "pending",
+        execution_statement: "No tools executed."
+      }
+    });
+    pushNode({
+      id: checkpointPolicyNodeId,
+      kind: "checkpoint_policy",
+      label: "checkpoint_policy",
+      state: "requires_approval",
+      metadata: {
+        status: "required_before_execution",
+        execution_statement: "No tools executed."
+      }
+    });
+    pushNode({
+      id: resumeGuardNodeId,
+      kind: "resume_guard",
+      label: "resume_guard",
+      state: "requires_approval",
+      metadata: {
+        status: "requires_checkpoint",
+        execution_statement: "No tools executed."
+      }
+    });
+    pushEdge({
+      from: rootId,
+      to: approvalRequestNodeId,
+      relation: "references",
+      state: "requires_approval",
+      reason: "Governed handoff would require explicit approval request before future execution."
+    });
+    pushEdge({
+      from: rootId,
+      to: checkpointPolicyNodeId,
+      relation: "constrains",
+      state: "requires_approval",
+      reason: "Checkpoint would be required before future approved execution."
+    });
+    pushEdge({
+      from: rootId,
+      to: resumeGuardNodeId,
+      relation: "constrains",
+      state: "requires_approval",
+      reason: "Resume would require checkpoint and revalidation."
+    });
     const approvalNodeId = "constraint.approval_required";
     pushNode({
       id: approvalNodeId,
@@ -592,6 +646,12 @@ function symbolForKind(kind: RuntimeIRMatrixNodeKind): string {
       return "◌";
     case "matrix_placeholder":
       return "?";
+    case "approval_request":
+      return "⛓";
+    case "checkpoint_policy":
+      return "⛓";
+    case "resume_guard":
+      return "⛓";
     default:
       return "?";
   }

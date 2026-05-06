@@ -11,7 +11,10 @@ export type RuntimeIRMatrixNodeKind =
   | "support_artifact"
   | "warning"
   | "trace_event"
-  | "matrix_placeholder";
+  | "matrix_placeholder"
+  | "approval_request"
+  | "checkpoint_policy"
+  | "resume_guard";
 
 export type RuntimeIRMatrixEdgeRelation =
   | "selects"
