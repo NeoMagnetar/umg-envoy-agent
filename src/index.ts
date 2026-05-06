@@ -18,6 +18,11 @@ export type {
   PluginNativeMetadataClassificationV0
 } from "./runtime-spec/governed-execution-alpha-expansion-types.js";
 export type {
+  LocalReadOnlyFileMetadataV0,
+  LocalReadOnlyInspectionResultV0,
+  LocalReadOnlyInspectionScopeV0
+} from "./runtime-spec/local-readonly-inspection-types.js";
+export type {
   GovernedExecutionAlphaAllowedTool,
   GovernedExecutionAlphaBlockedTool,
   GovernedExecutionAlphaPreflightRuleV0,
