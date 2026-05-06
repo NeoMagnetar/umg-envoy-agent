@@ -20,12 +20,15 @@ export function buildRuntimeDashboard(spec, options = {}) {
     const resume_reference = includeApprovalCheckpoint && governed_handoff ? buildExecutionResumeReferenceDryRun({ handoff: governed_handoff, checkpoint: checkpoint_record, approvalRequest: approval_request }) : undefined;
     const preflight = includeApprovalCheckpoint && governed_handoff ? buildPreflightValidationDryRun({ handoff: governed_handoff, approvalRequest: approval_request, checkpoint: checkpoint_record, resumeReference: resume_reference }) : undefined;
     const governed_alpha = includeGovernedAlpha && governed_handoff && preflight ? executeGovernedAlpha({
-        tool_id: spec.tool_bindings.requested.includes("resolver.library_status") ? "resolver.library_status" : spec.tool_bindings.requested[0] ?? "resolver.library_status",
+        tool_id: options.governed_alpha_tool_id ?? (spec.tool_bindings.requested.includes("resolver.library_status") ? "resolver.library_status" : spec.tool_bindings.requested[0] ?? "resolver.library_status"),
         runtimeSpec: spec,
         handoff: governed_handoff,
         approvalRequest: approval_request,
         checkpoint: checkpoint_record,
-        preflight
+        preflight,
+        query: options.governed_alpha_query,
+        kind: options.governed_alpha_kind,
+        limit: options.governed_alpha_limit
     }) : undefined;
     const headerWithMatrix = {
         ...header,
@@ -94,6 +97,15 @@ export function renderRuntimeDashboard(dashboard) {
         lines.push(`Approval: ${dashboard.governed_alpha.approval.required ? 'required' : 'not required'}`);
         lines.push(`Checkpoint: ${dashboard.governed_alpha.checkpoint.required ? 'required' : 'not required'}`);
         lines.push(`Payload Policy: ${dashboard.governed_alpha.result_payload_policy.payload_type} only`);
+        if (dashboard.governed_alpha.payload && typeof dashboard.governed_alpha.payload === 'object') {
+            const payload = dashboard.governed_alpha.payload;
+            if (typeof payload.limit === 'number')
+                lines.push(`Limit: ${payload.limit}`);
+            if (typeof payload.hard_max === 'number')
+                lines.push(`Hard Max: ${payload.hard_max}`);
+        }
+        lines.push(`File Contents: ${dashboard.governed_alpha.result_payload_policy.contains_file_content ? 'yes' : 'no'}`);
+        lines.push(`Sensitive Data: ${dashboard.governed_alpha.result_payload_policy.contains_sensitive_data ? 'yes' : 'no'}`);
         lines.push(`Writes: ${dashboard.governed_alpha.execution_boundary.write_performed ? 'yes' : 'no'}`);
         lines.push(`Deletes: ${dashboard.governed_alpha.execution_boundary.delete_performed ? 'yes' : 'no'}`);
         lines.push(`External Calls: ${dashboard.governed_alpha.execution_boundary.external_calls_performed ? 'yes' : 'no'}`);

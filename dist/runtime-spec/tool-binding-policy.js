@@ -18,6 +18,33 @@ export const DEFAULT_KNOWN_TOOL_SURFACES = [
         governance_policy: "langchain_agent_mode_requires_approval"
     },
     {
+        tool_id: "resolver.library_status",
+        aliases: ["library status", "resolver status", "umg library status"],
+        status: "metadata_only",
+        default_risk_level: "none",
+        default_execution_mode: "metadata_only",
+        approval_required: false,
+        governance_policy: "plugin_native_metadata_only"
+    },
+    {
+        tool_id: "resolver.library_search",
+        aliases: ["library search", "resolver search", "search library"],
+        status: "metadata_only",
+        default_risk_level: "none",
+        default_execution_mode: "metadata_only",
+        approval_required: false,
+        governance_policy: "plugin_native_metadata_only"
+    },
+    {
+        tool_id: "tool.capability_summary",
+        aliases: ["tool capability summary", "capability summary", "governed tool capabilities"],
+        status: "metadata_only",
+        default_risk_level: "none",
+        default_execution_mode: "metadata_only",
+        approval_required: false,
+        governance_policy: "plugin_native_metadata_only"
+    },
+    {
         tool_id: "mcp.server_metadata",
         aliases: ["mcp metadata", "server metadata"],
         status: "metadata_only",
@@ -324,6 +351,12 @@ function mapLooseToolReference(value) {
         hits.push("langchain.agent_mode");
     if (lower.includes("langchain_bridge") || lower.includes("langchain bridge") || lower === "langchain")
         hits.push("langchain_bridge");
+    if (lower.includes("resolver.library_status") || lower.includes("library status") || lower.includes("resolver status"))
+        hits.push("resolver.library_status");
+    if (lower.includes("resolver.library_search") || lower.includes("library search") || lower.includes("resolver search") || lower.includes("search library"))
+        hits.push("resolver.library_search");
+    if (lower.includes("tool.capability_summary") || lower.includes("tool capability summary") || lower.includes("capability summary") || lower.includes("governed tool capabilities"))
+        hits.push("tool.capability_summary");
     if (lower.includes("mcp.server_metadata") || lower.includes("server metadata") || lower.includes("mcp metadata"))
         hits.push("mcp.server_metadata");
     if (lower.includes("mcp.real_remote_execution") || lower.includes("real remote execution"))

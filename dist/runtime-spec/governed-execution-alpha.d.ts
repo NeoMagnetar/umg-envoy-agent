@@ -9,12 +9,18 @@ export declare function executeGovernedAlpha(input: {
     approvalRequest?: ApprovalRequestV0;
     checkpoint?: ExecutionCheckpointRecordV0;
     preflight: PreflightValidationResultV0;
+    query?: string;
+    kind?: string;
+    limit?: number;
 }): GovernedExecutionAlphaResultV0;
 export declare function executeGovernedAlphaMetadataOnly(input: {
-    tool_id: "resolver.library_status";
+    tool_id: "resolver.library_status" | "resolver.library_search" | "tool.capability_summary";
     runtimeSpec: RuntimeSpecV0;
     handoff: GovernedExecutionHandoffV0;
     approvalRequest?: ApprovalRequestV0;
     checkpoint?: ExecutionCheckpointRecordV0;
     preflight: PreflightValidationResultV0;
+    query?: string;
+    kind?: string;
+    limit?: number;
 }): GovernedExecutionAlphaResultV0;

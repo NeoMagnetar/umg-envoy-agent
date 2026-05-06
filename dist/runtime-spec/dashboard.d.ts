@@ -11,6 +11,10 @@ export interface RuntimeDashboardOptions {
     include_governed_handoff?: boolean;
     include_approval_checkpoint?: boolean;
     include_governed_alpha?: boolean;
+    governed_alpha_tool_id?: string;
+    governed_alpha_query?: string;
+    governed_alpha_kind?: string;
+    governed_alpha_limit?: number;
     mode?: RuntimeVisibilityMode;
 }
 export interface RuntimeDashboardV0 {
