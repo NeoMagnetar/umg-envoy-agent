@@ -6,7 +6,7 @@ export interface SleeveToolBindingV0 {
     label?: string;
     requested_by: {
         artifact_id: string;
-        artifact_kind: "sleeve" | "neostack" | "neoblock" | "molt_block";
+        artifact_kind: "sleeve" | "neostack" | "neoblock" | "molt_block" | "runtime_spec";
     };
     status: ToolBindingStatus;
     risk_level: ToolRiskLevel;

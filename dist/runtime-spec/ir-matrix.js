@@ -247,13 +247,19 @@ export function buildRuntimeIRMatrix(input) {
     }
     const addToolBinding = (tool, state, relationState, reason) => {
         const nodeId = `tool.${tool}`;
+        const binding = spec.tool_bindings.bindings?.find((entry) => entry.tool_id === tool);
         pushNode({
             id: nodeId,
             kind: "tool_binding",
             label: tool,
             state,
             metadata: {
-                binding_scope: "requested_tool_binding"
+                binding_scope: binding?.status === "metadata_only" ? "metadata_only" : binding?.status === "mock_only" ? "mock_only" : "requested_tool_binding",
+                risk_level: binding?.risk_level,
+                execution_mode: binding?.execution_mode,
+                approval_required: binding?.approval_required,
+                governance_policy: binding?.governance_policy,
+                blocked_reason: binding?.blocked_reason
             }
         });
         pushEdge({
@@ -274,6 +280,12 @@ export function buildRuntimeIRMatrix(input) {
     };
     for (const tool of spec.tool_bindings.available) {
         addToolBinding(tool, "available", "available", "Requested tool binding is available in dry-run projection.");
+    }
+    for (const tool of spec.tool_bindings.metadata_only ?? []) {
+        addToolBinding(tool, "available", "available", "Requested tool binding is metadata-only in dry-run projection.");
+    }
+    for (const tool of spec.tool_bindings.mock_only ?? []) {
+        addToolBinding(tool, "available", "available", "Requested tool binding is mock-only in dry-run projection.");
     }
     for (const tool of spec.tool_bindings.requires_approval) {
         const nodeId = addToolBinding(tool, "requires_approval", "requires_approval", "Requested tool binding requires approval in dry-run projection.");
@@ -497,6 +509,10 @@ function renderEdgeLine(node, edge, depth = 0) {
 function annotationForNode(node, edge) {
     if (node.kind === "tool_binding" && node.state === "requires_approval")
         return "requires_approval";
+    if (node.kind === "tool_binding" && node.metadata?.binding_scope === "metadata_only")
+        return "metadata_only";
+    if (node.kind === "tool_binding" && node.metadata?.binding_scope === "mock_only")
+        return "mock_only";
     if (node.kind === "support_artifact" && node.state === "support_only")
         return "support_only";
     if (node.kind === "governance") {

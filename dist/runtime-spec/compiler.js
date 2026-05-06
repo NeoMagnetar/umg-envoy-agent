@@ -5,6 +5,7 @@ import { UMGResolver } from "../resolver/resolver.js";
 import { classifyRuntimeSpecCandidates } from "./classifier.js";
 import { selectRuntimeArtifacts } from "./selector.js";
 import { selectActiveSleeveDryRun } from "./sleeve-selection.js";
+import { classifySleeveToolBindingsDryRun } from "./tool-binding-policy.js";
 import { event, matrixId, runtimeSpecId, traceId } from "./trace.js";
 export function compileRuntimeSpecDryRun(input) {
     const config = loadBlockLibraryConfig();
@@ -28,7 +29,7 @@ export function compileRuntimeSpecDryRun(input) {
     }
     const requested_tools = input.requested_tools ?? inferRequestedTools(input.user_task);
     const available = requested_tools.filter((tool) => tool === "langchain_bridge");
-    const blocked = requested_tools.filter((tool) => tool.startsWith("mcp."));
+    const blocked = requested_tools.filter((tool) => tool === "mcp.real_remote_execution");
     const requires_approval = requested_tools.filter((tool) => tool.includes("agent_mode"));
     if (requested_tools.length > 0) {
         selection_events.push({ event: "TOOL_BINDING_REQUESTED", reason: `Requested tool bindings: ${requested_tools.join(', ')}` });
@@ -62,7 +63,7 @@ export function compileRuntimeSpecDryRun(input) {
     for (const warning of [...selection.warnings, ...sleeve_selection.warnings]) {
         selection_events.push({ event: "SELECTION_WARNING", reason: warning });
     }
-    return {
+    const compiledSpecBase = {
         runtime_spec_id: runtimeSpecId(),
         runtime_kind: selection.active_sleeve ? "sleeve_runtime" : selection.runtime_kind,
         source_mode: resolver.status().source_mode,
@@ -113,6 +114,14 @@ export function compileRuntimeSpecDryRun(input) {
             available: false
         },
         status: selection.runtime_kind === "assembled_runtime" ? "assembled_runtime" : "compiled"
+    };
+    const structuredToolBindings = classifySleeveToolBindingsDryRun({
+        runtimeSpec: compiledSpecBase,
+        registryArtifacts: [...registry.artifacts, ...registry.support_artifacts]
+    });
+    return {
+        ...compiledSpecBase,
+        tool_bindings: structuredToolBindings
     };
 }
 function inferRequestedTools(task) {

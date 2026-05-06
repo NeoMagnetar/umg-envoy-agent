@@ -5,6 +5,7 @@ import { UMGResolver } from "../resolver/resolver.js";
 import { classifyRuntimeSpecCandidates } from "./classifier.js";
 import { selectRuntimeArtifacts } from "./selector.js";
 import { selectActiveSleeveDryRun } from "./sleeve-selection.js";
+import { classifySleeveToolBindingsDryRun } from "./tool-binding-policy.js";
 import { event, matrixId, runtimeSpecId, traceId } from "./trace.js";
 import type { RuntimeSpecCompileInput, RuntimeSpecV0 } from "./types.js";
 
@@ -28,7 +29,7 @@ export function compileRuntimeSpecDryRun(input: RuntimeSpecCompileInput): Runtim
 
   const requested_tools = input.requested_tools ?? inferRequestedTools(input.user_task);
   const available = requested_tools.filter((tool) => tool === "langchain_bridge");
-  const blocked = requested_tools.filter((tool) => tool.startsWith("mcp."));
+  const blocked = requested_tools.filter((tool) => tool === "mcp.real_remote_execution");
   const requires_approval = requested_tools.filter((tool) => tool.includes("agent_mode"));
   if (requested_tools.length > 0) {
     selection_events.push({ event: "TOOL_BINDING_REQUESTED", reason: `Requested tool bindings: ${requested_tools.join(', ')}` });
@@ -65,7 +66,7 @@ export function compileRuntimeSpecDryRun(input: RuntimeSpecCompileInput): Runtim
     selection_events.push({ event: "SELECTION_WARNING", reason: warning });
   }
 
-  return {
+  const compiledSpecBase = {
     runtime_spec_id: runtimeSpecId(),
     runtime_kind: selection.active_sleeve ? "sleeve_runtime" : selection.runtime_kind,
     source_mode: resolver.status().source_mode,
@@ -100,11 +101,11 @@ export function compileRuntimeSpecDryRun(input: RuntimeSpecCompileInput): Runtim
       requires_approval
     },
     governance: {
-      execution_mode: "dry_run",
+      execution_mode: "dry_run" as const,
       approval_required: requires_approval.length > 0,
-      governed_execution_plane: true,
-      mcp_policy: blocked.length > 0 ? "blocked_by_default" : "metadata_only",
-      langchain_policy: available.includes("langchain_bridge") ? "governed" : "dry_run"
+      governed_execution_plane: true as const,
+      mcp_policy: blocked.length > 0 ? "blocked_by_default" as const : "metadata_only" as const,
+      langchain_policy: available.includes("langchain_bridge") ? "governed" as const : "dry_run" as const
     },
     trace: {
       trace_id: traceId(),
@@ -115,7 +116,17 @@ export function compileRuntimeSpecDryRun(input: RuntimeSpecCompileInput): Runtim
       matrix_id: matrixId(),
       available: false
     },
-    status: selection.runtime_kind === "assembled_runtime" ? "assembled_runtime" : "compiled"
+    status: selection.runtime_kind === "assembled_runtime" ? "assembled_runtime" as const : "compiled" as const
+  };
+
+  const structuredToolBindings = classifySleeveToolBindingsDryRun({
+    runtimeSpec: compiledSpecBase as RuntimeSpecV0,
+    registryArtifacts: [...registry.artifacts, ...registry.support_artifacts]
+  });
+
+  return {
+    ...compiledSpecBase,
+    tool_bindings: structuredToolBindings
   };
 }
 

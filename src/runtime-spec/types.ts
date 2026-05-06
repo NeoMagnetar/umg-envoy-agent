@@ -39,11 +39,18 @@ export interface RuntimeSpecArtifactSelection {
   selection_warnings?: string[];
 }
 
+import type { SleeveToolBindingV0 } from "./tool-binding-policy-types.js";
+
 export interface RuntimeSpecToolBindings {
   requested: string[];
   available: string[];
   blocked: string[];
   requires_approval: string[];
+  metadata_only?: string[];
+  mock_only?: string[];
+  unavailable?: string[];
+  unknown?: string[];
+  bindings?: SleeveToolBindingV0[];
 }
 
 export interface RuntimeSpecGovernance {

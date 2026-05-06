@@ -22,6 +22,10 @@ export interface RuntimeVisibilityHeader {
         available: string[];
         blocked: string[];
         requires_approval: string[];
+        metadata_only?: string[];
+        mock_only?: string[];
+        unavailable?: string[];
+        unknown?: string[];
     };
     governance_summary: {
         execution_mode: string;

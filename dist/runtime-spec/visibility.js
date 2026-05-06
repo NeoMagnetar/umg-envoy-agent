@@ -67,8 +67,16 @@ function toolBindingSummaryText(header) {
         parts.push(`${header.tool_binding_summary.available.join(', ')} available`);
     if (header.tool_binding_summary.requires_approval.length > 0)
         parts.push(`${header.tool_binding_summary.requires_approval.join(', ')} requires approval`);
+    if (header.tool_binding_summary.metadata_only && header.tool_binding_summary.metadata_only.length > 0)
+        parts.push(`${header.tool_binding_summary.metadata_only.join(', ')} metadata-only`);
+    if (header.tool_binding_summary.mock_only && header.tool_binding_summary.mock_only.length > 0)
+        parts.push(`${header.tool_binding_summary.mock_only.join(', ')} mock-only`);
     if (header.tool_binding_summary.blocked.length > 0)
         parts.push(`${header.tool_binding_summary.blocked.join(', ')} blocked`);
+    if (header.tool_binding_summary.unavailable && header.tool_binding_summary.unavailable.length > 0)
+        parts.push(`${header.tool_binding_summary.unavailable.join(', ')} unavailable`);
+    if (header.tool_binding_summary.unknown && header.tool_binding_summary.unknown.length > 0)
+        parts.push(`${header.tool_binding_summary.unknown.join(', ')} unknown`);
     if (parts.length === 0)
         return 'none';
     return parts.join('; ');

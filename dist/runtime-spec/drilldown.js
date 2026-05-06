@@ -191,11 +191,11 @@ function resolveToolBindingRelations(request, artifact, runtimeSpec) {
     const selectedArtifact = selectedNeostack || selectedSleeve || request.query_type === "inspect_tool_bindings";
     if (!selectedArtifact)
         return relations;
-    for (const tool of runtimeSpec.tool_bindings.requested) {
-        relations.push({ relation: "requests_tool", target_id: tool, target_kind: "tool_binding", label: "tool-binding intent" });
-    }
-    for (const tool of runtimeSpec.tool_bindings.requires_approval) {
-        relations.push({ relation: "requires_approval", target_id: tool, target_kind: "tool_binding", label: "requires approval" });
+    for (const binding of runtimeSpec.tool_bindings.bindings ?? []) {
+        relations.push({ relation: "requests_tool", target_id: binding.tool_id, target_kind: "tool_binding", label: `${binding.status}; risk=${binding.risk_level}; mode=${binding.execution_mode}` });
+        if (binding.approval_required) {
+            relations.push({ relation: "requires_approval", target_id: binding.tool_id, target_kind: "tool_binding", label: binding.blocked_reason ?? "requires approval" });
+        }
     }
     return relations;
 }
