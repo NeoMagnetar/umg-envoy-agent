@@ -4,3 +4,4 @@ export { executeGovernedAlpha, executeGovernedAlphaMetadataOnly } from "./runtim
 export { buildLocalReadOnlyInspectionMockResultDryRun, buildLocalReadOnlyInspectionPreflightDryRun, buildLocalReadOnlyInspectionScope, executeLocalReadOnlyMetadataScan, hashLocalReadOnlyInspectionScope, redactScopePath, validateLocalReadOnlyInspectionScopeDryRun } from "./runtime-spec/local-readonly-inspection.js";
 export { buildUMGEnvoyAlphaDemo } from "./runtime-spec/alpha-demo.js";
 export { buildUMGRuntimeDisplayContract, renderUMGRuntimeDisplay } from "./runtime-spec/runtime-display.js";
+export { demoOperationalSleeve, inspectOperationalSleeve, listOperationalSleeves } from "./runtime-spec/operational-sleeve.js";

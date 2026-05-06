@@ -173,6 +173,9 @@
     "umg_envoy_runtime_inspect",
     "umg_envoy_local_readonly_plan",
     "umg_envoy_local_readonly_scan",
-    "umg_envoy_alpha_demo"
+    "umg_envoy_alpha_demo",
+    "umg_envoy_sleeve_list",
+    "umg_envoy_sleeve_inspect",
+    "umg_envoy_sleeve_demo"
   ]
 }

@@ -39,6 +39,7 @@ import { buildLocalReadOnlyInspectionPlanDryRun, executeApprovedLocalReadOnlyMet
 import { buildGovernedExecutionHandoffDryRun } from "./runtime-spec/governed-execution-handoff.js";
 import { buildUMGEnvoyAlphaDemo } from "./runtime-spec/alpha-demo.js";
 import { renderUMGRuntimeDisplay } from "./runtime-spec/runtime-display.js";
+import { demoOperationalSleeve, inspectOperationalSleeve, listOperationalSleeves } from "./runtime-spec/operational-sleeve.js";
 import { loadNeostackFile } from "./compiler/neostack-loader.js";
 import { resolveNeostackArtifacts, validateNeostackStructure } from "./compiler/neostack-validator.js";
 function effectiveConfig(config) {
@@ -125,7 +126,10 @@ function statusPayload(config) {
             "umg_envoy_runtime_inspect",
             "umg_envoy_local_readonly_plan",
             "umg_envoy_local_readonly_scan",
-            "umg_envoy_alpha_demo"
+            "umg_envoy_alpha_demo",
+            "umg_envoy_sleeve_list",
+            "umg_envoy_sleeve_inspect",
+            "umg_envoy_sleeve_demo"
         ]
     };
 }
@@ -590,6 +594,31 @@ function registerCliBridge(api, config) {
             const report = buildUMGEnvoyAlphaDemo({ query: opts.query, kind: opts.kind, limit: opts.limit ? Number(opts.limit) : undefined, display_mode: opts.displayMode ?? "compact", include_display: opts.display !== false });
             console.log(JSON.stringify({ ...report, rendered_display: report.display ? renderUMGRuntimeDisplay(report.display) : undefined }, null, 2));
         });
+        root.command("sleeve-list")
+            .action(async () => {
+            console.log(JSON.stringify(listOperationalSleeves(), null, 2));
+        });
+        root.command("sleeve-inspect")
+            .requiredOption("--sleeve-id <id>")
+            .option("--include-molt-map")
+            .option("--include-ir-matrix")
+            .option("--display-mode <mode>")
+            .action(async (opts) => {
+            console.log(JSON.stringify(inspectOperationalSleeve({ sleeve_id: opts.sleeveId, include_molt_map: Boolean(opts.includeMoltMap), include_ir_matrix: Boolean(opts.includeIrMatrix), display_mode: opts.displayMode ?? "developer" }), null, 2));
+        });
+        root.command("sleeve-demo")
+            .requiredOption("--sleeve-id <id>")
+            .option("--query <text>")
+            .option("--kind <kind>")
+            .option("--limit <number>")
+            .option("--root-path <path>")
+            .option("--recursive")
+            .option("--max-depth <number>")
+            .option("--max-items <number>")
+            .option("--display-mode <mode>")
+            .action(async (opts) => {
+            console.log(JSON.stringify(demoOperationalSleeve({ sleeve_id: opts.sleeveId, query: opts.query, kind: opts.kind, limit: opts.limit ? Number(opts.limit) : undefined, root_path: opts.rootPath, recursive: Boolean(opts.recursive), max_depth: opts.maxDepth ? Number(opts.maxDepth) : undefined, max_items: opts.maxItems ? Number(opts.maxItems) : undefined, display_mode: opts.displayMode ?? "developer" }), null, 2));
+        });
         root.command("runtime-ir-matrix")
             .requiredOption("--user-task <task>")
             .option("--preferred-kind <kind>")
@@ -986,6 +1015,30 @@ const entry = {
             async execute(input) {
                 const report = buildUMGEnvoyAlphaDemo(input);
                 return { content: [{ type: "text", text: JSON.stringify({ ...report, rendered_display: report.display ? renderUMGRuntimeDisplay(report.display) : undefined }, null, 2) }] };
+            }
+        }, { optional: true });
+        api.registerTool({
+            name: "umg_envoy_sleeve_list",
+            description: "Operational demo layer sleeve catalog. Lists safe allowlisted demo-ready sleeves only.",
+            parameters: Type.Object({}, { additionalProperties: false }),
+            async execute() {
+                return { content: [{ type: "text", text: JSON.stringify(listOperationalSleeves(), null, 2) }] };
+            }
+        }, { optional: true });
+        api.registerTool({
+            name: "umg_envoy_sleeve_inspect",
+            description: "Inspect a demo-ready sleeve profile, runtime containment, governance state, and runtime display envelope. No broad execution.",
+            parameters: Type.Object({ sleeve_id: Type.String(), include_molt_map: Type.Optional(Type.Boolean()), include_ir_matrix: Type.Optional(Type.Boolean()), display_mode: Type.Optional(Type.Union([Type.Literal("compact"), Type.Literal("developer"), Type.Literal("debug")])) }, { additionalProperties: false }),
+            async execute(input) {
+                return { content: [{ type: "text", text: JSON.stringify(inspectOperationalSleeve(input), null, 2) }] };
+            }
+        }, { optional: true });
+        api.registerTool({
+            name: "umg_envoy_sleeve_demo",
+            description: "Run safe allowlisted operational sleeve demos only. Library demo is metadata-only, local readonly demo is plan-only by default, and LangChain demo is handoff-only.",
+            parameters: Type.Object({ sleeve_id: Type.String(), query: Type.Optional(Type.String()), kind: Type.Optional(Type.String()), limit: Type.Optional(Type.Number()), root_path: Type.Optional(Type.String()), recursive: Type.Optional(Type.Boolean()), max_depth: Type.Optional(Type.Number()), max_items: Type.Optional(Type.Number()), display_mode: Type.Optional(Type.Union([Type.Literal("compact"), Type.Literal("developer"), Type.Literal("debug")])) }, { additionalProperties: false }),
+            async execute(input) {
+                return { content: [{ type: "text", text: JSON.stringify(demoOperationalSleeve(input), null, 2) }] };
             }
         }, { optional: true });
         api.registerTool({
