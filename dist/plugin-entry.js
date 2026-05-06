@@ -33,6 +33,7 @@ import { compileRuntimeSpecDryRun } from "./runtime-spec/compiler.js";
 import { buildRuntimeVisibilityHeader } from "./runtime-spec/visibility.js";
 import { buildRuntimeMOLTMap } from "./runtime-spec/molt-map.js";
 import { buildRuntimeDashboard } from "./runtime-spec/dashboard.js";
+import { inspectRuntimeDrilldown } from "./runtime-spec/drilldown.js";
 import { buildRuntimeIRMatrix } from "./runtime-spec/ir-matrix.js";
 import { loadNeostackFile } from "./compiler/neostack-loader.js";
 import { resolveNeostackArtifacts, validateNeostackStructure } from "./compiler/neostack-validator.js";
@@ -116,7 +117,8 @@ function statusPayload(config) {
             "umg_envoy_runtime_visibility_header",
             "umg_envoy_runtime_molt_map",
             "umg_envoy_runtime_dashboard",
-            "umg_envoy_runtime_ir_matrix"
+            "umg_envoy_runtime_ir_matrix",
+            "umg_envoy_runtime_inspect"
         ]
     };
 }
@@ -553,6 +555,39 @@ function registerCliBridge(api, config) {
             const moltMap = dashboard?.molt_map;
             console.log(JSON.stringify(buildRuntimeIRMatrix({ spec, molt_map: moltMap, dashboard }), null, 2));
         });
+        root.command("runtime-inspect")
+            .requiredOption("--query-type <type>")
+            .option("--artifact-id <id>")
+            .option("--user-task <task>")
+            .option("--preferred-kind <kind>")
+            .option("--depth <number>")
+            .option("--include-support-docs")
+            .option("--include-provenance")
+            .option("--include-matrix-links")
+            .option("--include-molt-map-links")
+            .action(async (opts) => {
+            const config = loadBlockLibraryConfig();
+            const resolver = new UMGResolver(config, path.dirname(new URL(import.meta.url).pathname));
+            const registry = buildRegistry(resolver);
+            const spec = compileRuntimeSpecDryRun({ user_task: opts.userTask ?? "Use the LangChain bridge for a governed workflow.", preferred_kind: opts.preferredKind, execution_mode: "dry_run" });
+            const dashboard = buildRuntimeDashboard(spec, { include_molt_map: true, include_ir_matrix: true, mode: "developer" });
+            console.log(JSON.stringify(inspectRuntimeDrilldown({
+                request: {
+                    query_type: opts.queryType,
+                    artifact_id: opts.artifactId,
+                    depth: opts.depth ? Number(opts.depth) : 1,
+                    include_support_docs: Boolean(opts.includeSupportDocs),
+                    include_provenance: Boolean(opts.includeProvenance),
+                    include_matrix_links: Boolean(opts.includeMatrixLinks),
+                    include_molt_map_links: Boolean(opts.includeMoltMapLinks)
+                },
+                registryArtifacts: [...registry.artifacts, ...registry.support_artifacts],
+                runtimeSpec: spec,
+                dashboard,
+                irMatrix: dashboard.ir_matrix,
+                moltMap: dashboard.molt_map
+            }), null, 2));
+        });
     }, { commands: ["umg-envoy"] });
 }
 const entry = {
@@ -887,6 +922,40 @@ const entry = {
                 const spec = compileRuntimeSpecDryRun({ ...input, execution_mode: "dry_run" });
                 const dashboard = input.include_dashboard_context ? buildRuntimeDashboard(spec, { include_molt_map: true, mode: "developer" }) : undefined;
                 return { content: [{ type: "text", text: JSON.stringify(buildRuntimeIRMatrix({ spec, molt_map: dashboard?.molt_map, dashboard }), null, 2) }] };
+            }
+        }, { optional: true });
+        api.registerTool({
+            name: "umg_envoy_runtime_inspect",
+            description: "Inspect dry-run runtime selection and artifact structure using a read-only drill-down layer without executing anything.",
+            parameters: Type.Object({ query_type: Type.String(), artifact_id: Type.Optional(Type.String()), user_task: Type.Optional(Type.String()), requested_capabilities: Type.Optional(Type.Array(Type.String())), requested_tools: Type.Optional(Type.Array(Type.String())), preferred_kind: Type.Optional(Type.Union([Type.Literal("sleeve"), Type.Literal("neostack"), Type.Literal("neoblock"), Type.Literal("molt_block")])), depth: Type.Optional(Type.Union([Type.Literal(0), Type.Literal(1), Type.Literal(2), Type.Literal(3)])), include_support_docs: Type.Optional(Type.Boolean()), include_provenance: Type.Optional(Type.Boolean()), include_matrix_links: Type.Optional(Type.Boolean()), include_molt_map_links: Type.Optional(Type.Boolean()) }, { additionalProperties: false }),
+            async execute(input) {
+                const config = loadBlockLibraryConfig();
+                const resolver = new UMGResolver(config, path.dirname(new URL(import.meta.url).pathname));
+                const registry = buildRegistry(resolver);
+                const spec = compileRuntimeSpecDryRun({
+                    user_task: input.user_task ?? "Use the LangChain bridge for a governed workflow.",
+                    requested_capabilities: input.requested_capabilities,
+                    requested_tools: input.requested_tools,
+                    preferred_kind: input.preferred_kind,
+                    execution_mode: "dry_run"
+                });
+                const dashboard = buildRuntimeDashboard(spec, { include_molt_map: true, include_ir_matrix: true, mode: "developer" });
+                return { content: [{ type: "text", text: JSON.stringify(inspectRuntimeDrilldown({
+                                request: {
+                                    query_type: input.query_type,
+                                    artifact_id: input.artifact_id,
+                                    depth: input.depth,
+                                    include_support_docs: input.include_support_docs,
+                                    include_provenance: input.include_provenance,
+                                    include_matrix_links: input.include_matrix_links,
+                                    include_molt_map_links: input.include_molt_map_links
+                                },
+                                registryArtifacts: [...registry.artifacts, ...registry.support_artifacts],
+                                runtimeSpec: spec,
+                                dashboard,
+                                irMatrix: dashboard.ir_matrix,
+                                moltMap: dashboard.molt_map
+                            }), null, 2) }] };
             }
         }, { optional: true });
     }

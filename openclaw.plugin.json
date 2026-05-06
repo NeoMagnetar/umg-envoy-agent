@@ -169,6 +169,7 @@
     "umg_envoy_runtime_visibility_header",
     "umg_envoy_runtime_molt_map",
     "umg_envoy_runtime_dashboard",
-    "umg_envoy_runtime_ir_matrix"
+    "umg_envoy_runtime_ir_matrix",
+    "umg_envoy_runtime_inspect"
   ]
 }
