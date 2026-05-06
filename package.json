@@ -27,6 +27,7 @@
     "umg:runtime-visibility:smoke": "node scripts/runtime-visibility-smoke.mjs",
     "umg:runtime-molt-map:smoke": "node scripts/runtime-molt-map-smoke.mjs",
     "umg:runtime-dashboard:smoke": "node scripts/runtime-dashboard-smoke.mjs",
+    "umg:runtime-ir-matrix:smoke": "node scripts/runtime-ir-matrix-smoke.mjs",
     "validate:umg:e2e": "node scripts/validate-umg-e2e.mjs",
     "pack:dry": "npm pack --dry-run"
   },

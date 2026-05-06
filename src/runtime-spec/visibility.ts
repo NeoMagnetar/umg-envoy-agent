@@ -32,7 +32,7 @@ export interface RuntimeVisibilityHeader {
   trace_id: string;
   trace_events?: string[];
   matrix_id: string;
-  matrix_available: false;
+  matrix_available: boolean;
   warnings: string[];
   execution_statement: "No tools executed.";
 }

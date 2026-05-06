@@ -14,10 +14,10 @@ const compactSpec = compileRuntimeSpecDryRun({
   user_task: 'Use the LangChain bridge for a governed workflow.'
 });
 
-const langchain = buildRuntimeDashboard(langchainSpec, { include_molt_map: true, mode: 'developer' });
-const assembled = buildRuntimeDashboard(assembledSpec, { include_molt_map: true, mode: 'developer' });
-const support = buildRuntimeDashboard(supportSpec, { include_molt_map: true, mode: 'developer' });
-const compact = buildRuntimeDashboard(compactSpec, { include_molt_map: false, mode: 'compact' });
+const langchain = buildRuntimeDashboard(langchainSpec, { include_molt_map: true, include_ir_matrix: true, mode: 'developer' });
+const assembled = buildRuntimeDashboard(assembledSpec, { include_molt_map: true, include_ir_matrix: true, mode: 'developer' });
+const support = buildRuntimeDashboard(supportSpec, { include_molt_map: true, include_ir_matrix: true, mode: 'developer' });
+const compact = buildRuntimeDashboard(compactSpec, { include_molt_map: false, include_ir_matrix: false, mode: 'compact' });
 
 console.log(JSON.stringify({
   ok: true,

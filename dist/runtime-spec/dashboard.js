@@ -1,13 +1,19 @@
+import { buildRuntimeIRMatrix, renderRuntimeIRMatrix } from "./ir-matrix.js";
 import { buildRuntimeMOLTMap } from "./molt-map.js";
 import { buildRuntimeVisibilityHeader } from "./visibility.js";
 export function buildRuntimeDashboard(spec, options = {}) {
     const header = buildRuntimeVisibilityHeader(spec, options.mode ?? "developer");
-    const molt_map = options.include_molt_map ? buildRuntimeMOLTMap(spec) : undefined;
+    const molt_map = options.include_molt_map || options.include_ir_matrix ? buildRuntimeMOLTMap(spec) : undefined;
+    const ir_matrix = options.include_ir_matrix ? buildRuntimeIRMatrix({ spec, molt_map }) : undefined;
     return {
-        header,
+        header: {
+            ...header,
+            matrix_available: Boolean(ir_matrix)
+        },
         molt_map,
+        ir_matrix,
         execution_statement: "No tools executed.",
-        matrix_available: false
+        matrix_available: Boolean(ir_matrix)
     };
 }
 export function renderRuntimeDashboard(dashboard) {
@@ -23,7 +29,7 @@ export function renderRuntimeDashboard(dashboard) {
         `Tool Binding Intent: ${renderToolIntent(dashboard.header)}`,
         `Governance: ${renderGovernance(dashboard.header)}`,
         `Trace: ${dashboard.header.trace_id}`,
-        `Matrix: ${dashboard.header.matrix_id} ${dashboard.header.matrix_available ? 'available' : 'unavailable'}`,
+        `Matrix: ${dashboard.header.matrix_id} ${dashboard.matrix_available ? 'available' : 'unavailable'}`,
         `Execution: ${dashboard.execution_statement}`
     ];
     if (dashboard.header.warnings.length > 0) {
@@ -38,6 +44,10 @@ export function renderRuntimeDashboard(dashboard) {
         for (const key of ["Trigger", "Directive", "Instruction", "Subject", "Primary", "Philosophy", "Blueprint"]) {
             lines.push(`${key}: ${dashboard.molt_map.fields[key].value}`);
         }
+    }
+    if (dashboard.ir_matrix) {
+        lines.push('', 'RUNTIME IR MATRIX');
+        lines.push(renderRuntimeIRMatrix(dashboard.ir_matrix));
     }
     return lines.join('\n');
 }
