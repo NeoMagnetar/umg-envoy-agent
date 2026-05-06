@@ -30,6 +30,7 @@ import { UMGResolver } from "./resolver/resolver.js";
 import { buildRegistry } from "./resolver/indexer.js";
 import { searchRegistry } from "./resolver/search.js";
 import { compileRuntimeSpecDryRun } from "./runtime-spec/compiler.js";
+import { buildRuntimeVisibilityHeader } from "./runtime-spec/visibility.js";
 import { loadNeostackFile } from "./compiler/neostack-loader.js";
 import { resolveNeostackArtifacts, validateNeostackStructure } from "./compiler/neostack-validator.js";
 function effectiveConfig(config) {
@@ -108,7 +109,8 @@ function statusPayload(config) {
             "umg_envoy_neostack_permission_check",
             "umg_envoy_library_status",
             "umg_envoy_library_search",
-            "umg_envoy_runtime_spec_dry_run"
+            "umg_envoy_runtime_spec_dry_run",
+            "umg_envoy_runtime_visibility_header"
         ]
     };
 }
@@ -510,6 +512,14 @@ function registerCliBridge(api, config) {
             .action(async (opts) => {
             console.log(JSON.stringify(compileRuntimeSpecDryRun({ user_task: opts.userTask, preferred_kind: opts.preferredKind, execution_mode: "dry_run" }), null, 2));
         });
+        root.command("runtime-visibility-header")
+            .requiredOption("--user-task <task>")
+            .option("--preferred-kind <kind>")
+            .option("--mode <mode>")
+            .action(async (opts) => {
+            const spec = compileRuntimeSpecDryRun({ user_task: opts.userTask, preferred_kind: opts.preferredKind, execution_mode: "dry_run" });
+            console.log(JSON.stringify(buildRuntimeVisibilityHeader(spec, opts.mode ?? "developer"), null, 2));
+        });
     }, { commands: ["umg-envoy"] });
 }
 const entry = {
@@ -807,6 +817,15 @@ const entry = {
             parameters: Type.Object({ user_task: Type.String(), requested_capabilities: Type.Optional(Type.Array(Type.String())), requested_tools: Type.Optional(Type.Array(Type.String())), preferred_kind: Type.Optional(Type.Union([Type.Literal("sleeve"), Type.Literal("neostack"), Type.Literal("neoblock"), Type.Literal("molt_block")])) }, { additionalProperties: false }),
             async execute(input) {
                 return { content: [{ type: "text", text: JSON.stringify(compileRuntimeSpecDryRun({ ...input, execution_mode: "dry_run" }), null, 2) }] };
+            }
+        }, { optional: true });
+        api.registerTool({
+            name: "umg_envoy_runtime_visibility_header",
+            description: "Build a read-only runtime visibility header from a dry-run RuntimeSpec without executing anything.",
+            parameters: Type.Object({ user_task: Type.String(), requested_capabilities: Type.Optional(Type.Array(Type.String())), requested_tools: Type.Optional(Type.Array(Type.String())), preferred_kind: Type.Optional(Type.Union([Type.Literal("sleeve"), Type.Literal("neostack"), Type.Literal("neoblock"), Type.Literal("molt_block")])), mode: Type.Optional(Type.Union([Type.Literal("compact"), Type.Literal("developer"), Type.Literal("debug")])) }, { additionalProperties: false }),
+            async execute(input) {
+                const spec = compileRuntimeSpecDryRun({ ...input, execution_mode: "dry_run" });
+                return { content: [{ type: "text", text: JSON.stringify(buildRuntimeVisibilityHeader(spec, input.mode ?? "developer"), null, 2) }] };
             }
         }, { optional: true });
     }

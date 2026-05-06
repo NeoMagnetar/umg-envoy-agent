@@ -24,6 +24,7 @@
     "umg:resolver:search": "node scripts/resolver-search.mjs",
     "umg:resolver:smoke": "node scripts/resolver-smoke.mjs",
     "umg:runtime-spec:smoke": "node scripts/runtime-spec-smoke.mjs",
+    "umg:runtime-visibility:smoke": "node scripts/runtime-visibility-smoke.mjs",
     "validate:umg:e2e": "node scripts/validate-umg-e2e.mjs",
     "pack:dry": "npm pack --dry-run"
   },

@@ -81,6 +81,11 @@ export interface RuntimeSpecMatrixRef {
   available: boolean;
 }
 
+export type RuntimeVisibilityMode =
+  | "compact"
+  | "developer"
+  | "debug";
+
 export interface RuntimeSpecV0 {
   runtime_spec_id: string;
   runtime_kind: RuntimeKind;
