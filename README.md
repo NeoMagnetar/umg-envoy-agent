@@ -158,6 +158,22 @@ If you do not already have the expected local UMG dependency layout, stop at `ch
 - **Compiler Bridge**: the controlled path Envoy uses to call the UMG compiler.
 - **Artifact Resolution**: the process of locating and loading referenced UMG sleeves, blocks, overlays, capabilities, schemas, or related artifacts.
 
+## Quick Alpha Demo
+
+Run the alpha demo to verify safe UMG Envoy surfaces:
+
+- library status
+- metadata search
+- tool capability summary
+- runtime display
+- exact-scope local readonly surface availability
+
+This demo does not read file contents, write files, delete files, run shell commands, start MCP, run remote MCP, or run LangChain agent mode.
+
+```bash
+node dist/plugin-entry.js umg-envoy runtime-alpha-demo --query "langchain bridge" --kind neostack --limit 3
+```
+
 ## Build and validation
 
 ```bash

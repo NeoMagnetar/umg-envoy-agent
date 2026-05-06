@@ -26,6 +26,15 @@ export type {
   MetadataAlphaPayloadPolicyV0,
   PluginNativeMetadataClassificationV0
 } from "./runtime-spec/governed-execution-alpha-expansion-types.js";
+export { buildUMGEnvoyAlphaDemo } from "./runtime-spec/alpha-demo.js";
+export { buildUMGRuntimeDisplayContract, renderUMGRuntimeDisplay } from "./runtime-spec/runtime-display.js";
+export type {
+  UMGEnvoyAlphaDemoReportV0
+} from "./runtime-spec/alpha-demo-types.js";
+export type {
+  UMGRuntimeDisplayContractV0,
+  UMGRuntimeDisplayMode
+} from "./runtime-spec/runtime-display-types.js";
 export type {
   LocalReadOnlyFileMetadataV0,
   LocalReadOnlyInspectionResultV0,

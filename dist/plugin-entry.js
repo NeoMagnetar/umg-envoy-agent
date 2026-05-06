@@ -37,6 +37,8 @@ import { inspectRuntimeDrilldown } from "./runtime-spec/drilldown.js";
 import { buildRuntimeIRMatrix } from "./runtime-spec/ir-matrix.js";
 import { buildLocalReadOnlyInspectionPlanDryRun, executeApprovedLocalReadOnlyMetadataScan } from "./runtime-spec/local-readonly-inspection.js";
 import { buildGovernedExecutionHandoffDryRun } from "./runtime-spec/governed-execution-handoff.js";
+import { buildUMGEnvoyAlphaDemo } from "./runtime-spec/alpha-demo.js";
+import { renderUMGRuntimeDisplay } from "./runtime-spec/runtime-display.js";
 import { loadNeostackFile } from "./compiler/neostack-loader.js";
 import { resolveNeostackArtifacts, validateNeostackStructure } from "./compiler/neostack-validator.js";
 function effectiveConfig(config) {
@@ -122,7 +124,8 @@ function statusPayload(config) {
             "umg_envoy_runtime_ir_matrix",
             "umg_envoy_runtime_inspect",
             "umg_envoy_local_readonly_plan",
-            "umg_envoy_local_readonly_scan"
+            "umg_envoy_local_readonly_scan",
+            "umg_envoy_alpha_demo"
         ]
     };
 }
@@ -577,6 +580,16 @@ function registerCliBridge(api, config) {
             const handoff = buildGovernedExecutionHandoffDryRun({ runtimeSpec });
             console.log(JSON.stringify(await executeApprovedLocalReadOnlyMetadataScan({ runtimeSpec, handoff, root_path: opts.rootPath, recursive: Boolean(opts.recursive), max_depth: opts.maxDepth ? Number(opts.maxDepth) : undefined, max_items: opts.maxItems ? Number(opts.maxItems) : undefined, include_hidden: Boolean(opts.includeHidden), include_system_paths: Boolean(opts.includeSystemPaths), scope_hash: opts.scopeHash, approval_token: opts.approvalToken, user_approved_exact_scope: Boolean(opts.approveExactScope), confirm_no_file_contents: Boolean(opts.confirmNoFileContents) }), null, 2));
         });
+        root.command("runtime-alpha-demo")
+            .option("--query <text>")
+            .option("--kind <kind>")
+            .option("--limit <number>")
+            .option("--display-mode <mode>")
+            .option("--no-display")
+            .action(async (opts) => {
+            const report = buildUMGEnvoyAlphaDemo({ query: opts.query, kind: opts.kind, limit: opts.limit ? Number(opts.limit) : undefined, display_mode: opts.displayMode ?? "compact", include_display: opts.display !== false });
+            console.log(JSON.stringify({ ...report, rendered_display: report.display ? renderUMGRuntimeDisplay(report.display) : undefined }, null, 2));
+        });
         root.command("runtime-ir-matrix")
             .requiredOption("--user-task <task>")
             .option("--preferred-kind <kind>")
@@ -964,6 +977,15 @@ const entry = {
                 const runtimeSpec = compileRuntimeSpecDryRun({ user_task: `Scan ${input.root_path} for file metadata only.`, requested_tools: ["desktop_bridge.file_scan"], execution_mode: "dry_run" });
                 const handoff = buildGovernedExecutionHandoffDryRun({ runtimeSpec });
                 return { content: [{ type: "text", text: JSON.stringify(await executeApprovedLocalReadOnlyMetadataScan({ runtimeSpec, handoff, ...input }), null, 2) }] };
+            }
+        }, { optional: true });
+        api.registerTool({
+            name: "umg_envoy_alpha_demo",
+            description: "Safe alpha self-test/demo surface. Uses metadata-only surfaces and runtime projections. Does not read file contents, write files, delete files, run shell commands, start MCP, or run LangChain agent mode.",
+            parameters: Type.Object({ query: Type.Optional(Type.String()), kind: Type.Optional(Type.String()), limit: Type.Optional(Type.Number()), display_mode: Type.Optional(Type.Union([Type.Literal("compact"), Type.Literal("developer"), Type.Literal("debug")])), include_display: Type.Optional(Type.Boolean()) }, { additionalProperties: false }),
+            async execute(input) {
+                const report = buildUMGEnvoyAlphaDemo(input);
+                return { content: [{ type: "text", text: JSON.stringify({ ...report, rendered_display: report.display ? renderUMGRuntimeDisplay(report.display) : undefined }, null, 2) }] };
             }
         }, { optional: true });
         api.registerTool({
