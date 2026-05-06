@@ -11,6 +11,13 @@ export {
   executeGovernedAlphaMetadataOnly
 } from "./runtime-spec/governed-execution-alpha.js";
 export type {
+  GovernedMetadataAlphaCandidateToolV2,
+  GovernedMetadataAlphaToolV2,
+  McpMetadataCandidateClassificationV0,
+  MetadataAlphaPayloadPolicyV0,
+  PluginNativeMetadataClassificationV0
+} from "./runtime-spec/governed-execution-alpha-expansion-types.js";
+export type {
   GovernedExecutionAlphaAllowedTool,
   GovernedExecutionAlphaBlockedTool,
   GovernedExecutionAlphaPreflightRuleV0,
