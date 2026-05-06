@@ -31,6 +31,7 @@
     "umg:runtime-drilldown:smoke": "node scripts/runtime-drilldown-smoke.mjs",
     "umg:runtime-sleeve-selection:smoke": "node scripts/runtime-sleeve-selection-smoke.mjs",
     "umg:runtime-tool-binding:smoke": "node scripts/runtime-tool-binding-smoke.mjs",
+    "umg:runtime-governed-handoff:smoke": "node scripts/runtime-governed-handoff-smoke.mjs",
     "validate:umg:e2e": "node scripts/validate-umg-e2e.mjs",
     "pack:dry": "npm pack --dry-run"
   },
