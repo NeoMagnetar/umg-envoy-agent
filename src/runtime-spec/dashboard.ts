@@ -3,7 +3,7 @@ import { buildApprovalRequestDryRun, buildExecutionCheckpointRecordDryRun, build
 import type { GovernedExecutionAlphaResultV0 } from "./governed-execution-alpha-types.js";
 import { executeGovernedAlpha } from "./governed-execution-alpha.js";
 import type { LocalReadOnlyInspectionMockResultV0 } from "./local-readonly-inspection.js";
-import { buildLocalReadOnlyInspectionMockResultDryRun, buildLocalReadOnlyInspectionScope } from "./local-readonly-inspection.js";
+import { buildLocalReadOnlyInspectionMockResultDryRun, buildLocalReadOnlyInspectionScope, executeLocalReadOnlyMetadataScan } from "./local-readonly-inspection.js";
 import type { GovernedExecutionHandoffV0 } from "./governed-execution-handoff-types.js";
 import { buildGovernedExecutionHandoffDryRun } from "./governed-execution-handoff.js";
 import type { RuntimeIRMatrixV0 } from "./ir-matrix-types.js";
@@ -173,11 +173,22 @@ export function renderRuntimeDashboard(dashboard: RuntimeDashboardV0): string {
     lines.push(`Recursive: ${dashboard.local_readonly_inspection.scope.recursive ? 'true' : 'false'}`);
     lines.push(`Max Depth: ${dashboard.local_readonly_inspection.scope.max_depth}`);
     lines.push(`Max Items: ${dashboard.local_readonly_inspection.scope.max_items}`);
+    if ('summary' in dashboard.local_readonly_inspection && dashboard.local_readonly_inspection.summary) {
+      const summary = dashboard.local_readonly_inspection.summary as { item_count: number; file_count: number; directory_count: number; skipped_count: number; truncated: boolean };
+      lines.push(`Items: ${summary.item_count}`);
+      lines.push(`Files: ${summary.file_count}`);
+      lines.push(`Directories: ${summary.directory_count}`);
+      lines.push(`Skipped: ${summary.skipped_count}`);
+      lines.push(`Truncated: ${summary.truncated ? 'yes' : 'no'}`);
+    }
     lines.push(`File Contents: no`);
     lines.push(`Writes: no`);
     lines.push(`Deletes: no`);
     lines.push(`External Calls: no`);
-    lines.push(`Scope Hash: ${dashboard.local_readonly_inspection.scope_hash}`);
+    lines.push(`Shell: no`);
+    if ('scope_hash' in dashboard.local_readonly_inspection && dashboard.local_readonly_inspection.scope_hash) {
+      lines.push(`Scope Hash: ${dashboard.local_readonly_inspection.scope_hash}`);
+    }
     if (dashboard.local_readonly_inspection.warnings.length > 0) {
       lines.push(`Reason: ${dashboard.local_readonly_inspection.warnings.join('; ')}`);
     }

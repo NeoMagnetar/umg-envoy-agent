@@ -63,15 +63,6 @@ export const DEFAULT_KNOWN_TOOL_SURFACES = [
         governance_policy: "mcp_remote_execution_blocked"
     },
     {
-        tool_id: "desktop_bridge.file_scan",
-        aliases: ["file scan", "desktop bridge file scan", "file inventory"],
-        status: "available",
-        default_risk_level: "low",
-        default_execution_mode: "dry_run",
-        approval_required: false,
-        governance_policy: "desktop_bridge_read_only_dry_run"
-    },
-    {
         tool_id: "desktop_bridge.file_write",
         aliases: ["file write", "write file"],
         status: "available",
@@ -79,6 +70,15 @@ export const DEFAULT_KNOWN_TOOL_SURFACES = [
         default_execution_mode: "approval_required",
         approval_required: true,
         governance_policy: "file_write_requires_approval"
+    },
+    {
+        tool_id: "desktop_bridge.file_scan",
+        aliases: ["file scan", "local file scan", "desktop file scan"],
+        status: "requires_approval",
+        default_risk_level: "medium",
+        default_execution_mode: "approval_required",
+        approval_required: true,
+        governance_policy: "local_readonly_scope_required"
     },
     {
         tool_id: "desktop_bridge.file_delete",
@@ -357,6 +357,8 @@ function mapLooseToolReference(value) {
         hits.push("resolver.library_search");
     if (lower.includes("tool.capability_summary") || lower.includes("tool capability summary") || lower.includes("capability summary") || lower.includes("governed tool capabilities"))
         hits.push("tool.capability_summary");
+    if (lower.includes("desktop_bridge.file_scan") || lower.includes("file scan") || lower.includes("local file scan") || lower.includes("desktop file scan"))
+        hits.push("desktop_bridge.file_scan");
     if (lower.includes("mcp.server_metadata") || lower.includes("server metadata") || lower.includes("mcp metadata"))
         hits.push("mcp.server_metadata");
     if (lower.includes("mcp.real_remote_execution") || lower.includes("real remote execution"))

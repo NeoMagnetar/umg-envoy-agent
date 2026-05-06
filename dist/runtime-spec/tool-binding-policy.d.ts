@@ -4,7 +4,7 @@ import type { SleeveToolBindingV0, ToolExecutionMode, ToolRiskLevel } from "./to
 export interface KnownToolSurfaceV0 {
     tool_id: string;
     aliases?: string[];
-    status?: "available" | "metadata_only" | "mock_only" | "blocked";
+    status?: "available" | "requires_approval" | "metadata_only" | "mock_only" | "blocked";
     default_risk_level?: ToolRiskLevel;
     default_execution_mode?: ToolExecutionMode;
     approval_required?: boolean;

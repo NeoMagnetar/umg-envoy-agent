@@ -14,6 +14,7 @@ export {
   buildLocalReadOnlyInspectionMockResultDryRun,
   buildLocalReadOnlyInspectionPreflightDryRun,
   buildLocalReadOnlyInspectionScope,
+  executeLocalReadOnlyMetadataScan,
   hashLocalReadOnlyInspectionScope,
   redactScopePath,
   validateLocalReadOnlyInspectionScopeDryRun

@@ -1,6 +1,6 @@
 import type { ApprovalRequestV0, ExecutionCheckpointRecordV0 } from "./approval-checkpoint-contract-types.js";
 import type { GovernedExecutionHandoffV0 } from "./governed-execution-handoff-types.js";
-import type { LocalReadOnlyInspectionScopeV0 } from "./local-readonly-inspection-types.js";
+import type { LocalReadOnlyInspectionResultV0, LocalReadOnlyInspectionScopeV0 } from "./local-readonly-inspection-types.js";
 import type { RuntimeSpecV0 } from "./types.js";
 export interface LocalReadOnlyInspectionPreflightResultV0 {
     preflight_id: string;
@@ -90,5 +90,13 @@ export declare function buildLocalReadOnlyInspectionMockResultDryRun(input: {
     checkpoint?: ExecutionCheckpointRecordV0;
     scope: LocalReadOnlyInspectionScopeV0;
 }): LocalReadOnlyInspectionMockResultV0;
+export declare function executeLocalReadOnlyMetadataScan(input: {
+    runtimeSpec: RuntimeSpecV0;
+    handoff: GovernedExecutionHandoffV0;
+    approvalRequest: ApprovalRequestV0;
+    checkpoint: ExecutionCheckpointRecordV0;
+    scope: LocalReadOnlyInspectionScopeV0;
+    preflight: LocalReadOnlyInspectionPreflightResultV0;
+}): Promise<LocalReadOnlyInspectionResultV0>;
 export declare function redactScopePath(root_path: string): string;
 export declare function normalizeScopePath(root_path: string): string;
