@@ -11,6 +11,12 @@ export interface RuntimeVisibilityHeader {
     active_neoblocks: string[];
     active_molt_blocks: string[];
     support_artifacts: string[];
+    candidate_sleeves?: {
+        sleeve_id: string;
+        confidence: string;
+    }[];
+    selection_confidence?: string;
+    selection_policy?: string;
     tool_binding_summary: {
         requested: string[];
         available: string[];

@@ -16,6 +16,9 @@ export interface RuntimeVisibilityHeader {
   active_neoblocks: string[];
   active_molt_blocks: string[];
   support_artifacts: string[];
+  candidate_sleeves?: { sleeve_id: string; confidence: string }[];
+  selection_confidence?: string;
+  selection_policy?: string;
   tool_binding_summary: {
     requested: string[];
     available: string[];
@@ -49,6 +52,9 @@ export function buildRuntimeVisibilityHeader(spec: RuntimeSpecV0, mode: RuntimeV
     active_neoblocks: spec.selection.active_neoblocks,
     active_molt_blocks: spec.selection.active_molt_blocks,
     support_artifacts: spec.selection.support_artifacts,
+    candidate_sleeves: spec.selection.candidate_sleeves?.map((candidate) => ({ sleeve_id: candidate.sleeve_id, confidence: candidate.confidence })),
+    selection_confidence: spec.selection.selection_confidence,
+    selection_policy: spec.selection.selection_policy,
     tool_binding_summary: spec.tool_bindings,
     governance_summary: {
       execution_mode: spec.governance.execution_mode,
@@ -74,7 +80,9 @@ export function renderRuntimeVisibilityHeader(header: RuntimeVisibilityHeader): 
     `Library Mode: ${header.library_mode}`,
     `RuntimeSpec: ${header.runtime_spec_id}`,
     `Runtime Kind: ${header.runtime_kind}`,
-    `Active Sleeve: ${header.active_sleeve ?? 'none'}`,
+    `Selected Sleeve: ${header.active_sleeve ?? 'none'}`,
+    ...(header.selection_confidence ? [`Selection Confidence: ${header.selection_confidence}`] : []),
+    ...(header.candidate_sleeves && header.candidate_sleeves.length > 0 ? [`Candidate Sleeves: ${header.candidate_sleeves.map((candidate) => `${candidate.sleeve_id} — ${candidate.confidence}`).join(', ')}`] : []),
     `Active NeoStack: ${header.active_neostacks.length > 0 ? header.active_neostacks.join(', ') : 'none'}`,
     `Active NeoBlocks: ${header.active_neoblocks.length > 0 ? header.active_neoblocks.join(', ') : 'none'}`,
     `Active MOLT Blocks: ${header.active_molt_blocks.length > 0 ? header.active_molt_blocks.join(', ') : 'none'}`,

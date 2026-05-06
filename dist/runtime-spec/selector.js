@@ -39,10 +39,6 @@ export function selectRuntimeArtifacts(input, selectable, support) {
         runtime_kind = "neostack_runtime";
         active_neostacks = [neostacks[0].artifact.id];
     }
-    else if (sleeves[0] && sleeves[0].score >= 4 && !terms.includes('one-off')) {
-        runtime_kind = "sleeve_runtime";
-        active_sleeve = sleeves[0].artifact.id;
-    }
     else if (neostacks[0] && neostacks[0].score >= 2 && !terms.includes('one-off')) {
         runtime_kind = "neostack_runtime";
         active_neostacks = [neostacks[0].artifact.id];

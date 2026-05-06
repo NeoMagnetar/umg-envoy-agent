@@ -62,27 +62,53 @@ export function buildRuntimeIRMatrix(input) {
             to: spec.selection.active_sleeve,
             relation: "selects",
             state: "active",
-            reason: "Selected active sleeve in dry-run RuntimeSpec."
+            reason: "Dry-run selected sleeve met conservative threshold."
         });
     }
-    else if (spec.runtime_kind === "assembled_runtime") {
-        const placeholderId = "placeholder.active_sleeve.none";
-        pushNode({
-            id: placeholderId,
-            kind: "matrix_placeholder",
-            label: "active_sleeve:none",
-            state: "placeholder",
-            metadata: {
-                runtime_kind: spec.runtime_kind
-            }
-        });
-        pushEdge({
-            from: rootId,
-            to: placeholderId,
-            relation: "references",
-            state: "placeholder",
-            reason: "No matching sleeve found; assembled runtime remains dry-run only."
-        });
+    else {
+        for (const candidate of spec.selection.candidate_sleeves ?? []) {
+            pushNode({
+                id: candidate.sleeve_id,
+                kind: "sleeve",
+                label: candidate.sleeve_id,
+                state: "available",
+                artifact_id: candidate.sleeve_id,
+                metadata: {
+                    ...candidate.provenance,
+                    confidence: candidate.confidence,
+                    score: candidate.score,
+                    reasons: candidate.reasons,
+                    warnings: candidate.warnings,
+                    candidate: true
+                }
+            });
+            pushEdge({
+                from: rootId,
+                to: candidate.sleeve_id,
+                relation: "references",
+                state: "available",
+                reason: "Candidate sleeve found, but conservative threshold was not met."
+            });
+        }
+        if (spec.runtime_kind === "assembled_runtime") {
+            const placeholderId = "placeholder.active_sleeve.none";
+            pushNode({
+                id: placeholderId,
+                kind: "matrix_placeholder",
+                label: "active_sleeve:none",
+                state: "placeholder",
+                metadata: {
+                    runtime_kind: spec.runtime_kind
+                }
+            });
+            pushEdge({
+                from: rootId,
+                to: placeholderId,
+                relation: "references",
+                state: "placeholder",
+                reason: "No matching sleeve found; assembled runtime remains dry-run only."
+            });
+        }
     }
     for (const neostack of spec.selection.active_neostacks) {
         pushNode({

@@ -60,6 +60,9 @@ export function inspectRuntimeDrilldown(input: {
       active_molt_blocks: [...runtimeSpec.selection.active_molt_blocks],
       support_artifacts: [...runtimeSpec.selection.support_artifacts]
     };
+    if (runtimeSpec.selection.selection_warnings?.length) {
+      warnings.push(...runtimeSpec.selection.selection_warnings);
+    }
     return result;
   }
 

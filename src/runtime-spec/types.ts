@@ -25,12 +25,18 @@ export interface RuntimeSpecInput {
   risk_level: "low" | "medium" | "high";
 }
 
+import type { SleeveSelectionCandidateV0, SleeveSelectionConfidence, SleeveSelectionPolicy } from "./sleeve-selection-types.js";
+
 export interface RuntimeSpecArtifactSelection {
   active_sleeve: string | null;
   active_neostacks: string[];
   active_neoblocks: string[];
   active_molt_blocks: string[];
   support_artifacts: string[];
+  candidate_sleeves?: SleeveSelectionCandidateV0[];
+  selection_confidence?: SleeveSelectionConfidence;
+  selection_policy?: SleeveSelectionPolicy;
+  selection_warnings?: string[];
 }
 
 export interface RuntimeSpecToolBindings {

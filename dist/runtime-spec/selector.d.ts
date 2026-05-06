@@ -9,9 +9,9 @@ export declare function selectRuntimeArtifacts(input: RuntimeSpecCompileInput, s
     support_artifacts: string[];
     warnings: string[];
     candidates: {
-        sleeve: NormalizedArtifact;
-        neostack: NormalizedArtifact;
-        neoblock: NormalizedArtifact;
-        molt: NormalizedArtifact;
+        sleeve?: NormalizedArtifact;
+        neostack?: NormalizedArtifact;
+        neoblock?: NormalizedArtifact;
+        molt?: NormalizedArtifact;
     };
 };

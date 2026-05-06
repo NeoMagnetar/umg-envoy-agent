@@ -4,6 +4,7 @@ import { buildRegistry } from "../resolver/indexer.js";
 import { UMGResolver } from "../resolver/resolver.js";
 import { classifyRuntimeSpecCandidates } from "./classifier.js";
 import { selectRuntimeArtifacts } from "./selector.js";
+import { selectActiveSleeveDryRun } from "./sleeve-selection.js";
 import { event, matrixId, runtimeSpecId, traceId } from "./trace.js";
 export function compileRuntimeSpecDryRun(input) {
     const config = loadBlockLibraryConfig();
@@ -12,8 +13,8 @@ export function compileRuntimeSpecDryRun(input) {
     const candidates = classifyRuntimeSpecCandidates(input, registry.artifacts, registry.support_artifacts);
     const selection = selectRuntimeArtifacts({ ...input, execution_mode: "dry_run" }, candidates.selectable, candidates.support);
     const selection_events = [event("RUNTIMESPEC_CREATED", "RuntimeSpec dry-run compilation started.")];
-    if (selection.candidates.sleeve && selection.active_sleeve)
-        selection_events.push(event("SLEEVE_CANDIDATE_SELECTED", "Selected strongest sleeve candidate.", selection.candidates.sleeve));
+    if (selection.candidates.sleeve)
+        selection_events.push(event("SLEEVE_CANDIDATE_SELECTED", "Identified strongest sleeve candidate for conservative dry-run evaluation.", selection.candidates.sleeve));
     if (selection.candidates.neostack && selection.active_neostacks.length > 0)
         selection_events.push(event("NEOSTACK_SELECTED", "Selected strongest neostack candidate.", selection.candidates.neostack));
     if (selection.candidates.neoblock && selection.active_neoblocks.length > 0)
@@ -36,12 +37,34 @@ export function compileRuntimeSpecDryRun(input) {
         selection_events.push({ event: "APPROVAL_REQUIRED", reason: `Approval would be required for: ${requires_approval.join(', ')}` });
     }
     selection_events.push({ event: "GOVERNANCE_HANDOFF_CREATED", reason: "RuntimeSpec prepared governance handoff intent in dry-run mode." });
-    for (const warning of selection.warnings) {
+    const sleeve_selection = selectActiveSleeveDryRun({
+        user_task: input.user_task,
+        registry_artifacts: registry.artifacts,
+        selected_neostacks: selection.active_neostacks,
+        selected_neoblocks: selection.active_neoblocks,
+        selected_molt_blocks: selection.active_molt_blocks,
+        requested_tools,
+        requested_capabilities: input.requested_capabilities ?? [],
+        governance: {
+            execution_mode: "dry_run",
+            approval_required: requires_approval.length > 0,
+            governed_execution_plane: true,
+            mcp_policy: blocked.length > 0 ? "blocked_by_default" : "metadata_only",
+            langchain_policy: available.includes("langchain_bridge") ? "governed" : "dry_run"
+        }
+    });
+    if (sleeve_selection.active_sleeve) {
+        selection.runtime_kind = "sleeve_runtime";
+        selection.active_sleeve = sleeve_selection.active_sleeve;
+        selection.warnings = selection.warnings.filter((warning) => warning !== "no matching sleeve found");
+        selection_events.push({ event: "SLEEVE_CANDIDATE_SELECTED", artifact_id: sleeve_selection.active_sleeve, reason: "Selected sleeve met conservative dry-run threshold." });
+    }
+    for (const warning of [...selection.warnings, ...sleeve_selection.warnings]) {
         selection_events.push({ event: "SELECTION_WARNING", reason: warning });
     }
     return {
         runtime_spec_id: runtimeSpecId(),
-        runtime_kind: selection.runtime_kind,
+        runtime_kind: selection.active_sleeve ? "sleeve_runtime" : selection.runtime_kind,
         source_mode: resolver.status().source_mode,
         created_at: new Date().toISOString(),
         input: {
@@ -55,7 +78,11 @@ export function compileRuntimeSpecDryRun(input) {
             active_neostacks: selection.active_neostacks,
             active_neoblocks: selection.active_neoblocks,
             active_molt_blocks: selection.active_molt_blocks,
-            support_artifacts: selection.support_artifacts
+            support_artifacts: selection.support_artifacts,
+            candidate_sleeves: sleeve_selection.candidate_sleeves,
+            selection_confidence: sleeve_selection.selection_confidence,
+            selection_policy: sleeve_selection.selection_policy,
+            selection_warnings: sleeve_selection.warnings
         },
         constraints: {
             instructions: [],

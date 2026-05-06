@@ -18,7 +18,21 @@ function boostedScore(artifact: NormalizedArtifact, terms: string[], preferredKi
   return score;
 }
 
-export function selectRuntimeArtifacts(input: RuntimeSpecCompileInput, selectable: NormalizedArtifact[], support: NormalizedArtifact[]) {
+export function selectRuntimeArtifacts(input: RuntimeSpecCompileInput, selectable: NormalizedArtifact[], support: NormalizedArtifact[]): {
+  runtime_kind: RuntimeKind;
+  active_sleeve: string | null;
+  active_neostacks: string[];
+  active_neoblocks: string[];
+  active_molt_blocks: string[];
+  support_artifacts: string[];
+  warnings: string[];
+  candidates: {
+    sleeve?: NormalizedArtifact;
+    neostack?: NormalizedArtifact;
+    neoblock?: NormalizedArtifact;
+    molt?: NormalizedArtifact;
+  };
+} {
   const terms = input.user_task.toLowerCase().split(/\s+/).filter(Boolean);
 
   const sleeves = selectable.filter((artifact) => artifact.kind === "sleeve").map((artifact) => ({ artifact, score: boostedScore(artifact, terms, input.preferred_kind) }));
@@ -41,9 +55,6 @@ export function selectRuntimeArtifacts(input: RuntimeSpecCompileInput, selectabl
   if (neostacks[0] && neostacks[0].score >= 4 && terms.includes('langchain')) {
     runtime_kind = "neostack_runtime";
     active_neostacks = [neostacks[0].artifact.id];
-  } else if (sleeves[0] && sleeves[0].score >= 4 && !terms.includes('one-off')) {
-    runtime_kind = "sleeve_runtime";
-    active_sleeve = sleeves[0].artifact.id;
   } else if (neostacks[0] && neostacks[0].score >= 2 && !terms.includes('one-off')) {
     runtime_kind = "neostack_runtime";
     active_neostacks = [neostacks[0].artifact.id];
