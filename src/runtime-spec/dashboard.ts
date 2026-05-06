@@ -21,15 +21,18 @@ export interface RuntimeDashboardV0 {
 }
 
 export function buildRuntimeDashboard(spec: RuntimeSpecV0, options: RuntimeDashboardOptions = {}): RuntimeDashboardV0 {
-  const header = buildRuntimeVisibilityHeader(spec, options.mode ?? "developer");
-  const molt_map = options.include_molt_map || options.include_ir_matrix ? buildRuntimeMOLTMap(spec) : undefined;
-  const ir_matrix = options.include_ir_matrix ? buildRuntimeIRMatrix({ spec, molt_map }) : undefined;
+  const mode = options.mode ?? "developer";
+  const includeMoltMap = Boolean(options.include_molt_map);
+  const includeIRMatrix = Boolean(options.include_ir_matrix);
+  const header = buildRuntimeVisibilityHeader(spec, mode);
+  const molt_map = includeMoltMap || includeIRMatrix ? buildRuntimeMOLTMap(spec) : undefined;
+  const ir_matrix = includeIRMatrix ? buildRuntimeIRMatrix({ spec, molt_map }) : undefined;
   return {
     header: {
       ...header,
       matrix_available: Boolean(ir_matrix)
     },
-    molt_map,
+    molt_map: includeMoltMap ? molt_map : undefined,
     ir_matrix,
     execution_statement: "No tools executed.",
     matrix_available: Boolean(ir_matrix)
@@ -60,6 +63,9 @@ export function renderRuntimeDashboard(dashboard: RuntimeDashboardV0): string {
     lines.push(`Support Artifacts: ${dashboard.header.support_artifacts.join(', ')} attached for explanation only`);
     lines.push('Runtime Selection: support docs not selected as runtime artifacts');
   }
+  if (dashboard.header.trace_events && dashboard.header.trace_events.length > 0) {
+    lines.push(`Trace Events: ${dashboard.header.trace_events.join(', ')}`);
+  }
 
   if (dashboard.molt_map) {
     lines.push('', 'RUNTIME MOLT MAP');
@@ -70,6 +76,10 @@ export function renderRuntimeDashboard(dashboard: RuntimeDashboardV0): string {
 
   if (dashboard.ir_matrix) {
     lines.push('', 'RUNTIME IR MATRIX');
+    if (dashboard.header.trace_events && dashboard.header.trace_events.length > 0) {
+      lines.push(`Matrix Nodes: ${dashboard.ir_matrix.nodes.length}`);
+      lines.push(`Matrix Edges: ${dashboard.ir_matrix.edges.length}`);
+    }
     lines.push(renderRuntimeIRMatrix(dashboard.ir_matrix));
   }
 
