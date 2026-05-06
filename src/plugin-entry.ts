@@ -998,7 +998,7 @@ const entry = {
     }, { optional: true });
     api.registerTool({
       name: "umg_envoy_local_readonly_plan",
-      description: "Plan an exact-scope local read-only metadata scan preview. Metadata only, no file contents, no writes, no deletes, no shell, and no scan performed.",
+      description: "Plan an exact-scope local read-only metadata scan preview. Metadata only, approval/checkpoint required, no file contents, no writes, no deletes, no shell, no remote execution, and no scan performed.",
       parameters: Type.Object({ root_path: Type.String(), recursive: Type.Optional(Type.Boolean()), max_depth: Type.Optional(Type.Number()), max_items: Type.Optional(Type.Number()), include_hidden: Type.Optional(Type.Boolean()), include_system_paths: Type.Optional(Type.Boolean()) }, { additionalProperties: false }),
       async execute(input: { root_path: string; recursive?: boolean; max_depth?: number; max_items?: number; include_hidden?: boolean; include_system_paths?: boolean }) {
         const runtimeSpec = compileRuntimeSpecDryRun({ user_task: `Scan ${input.root_path} for file metadata only.`, requested_tools: ["desktop_bridge.file_scan"], execution_mode: "dry_run" });
@@ -1008,7 +1008,7 @@ const entry = {
     }, { optional: true });
     api.registerTool({
       name: "umg_envoy_local_readonly_scan",
-      description: "Execute an exact-scope approved local read-only metadata scan. Requires matching scope hash, approval token, exact-scope approval flag, and no-file-contents confirmation.",
+      description: "Execute an exact-scope approved local read-only metadata scan. Metadata only, approval/checkpoint required, requires matching scope hash, approval token, exact-scope approval flag, no-file-contents confirmation, and permits no writes, deletes, shell, or remote execution.",
       parameters: Type.Object({ root_path: Type.String(), recursive: Type.Optional(Type.Boolean()), max_depth: Type.Optional(Type.Number()), max_items: Type.Optional(Type.Number()), include_hidden: Type.Optional(Type.Boolean()), include_system_paths: Type.Optional(Type.Boolean()), scope_hash: Type.String(), approval_token: Type.String(), user_approved_exact_scope: Type.Boolean(), confirm_no_file_contents: Type.Boolean() }, { additionalProperties: false }),
       async execute(input: { root_path: string; recursive?: boolean; max_depth?: number; max_items?: number; include_hidden?: boolean; include_system_paths?: boolean; scope_hash: string; approval_token: string; user_approved_exact_scope: boolean; confirm_no_file_contents: boolean }) {
         const runtimeSpec = compileRuntimeSpecDryRun({ user_task: `Scan ${input.root_path} for file metadata only.`, requested_tools: ["desktop_bridge.file_scan"], execution_mode: "dry_run" });

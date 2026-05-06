@@ -33,6 +33,27 @@ In UMG terminology, an Envoy is an agent-like carrier. The word Agent is include
 - compilerMode: bundled-adapter
 - debug: false
 
+## Current Capability Boundary
+
+UMG Envoy Agent currently supports governed metadata execution and exact-scope local read-only metadata inspection.
+
+Allowed alpha actions:
+- inspect UMG library status
+- search UMG library metadata
+- summarize governed tool capability metadata
+- plan exact-scope local read-only inspection
+- execute approved exact-scope local file metadata scan
+
+Not allowed:
+- reading file contents
+- writing files
+- deleting files
+- shell execution
+- remote MCP execution
+- MCP server startup
+- LangChain agent mode
+- broad Desktop Bridge automation
+
 ## Fresh tester quickstart
 
 ### What this plugin is
