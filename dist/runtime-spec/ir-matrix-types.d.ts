@@ -1,4 +1,4 @@
-export type RuntimeIRMatrixNodeKind = "runtime_spec" | "molt_map" | "sleeve" | "neostack" | "neoblock" | "molt_block" | "tool_binding" | "governance" | "constraint" | "support_artifact" | "warning" | "trace_event" | "matrix_placeholder";
+export type RuntimeIRMatrixNodeKind = "runtime_spec" | "molt_map" | "sleeve" | "neostack" | "neoblock" | "molt_block" | "tool_binding" | "governance" | "constraint" | "support_artifact" | "warning" | "trace_event" | "matrix_placeholder" | "approval_request" | "checkpoint_policy" | "resume_guard";
 export type RuntimeIRMatrixEdgeRelation = "selects" | "contains" | "references" | "constrains" | "requests_tool" | "requires_approval" | "blocked_by" | "governed_by" | "supports_explanation" | "maps_to_molt_field" | "emits_trace" | "has_warning";
 export type RuntimeIRMatrixNodeState = "active" | "selected" | "available" | "support_only" | "blocked" | "requires_approval" | "warning" | "unavailable" | "placeholder";
 export interface RuntimeIRMatrixNode {

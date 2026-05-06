@@ -183,3 +183,34 @@ export interface ApprovalCheckpointPreflightCheckV0 {
   failure_blocks_execution: true;
   reason: string;
 }
+
+export interface PreflightValidationCheckV0 {
+  check:
+    | "runtime_spec_match"
+    | "tool_plan_match"
+    | "selected_context_match"
+    | "approval_request_match"
+    | "approval_scope_match"
+    | "blocked_tools_absent"
+    | "unknown_tools_absent"
+    | "policy_version_match"
+    | "checkpoint_required"
+    | "resume_reference_valid"
+    | "support_doc_tool_source_absent"
+    | "execution_mode_not_blocked";
+  passed: boolean;
+  reason: string;
+}
+
+export interface PreflightValidationResultV0 {
+  preflight_id: string;
+  handoff_id: string;
+  runtime_spec_id: string;
+  status: "pass_future_only" | "blocked" | "invalid";
+  checks: PreflightValidationCheckV0[];
+  execution_boundary: {
+    execution_performed: false;
+    statement: "No tools executed.";
+  };
+  warnings: string[];
+}

@@ -1,4 +1,4 @@
-export type RuntimeInspectionQueryType = "runtime_selection" | "inspect_artifact" | "inspect_sleeve" | "inspect_neostack" | "inspect_neoblock" | "inspect_molt_block" | "inspect_tool_bindings" | "inspect_support_docs" | "inspect_provenance" | "inspect_matrix_links" | "inspect_molt_map_links";
+export type RuntimeInspectionQueryType = "runtime_selection" | "inspect_artifact" | "inspect_sleeve" | "inspect_neostack" | "inspect_neoblock" | "inspect_molt_block" | "inspect_tool_bindings" | "inspect_support_docs" | "inspect_provenance" | "inspect_matrix_links" | "inspect_molt_map_links" | "inspect_approval" | "inspect_checkpoint" | "inspect_resume_guard" | "inspect_invalidation_reason";
 export interface RuntimeInspectionRequestV0 {
     query_type: RuntimeInspectionQueryType;
     artifact_id?: string;

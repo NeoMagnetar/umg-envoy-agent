@@ -1,4 +1,11 @@
 export { default } from "./plugin-entry.js";
+export {
+  buildApprovalRequestDryRun,
+  buildExecutionCheckpointRecordDryRun,
+  buildExecutionResumeReferenceDryRun,
+  buildPreflightValidationDryRun,
+  stableHash
+} from "./runtime-spec/approval-checkpoint-contract.js";
 export type {
   ApprovalCheckpointPreflightCheckV0,
   ApprovalContractStatus,
@@ -8,5 +15,7 @@ export type {
   CheckpointContractStatus,
   ExecutionCheckpointRecordV0,
   ExecutionResumeReferenceV0,
+  PreflightValidationCheckV0,
+  PreflightValidationResultV0,
   ResumeContractStatus
 } from "./runtime-spec/approval-checkpoint-contract-types.js";

@@ -1,3 +1,4 @@
+import type { ApprovalRequestV0, ExecutionCheckpointRecordV0, ExecutionResumeReferenceV0, PreflightValidationResultV0 } from "./approval-checkpoint-contract-types.js";
 import type { GovernedExecutionHandoffV0 } from "./governed-execution-handoff-types.js";
 import type { RuntimeIRMatrixV0 } from "./ir-matrix-types.js";
 import type { RuntimeMOLTMapV0 } from "./molt-map-types.js";
@@ -7,6 +8,7 @@ export interface RuntimeDashboardOptions {
     include_molt_map?: boolean;
     include_ir_matrix?: boolean;
     include_governed_handoff?: boolean;
+    include_approval_checkpoint?: boolean;
     mode?: RuntimeVisibilityMode;
 }
 export interface RuntimeDashboardV0 {
@@ -14,6 +16,10 @@ export interface RuntimeDashboardV0 {
     molt_map?: RuntimeMOLTMapV0;
     ir_matrix?: RuntimeIRMatrixV0;
     governed_handoff?: GovernedExecutionHandoffV0;
+    approval_request?: ApprovalRequestV0;
+    checkpoint_record?: ExecutionCheckpointRecordV0;
+    resume_reference?: ExecutionResumeReferenceV0;
+    preflight?: PreflightValidationResultV0;
     execution_statement: "No tools executed.";
     matrix_available: boolean;
 }

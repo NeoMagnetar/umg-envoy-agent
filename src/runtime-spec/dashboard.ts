@@ -1,3 +1,5 @@
+import type { ApprovalRequestV0, ExecutionCheckpointRecordV0, ExecutionResumeReferenceV0, PreflightValidationResultV0 } from "./approval-checkpoint-contract-types.js";
+import { buildApprovalRequestDryRun, buildExecutionCheckpointRecordDryRun, buildExecutionResumeReferenceDryRun, buildPreflightValidationDryRun } from "./approval-checkpoint-contract.js";
 import type { GovernedExecutionHandoffV0 } from "./governed-execution-handoff-types.js";
 import { buildGovernedExecutionHandoffDryRun } from "./governed-execution-handoff.js";
 import type { RuntimeIRMatrixV0 } from "./ir-matrix-types.js";
@@ -12,6 +14,7 @@ export interface RuntimeDashboardOptions {
   include_molt_map?: boolean;
   include_ir_matrix?: boolean;
   include_governed_handoff?: boolean;
+  include_approval_checkpoint?: boolean;
   mode?: RuntimeVisibilityMode;
 }
 
@@ -20,6 +23,10 @@ export interface RuntimeDashboardV0 {
   molt_map?: RuntimeMOLTMapV0;
   ir_matrix?: RuntimeIRMatrixV0;
   governed_handoff?: GovernedExecutionHandoffV0;
+  approval_request?: ApprovalRequestV0;
+  checkpoint_record?: ExecutionCheckpointRecordV0;
+  resume_reference?: ExecutionResumeReferenceV0;
+  preflight?: PreflightValidationResultV0;
   execution_statement: "No tools executed.";
   matrix_available: boolean;
 }
@@ -29,10 +36,15 @@ export function buildRuntimeDashboard(spec: RuntimeSpecV0, options: RuntimeDashb
   const includeMoltMap = Boolean(options.include_molt_map);
   const includeIRMatrix = Boolean(options.include_ir_matrix);
   const includeGovernedHandoff = Boolean(options.include_governed_handoff);
+  const includeApprovalCheckpoint = Boolean(options.include_approval_checkpoint);
   const header = buildRuntimeVisibilityHeader(spec, mode);
   const molt_map = includeMoltMap || includeIRMatrix ? buildRuntimeMOLTMap(spec) : undefined;
   const ir_matrix = includeIRMatrix ? buildRuntimeIRMatrix({ spec, molt_map }) : undefined;
-  const governed_handoff = includeGovernedHandoff ? buildGovernedExecutionHandoffDryRun({ runtimeSpec: spec, irMatrixId: ir_matrix?.matrix_id, moltMapId: molt_map?.molt_map_id }) : undefined;
+  const governed_handoff = (includeGovernedHandoff || includeApprovalCheckpoint) ? buildGovernedExecutionHandoffDryRun({ runtimeSpec: spec, irMatrixId: ir_matrix?.matrix_id, moltMapId: molt_map?.molt_map_id }) : undefined;
+  const approval_request = includeApprovalCheckpoint && governed_handoff ? buildApprovalRequestDryRun({ handoff: governed_handoff }) : undefined;
+  const checkpoint_record = includeApprovalCheckpoint && governed_handoff ? buildExecutionCheckpointRecordDryRun({ handoff: governed_handoff, approvalRequest: approval_request }) : undefined;
+  const resume_reference = includeApprovalCheckpoint && governed_handoff ? buildExecutionResumeReferenceDryRun({ handoff: governed_handoff, checkpoint: checkpoint_record, approvalRequest: approval_request }) : undefined;
+  const preflight = includeApprovalCheckpoint && governed_handoff ? buildPreflightValidationDryRun({ handoff: governed_handoff, approvalRequest: approval_request, checkpoint: checkpoint_record, resumeReference: resume_reference }) : undefined;
   const headerWithMatrix = {
     ...header,
     matrix_available: Boolean(ir_matrix)
@@ -42,6 +54,10 @@ export function buildRuntimeDashboard(spec: RuntimeSpecV0, options: RuntimeDashb
     molt_map: includeMoltMap ? molt_map : undefined,
     ir_matrix,
     governed_handoff,
+    approval_request,
+    checkpoint_record,
+    resume_reference,
+    preflight,
     execution_statement: "No tools executed.",
     matrix_available: Boolean(ir_matrix)
   };
@@ -99,7 +115,14 @@ export function renderRuntimeDashboard(dashboard: RuntimeDashboardV0): string {
       lines.push(`Approval Items: ${dashboard.governed_handoff.approval.approval_items.map((item) => `${item.tool_id} — ${item.risk_level} risk — exact-scope approval required`).join(', ')}`);
     }
     lines.push(`Checkpoint: ${dashboard.governed_handoff.checkpoint.checkpoint_required ? 'required before execution' : dashboard.governed_handoff.checkpoint.checkpoint_policy}`);
-    lines.push(`Resume: ${dashboard.governed_handoff.checkpoint.resume_policy === 'resume_requires_checkpoint' ? 'requires checkpoint' : dashboard.governed_handoff.checkpoint.resume_policy}`);
+    lines.push(`Resume: ${dashboard.resume_reference ? renderResumeStatus(dashboard.resume_reference.status) : dashboard.governed_handoff.checkpoint.resume_policy === 'resume_requires_checkpoint' ? 'requires checkpoint' : dashboard.governed_handoff.checkpoint.resume_policy}`);
+    if (dashboard.governed_handoff.blocking.blocked_items.length > 0) {
+      lines.push(`Blocked Items: ${dashboard.governed_handoff.blocking.blocked_items.map((item) => `${item.tool_id} — ${item.risk_level} — cannot be approved under conservative v0`).join(', ')}`);
+    }
+    if (dashboard.preflight) {
+      lines.push(`Preflight: ${renderPreflightStatus(dashboard.preflight.status)}`);
+    }
+    lines.push(`Execution: ${dashboard.execution_statement}`);
     lines.push('', 'GOVERNED EXECUTION HANDOFF');
     lines.push(`Status: ${resolveHandoffStatusText(dashboard.governed_handoff)}`);
     lines.push(`Approval Required: ${dashboard.governed_handoff.approval.approval_required ? 'yes' : 'no'}`);
@@ -138,6 +161,24 @@ function resolveHandoffStatusText(handoff: GovernedExecutionHandoffV0): string {
   if (handoff.tool_plan.mock_only.length > 0 && handoff.tool_plan.available.length === 0 && handoff.tool_plan.requires_approval.length === 0) return 'mock_only';
   if (handoff.tool_plan.requested.length === 0) return 'not_requested';
   return 'draft';
+}
+
+function renderResumeStatus(status: ExecutionResumeReferenceV0["status"]): string {
+  switch (status) {
+    case "requires_checkpoint": return "requires checkpoint";
+    case "resume_ready_future_only": return "future-only ready";
+    case "invalid": return "invalid";
+    case "expired": return "expired";
+    default: return "not applicable";
+  }
+}
+
+function renderPreflightStatus(status: PreflightValidationResultV0["status"]): string {
+  switch (status) {
+    case "pass_future_only": return "pass_future_only (non-authorizing)";
+    case "blocked": return "blocked until approval/checkpoint exists";
+    default: return "invalid until revalidation";
+  }
 }
 
 function renderGovernance(header: RuntimeVisibilityHeader): string {
