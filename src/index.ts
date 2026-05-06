@@ -7,6 +7,13 @@ export {
   stableHash
 } from "./runtime-spec/approval-checkpoint-contract.js";
 export type {
+  GovernedExecutionAlphaAllowedTool,
+  GovernedExecutionAlphaBlockedTool,
+  GovernedExecutionAlphaPreflightRuleV0,
+  GovernedExecutionAlphaResultV0,
+  GovernedExecutionAlphaStatus
+} from "./runtime-spec/governed-execution-alpha-types.js";
+export type {
   ApprovalCheckpointPreflightCheckV0,
   ApprovalContractStatus,
   ApprovalDecisionV0,
