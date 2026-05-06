@@ -41,7 +41,7 @@ export interface GovernedExecutionAlphaResultV0 {
     | "not_executed"
     | "blocked"
     | "preflight_failed"
-    | "executed_metadata_only_future"
+    | "executed_metadata_only"
     | "executed_read_only_future";
 
   tool_id: string;
@@ -82,6 +82,7 @@ export interface GovernedExecutionAlphaResultV0 {
     statement: string;
   };
 
+  payload?: Record<string, unknown>;
   warnings: string[];
 }
 

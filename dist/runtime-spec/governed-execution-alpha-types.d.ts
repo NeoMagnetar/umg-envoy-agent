@@ -10,7 +10,7 @@ export interface GovernedExecutionAlphaResultV0 {
     runtime_spec_id: string;
     trace_id: string;
     mode: "governed_alpha";
-    status: "not_executed" | "blocked" | "preflight_failed" | "executed_metadata_only_future" | "executed_read_only_future";
+    status: "not_executed" | "blocked" | "preflight_failed" | "executed_metadata_only" | "executed_read_only_future";
     tool_id: string;
     tool_status: ToolBindingStatus;
     risk_level: ToolRiskLevel;
@@ -43,6 +43,7 @@ export interface GovernedExecutionAlphaResultV0 {
         delete_performed: false;
         statement: string;
     };
+    payload?: Record<string, unknown>;
     warnings: string[];
 }
 export interface GovernedExecutionAlphaPreflightRuleV0 {

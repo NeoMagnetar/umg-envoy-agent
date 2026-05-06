@@ -1,4 +1,5 @@
 import { buildApprovalRequestDryRun, buildExecutionCheckpointRecordDryRun, buildExecutionResumeReferenceDryRun, buildPreflightValidationDryRun } from "./approval-checkpoint-contract.js";
+import { executeGovernedAlpha } from "./governed-execution-alpha.js";
 import { buildGovernedExecutionHandoffDryRun } from "./governed-execution-handoff.js";
 import { buildRuntimeIRMatrix, renderRuntimeIRMatrix } from "./ir-matrix.js";
 import { buildRuntimeMOLTMap } from "./molt-map.js";
@@ -9,6 +10,7 @@ export function buildRuntimeDashboard(spec, options = {}) {
     const includeIRMatrix = Boolean(options.include_ir_matrix);
     const includeGovernedHandoff = Boolean(options.include_governed_handoff);
     const includeApprovalCheckpoint = Boolean(options.include_approval_checkpoint);
+    const includeGovernedAlpha = Boolean(options.include_governed_alpha);
     const header = buildRuntimeVisibilityHeader(spec, mode);
     const molt_map = includeMoltMap || includeIRMatrix ? buildRuntimeMOLTMap(spec) : undefined;
     const ir_matrix = includeIRMatrix ? buildRuntimeIRMatrix({ spec, molt_map }) : undefined;
@@ -17,6 +19,14 @@ export function buildRuntimeDashboard(spec, options = {}) {
     const checkpoint_record = includeApprovalCheckpoint && governed_handoff ? buildExecutionCheckpointRecordDryRun({ handoff: governed_handoff, approvalRequest: approval_request }) : undefined;
     const resume_reference = includeApprovalCheckpoint && governed_handoff ? buildExecutionResumeReferenceDryRun({ handoff: governed_handoff, checkpoint: checkpoint_record, approvalRequest: approval_request }) : undefined;
     const preflight = includeApprovalCheckpoint && governed_handoff ? buildPreflightValidationDryRun({ handoff: governed_handoff, approvalRequest: approval_request, checkpoint: checkpoint_record, resumeReference: resume_reference }) : undefined;
+    const governed_alpha = includeGovernedAlpha && governed_handoff && preflight ? executeGovernedAlpha({
+        tool_id: spec.tool_bindings.requested.includes("resolver.library_status") ? "resolver.library_status" : spec.tool_bindings.requested[0] ?? "resolver.library_status",
+        runtimeSpec: spec,
+        handoff: governed_handoff,
+        approvalRequest: approval_request,
+        checkpoint: checkpoint_record,
+        preflight
+    }) : undefined;
     const headerWithMatrix = {
         ...header,
         matrix_available: Boolean(ir_matrix)
@@ -30,7 +40,8 @@ export function buildRuntimeDashboard(spec, options = {}) {
         checkpoint_record,
         resume_reference,
         preflight,
-        execution_statement: "No tools executed.",
+        governed_alpha,
+        execution_statement: governed_alpha?.execution_boundary.statement ?? "No tools executed.",
         matrix_available: Boolean(ir_matrix)
     };
     return dashboard;
@@ -74,6 +85,22 @@ export function renderRuntimeDashboard(dashboard) {
             lines.push(`Matrix Edges: ${dashboard.ir_matrix.edges.length}`);
         }
         lines.push(renderRuntimeIRMatrix(dashboard.ir_matrix));
+    }
+    if (dashboard.governed_alpha) {
+        lines.push('', 'FIRST GOVERNED EXECUTION ALPHA');
+        lines.push(`Alpha Target: ${dashboard.governed_alpha.tool_id}`);
+        lines.push(`Status: ${dashboard.governed_alpha.status}`);
+        lines.push(`Risk: ${dashboard.governed_alpha.risk_level}`);
+        lines.push(`Approval: ${dashboard.governed_alpha.approval.required ? 'required' : 'not required'}`);
+        lines.push(`Checkpoint: ${dashboard.governed_alpha.checkpoint.required ? 'required' : 'not required'}`);
+        lines.push(`Payload Policy: ${dashboard.governed_alpha.result_payload_policy.payload_type} only`);
+        lines.push(`Writes: ${dashboard.governed_alpha.execution_boundary.write_performed ? 'yes' : 'no'}`);
+        lines.push(`Deletes: ${dashboard.governed_alpha.execution_boundary.delete_performed ? 'yes' : 'no'}`);
+        lines.push(`External Calls: ${dashboard.governed_alpha.execution_boundary.external_calls_performed ? 'yes' : 'no'}`);
+        if (dashboard.governed_alpha.status === 'blocked' && dashboard.governed_alpha.warnings.length > 0) {
+            lines.push(`Reason: ${dashboard.governed_alpha.warnings[0]}`);
+        }
+        lines.push(`Execution: ${dashboard.governed_alpha.execution_boundary.statement}`);
     }
     if (dashboard.governed_handoff) {
         lines.push('', 'APPROVAL / CHECKPOINT CONTRACT');
