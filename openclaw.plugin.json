@@ -164,6 +164,7 @@
     "umg_envoy_mcp_tool_classify",
     "umg_envoy_mcp_capability_summary",
     "umg_envoy_library_status",
-    "umg_envoy_library_search"
+    "umg_envoy_library_search",
+    "umg_envoy_runtime_spec_dry_run"
   ]
 }

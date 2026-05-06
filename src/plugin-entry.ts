@@ -29,6 +29,7 @@ import { loadBlockLibraryConfig } from "./resolver/block-library-config.js";
 import { UMGResolver } from "./resolver/resolver.js";
 import { buildRegistry } from "./resolver/indexer.js";
 import { searchRegistry } from "./resolver/search.js";
+import { compileRuntimeSpecDryRun } from "./runtime-spec/compiler.js";
 import { loadNeostackFile } from "./compiler/neostack-loader.js";
 import { resolveNeostackArtifacts, validateNeostackStructure } from "./compiler/neostack-validator.js";
 import type { CompilerInputPreview, LangChainBridgePayload, PluginConfig, SleeveLoadResult, NeostackLoadResult } from "./types.js";
@@ -110,7 +111,8 @@ function statusPayload(config?: PluginConfig) {
       "umg_envoy_neostack_list_tools",
       "umg_envoy_neostack_permission_check",
       "umg_envoy_library_status",
-      "umg_envoy_library_search"
+      "umg_envoy_library_search",
+      "umg_envoy_runtime_spec_dry_run"
     ]
   };
 }
@@ -545,6 +547,13 @@ function registerCliBridge(api: any, config?: PluginConfig) {
         }, registry.support_artifacts);
         console.log(JSON.stringify({ source_mode: resolver.status().source_mode, counts: registry.counts, support_artifact_count: registry.support_artifacts.length, hits, warnings_summary: registry.warnings_summary, warnings: registry.warnings.slice(0, 25) }, null, 2));
       });
+
+    root.command("runtime-spec-dry-run")
+      .requiredOption("--user-task <task>")
+      .option("--preferred-kind <kind>")
+      .action(async (opts: { userTask: string; preferredKind?: "sleeve" | "neostack" | "neoblock" | "molt_block" }) => {
+        console.log(JSON.stringify(compileRuntimeSpecDryRun({ user_task: opts.userTask, preferred_kind: opts.preferredKind, execution_mode: "dry_run" }), null, 2));
+      });
   }, { commands: ["umg-envoy"] });
 }
 
@@ -833,6 +842,14 @@ const entry = {
           limit: input.limit
         }, registry.support_artifacts);
         return { content: [{ type: "text", text: JSON.stringify({ source_mode: resolver.status().source_mode, counts: registry.counts, support_artifact_count: registry.support_artifacts.length, hits, warnings_summary: registry.warnings_summary, warnings: registry.warnings.slice(0, 25) }, null, 2) }] };
+      }
+    }, { optional: true });
+    api.registerTool({
+      name: "umg_envoy_runtime_spec_dry_run",
+      description: "Compile a read-only dry-run RuntimeSpec v0 object from the resolver registry without executing anything.",
+      parameters: Type.Object({ user_task: Type.String(), requested_capabilities: Type.Optional(Type.Array(Type.String())), requested_tools: Type.Optional(Type.Array(Type.String())), preferred_kind: Type.Optional(Type.Union([Type.Literal("sleeve"), Type.Literal("neostack"), Type.Literal("neoblock"), Type.Literal("molt_block")])) }, { additionalProperties: false }),
+      async execute(input: { user_task: string; requested_capabilities?: string[]; requested_tools?: string[]; preferred_kind?: "sleeve" | "neostack" | "neoblock" | "molt_block" }) {
+        return { content: [{ type: "text", text: JSON.stringify(compileRuntimeSpecDryRun({ ...input, execution_mode: "dry_run" }), null, 2) }] };
       }
     }, { optional: true });
   }

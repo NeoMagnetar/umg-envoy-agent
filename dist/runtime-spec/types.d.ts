@@ -1,5 +1,12 @@
 export type RuntimeSpecStatus = "draft" | "compiled" | "assembled_runtime" | "blocked" | "invalid";
 export type RuntimeKind = "sleeve_runtime" | "neostack_runtime" | "assembled_runtime";
+export interface RuntimeSpecCompileInput {
+    user_task: string;
+    requested_capabilities?: string[];
+    requested_tools?: string[];
+    preferred_kind?: "sleeve" | "neostack" | "neoblock" | "molt_block";
+    execution_mode?: "dry_run";
+}
 export interface RuntimeSpecInput {
     user_task: string;
     requested_capabilities: string[];
