@@ -166,6 +166,7 @@
     "umg_envoy_library_status",
     "umg_envoy_library_search",
     "umg_envoy_runtime_spec_dry_run",
-    "umg_envoy_runtime_visibility_header"
+    "umg_envoy_runtime_visibility_header",
+    "umg_envoy_runtime_molt_map"
   ]
 }
