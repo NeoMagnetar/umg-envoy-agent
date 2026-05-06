@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { stableHash } from "./approval-checkpoint-contract.js";
 const POLICY_VERSION = "local-readonly-inspection/v0";
+export const LOCAL_READONLY_POLICY_VERSION = POLICY_VERSION;
 const DEFAULT_MAX_DEPTH = 2;
 const DEFAULT_MAX_ITEMS = 100;
 const HARD_MAX_DEPTH = 5;
@@ -193,6 +194,84 @@ export function buildLocalReadOnlyInspectionMockResultDryRun(input) {
         warnings: [...preflight.warnings]
     };
 }
+export function buildLocalReadOnlyApprovalToken(input) {
+    return `approval_scope_${stableHash({ scope_hash: input.scope_hash, tool_id: input.tool_id, policy_version: input.policy_version ?? POLICY_VERSION, payload_policy: "read_only_file_metadata" })}`;
+}
+export function verifyLocalReadOnlyApprovalToken(input) {
+    return input.approval_token === buildLocalReadOnlyApprovalToken({ scope_hash: input.scope_hash, tool_id: input.tool_id, policy_version: input.policy_version });
+}
+export function buildLocalReadOnlyInspectionPlanDryRun(input) {
+    const scope = buildLocalReadOnlyInspectionScope({
+        root_path: input.root_path,
+        recursive: input.recursive,
+        max_depth: input.max_depth,
+        max_items: input.max_items,
+        include_hidden: input.include_hidden,
+        include_system_paths: input.include_system_paths,
+        include_file_contents: input.include_file_contents,
+        reason: "Local read-only metadata inspection requested."
+    });
+    const redacted_root = redactScopePath(scope.root_path);
+    const scope_hash = hashLocalReadOnlyInspectionScope(scope);
+    const approval_request = buildApprovalRequestV0Bridge(input.handoff, scope, redacted_root);
+    const checkpoint_preview = scope.allowed ? buildCheckpointV0Bridge(input.handoff, approval_request, scope_hash) : undefined;
+    const preflight = buildLocalReadOnlyInspectionPreflightDryRun({
+        runtimeSpec: input.runtimeSpec,
+        handoff: input.handoff,
+        approvalRequest: approval_request,
+        checkpoint: checkpoint_preview,
+        scope
+    });
+    const approval_token = scope.allowed ? buildLocalReadOnlyApprovalToken({ scope_hash, tool_id: "desktop_bridge.file_scan" }) : undefined;
+    return {
+        status: !scope.allowed ? "blocked" : checkpoint_preview ? "checkpoint_required" : "approval_required",
+        scope,
+        redacted_root,
+        scope_hash,
+        approval_token,
+        approval_request,
+        checkpoint_preview,
+        preflight,
+        execution_boundary: {
+            local_inspection_performed: false,
+            statement: "No local inspection performed."
+        },
+        warnings: [...preflight.warnings]
+    };
+}
+export async function executeApprovedLocalReadOnlyMetadataScan(input) {
+    const scope = buildLocalReadOnlyInspectionScope({
+        root_path: input.root_path,
+        recursive: input.recursive,
+        max_depth: input.max_depth,
+        max_items: input.max_items,
+        include_hidden: input.include_hidden,
+        include_system_paths: input.include_system_paths,
+        include_file_contents: input.include_file_contents,
+        reason: "Local read-only metadata inspection requested."
+    });
+    const scope_hash = hashLocalReadOnlyInspectionScope(scope);
+    const redacted_root = redactScopePath(scope.root_path);
+    if (!input.scope_hash || input.scope_hash !== scope_hash) {
+        return buildRejectedLocalReadonlyResult(input.runtimeSpec.runtime_spec_id, input.handoff.handoff_id, scope, scope_hash, redacted_root, "invalid", ["scope hash mismatch"]);
+    }
+    if (!input.approval_token || !verifyLocalReadOnlyApprovalToken({ approval_token: input.approval_token, scope_hash, tool_id: "desktop_bridge.file_scan" })) {
+        return buildRejectedLocalReadonlyResult(input.runtimeSpec.runtime_spec_id, input.handoff.handoff_id, scope, scope_hash, redacted_root, "invalid", ["missing or invalid approval token"]);
+    }
+    if (!input.user_approved_exact_scope) {
+        return buildRejectedLocalReadonlyResult(input.runtimeSpec.runtime_spec_id, input.handoff.handoff_id, scope, scope_hash, redacted_root, "approval_required", ["explicit exact-scope approval flag is required"]);
+    }
+    if (!input.confirm_no_file_contents) {
+        return buildRejectedLocalReadonlyResult(input.runtimeSpec.runtime_spec_id, input.handoff.handoff_id, scope, scope_hash, redacted_root, "invalid", ["confirm_no_file_contents must be true"]);
+    }
+    const approvalRequest = buildApprovalRequestV0Bridge(input.handoff, scope, redacted_root);
+    const checkpoint = buildCheckpointV0Bridge(input.handoff, approvalRequest, scope_hash);
+    const preflight = buildLocalReadOnlyInspectionPreflightDryRun({ runtimeSpec: input.runtimeSpec, handoff: input.handoff, approvalRequest: approvalRequest, checkpoint, scope });
+    if (preflight.status !== "pass_future_only") {
+        return buildRejectedLocalReadonlyResult(input.runtimeSpec.runtime_spec_id, input.handoff.handoff_id, scope, scope_hash, redacted_root, preflight.status === "blocked" ? "blocked" : preflight.status === "approval_required" ? "approval_required" : preflight.status === "checkpoint_required" ? "checkpoint_required" : "invalid", preflight.warnings);
+    }
+    return executeLocalReadOnlyMetadataScan({ runtimeSpec: input.runtimeSpec, handoff: input.handoff, approvalRequest, checkpoint, scope, preflight });
+}
 export async function executeLocalReadOnlyMetadataScan(input) {
     const { runtimeSpec, handoff, approvalRequest, checkpoint, scope, preflight } = input;
     const scope_hash = hashLocalReadOnlyInspectionScope(scope);
@@ -379,6 +458,126 @@ async function safeChildCount(entryPath) {
     catch {
         return undefined;
     }
+}
+function buildApprovalRequestV0Bridge(handoff, scope, redacted_root) {
+    return {
+        approval_request_id: `approval_request_${stableHash({ handoff_id: handoff.handoff_id, tool_id: "desktop_bridge.file_scan", root: scope.root_path })}`,
+        handoff_id: handoff.handoff_id,
+        runtime_spec_id: handoff.runtime_spec_id,
+        trace_id: handoff.trace_id,
+        status: "required",
+        mode: "dry_run",
+        requested_action_summary: `Future local read-only metadata inspection would require approval for ${redacted_root}.`,
+        selected_context: { ...handoff.selected_context },
+        approval_items: [{
+                item_id: `${handoff.handoff_id}:approval_item:desktop_bridge.file_scan`,
+                tool_id: "desktop_bridge.file_scan",
+                requested_by: { artifact_id: handoff.handoff_id, artifact_kind: "runtime_spec" },
+                risk_level: "medium",
+                execution_mode: "approval_required",
+                reason: "exact local read-only metadata inspection",
+                user_visible_risk: "desktop_bridge.file_scan can reveal local file and folder names, structure, and timestamps.",
+                approval_scope: "single_handoff",
+                status: "requires_approval"
+            }],
+        blocked_items: [],
+        user_visible_summary: {
+            title: "Approval required for local read-only metadata inspection",
+            plain_language_summary: `Tool: desktop_bridge.file_scan; Root Path: ${redacted_root}; Recursive: ${scope.recursive}; Max Depth: ${scope.max_depth}; Max Items: ${scope.max_items}; File Contents: no; Writes: no; Deletes: no; External Calls: no.`,
+            tools_requested: ["desktop_bridge.file_scan"],
+            risks: ["Local metadata scan can reveal filenames, folder names, and timestamps."],
+            blocked_items: [],
+            checkpoint_required: true,
+            execution_statement: "No tools executed."
+        },
+        constraints: {
+            single_use: true,
+            exact_match_required: true,
+            blocked_items_cannot_be_approved: true
+        },
+        warnings: []
+    };
+}
+function buildCheckpointV0Bridge(handoff, approvalRequest, scope_hash) {
+    return {
+        checkpoint_id: `checkpoint_${stableHash({ handoff_id: handoff.handoff_id, scope_hash })}`,
+        handoff_id: handoff.handoff_id,
+        approval_request_id: approvalRequest.approval_request_id,
+        runtime_spec_id: handoff.runtime_spec_id,
+        trace_id: handoff.trace_id,
+        status: "required",
+        snapshot: {
+            runtime_spec_hash: stableHash({ runtime_spec_id: handoff.runtime_spec_id, trace_id: handoff.trace_id }),
+            tool_plan_hash: stableHash(handoff.tool_plan),
+            selected_context_hash: stableHash(handoff.selected_context),
+            approval_request_hash: stableHash(approvalRequest),
+            policy_version: POLICY_VERSION,
+            extra_hashes: {
+                local_inspection_scope_hash: scope_hash
+            }
+        },
+        replay_guard: {
+            exact_match_required: true,
+            blocked_if_policy_changed: true,
+            blocked_if_runtime_spec_changed: true,
+            blocked_if_tool_plan_changed: true
+        },
+        execution_boundary: {
+            execution_performed: false,
+            checkpoint_written: false,
+            statement: "No tools executed."
+        },
+        warnings: []
+    };
+}
+function buildRejectedLocalReadonlyResult(runtime_spec_id, handoff_id, scope, scope_hash, redacted_root, status, warnings) {
+    return {
+        result_id: `local_readonly_mock_${stableHash({ runtime_spec_id, handoff_id, scope_hash, status })}`,
+        runtime_spec_id,
+        handoff_id,
+        tool_id: "desktop_bridge.file_scan",
+        status,
+        scope,
+        scope_hash,
+        redacted_root,
+        preflight: {
+            preflight_id: `local_preflight_${stableHash({ runtime_spec_id, handoff_id, scope_hash, status })}`,
+            runtime_spec_id,
+            handoff_id,
+            tool_id: "desktop_bridge.file_scan",
+            status: status === "approval_required" ? "approval_required" : status === "checkpoint_required" ? "checkpoint_required" : status === "blocked" ? "blocked" : "invalid",
+            scope_hash,
+            checks: [],
+            execution_boundary: {
+                local_inspection_performed: false,
+                file_contents_read: false,
+                write_performed: false,
+                delete_performed: false,
+                shell_command_executed: false,
+                external_calls_performed: false,
+                statement: "No local inspection performed."
+            },
+            warnings
+        },
+        payload_policy: {
+            payload_type: "read_only_file_metadata",
+            contains_file_contents: false,
+            contains_sensitive_data: false,
+            redaction_required: true,
+            max_items: scope.max_items,
+            max_depth: scope.max_depth
+        },
+        execution_boundary: {
+            local_inspection_performed: false,
+            file_contents_read: false,
+            write_performed: false,
+            delete_performed: false,
+            external_calls_performed: false,
+            shell_command_executed: false,
+            statement: "No local inspection performed."
+        },
+        warnings
+    };
 }
 function blockedScanResult(runtime_spec_id, handoff_id, approval_request_id, checkpoint_id, scope, redacted_root, status, statement, warnings = []) {
     return {

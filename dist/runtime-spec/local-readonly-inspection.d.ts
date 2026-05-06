@@ -2,6 +2,7 @@ import type { ApprovalRequestV0, ExecutionCheckpointRecordV0 } from "./approval-
 import type { GovernedExecutionHandoffV0 } from "./governed-execution-handoff-types.js";
 import type { LocalReadOnlyInspectionResultV0, LocalReadOnlyInspectionScopeV0 } from "./local-readonly-inspection-types.js";
 import type { RuntimeSpecV0 } from "./types.js";
+export declare const LOCAL_READONLY_POLICY_VERSION = "local-readonly-inspection/v0";
 export interface LocalReadOnlyInspectionPreflightResultV0 {
     preflight_id: string;
     runtime_spec_id: string;
@@ -90,6 +91,57 @@ export declare function buildLocalReadOnlyInspectionMockResultDryRun(input: {
     checkpoint?: ExecutionCheckpointRecordV0;
     scope: LocalReadOnlyInspectionScopeV0;
 }): LocalReadOnlyInspectionMockResultV0;
+export declare function buildLocalReadOnlyApprovalToken(input: {
+    scope_hash: string;
+    tool_id: "desktop_bridge.file_scan";
+    policy_version?: string;
+}): string;
+export declare function verifyLocalReadOnlyApprovalToken(input: {
+    approval_token: string;
+    scope_hash: string;
+    tool_id: "desktop_bridge.file_scan";
+    policy_version?: string;
+}): boolean;
+export declare function buildLocalReadOnlyInspectionPlanDryRun(input: {
+    runtimeSpec: RuntimeSpecV0;
+    handoff: GovernedExecutionHandoffV0;
+    root_path: string;
+    recursive?: boolean;
+    max_depth?: number;
+    max_items?: number;
+    include_hidden?: boolean;
+    include_system_paths?: boolean;
+    include_file_contents?: boolean;
+}): {
+    status: "approval_required" | "checkpoint_required" | "blocked" | "invalid";
+    scope: LocalReadOnlyInspectionScopeV0;
+    redacted_root: string;
+    scope_hash: string;
+    approval_token?: string;
+    approval_request?: ApprovalRequestV0;
+    checkpoint_preview?: ExecutionCheckpointRecordV0;
+    preflight: LocalReadOnlyInspectionPreflightResultV0;
+    execution_boundary: {
+        local_inspection_performed: false;
+        statement: "No local inspection performed.";
+    };
+    warnings: string[];
+};
+export declare function executeApprovedLocalReadOnlyMetadataScan(input: {
+    runtimeSpec: RuntimeSpecV0;
+    handoff: GovernedExecutionHandoffV0;
+    root_path: string;
+    recursive?: boolean;
+    max_depth?: number;
+    max_items?: number;
+    include_hidden?: boolean;
+    include_system_paths?: boolean;
+    include_file_contents?: boolean;
+    scope_hash?: string;
+    approval_token?: string;
+    user_approved_exact_scope?: boolean;
+    confirm_no_file_contents?: boolean;
+}): Promise<LocalReadOnlyInspectionResultV0 | LocalReadOnlyInspectionMockResultV0>;
 export declare function executeLocalReadOnlyMetadataScan(input: {
     runtimeSpec: RuntimeSpecV0;
     handoff: GovernedExecutionHandoffV0;

@@ -35,6 +35,8 @@ import { buildRuntimeMOLTMap } from "./runtime-spec/molt-map.js";
 import { buildRuntimeDashboard } from "./runtime-spec/dashboard.js";
 import { inspectRuntimeDrilldown } from "./runtime-spec/drilldown.js";
 import { buildRuntimeIRMatrix } from "./runtime-spec/ir-matrix.js";
+import { buildLocalReadOnlyApprovalToken, buildLocalReadOnlyInspectionPlanDryRun, executeApprovedLocalReadOnlyMetadataScan } from "./runtime-spec/local-readonly-inspection.js";
+import { buildGovernedExecutionHandoffDryRun } from "./runtime-spec/governed-execution-handoff.js";
 import { loadNeostackFile } from "./compiler/neostack-loader.js";
 import { resolveNeostackArtifacts, validateNeostackStructure } from "./compiler/neostack-validator.js";
 import type { CompilerInputPreview, LangChainBridgePayload, PluginConfig, SleeveLoadResult, NeostackLoadResult } from "./types.js";
@@ -122,7 +124,9 @@ function statusPayload(config?: PluginConfig) {
       "umg_envoy_runtime_molt_map",
       "umg_envoy_runtime_dashboard",
       "umg_envoy_runtime_ir_matrix",
-      "umg_envoy_runtime_inspect"
+      "umg_envoy_runtime_inspect",
+      "umg_envoy_local_readonly_plan",
+      "umg_envoy_local_readonly_scan"
     ]
   };
 }
@@ -593,6 +597,36 @@ function registerCliBridge(api: any, config?: PluginConfig) {
         console.log(JSON.stringify(buildRuntimeDashboard(spec, { include_molt_map: Boolean(opts.includeMoltMap), include_ir_matrix: Boolean(opts.includeIrMatrix), mode: opts.mode ?? "developer" }), null, 2));
       });
 
+    root.command("runtime-local-readonly-plan")
+      .requiredOption("--root-path <path>")
+      .option("--recursive")
+      .option("--max-depth <number>")
+      .option("--max-items <number>")
+      .option("--include-hidden")
+      .option("--include-system-paths")
+      .action(async (opts: { rootPath: string; recursive?: boolean; maxDepth?: string; maxItems?: string; includeHidden?: boolean; includeSystemPaths?: boolean }) => {
+        const runtimeSpec = compileRuntimeSpecDryRun({ user_task: `Scan ${opts.rootPath} for file metadata only.`, requested_tools: ["desktop_bridge.file_scan"], execution_mode: "dry_run" });
+        const handoff = buildGovernedExecutionHandoffDryRun({ runtimeSpec });
+        console.log(JSON.stringify(buildLocalReadOnlyInspectionPlanDryRun({ runtimeSpec, handoff, root_path: opts.rootPath, recursive: Boolean(opts.recursive), max_depth: opts.maxDepth ? Number(opts.maxDepth) : undefined, max_items: opts.maxItems ? Number(opts.maxItems) : undefined, include_hidden: Boolean(opts.includeHidden), include_system_paths: Boolean(opts.includeSystemPaths) }), null, 2));
+      });
+
+    root.command("runtime-local-readonly-scan")
+      .requiredOption("--root-path <path>")
+      .requiredOption("--scope-hash <hash>")
+      .requiredOption("--approval-token <token>")
+      .option("--recursive")
+      .option("--max-depth <number>")
+      .option("--max-items <number>")
+      .option("--include-hidden")
+      .option("--include-system-paths")
+      .option("--approve-exact-scope")
+      .option("--confirm-no-file-contents")
+      .action(async (opts: { rootPath: string; scopeHash: string; approvalToken: string; recursive?: boolean; maxDepth?: string; maxItems?: string; includeHidden?: boolean; includeSystemPaths?: boolean; approveExactScope?: boolean; confirmNoFileContents?: boolean }) => {
+        const runtimeSpec = compileRuntimeSpecDryRun({ user_task: `Scan ${opts.rootPath} for file metadata only.`, requested_tools: ["desktop_bridge.file_scan"], execution_mode: "dry_run" });
+        const handoff = buildGovernedExecutionHandoffDryRun({ runtimeSpec });
+        console.log(JSON.stringify(await executeApprovedLocalReadOnlyMetadataScan({ runtimeSpec, handoff, root_path: opts.rootPath, recursive: Boolean(opts.recursive), max_depth: opts.maxDepth ? Number(opts.maxDepth) : undefined, max_items: opts.maxItems ? Number(opts.maxItems) : undefined, include_hidden: Boolean(opts.includeHidden), include_system_paths: Boolean(opts.includeSystemPaths), scope_hash: opts.scopeHash, approval_token: opts.approvalToken, user_approved_exact_scope: Boolean(opts.approveExactScope), confirm_no_file_contents: Boolean(opts.confirmNoFileContents) }), null, 2));
+      });
+
     root.command("runtime-ir-matrix")
       .requiredOption("--user-task <task>")
       .option("--preferred-kind <kind>")
@@ -960,6 +994,26 @@ const entry = {
       async execute(input: { user_task: string; requested_capabilities?: string[]; requested_tools?: string[]; preferred_kind?: "sleeve" | "neostack" | "neoblock" | "molt_block"; include_molt_map?: boolean; include_ir_matrix?: boolean; mode?: "compact" | "developer" | "debug" }) {
         const spec = compileRuntimeSpecDryRun({ ...input, execution_mode: "dry_run" });
         return { content: [{ type: "text", text: JSON.stringify(buildRuntimeDashboard(spec, { include_molt_map: input.include_molt_map, include_ir_matrix: input.include_ir_matrix, mode: input.mode }), null, 2) }] };
+      }
+    }, { optional: true });
+    api.registerTool({
+      name: "umg_envoy_local_readonly_plan",
+      description: "Plan an exact-scope local read-only metadata scan preview. Metadata only, no file contents, no writes, no deletes, no shell, and no scan performed.",
+      parameters: Type.Object({ root_path: Type.String(), recursive: Type.Optional(Type.Boolean()), max_depth: Type.Optional(Type.Number()), max_items: Type.Optional(Type.Number()), include_hidden: Type.Optional(Type.Boolean()), include_system_paths: Type.Optional(Type.Boolean()) }, { additionalProperties: false }),
+      async execute(input: { root_path: string; recursive?: boolean; max_depth?: number; max_items?: number; include_hidden?: boolean; include_system_paths?: boolean }) {
+        const runtimeSpec = compileRuntimeSpecDryRun({ user_task: `Scan ${input.root_path} for file metadata only.`, requested_tools: ["desktop_bridge.file_scan"], execution_mode: "dry_run" });
+        const handoff = buildGovernedExecutionHandoffDryRun({ runtimeSpec });
+        return { content: [{ type: "text", text: JSON.stringify(buildLocalReadOnlyInspectionPlanDryRun({ runtimeSpec, handoff, ...input }), null, 2) }] };
+      }
+    }, { optional: true });
+    api.registerTool({
+      name: "umg_envoy_local_readonly_scan",
+      description: "Execute an exact-scope approved local read-only metadata scan. Requires matching scope hash, approval token, exact-scope approval flag, and no-file-contents confirmation.",
+      parameters: Type.Object({ root_path: Type.String(), recursive: Type.Optional(Type.Boolean()), max_depth: Type.Optional(Type.Number()), max_items: Type.Optional(Type.Number()), include_hidden: Type.Optional(Type.Boolean()), include_system_paths: Type.Optional(Type.Boolean()), scope_hash: Type.String(), approval_token: Type.String(), user_approved_exact_scope: Type.Boolean(), confirm_no_file_contents: Type.Boolean() }, { additionalProperties: false }),
+      async execute(input: { root_path: string; recursive?: boolean; max_depth?: number; max_items?: number; include_hidden?: boolean; include_system_paths?: boolean; scope_hash: string; approval_token: string; user_approved_exact_scope: boolean; confirm_no_file_contents: boolean }) {
+        const runtimeSpec = compileRuntimeSpecDryRun({ user_task: `Scan ${input.root_path} for file metadata only.`, requested_tools: ["desktop_bridge.file_scan"], execution_mode: "dry_run" });
+        const handoff = buildGovernedExecutionHandoffDryRun({ runtimeSpec });
+        return { content: [{ type: "text", text: JSON.stringify(await executeApprovedLocalReadOnlyMetadataScan({ runtimeSpec, handoff, ...input }), null, 2) }] };
       }
     }, { optional: true });
     api.registerTool({

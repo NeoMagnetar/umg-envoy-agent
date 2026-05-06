@@ -4,7 +4,7 @@ import path from 'node:path';
 import { compileRuntimeSpecDryRun } from '../dist/runtime-spec/compiler.js';
 import { buildGovernedExecutionHandoffDryRun } from '../dist/runtime-spec/governed-execution-handoff.js';
 import { buildApprovalRequestDryRun, buildExecutionCheckpointRecordDryRun } from '../dist/runtime-spec/approval-checkpoint-contract.js';
-import { buildLocalReadOnlyInspectionMockResultDryRun, buildLocalReadOnlyInspectionPreflightDryRun, buildLocalReadOnlyInspectionScope, executeLocalReadOnlyMetadataScan, hashLocalReadOnlyInspectionScope, redactScopePath } from '../dist/runtime-spec/local-readonly-inspection.js';
+import { buildLocalReadOnlyInspectionMockResultDryRun, buildLocalReadOnlyInspectionPlanDryRun, buildLocalReadOnlyInspectionPreflightDryRun, buildLocalReadOnlyInspectionScope, executeApprovedLocalReadOnlyMetadataScan, executeLocalReadOnlyMetadataScan, hashLocalReadOnlyInspectionScope, redactScopePath } from '../dist/runtime-spec/local-readonly-inspection.js';
 
 function ensure(condition, message) {
   if (!condition) throw new Error(message);
@@ -41,13 +41,18 @@ await withFixture(async (fixtureRoot) => {
   const approvalMissing = buildLocalReadOnlyInspectionMockResultDryRun({ ...context, scope });
   ensure(approvalMissing.status === 'approval_required', 'missing approval should block before scan');
 
+  const plan = buildLocalReadOnlyInspectionPlanDryRun({ ...context, root_path: fixtureRoot, recursive: false, max_depth: 2, max_items: 100 });
+  ensure(plan.scope_hash.startsWith('scope_'), 'plan should return scope hash');
+  ensure(typeof plan.approval_token === 'string' && plan.approval_token.startsWith('approval_scope_'), 'plan should return approval token for allowed scope');
+  ensure(plan.execution_boundary.local_inspection_performed === false, 'plan must not perform scan');
+
   const approvalRequest = buildApprovalRequestDryRun({ handoff: context.handoff, localReadOnlyScope: { redacted_root: redactScopePath(scope.root_path), recursive: scope.recursive, max_depth: scope.max_depth, max_items: scope.max_items } });
   const scopeHash = hashLocalReadOnlyInspectionScope(scope);
   const checkpoint = buildExecutionCheckpointRecordDryRun({ handoff: context.handoff, approvalRequest, localInspectionScopeHash: scopeHash });
   const preflight = buildLocalReadOnlyInspectionPreflightDryRun({ ...context, approvalRequest, checkpoint, scope });
   ensure(preflight.status === 'pass_future_only', 'matching approval/checkpoint should pass future-only before scan');
 
-  const success = await executeLocalReadOnlyMetadataScan({ ...context, approvalRequest, checkpoint, scope, preflight });
+  const success = await executeApprovedLocalReadOnlyMetadataScan({ ...context, root_path: fixtureRoot, recursive: false, max_depth: 2, max_items: 100, scope_hash: plan.scope_hash, approval_token: plan.approval_token, user_approved_exact_scope: true, confirm_no_file_contents: true });
   ensure(success.status === 'executed_read_only', 'fixture scan should succeed');
   ensure(success.summary.item_count > 0, 'fixture scan should return items');
   ensure(success.summary.file_count > 0, 'fixture scan should return files');
@@ -81,6 +86,15 @@ await withFixture(async (fixtureRoot) => {
   ensure(success.summary.skipped_count > 0, 'sensitive filenames should be skipped');
   ensure(success.items.some((item) => item.skipped_reason === 'sensitive_filename_pattern'), 'sensitive filename skip should be reported');
 
+  const missingApprovalToken = await executeApprovedLocalReadOnlyMetadataScan({ ...context, root_path: fixtureRoot, recursive: false, max_depth: 2, max_items: 100, scope_hash: plan.scope_hash, user_approved_exact_scope: true, confirm_no_file_contents: true });
+  ensure(missingApprovalToken.status === 'invalid', 'missing approval token should invalidate scan');
+
+  const missingExactScopeApproval = await executeApprovedLocalReadOnlyMetadataScan({ ...context, root_path: fixtureRoot, recursive: false, max_depth: 2, max_items: 100, scope_hash: plan.scope_hash, approval_token: plan.approval_token, confirm_no_file_contents: true });
+  ensure(missingExactScopeApproval.status === 'approval_required', 'missing exact-scope approval flag should block scan');
+
+  const missingNoContentsConfirmation = await executeApprovedLocalReadOnlyMetadataScan({ ...context, root_path: fixtureRoot, recursive: false, max_depth: 2, max_items: 100, scope_hash: plan.scope_hash, approval_token: plan.approval_token, user_approved_exact_scope: true });
+  ensure(missingNoContentsConfirmation.status === 'invalid', 'missing no-file-contents confirmation should invalidate scan');
+
   const missingCheckpointPreflight = buildLocalReadOnlyInspectionPreflightDryRun({ ...context, approvalRequest, scope });
   ensure(missingCheckpointPreflight.status === 'checkpoint_required', 'missing checkpoint should block before scan');
 
@@ -113,6 +127,7 @@ await withFixture(async (fixtureRoot) => {
 
   console.log(JSON.stringify({
     ok: true,
+    plan_allowed_project_fixture: plan,
     fixture_scan_success: success,
     non_recursive_direct_children_only: nonRecursive.summary,
     recursive_max_depth: recursiveResult.summary,
@@ -121,6 +136,9 @@ await withFixture(async (fixtureRoot) => {
     root_drive_blocked: rootBlockedPreflight,
     appdata_private_blocked: appDataPreflight,
     missing_approval_blocked: approvalMissing,
+    missing_approval_token: missingApprovalToken,
+    missing_exact_scope_approval: missingExactScopeApproval,
+    missing_no_contents_confirmation: missingNoContentsConfirmation,
     missing_checkpoint_blocked: missingCheckpointPreflight,
     scope_mismatch_invalid: mismatchPreflight,
     symlink_not_followed: symlinkSmoke

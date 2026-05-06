@@ -170,6 +170,8 @@
     "umg_envoy_runtime_molt_map",
     "umg_envoy_runtime_dashboard",
     "umg_envoy_runtime_ir_matrix",
-    "umg_envoy_runtime_inspect"
+    "umg_envoy_runtime_inspect",
+    "umg_envoy_local_readonly_plan",
+    "umg_envoy_local_readonly_scan"
   ]
 }
