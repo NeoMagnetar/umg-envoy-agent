@@ -1,6 +1,6 @@
 {
   "name": "umg-envoy-agent",
-  "version": "0.2.8",
+  "version": "0.3.0-alpha.1",
   "description": "OpenClaw code plugin for running Universal Modular Generation as a modular cognitive architecture runtime.",
   "type": "module",
   "main": "dist/plugin-entry.js",
@@ -37,6 +37,7 @@
     "umg:runtime-local-readonly-inspection:smoke": "node scripts/runtime-local-readonly-inspection-smoke.mjs",
     "umg:alpha-demo:smoke": "node scripts/alpha-demo-smoke.mjs",
     "umg:operational-sleeve:smoke": "node scripts/operational-sleeve-smoke.mjs",
+    "umg:public-surface:smoke": "node scripts/public-surface-alignment-smoke.mjs",
     "validate:umg:e2e": "node scripts/validate-umg-e2e.mjs",
     "pack:dry": "npm pack --dry-run"
   },

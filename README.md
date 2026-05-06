@@ -35,24 +35,30 @@ In UMG terminology, an Envoy is an agent-like carrier. The word Agent is include
 
 ## Current Capability Boundary
 
-UMG Envoy Agent currently supports governed metadata execution and exact-scope local read-only metadata inspection.
+UMG Envoy Agent currently supports governed metadata execution, operational sleeve demos, and exact-scope local read-only metadata inspection.
 
-Allowed alpha actions:
-- inspect UMG library status
-- search UMG library metadata
-- summarize governed tool capability metadata
-- plan exact-scope local read-only inspection
-- execute approved exact-scope local file metadata scan
+Allowed alpha capabilities:
+- UMG library status
+- UMG library metadata search
+- RuntimeSpec dry-run
+- Runtime Display
+- MOLT Map
+- IR Matrix
+- operational sleeve list / inspect / demo
+- alpha demo
+- exact-scope local read-only metadata scan
+- LangChain handoff-only demo
 
-Not allowed:
-- reading file contents
-- writing files
-- deleting files
+Not allowed in this release:
+- file contents reading
+- file writes
+- file deletes
 - shell execution
 - remote MCP execution
 - MCP server startup
-- LangChain agent mode
+- LangChain agent mode execution
 - broad Desktop Bridge automation
+- unrestricted production sleeve execution
 
 ## Fresh tester quickstart
 
@@ -166,6 +172,8 @@ node dist/plugin-entry.js umg-envoy sleeve-demo --sleeve-id SL.UMG.LIBRARY_RESEA
 node dist/plugin-entry.js umg-envoy sleeve-demo --sleeve-id SL.UMG.LANGCHAIN_BRIDGE_DEMO.v0.1 --display-mode debug
 ```
 
+UMG has usable operational sleeve demos, but not unrestricted production sleeve execution yet.
+
 The LangChain demo is governed handoff / HITL preview only. It does not start LangChain agent mode.
 
 ## Quick Alpha Demo
@@ -180,9 +188,57 @@ Run the alpha demo to verify safe UMG Envoy surfaces:
 
 This demo does not read file contents, write files, delete files, run shell commands, start MCP, run remote MCP, or run LangChain agent mode.
 
+See also: `docs/UMG-RUNTIME-DISPLAY-CONTRACT.md`
+
+Compact runtime display example:
+
+```nl
+Runtime Header:
+Agent: OpenClaw UMG Envoy
+Mode: OPERATIONAL_SLEEVE_DEMO
+RuntimeSpec: runtime_spec_...
+Trace: trace_...
+Matrix: matrix_...
+Execution: LangChain handoff preview generated. No agent started.
+```
+
+```nl
+Active Runtime:
+Selected Sleeve: SL.UMG.LANGCHAIN_BRIDGE_DEMO.v0.1
+Selected NeoStack: NS.UMG.LANGCHAIN_BRIDGE.v0.1
+Support Docs Runtime-Selected: false
+```
+
+```nl
+Execution / Safety:
+File Contents Read: false
+Writes: false
+Deletes: false
+Shell: false
+Remote MCP: false
+LangChain Agent Mode: false
+Approval Required: true
+Checkpoint Required: true
+SpecVersion: UMG_RUNTIME_DISPLAY.v0.1
+```
+
 ```bash
 node dist/plugin-entry.js umg-envoy runtime-alpha-demo --query "langchain bridge" --kind neostack --limit 3
 ```
+
+## Library lane alignment
+
+- `AI/` is the machine-facing source lane.
+- `HUMAN/` is the human-readable support lane.
+- `sleeves/manifests/` is the curated public/package-facing sleeve catalog.
+- support docs are not runtime-selected artifacts.
+- public demos prefer curated/package-facing sleeve catalogs where possible.
+
+Resolver behavior in this alpha may still use generated index and fallback indexing when needed; do not assume perfect manifest coverage.
+
+## Compiler alignment note
+
+`umg-compiler` is an adjacent/compiler package. This `0.3.0-alpha.1` release does not expose external compiler process execution as a public tool. Future compiler/runtime sync should align RuntimeSpecV0, Trace, MOLT Map, IR Matrix, and Runtime Display schemas.
 
 ## Build and validation
 
