@@ -32,6 +32,7 @@ import { searchRegistry } from "./resolver/search.js";
 import { compileRuntimeSpecDryRun } from "./runtime-spec/compiler.js";
 import { buildRuntimeVisibilityHeader } from "./runtime-spec/visibility.js";
 import { buildRuntimeMOLTMap } from "./runtime-spec/molt-map.js";
+import { buildRuntimeDashboard } from "./runtime-spec/dashboard.js";
 import { loadNeostackFile } from "./compiler/neostack-loader.js";
 import { resolveNeostackArtifacts, validateNeostackStructure } from "./compiler/neostack-validator.js";
 import type { CompilerInputPreview, LangChainBridgePayload, PluginConfig, SleeveLoadResult, NeostackLoadResult } from "./types.js";
@@ -116,7 +117,8 @@ function statusPayload(config?: PluginConfig) {
       "umg_envoy_library_search",
       "umg_envoy_runtime_spec_dry_run",
       "umg_envoy_runtime_visibility_header",
-      "umg_envoy_runtime_molt_map"
+      "umg_envoy_runtime_molt_map",
+      "umg_envoy_runtime_dashboard"
     ]
   };
 }
@@ -575,6 +577,16 @@ function registerCliBridge(api: any, config?: PluginConfig) {
         const spec = compileRuntimeSpecDryRun({ user_task: opts.userTask, preferred_kind: opts.preferredKind, execution_mode: "dry_run" });
         console.log(JSON.stringify(buildRuntimeMOLTMap(spec), null, 2));
       });
+
+    root.command("runtime-dashboard")
+      .requiredOption("--user-task <task>")
+      .option("--preferred-kind <kind>")
+      .option("--include-molt-map")
+      .option("--mode <mode>")
+      .action(async (opts: { userTask: string; preferredKind?: "sleeve" | "neostack" | "neoblock" | "molt_block"; includeMoltMap?: boolean; mode?: "compact" | "developer" | "debug" }) => {
+        const spec = compileRuntimeSpecDryRun({ user_task: opts.userTask, preferred_kind: opts.preferredKind, execution_mode: "dry_run" });
+        console.log(JSON.stringify(buildRuntimeDashboard(spec, { include_molt_map: Boolean(opts.includeMoltMap), mode: opts.mode ?? "developer" }), null, 2));
+      });
   }, { commands: ["umg-envoy"] });
 }
 
@@ -889,6 +901,15 @@ const entry = {
       async execute(input: { user_task: string; requested_capabilities?: string[]; requested_tools?: string[]; preferred_kind?: "sleeve" | "neostack" | "neoblock" | "molt_block" }) {
         const spec = compileRuntimeSpecDryRun({ ...input, execution_mode: "dry_run" });
         return { content: [{ type: "text", text: JSON.stringify(buildRuntimeMOLTMap(spec), null, 2) }] };
+      }
+    }, { optional: true });
+    api.registerTool({
+      name: "umg_envoy_runtime_dashboard",
+      description: "Build a combined read-only runtime dashboard with visibility header and optional MOLT Map.",
+      parameters: Type.Object({ user_task: Type.String(), requested_capabilities: Type.Optional(Type.Array(Type.String())), requested_tools: Type.Optional(Type.Array(Type.String())), preferred_kind: Type.Optional(Type.Union([Type.Literal("sleeve"), Type.Literal("neostack"), Type.Literal("neoblock"), Type.Literal("molt_block")])), include_molt_map: Type.Optional(Type.Boolean()), mode: Type.Optional(Type.Union([Type.Literal("compact"), Type.Literal("developer"), Type.Literal("debug")])) }, { additionalProperties: false }),
+      async execute(input: { user_task: string; requested_capabilities?: string[]; requested_tools?: string[]; preferred_kind?: "sleeve" | "neostack" | "neoblock" | "molt_block"; include_molt_map?: boolean; mode?: "compact" | "developer" | "debug" }) {
+        const spec = compileRuntimeSpecDryRun({ ...input, execution_mode: "dry_run" });
+        return { content: [{ type: "text", text: JSON.stringify(buildRuntimeDashboard(spec, { include_molt_map: input.include_molt_map, mode: input.mode }), null, 2) }] };
       }
     }, { optional: true });
   }
