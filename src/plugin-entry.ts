@@ -111,7 +111,6 @@ function statusPayload(config?: PluginConfig) {
       "umg_envoy_render_path",
       "umg_envoy_build_path",
       "umg_envoy_matrix_status",
-      "umg_envoy_emit_relation_matrix",
       "umg_envoy_neostack_inspect",
       "umg_envoy_neostack_validate",
       "umg_envoy_neostack_invoke",
