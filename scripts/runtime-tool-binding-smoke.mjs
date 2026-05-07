@@ -46,9 +46,9 @@ ensure(langchainBridge?.status === 'requires_approval' || langchainBridge?.statu
 ensure(langchainAgent?.status === 'requires_approval', 'LangChain agent mode should require approval');
 
 const fileScan = fileInventory.tool_bindings.bindings.find((binding) => binding.tool_id === 'desktop_bridge.file_scan');
-ensure(fileScan?.status === 'available', 'File scan should be available');
-ensure(fileScan?.risk_level === 'low', 'File scan should be low risk');
-ensure(fileScan?.execution_mode === 'dry_run', 'File scan should remain dry_run');
+ensure(fileScan?.status === 'requires_approval', 'File scan should require exact-scope approval');
+ensure(fileScan?.risk_level === 'medium', 'File scan should be medium risk');
+ensure(fileScan?.execution_mode === 'approval_required', 'File scan should remain approval_required');
 
 const fileDelete = destructive.tool_bindings.bindings.find((binding) => binding.tool_id === 'desktop_bridge.file_delete');
 ensure(fileDelete?.status === 'blocked', 'File delete should be blocked');
