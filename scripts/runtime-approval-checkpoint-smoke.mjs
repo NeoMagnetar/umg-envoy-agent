@@ -44,9 +44,9 @@ ensure(langchain.resumeReference.status === 'resume_ready_future_only', 'LangCha
 ensure(langchain.preflight.status === 'pass_future_only', 'LangChain preflight should pass future-only when read-only contract objects align');
 ensure(langchain.preflight.execution_boundary.execution_performed === false, 'LangChain preflight must not execute');
 
-ensure(fileScan.approvalRequest.status === 'not_required', 'File scan approval should not be required');
-ensure(fileScan.checkpoint.status === 'not_required', 'File scan checkpoint should not be required');
-ensure(fileScan.resumeReference.status === 'not_applicable', 'File scan resume should not apply');
+ensure(fileScan.approvalRequest.status === 'required', 'File scan approval should be required');
+ensure(fileScan.checkpoint.status === 'required', 'File scan checkpoint should be required');
+ensure(fileScan.resumeReference.status === 'resume_ready_future_only', 'File scan resume should be future-ready when checkpoint object exists');
 ensure(fileScan.approvalRequest.user_visible_summary.execution_statement === 'No tools executed.', 'File scan must preserve no-execution wording');
 
 ensure(fileWrite.approvalRequest.status === 'required', 'File write should require approval');
