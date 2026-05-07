@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.3.0-alpha.2
+
+UMG Envoy Agent 0.3.0-alpha.2 — Public Listing / Packaging Correction Alpha
+
+### Changed
+
+- Tightens the public package story around the operational sleeve alpha boundary.
+- Updates README publication status and removes stale 0.2.x-era publish guidance from the public listing surface.
+- Narrows the public manifest tool list to the read-only, metadata-only, runtime-display, operational-sleeve-demo, and exact-scope local-readonly alpha surfaces.
+- Aligns package/manifest versions for the packaging-correction release.
+
+### Notes
+
+- This release is intended as a public listing, metadata, and artifact-format correction pass.
+- No new UMG runtime capability is introduced.
+- The alpha boundary remains: usable operational sleeve demos, not unrestricted production sleeve execution.
+
 ## 0.3.0-alpha.1
 
 UMG Envoy Agent 0.3.0-alpha.1 — Operational Sleeve Demo Alpha

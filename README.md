@@ -1,4 +1,4 @@
-# UMG Envoy Agent v0.3.0-alpha.1
+# UMG Envoy Agent v0.3.0-alpha.2
 
 UMG Envoy Agent is an OpenClaw code plugin that runs Universal Modular Generation workflows as a modular cognitive architecture runtime: loading UMG sleeves, resolving artifacts, compiling canonical IR, and emitting runtime specs, traces, diagnostics, and relation matrices.
 
@@ -10,21 +10,21 @@ UMG Envoy Agent is an OpenClaw code plugin that carries selected UMG structures 
 
 In UMG terminology, an Envoy is an agent-like carrier. The word Agent is included here for compatibility with common AI and OpenClaw terminology.
 
-## Publication status
+## Current publication status
 
-- `v0.2.2` was the GitHub proof milestone and release-hardening checkpoint.
-- `v0.2.3` is a publication-cleanup patch focused on docs, packaging clarity, and fresh-tester onboarding.
-- ClawHub publication is intentionally handled as a separate final release operation after cleanup, validation, re-audit, and explicit publish authorization.
+- `0.3.0-alpha.1` is published on ClawHub as the first Operational Sleeve Demo Alpha.
+- `0.3.0-alpha.2` is a packaging, public-listing, and artifact-route correction release.
+- The public capability boundary remains alpha/demo-scoped.
 - Raw npm publication is not the primary documented user path for this package at this stage.
 
 ## What it does
 
-- compiles bundled public sleeves into Runtime Spec-like output
-- validates runtime output structure honestly
-- lists bundled sleeves and bundled block libraries
-- compares sleeves
-- keeps public path parse / validate / render / build tools
-- runs a smoke test that proves the bundled public compiler loop works
+- reports UMG library status and metadata search results
+- compiles dry-run RuntimeSpec projections without executing tools
+- renders Runtime Display, MOLT Map, IR Matrix, and drill-down inspection views
+- exposes operational sleeve demos for list / inspect / allowlisted demo flows
+- exposes exact-scope local read-only planning and approved metadata-only scan surfaces
+- provides a safe alpha demo that proves the governed metadata/runtime surfaces work
 
 ## Default posture
 
@@ -70,7 +70,7 @@ This package is an OpenClaw code plugin for running Universal Modular Generation
 
 - not the full `UMG-Block-Library`
 - not the full `umg-compiler` repository
-- ClawHub publication is handled as a separate release operation; check the current ClawHub listing or GitHub release notes for publication status
+- not unrestricted production sleeve execution
 - not primarily documented for raw npm-registry end-user consumption
 - not a private personal runtime package
 
@@ -107,9 +107,9 @@ npm run pack:dry
 
 ### Execution boundary note
 
-This is a code plugin. In normal packaged use, it loads bundled public content and exposes OpenClaw tools for inspection and validation.
+This is a code plugin. In normal packaged use, it loads bundled public content and exposes OpenClaw tools for inspection, metadata-only runtime projection, and operational sleeve demos.
 
-Optional compiler-bridge behavior may invoke a configured local compiler process through explicit configured paths. This is intended for controlled local UMG workflows, not arbitrary shell execution.
+The public alpha surface does not expose arbitrary shell execution, remote MCP execution, MCP server startup, unrestricted LangChain agent mode, file writes, or file deletes.
 
 Maintainer-only validation assets are not part of the hardened ClawHub artifact.
 
@@ -238,7 +238,7 @@ Resolver behavior in this alpha may still use generated index and fallback index
 
 ## Compiler alignment note
 
-`umg-compiler` is an adjacent/compiler package. This `0.3.0-alpha.1` release does not expose external compiler process execution as a public tool. Future compiler/runtime sync should align RuntimeSpecV0, Trace, MOLT Map, IR Matrix, and Runtime Display schemas.
+`umg-compiler` is an adjacent/compiler package. This `0.3.0-alpha.2` correction release does not expose external compiler process execution as a public tool. Future compiler/runtime sync should align RuntimeSpecV0, Trace, MOLT Map, IR Matrix, and Runtime Display schemas.
 
 ## Build and validation
 
@@ -265,15 +265,13 @@ External UMG validation requires explicit local inputs:
 
 Runtime outputs remain temp-only and are not intended for commit.
 
-## ClawHub-first publication note
+## ClawHub publication note
 
-ClawHub publication is the intended first public plugin path for this package line. That publication step remains intentionally separate from this patch.
+`0.3.0-alpha.1` is the first public ClawHub operational-sleeve alpha release.
 
-Future maintainer reference only, not to run during Stage 14D:
+`0.3.0-alpha.2` is reserved for packaging, listing, and artifact-format correction only. It does not widen the public capability boundary.
 
-```text
-clawhub package publish <path> --family code-plugin --name umg-envoy-agent --display-name "UMG Envoy Agent" --version 0.2.3 ...
-```
+Maintainers should publish only from a validated release artifact and keep source repo / commit metadata aligned with the uploaded package.
 
 ## Entry point
 
