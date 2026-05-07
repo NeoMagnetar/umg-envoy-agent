@@ -40,7 +40,8 @@ ensure(langchainHandoff.checkpoint.checkpoint_required === true, 'LangChain hand
 
 ensure(fileInventoryHandoff.execution_boundary.execution_performed === false, 'File scan handoff must not execute');
 ensure(fileInventoryHandoff.blocking.blocked === false, 'File scan handoff should not be blocked');
-ensure(fileInventoryHandoff.tool_plan.bindings.some((binding) => binding.tool_id === 'desktop_bridge.file_scan' && binding.execution_mode === 'dry_run'), 'File scan should remain dry_run');
+ensure(fileInventoryHandoff.approval.approval_required === true, 'File scan handoff should require exact-scope approval');
+ensure(fileInventoryHandoff.tool_plan.bindings.some((binding) => binding.tool_id === 'desktop_bridge.file_scan' && binding.execution_mode === 'approval_required'), 'File scan should remain approval_required');
 
 ensure(destructiveHandoff.blocking.blocked === true, 'Destructive handoff should be blocked');
 ensure(destructiveHandoff.blocking.blocked_items.some((item) => item.tool_id === 'desktop_bridge.file_delete'), 'Destructive blocked items should include file delete');
