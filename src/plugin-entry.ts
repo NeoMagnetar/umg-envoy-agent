@@ -111,7 +111,6 @@ function statusPayload(config?: PluginConfig) {
       "umg_envoy_render_path",
       "umg_envoy_build_path",
       "umg_envoy_matrix_status",
-      "umg_envoy_load_sleeve",
       "umg_envoy_compile_ir_bridge",
       "umg_envoy_emit_relation_matrix",
       "umg_envoy_neostack_inspect",
@@ -739,14 +738,6 @@ const entry = {
     api.registerTool({ name: "umg_envoy_render_path", description: "Render a parsed UMG path string back to text.", parameters: Type.Object({ source: Type.String() }, { additionalProperties: false }), async execute(input: { source: string }) { return { content: [{ type: "text", text: renderUMGPath(parseUMGPath(input.source)) }] }; } }, { optional: true });
     api.registerTool({ name: "umg_envoy_build_path", description: "Build a public-safe UMG path document.", parameters: Type.Object({ message: Type.String(), sleeveId: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input: { message: string; sleeveId?: string }) { return { content: [{ type: "text", text: renderUMGPath(buildPublicPath(input.message, input.sleeveId ?? config?.defaultSleeveId ?? "public-basic-envoy")) }] }; } }, { optional: true });
     api.registerTool({ name: "umg_envoy_matrix_status", description: "Report bundled compiler matrix status.", parameters: Type.Object({}, { additionalProperties: false }), async execute() { return { content: [{ type: "text", text: JSON.stringify(getCompilerMatrixStatus(import.meta.url), null, 2) }] }; } }, { optional: true });
-    api.registerTool({
-      name: "umg_envoy_load_sleeve",
-      description: "Read-only sleeve loader that validates sleeve structure, resolves artifacts, and previews canonical compiler preparation without invoking the compiler.",
-      parameters: Type.Object({ sleevePath: Type.String(), libraryRoot: Type.String() }, { additionalProperties: false }),
-      async execute(input: { sleevePath: string; libraryRoot: string }) {
-        return { content: [{ type: "text", text: JSON.stringify(loadSleevePreview(input.sleevePath, input.libraryRoot), null, 2) }] };
-      }
-    }, { optional: true });
     api.registerTool({
       name: "umg_envoy_compile_ir_bridge",
       description: "Invoke the configured local umg-compiler compile-ir path using a constrained canonical IR bridge.",
