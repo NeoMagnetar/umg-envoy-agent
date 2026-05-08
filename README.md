@@ -1,4 +1,4 @@
-# UMG Envoy Agent v0.3.0-alpha.2
+# UMG Envoy Agent v0.3.0-alpha.3
 
 UMG Envoy Agent is an OpenClaw code plugin that runs Universal Modular Generation workflows as a modular cognitive architecture runtime: loading UMG sleeves, resolving artifacts, compiling canonical IR, and emitting runtime specs, traces, diagnostics, and relation matrices.
 
@@ -14,6 +14,7 @@ In UMG terminology, an Envoy is an agent-like carrier. The word Agent is include
 
 - `0.3.0-alpha.1` is published on ClawHub as the first Operational Sleeve Demo Alpha.
 - `0.3.0-alpha.2` is a packaging, public-listing, and artifact-route correction release.
+- `0.3.0-alpha.3` is the minimized public artifact candidate with a dedicated public-safe entrypoint and narrowed package boundary.
 - The public capability boundary remains alpha/demo-scoped.
 - Raw npm publication is not the primary documented user path for this package at this stage.
 
@@ -167,9 +168,9 @@ If you do not already have the expected local UMG dependency layout, stop at `ch
 ## Operational Sleeve Demos
 
 ```bash
-node dist/plugin-entry.js umg-envoy sleeve-list
-node dist/plugin-entry.js umg-envoy sleeve-demo --sleeve-id SL.UMG.LIBRARY_RESEARCH_DEMO.v0.1 --query "langchain bridge" --kind neostack --limit 3
-node dist/plugin-entry.js umg-envoy sleeve-demo --sleeve-id SL.UMG.LANGCHAIN_BRIDGE_DEMO.v0.1 --display-mode debug
+node dist/plugin-entry-public.js umg-envoy sleeve-list
+node dist/plugin-entry-public.js umg-envoy sleeve-demo --sleeve-id SL.UMG.LIBRARY_RESEARCH_DEMO.v0.1 --query "langchain bridge" --kind neostack --limit 3
+node dist/plugin-entry-public.js umg-envoy sleeve-demo --sleeve-id SL.UMG.LANGCHAIN_BRIDGE_DEMO.v0.1 --display-mode debug
 ```
 
 UMG has usable operational sleeve demos, but not unrestricted production sleeve execution yet.

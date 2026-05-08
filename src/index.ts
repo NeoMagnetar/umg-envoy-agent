@@ -1,4 +1,4 @@
-export { default } from "./plugin-entry.js";
+export { default } from "./plugin-entry-public.js";
 export {
   buildApprovalRequestDryRun,
   buildExecutionCheckpointRecordDryRun,

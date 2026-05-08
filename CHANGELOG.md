@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.0-alpha.3
+
+- Create a dedicated public-safe plugin entrypoint for the approved public alpha surfaces.
+- Retarget the package to `dist/plugin-entry-public.js` and exclude compiler bridge, MCP bridge, LangChain bridge, and approval resume executor internals from the packed artifact.
+- Preserve package identity and public behavior while tightening the shipped artifact boundary.
+
 ## 0.3.0-alpha.2
 
 UMG Envoy Agent 0.3.0-alpha.2 — Public Listing / Packaging Correction Alpha

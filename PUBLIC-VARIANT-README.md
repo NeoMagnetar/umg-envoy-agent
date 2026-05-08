@@ -2,7 +2,7 @@
 
 This public package mirrors the compiler-backed architecture of the personal OpenClaw variant without shipping private roots, private runtime state, or private workspace assumptions.
 
-For the `0.2.3` publication-cleanup patch, the public variant docs are aligned to a ClawHub-first publication path, clearer tester onboarding, and a cleaner packaged surface.
+For the `0.3.0-alpha.3` minimized public candidate, the public variant docs are aligned to a ClawHub-first publication path, clearer tester onboarding, and a cleaner packaged surface with a dedicated public-safe entrypoint.
 
 It bundles:
 - sample blocks
