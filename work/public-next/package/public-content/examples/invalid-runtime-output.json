@@ -1,0 +1,15 @@
+{
+  "runtimespec_id": "runtime-invalid",
+  "snap_id": "default",
+  "primary_shell_block_id": "primary.sample",
+  "active_blocks": "not-an-array",
+  "prompt_parts": [],
+  "strategy": [],
+  "constraints": [],
+  "context": {},
+  "values": {},
+  "format": {},
+  "tool_requests": [],
+  "errors": [],
+  "warnings": []
+}

@@ -1,0 +1,66 @@
+{
+  "name": "umg-envoy-agent",
+  "version": "0.3.0-alpha.3",
+  "description": "Minimized public alpha.3 UMG Envoy Agent for OpenClaw",
+  "type": "module",
+  "main": "dist/plugin-entry-public.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/index.js",
+    "dist/index.d.ts",
+    "dist/plugin-entry-public.js",
+    "dist/plugin-entry-public.d.ts",
+    "dist/public-path-builder.js",
+    "dist/public-path-builder.d.ts",
+    "dist/types.js",
+    "dist/types.d.ts",
+    "dist/umg-path-parser.js",
+    "dist/umg-path-parser.d.ts",
+    "dist/umg-path-renderer.js",
+    "dist/umg-path-renderer.d.ts",
+    "dist/umg-path-types.js",
+    "dist/umg-path-types.d.ts",
+    "dist/umg-path-validator.js",
+    "dist/umg-path-validator.d.ts",
+    "README.md",
+    "PUBLIC-VARIANT-README.md",
+    "PUBLIC-VARIANT-OVERVIEW.md",
+    "openclaw.plugin.json",
+    "package.json",
+    "public-content/blocks",
+    "public-content/examples",
+    "public-content/sleeves"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "check": "tsc --noEmit",
+    "smoke": "node dist/plugin-entry-public.js --smoke",
+    "umg:public-surface:smoke": "node -e \"import('./dist/plugin-entry-public.js').then(async (m) => { const entry = m.default; const tools = []; entry.register({ registerTool(def) { tools.push(def.name); } }, {}); const expected = ['umg_envoy_status','umg_envoy_library_status','umg_envoy_library_search','umg_envoy_runtime_spec_dry_run','umg_envoy_runtime_visibility_header','umg_envoy_runtime_molt_map','umg_envoy_runtime_dashboard','umg_envoy_runtime_ir_matrix','umg_envoy_runtime_inspect','umg_envoy_local_readonly_plan','umg_envoy_local_readonly_scan','umg_envoy_alpha_demo','umg_envoy_sleeve_list','umg_envoy_sleeve_inspect','umg_envoy_sleeve_demo']; const missing = expected.filter(x => !tools.includes(x)); const extra = tools.filter(x => !expected.includes(x)); if (missing.length || extra.length) { console.error(JSON.stringify({ok:false, tools, missing, extra}, null, 2)); process.exit(1); } console.log(JSON.stringify({ok:true, tools}, null, 2)); })\"",
+    "umg:alpha-demo:smoke": "node -e \"import('./dist/plugin-entry-public.js').then(async (m) => { const entry = m.default; const defs = []; entry.register({ registerTool(def) { defs.push(def); } }, {}); const alpha = defs.find(d => d.name === 'umg_envoy_alpha_demo'); if (!alpha) { throw new Error('umg_envoy_alpha_demo missing'); } const result = await alpha.execute({ message: 'Give me a concise demo', sleeveId: 'public-basic-envoy' }); console.log(result.content[0].text); const parsed = JSON.parse(result.content[0].text); if (!parsed.ok) process.exit(1); })\"",
+    "umg:operational-sleeve:smoke": "node -e \"import('./dist/plugin-entry-public.js').then(async (m) => { const entry = m.default; const defs = []; entry.register({ registerTool(def) { defs.push(def); } }, {}); const inspect = defs.find(d => d.name === 'umg_envoy_sleeve_inspect'); if (!inspect) { throw new Error('umg_envoy_sleeve_inspect missing'); } const result = await inspect.execute({ sleeveId: 'public-basic-envoy' }); console.log(result.content[0].text); const parsed = JSON.parse(result.content[0].text); if (!parsed.ok) process.exit(1); })\"",
+    "pack:dry": "npm pack --dry-run"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "openclaw": {
+    "extensions": [
+      "./dist/plugin-entry.js"
+    ],
+    "compat": {
+      "pluginApi": ">=2026.3.23-1",
+      "minGatewayVersion": "2026.3.23-1"
+    },
+    "build": {
+      "openclawVersion": "2026.3.23-1",
+      "pluginSdkVersion": "2026.3.23-1"
+    }
+  },
+  "dependencies": {
+    "@sinclair/typebox": "^0.34.41"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.8.3"
+  }
+}

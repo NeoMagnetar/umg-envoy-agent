@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "outDir": "dist",
+    "rootDir": "src",
+    "declaration": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true
+  },
+  "include": [
+    "src/index.ts",
+    "src/plugin-entry-public.ts",
+    "src/public-path-builder.ts",
+    "src/types.ts",
+    "src/umg-path-parser.ts",
+    "src/umg-path-renderer.ts",
+    "src/umg-path-types.ts",
+    "src/umg-path-validator.ts"
+  ],
+  "exclude": [
+    "src/plugin-entry.ts",
+    "src/compiler/**"
+  ]
+}

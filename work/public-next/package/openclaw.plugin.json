@@ -1,0 +1,47 @@
+{
+  "id": "umg-envoy-agent",
+  "name": "UMG Envoy Agent",
+  "version": "0.3.0-alpha.3",
+  "description": "Minimized public alpha.3 UMG Envoy Agent for OpenClaw",
+  "entry": "dist/plugin-entry-public.js",
+  "apiVersion": 1,
+  "config": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "defaultSleeveId": {
+        "type": "string",
+        "description": "Optional default bundled public sleeve id."
+      },
+      "contentMode": {
+        "type": "string",
+        "description": "Public content loading mode for the minimized package."
+      },
+      "compilerMode": {
+        "type": "string",
+        "description": "Readonly public runtime interpretation mode."
+      },
+      "debug": {
+        "type": "boolean",
+        "description": "Enable debug logging for the minimized public package."
+      }
+    }
+  },
+  "tools": [
+    "umg_envoy_status",
+    "umg_envoy_library_status",
+    "umg_envoy_library_search",
+    "umg_envoy_runtime_spec_dry_run",
+    "umg_envoy_runtime_visibility_header",
+    "umg_envoy_runtime_molt_map",
+    "umg_envoy_runtime_dashboard",
+    "umg_envoy_runtime_ir_matrix",
+    "umg_envoy_runtime_inspect",
+    "umg_envoy_local_readonly_plan",
+    "umg_envoy_local_readonly_scan",
+    "umg_envoy_alpha_demo",
+    "umg_envoy_sleeve_list",
+    "umg_envoy_sleeve_inspect",
+    "umg_envoy_sleeve_demo"
+  ]
+}

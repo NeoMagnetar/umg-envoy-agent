@@ -1,0 +1,9 @@
+{
+  "block_id": "blueprint.sample",
+  "kind": "blueprint",
+  "title": "Sample Blueprint",
+  "text": "Emit a documented RuntimeSpec-like object from bundled sleeve and block content.",
+  "authority": 55,
+  "enabled": true,
+  "tags": ["sample", "blueprint"]
+}

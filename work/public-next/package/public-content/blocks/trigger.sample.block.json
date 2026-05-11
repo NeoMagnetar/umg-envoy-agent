@@ -1,0 +1,9 @@
+{
+  "block_id": "trigger.sample",
+  "kind": "trigger",
+  "title": "Sample Trigger",
+  "text": "Activate when the user asks for normal public envoy compilation behavior.",
+  "authority": 60,
+  "enabled": true,
+  "tags": ["sample", "trigger"]
+}

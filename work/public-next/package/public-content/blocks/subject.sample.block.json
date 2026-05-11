@@ -1,0 +1,9 @@
+{
+  "block_id": "subject.sample",
+  "kind": "subject",
+  "title": "Sample Subject",
+  "text": "The subject of this public sleeve is transparent compiler-backed envoy behavior.",
+  "authority": 40,
+  "enabled": true,
+  "tags": ["sample", "subject"]
+}
