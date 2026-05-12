@@ -5,7 +5,7 @@
   "description": "Minimized public alpha.3 UMG Envoy Agent for OpenClaw",
   "entry": "dist/plugin-entry-public.js",
   "apiVersion": 1,
-  "config": {
+  "configSchema": {
     "type": "object",
     "additionalProperties": false,
     "properties": {
