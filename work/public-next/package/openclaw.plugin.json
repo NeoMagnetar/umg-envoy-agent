@@ -1,8 +1,8 @@
 {
   "id": "umg-envoy-agent",
   "name": "UMG Envoy Agent",
-  "version": "0.3.0-alpha.3",
-  "description": "Minimized public alpha.3 UMG Envoy Agent for OpenClaw",
+  "version": "0.3.0-alpha.4",
+  "description": "Minimized public alpha.4 UMG Envoy Agent for OpenClaw",
   "entry": "dist/plugin-entry-public.js",
   "apiVersion": 1,
   "configSchema": {

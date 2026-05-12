@@ -1,15 +1,24 @@
-# UMG Envoy Agent 0.2.0
+# UMG Envoy Agent 0.3.0-alpha.4
 
-UMG Envoy Agent 0.2.0 is a public-safe OpenClaw plugin with a bundled UMG compiler adapter, bundled public sample sleeves and blocks, runtime validation, sleeve compilation, and path/planner utilities.
+UMG Envoy Agent 0.3.0-alpha.4 is a minimized public-safe OpenClaw plugin for read-only/demo UMG alpha surfaces. The published artifact keeps only the public entrypoint, bundled public sample content, runtime validation/demo utilities, and the approved safe tool surface.
 
 ## What it does
 
 - compiles bundled public sleeves into RuntimeSpec-like output
 - validates runtime output honestly
 - lists bundled sleeves and block libraries
-- compares sleeves
+- inspects bundled public sleeves
 - keeps public path parse/validate/render/build tools
-- runs a smoke test that proves the public compiler loop works
+- runs smoke/demo flows against bundled public content only
+
+## Public-safe posture
+
+- public-safe and read-only/demo oriented
+- bundled public sample sleeves and blocks only
+- no compiler bridge/process internals in the published artifact
+- no MCP bridge files in the published artifact
+- no LangChain bridge files in the published artifact
+- no approval/resume/execution bridge internals in the published artifact
 
 ## Default posture
 
@@ -17,6 +26,10 @@ UMG Envoy Agent 0.2.0 is a public-safe OpenClaw plugin with a bundled UMG compil
 - contentMode: bundled-public
 - compilerMode: bundled-adapter
 - debug: false
+
+## Install
+
+- `openclaw plugins install clawhub:umg-envoy-agent@0.3.0-alpha.4`
 
 ## Build and test
 
@@ -28,4 +41,4 @@ UMG Envoy Agent 0.2.0 is a public-safe OpenClaw plugin with a bundled UMG compil
 
 ## Entry point
 
-- dist/plugin-entry.js
+- dist/plugin-entry-public.js
