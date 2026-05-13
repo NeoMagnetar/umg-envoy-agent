@@ -1,0 +1,221 @@
+{
+  "generatedAt": "2026-05-13T19:15:27.305Z",
+  "results": [
+    {
+      "tool": "umg_envoy_library_status",
+      "ok": true,
+      "args": {},
+      "summary": {
+        "kind": "json-text",
+        "keys": [
+          "ok",
+          "totalBlocks",
+          "byKind",
+          "blockIds"
+        ],
+        "preview": "{\"ok\":true,\"totalBlocks\":7,\"byKind\":{\"blueprint\":1,\"directive\":1,\"instruction\":1,\"philosophy\":1,\"primary\":1,\"subject\":1,\"trigger\":1},\"blockIds\":[\"blueprint.sample\",\"directive.sample\",\"instruction.sample\",\"philosophy.sample\",\"primary.sample\",\"subject.sample\",\"trigger.sample\"]}"
+      }
+    },
+    {
+      "tool": "umg_envoy_library_search",
+      "ok": true,
+      "args": {
+        "query": "envoy"
+      },
+      "summary": {
+        "kind": "json-text",
+        "keys": [
+          "ok",
+          "query",
+          "count",
+          "results"
+        ],
+        "preview": "{\"ok\":true,\"query\":\"envoy\",\"count\":2,\"results\":[{\"block_id\":\"subject.sample\",\"kind\":\"subject\",\"title\":\"Sample Subject\",\"authority\":40,\"tags\":[\"sample\",\"subject\"]},{\"block_id\":\"trigger.sample\",\"kind\":\"trigger\",\"title\":\"Sample Trigger\",\"authority\":60,\"tags\":[\"sample\",\"trigger\"]}]}"
+      }
+    },
+    {
+      "tool": "umg_envoy_runtime_spec_dry_run",
+      "ok": true,
+      "args": {
+        "message": "Give me a concise demo"
+      },
+      "summary": {
+        "kind": "json-text",
+        "keys": [
+          "ok",
+          "mode",
+          "sleeveId",
+          "issues",
+          "rendered"
+        ],
+        "preview": "{\"ok\":true,\"mode\":\"readonly-plan\",\"sleeveId\":\"public-basic-envoy\",\"issues\":[],\"rendered\":\"USE[public_compile_and_render_path]\\nAIM[public_safe_human_inspectable_route]\\nNEED[bundled_public_content,compiler_visible_output]\\nSLV[public-basic-envoy]\\nTRG[public.concise]\\nGATE[]\\nLOAD[S.PUBLIC.01,S.PUBLIC.02]\\n\\nSTACK[S.PUBLIC.01]\\nBLOCK[NB.PUBLIC.01]\\nMOLT[+Pprimary.sample]\\nENDBLOCK\\nENDSTACK\\nSTACK[S.PUBLIC.02]\\nBLOCK[NB.PUBLIC.02]\\nMOLT[+Ddirective.sample]\\nENDBLOCK\\nENDSTACK\\n\\nWIN[chain]=NB.PUBLIC.02>directive.sample\\nCMP[validate>normalize>emit]\"}"
+      }
+    },
+    {
+      "tool": "umg_envoy_runtime_visibility_header",
+      "ok": true,
+      "args": {},
+      "summary": {
+        "kind": "json-text",
+        "keys": [
+          "ok",
+          "sleeveId",
+          "header"
+        ],
+        "preview": "{\"ok\":true,\"sleeveId\":\"public-basic-envoy\",\"header\":\"UMG Envoy public visibility header\\nsleeve: public-basic-envoy\\nprimary shell: primary.sample\\nactive blocks: 6\\nprompt parts: 6\"}"
+      }
+    },
+    {
+      "tool": "umg_envoy_runtime_molt_map",
+      "ok": true,
+      "args": {},
+      "summary": {
+        "kind": "json-text",
+        "keys": [
+          "ok",
+          "sleeveId",
+          "moltMap"
+        ],
+        "preview": "{\"ok\":true,\"sleeveId\":\"public-basic-envoy\",\"moltMap\":[{\"order\":1,\"block_id\":\"primary.sample\",\"kind\":\"primary\",\"authority\":10},{\"order\":2,\"block_id\":\"directive.sample\",\"kind\":\"directive\",\"authority\":20},{\"order\":3,\"block_id\":\"instruction.sample\",\"kind\":\"instruction\",\"authority\":30},{\"order\":4,\"block_id\":\"subject.sample\",\"kind\":\"subject\",\"authority\":40},{\"order\":5,\"block_id\":\"philosophy.sample\",\"kind\":\"philosophy\",\"authority\":50},{\"order\":6,\"block_id\":\"blueprint.sample\",\"kind\":\"blueprint\",\"authority\":55}]}"
+      }
+    },
+    {
+      "tool": "umg_envoy_runtime_dashboard",
+      "ok": true,
+      "args": {},
+      "summary": {
+        "kind": "json-text",
+        "keys": [
+          "ok",
+          "defaultSleeveId",
+          "sleeveCount",
+          "blockCount",
+          "blockKinds",
+          "activeBlockCount",
+          "promptPartCount",
+          "warnings",
+          "errors"
+        ],
+        "preview": "{\"ok\":true,\"defaultSleeveId\":\"public-basic-envoy\",\"sleeveCount\":2,\"blockCount\":7,\"blockKinds\":{\"blueprint\":1,\"directive\":1,\"instruction\":1,\"philosophy\":1,\"primary\":1,\"subject\":1,\"trigger\":1},\"activeBlockCount\":6,\"promptPartCount\":6,\"warnings\":[\"disabled block skipped: trigger.sample\"],\"errors\":[]}"
+      }
+    },
+    {
+      "tool": "umg_envoy_runtime_ir_matrix",
+      "ok": true,
+      "args": {},
+      "summary": {
+        "kind": "json-text",
+        "keys": [
+          "ok",
+          "compilerAdapter",
+          "contentMode",
+          "compilerMode",
+          "sampleSleeves",
+          "sampleBlocks",
+          "blockKinds",
+          "failClosed"
+        ],
+        "preview": "{\"ok\":true,\"compilerAdapter\":\"not-shipped-publicly\",\"contentMode\":\"bundled-public\",\"compilerMode\":\"public-readonly\",\"sampleSleeves\":2,\"sampleBlocks\":7,\"blockKinds\":[\"blueprint\",\"directive\",\"instruction\",\"philosophy\",\"primary\",\"subject\",\"trigger\"],\"failClosed\":true}"
+      }
+    },
+    {
+      "tool": "umg_envoy_runtime_inspect",
+      "ok": true,
+      "args": {},
+      "summary": {
+        "kind": "json-text",
+        "keys": [
+          "ok",
+          "sleeveId",
+          "activeBlocks",
+          "promptParts",
+          "warnings",
+          "errors"
+        ],
+        "preview": "{\"ok\":true,\"sleeveId\":\"public-basic-envoy\",\"activeBlocks\":[\"primary.sample\",\"directive.sample\",\"instruction.sample\",\"subject.sample\",\"philosophy.sample\",\"blueprint.sample\"],\"promptParts\":[{\"block_id\":\"primary.sample\",\"kind\":\"primary\",\"authority\":10},{\"block_id\":\"directive.sample\",\"kind\":\"directive\",\"authority\":20},{\"block_id\":\"instruction.sample\",\"kind\":\"instruction\",\"authority\":30},{\"block_id\":\"subject.sample\",\"kind\":\"subject\",\"authority\":40},{\"block_id\":\"philosophy.sample\",\"kind\":\"philosophy\",\"authority\":50},{\"block_id\":\"blueprint.sample\",\"kind\":\"blueprint\",\"authority\":55}],\"warnings\":[\"disabled block skipped: trigger.sample\"],\"errors\":[]}"
+      }
+    },
+    {
+      "tool": "umg_envoy_local_readonly_plan",
+      "ok": true,
+      "args": {
+        "message": "Summarize the public sleeve behavior"
+      },
+      "summary": {
+        "kind": "json-text",
+        "keys": [
+          "ok",
+          "mode",
+          "sleeveId",
+          "issues",
+          "rendered"
+        ],
+        "preview": "{\"ok\":true,\"mode\":\"readonly-plan\",\"sleeveId\":\"public-basic-envoy\",\"issues\":[],\"rendered\":\"USE[public_compile_and_render_path]\\nAIM[public_safe_human_inspectable_route]\\nNEED[bundled_public_content,compiler_visible_output]\\nSLV[public-basic-envoy]\\nTRG[public.default]\\nGATE[]\\nLOAD[S.PUBLIC.01,S.PUBLIC.02]\\n\\nSTACK[S.PUBLIC.01]\\nBLOCK[NB.PUBLIC.01]\\nMOLT[+Pprimary.sample]\\nENDBLOCK\\nENDSTACK\\nSTACK[S.PUBLIC.02]\\nBLOCK[NB.PUBLIC.02]\\nMOLT[+Iinstruction.sample]\\nENDBLOCK\\nENDSTACK\\n\\nWIN[chain]=NB.PUBLIC.02>instruction.sample\\nCMP[validate>normalize>emit]\"}"
+      }
+    },
+    {
+      "tool": "umg_envoy_local_readonly_scan",
+      "ok": true,
+      "args": {},
+      "summary": {
+        "kind": "json-text",
+        "keys": [
+          "ok",
+          "query",
+          "sleeveHits",
+          "blockSummary"
+        ],
+        "preview": "{\"ok\":true,\"query\":\"\",\"sleeveHits\":[{\"sleeve_id\":\"public-basic-envoy\",\"title\":\"Public Basic Envoy\"},{\"sleeve_id\":\"public-coder-envoy\",\"title\":\"Public Coder Envoy\"}],\"blockSummary\":{\"totalBlocks\":7,\"byKind\":{\"blueprint\":1,\"directive\":1,\"instruction\":1,\"philosophy\":1,\"primary\":1,\"subject\":1,\"trigger\":1},\"blockIds\":[\"blueprint.sample\",\"directive.sample\",\"instruction.sample\",\"philosophy.sample\",\"primary.sample\",\"subject.sample\",\"trigger.sample\"]}}"
+      }
+    },
+    {
+      "tool": "umg_envoy_alpha_demo",
+      "ok": true,
+      "args": {},
+      "summary": {
+        "kind": "json-text",
+        "keys": [
+          "ok",
+          "sleeveId",
+          "plan",
+          "inspect",
+          "note"
+        ],
+        "preview": "{\"ok\":true,\"sleeveId\":\"public-basic-envoy\",\"plan\":{\"ok\":true,\"mode\":\"readonly-plan\",\"sleeveId\":\"public-basic-envoy\",\"issues\":[],\"rendered\":\"USE[public_compile_and_render_path]\\nAIM[public_safe_human_inspectable_route]\\nNEED[bundled_public_content,compiler_visible_output]\\nSLV[public-basic-envoy]\\nTRG[public.concise]\\nGATE[]\\nLOAD[S.PUBLIC.01,S.PUBLIC.02]\\n\\nSTACK[S.PUBLIC.01]\\nBLOCK[NB.PUBLIC.01]\\nMOLT[+Pprimary.sample]\\nENDBLOCK\\nENDSTACK\\nSTACK[S.PUBLIC.02]\\nBLOCK[NB.PUBLIC.02]\\nMOLT[+Ddirective.sample]\\nENDBLOCK\\nENDSTACK\\n\\nWIN[chain]=NB.PUBLIC.02>directive.sample\\nCMP[validate>normalize>emit]\"},\"inspect\":{\"ok\":true,\"sleeveId\":\"public-basic-envoy\",\"activeBlocks\":[\"primary.sample\",\"directive.sample\",\"instruction.sample\",\"subject.sample\",\"philosophy.sample\",\"blueprint.sample\"],\"promptPar"
+      }
+    },
+    {
+      "tool": "umg_envoy_sleeve_inspect",
+      "ok": true,
+      "args": {
+        "sleeveId": "public-basic-envoy"
+      },
+      "summary": {
+        "kind": "json-text",
+        "keys": [
+          "ok",
+          "sleeve",
+          "runtime"
+        ],
+        "preview": "{\"ok\":true,\"sleeve\":{\"sleeve_id\":\"public-basic-envoy\",\"title\":\"Public Basic Envoy\",\"snap_id\":\"default\",\"primary_shell_block_id\":\"primary.sample\",\"block_refs\":[{\"block_id\":\"primary.sample\",\"enabled\":true},{\"block_id\":\"directive.sample\",\"enabled\":true},{\"block_id\":\"instruction.sample\",\"enabled\":true},{\"block_id\":\"subject.sample\",\"enabled\":true},{\"block_id\":\"philosophy.sample\",\"enabled\":true},{\"block_id\":\"blueprint.sample\",\"enabled\":true},{\"block_id\":\"trigger.sample\",\"enabled\":false}],\"strategy\":{\"mode\":\"public-basic\",\"compiler\":\"bundled-adapter\"},\"constraints\":[\"public-safe\",\"read-only-default\"],\"context\":{\"audience\":\"public\"},\"values\":{\"transparency\":true},\"format\":{\"style\":\"structured\"},\"tool_requests\":[]},\"runtime\":{\"runtimespec_id\":\"runtime-public-basic-e"
+      }
+    },
+    {
+      "tool": "umg_envoy_sleeve_demo",
+      "ok": true,
+      "args": {
+        "sleeveId": "public-basic-envoy"
+      },
+      "summary": {
+        "kind": "json-text",
+        "keys": [
+          "ok",
+          "sleeveId",
+          "previewPath",
+          "runtime"
+        ],
+        "preview": "{\"ok\":true,\"sleeveId\":\"public-basic-envoy\",\"previewPath\":\"USE[public_compile_and_render_path]\\nAIM[public_safe_human_inspectable_route]\\nNEED[bundled_public_content,compiler_visible_output]\\nSLV[public-basic-envoy]\\nTRG[public.default]\\nGATE[]\\nLOAD[S.PUBLIC.01,S.PUBLIC.02]\\n\\nSTACK[S.PUBLIC.01]\\nBLOCK[NB.PUBLIC.01]\\nMOLT[+Pprimary.sample]\\nENDBLOCK\\nENDSTACK\\nSTACK[S.PUBLIC.02]\\nBLOCK[NB.PUBLIC.02]\\nMOLT[+Iinstruction.sample]\\nENDBLOCK\\nENDSTACK\\n\\nWIN[chain]=NB.PUBLIC.02>instruction.sample\\nCMP[validate>normalize>emit]\",\"runtime\":{\"runtimespec_id\":\"runtime-public-basic-envoy\",\"sleeve_id\":\"public-basic-envoy\",\"snap_id\":\"default\",\"primary_shell_block_id\":\"primary.sample\",\"active_blocks\":[\"primary.sample\",\"directive.sample\",\"instruction.sample\",\"subject.sample\",\"philosophy.sample\",\"blueprin"
+      }
+    }
+  ]
+}
