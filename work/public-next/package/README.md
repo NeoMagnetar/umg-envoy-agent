@@ -1,6 +1,6 @@
-# UMG Envoy Agent 0.3.0-alpha.4
+# UMG Envoy Agent 0.3.0-alpha.5
 
-UMG Envoy Agent 0.3.0-alpha.4 is a minimized public-safe OpenClaw plugin for read-only/demo UMG alpha surfaces. The published artifact keeps only the public entrypoint, bundled public sample content, runtime validation/demo utilities, and the approved safe tool surface.
+UMG Envoy Agent 0.3.0-alpha.5 is a minimized public-safe OpenClaw plugin stabilization candidate for read-only/demo UMG alpha surfaces. The published artifact keeps only the public entrypoint, bundled public sample content, runtime validation/demo utilities, and the approved safe tool surface.
 
 ## What it does
 
@@ -29,7 +29,7 @@ UMG Envoy Agent 0.3.0-alpha.4 is a minimized public-safe OpenClaw plugin for rea
 
 ## Install
 
-- `openclaw plugins install clawhub:umg-envoy-agent@0.3.0-alpha.4`
+- `openclaw plugins install clawhub:umg-envoy-agent@0.3.0-alpha.5`
 
 ## Build and test
 

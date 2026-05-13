@@ -1,7 +1,7 @@
 {
   "name": "umg-envoy-agent",
-  "version": "0.3.0-alpha.4",
-  "description": "Minimized public alpha.4 UMG Envoy Agent for OpenClaw",
+  "version": "0.3.0-alpha.5",
+  "description": "Minimized public alpha.5 UMG Envoy Agent for OpenClaw",
   "type": "module",
   "main": "dist/plugin-entry-public.js",
   "types": "dist/index.d.ts",
@@ -47,6 +47,9 @@
     "extensions": [
       "./dist/plugin-entry-public.js"
     ],
+    "runtimeExtensions": [
+      "./dist/plugin-entry-public.js"
+    ],
     "compat": {
       "pluginApi": ">=1.2.0",
       "minGatewayVersion": "2026.3.23-1"
@@ -57,7 +60,7 @@
     }
   },
   "dependencies": {
-    "@sinclair/typebox": "^0.34.41"
+    "@sinclair/typebox": "0.34.41"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

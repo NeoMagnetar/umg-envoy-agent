@@ -192,7 +192,7 @@ function runPublicSmoke(metaUrl = import.meta.url) {
     return {
         ok: errors.length === 0,
         plugin: "umg-envoy-agent",
-        version: "0.3.0-alpha.3",
+        version: "0.3.0-alpha.5",
         compilerAdapter: "not-shipped-publicly",
         contentMode: "bundled-public",
         sampleSleeves: sleeves.length,
@@ -209,7 +209,7 @@ function statusPayload(config) {
     return {
         ok: true,
         plugin: "umg-envoy-agent",
-        version: "0.3.0-alpha.3",
+        version: "0.3.0-alpha.5",
         publicEntrypoint: "dist/plugin-entry-public.js",
         contentMode: cfg.contentMode,
         compilerMode: cfg.compilerMode,
@@ -405,7 +405,7 @@ function registerCliBridge(api, config) {
         return;
     }
     api.registerCli(({ program }) => {
-        const root = program.command("umg-envoy").description("UMG Envoy Agent minimized public alpha.3 utilities");
+        const root = program.command("umg-envoy").description("UMG Envoy Agent minimized public alpha.5 utilities");
         root.command("status").action(async () => console.log(JSON.stringify(statusPayload(config), null, 2)));
         root.command("library-status").action(async () => console.log(JSON.stringify({ ok: true, ...summarizeBlockLibraries(publicContentRoot(import.meta.url)) }, null, 2)));
         root.command("library-search").requiredOption("--query <text>").action(async (opts) => console.log(JSON.stringify(searchBlocks(opts.query), null, 2)));
@@ -430,10 +430,10 @@ function registerCliBridge(api, config) {
 const entry = {
     id: "umg-envoy-agent",
     name: "UMG Envoy Agent",
-    description: "Minimized public alpha.3 UMG Envoy Agent for OpenClaw",
+    description: "Minimized public alpha.5 UMG Envoy Agent for OpenClaw",
     register(api, config) {
         registerCliBridge(api, config);
-        api.registerTool({ name: "umg_envoy_status", description: "Report public alpha.3 status.", parameters: Type.Object({}, { additionalProperties: false }), async execute() { return { content: [{ type: "text", text: JSON.stringify(statusPayload(config), null, 2) }] }; } }, { optional: true });
+        api.registerTool({ name: "umg_envoy_status", description: "Report public alpha.5 status.", parameters: Type.Object({}, { additionalProperties: false }), async execute() { return { content: [{ type: "text", text: JSON.stringify(statusPayload(config), null, 2) }] }; } }, { optional: true });
         api.registerTool({ name: "umg_envoy_library_status", description: "Summarize bundled public block library status.", parameters: Type.Object({}, { additionalProperties: false }), async execute() { return { content: [{ type: "text", text: JSON.stringify({ ok: true, ...summarizeBlockLibraries(publicContentRoot(import.meta.url)) }, null, 2) }] }; } }, { optional: true });
         api.registerTool({ name: "umg_envoy_library_search", description: "Search bundled public block content.", parameters: Type.Object({ query: Type.String() }, { additionalProperties: false }), async execute(input) { return { content: [{ type: "text", text: JSON.stringify(searchBlocks(input.query), null, 2) }] }; } }, { optional: true });
         api.registerTool({ name: "umg_envoy_runtime_spec_dry_run", description: "Build a readonly RuntimeSpec-style plan without execution.", parameters: Type.Object({ message: Type.String(), sleeveId: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input) { return { content: [{ type: "text", text: JSON.stringify(localReadonlyPlan(input.message, input.sleeveId), null, 2) }] }; } }, { optional: true });

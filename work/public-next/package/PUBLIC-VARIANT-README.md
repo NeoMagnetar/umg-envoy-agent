@@ -1,6 +1,6 @@
 # Public Variant README
 
-This minimized public alpha.4 package mirrors the compiler-backed architecture of the personal OpenClaw variant without shipping private roots, private runtime state, or private workspace assumptions.
+This minimized public alpha.5 stabilization candidate mirrors the compiler-backed architecture of the personal OpenClaw variant without shipping private roots, private runtime state, or private workspace assumptions.
 
 It bundles:
 - sample blocks
