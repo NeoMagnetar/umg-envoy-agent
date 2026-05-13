@@ -1,0 +1,297 @@
+{
+  "generatedAt": "2026-05-13T19:01:54.969Z",
+  "toolCount": 15,
+  "tools": [
+    {
+      "name": "umg_envoy_status",
+      "title": null,
+      "description": "Report public alpha.5 status.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "umg_envoy_library_status",
+      "title": null,
+      "description": "Summarize bundled public block library status.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "umg_envoy_library_search",
+      "title": null,
+      "description": "Search bundled public block content.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "properties": {
+          "query": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "name": "umg_envoy_runtime_spec_dry_run",
+      "title": null,
+      "description": "Build a readonly RuntimeSpec-style plan without execution.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "sleeveId": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "name": "umg_envoy_runtime_visibility_header",
+      "title": null,
+      "description": "Return a concise visibility header for the selected public sleeve runtime.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "type": "object",
+        "properties": {
+          "sleeveId": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "name": "umg_envoy_runtime_molt_map",
+      "title": null,
+      "description": "Return readonly ordering and public molt-style mapping for the selected sleeve.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "type": "object",
+        "properties": {
+          "sleeveId": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "name": "umg_envoy_runtime_dashboard",
+      "title": null,
+      "description": "Report readonly public runtime dashboard stats.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "umg_envoy_runtime_ir_matrix",
+      "title": null,
+      "description": "Report public readonly IR matrix status.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "umg_envoy_runtime_inspect",
+      "title": null,
+      "description": "Inspect readonly RuntimeSpec-like output for a public sleeve.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "type": "object",
+        "properties": {
+          "sleeveId": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "name": "umg_envoy_local_readonly_plan",
+      "title": null,
+      "description": "Create a local readonly plan from a message.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "sleeveId": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "name": "umg_envoy_local_readonly_scan",
+      "title": null,
+      "description": "Scan bundled public content without writes or execution.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "name": "umg_envoy_alpha_demo",
+      "title": null,
+      "description": "Run the public alpha demo in readonly mode.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "sleeveId": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "name": "umg_envoy_sleeve_list",
+      "title": null,
+      "description": "List bundled public sleeves.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "umg_envoy_sleeve_inspect",
+      "title": null,
+      "description": "Inspect a bundled public sleeve and its readonly runtime.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "sleeveId"
+        ],
+        "properties": {
+          "sleeveId": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "name": "umg_envoy_sleeve_demo",
+      "title": null,
+      "description": "Show a sleeve-scoped public readonly demo payload.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "type": "object",
+        "properties": {
+          "sleeveId": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  ],
+  "liveRuns": [
+    {
+      "tool": "umg_envoy_status",
+      "ok": true,
+      "output": {
+        "kind": "json-text",
+        "parsed": {
+          "ok": true,
+          "plugin": "umg-envoy-agent",
+          "version": "0.3.0-alpha.5",
+          "publicEntrypoint": "dist/plugin-entry-public.js",
+          "contentMode": "bundled-public",
+          "compilerMode": "public-readonly",
+          "allowRuntimeWrites": false,
+          "sampleSleeves": 2,
+          "sampleBlocks": 7,
+          "supportedTools": [
+            "umg_envoy_status",
+            "umg_envoy_library_status",
+            "umg_envoy_library_search",
+            "umg_envoy_runtime_spec_dry_run",
+            "umg_envoy_runtime_visibility_header",
+            "umg_envoy_runtime_molt_map",
+            "umg_envoy_runtime_dashboard",
+            "umg_envoy_runtime_ir_matrix",
+            "umg_envoy_runtime_inspect",
+            "umg_envoy_local_readonly_plan",
+            "umg_envoy_local_readonly_scan",
+            "umg_envoy_alpha_demo",
+            "umg_envoy_sleeve_list",
+            "umg_envoy_sleeve_inspect",
+            "umg_envoy_sleeve_demo"
+          ]
+        }
+      },
+      "raw": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"ok\": true,\n  \"plugin\": \"umg-envoy-agent\",\n  \"version\": \"0.3.0-alpha.5\",\n  \"publicEntrypoint\": \"dist/plugin-entry-public.js\",\n  \"contentMode\": \"bundled-public\",\n  \"compilerMode\": \"public-readonly\",\n  \"allowRuntimeWrites\": false,\n  \"sampleSleeves\": 2,\n  \"sampleBlocks\": 7,\n  \"supportedTools\": [\n    \"umg_envoy_status\",\n    \"umg_envoy_library_status\",\n    \"umg_envoy_library_search\",\n    \"umg_envoy_runtime_spec_dry_run\",\n    \"umg_envoy_runtime_visibility_header\",\n    \"umg_envoy_runtime_molt_map\",\n    \"umg_envoy_runtime_dashboard\",\n    \"umg_envoy_runtime_ir_matrix\",\n    \"umg_envoy_runtime_inspect\",\n    \"umg_envoy_local_readonly_plan\",\n    \"umg_envoy_local_readonly_scan\",\n    \"umg_envoy_alpha_demo\",\n    \"umg_envoy_sleeve_list\",\n    \"umg_envoy_sleeve_inspect\",\n    \"umg_envoy_sleeve_demo\"\n  ]\n}"
+          }
+        ]
+      }
+    },
+    {
+      "tool": "umg_envoy_sleeve_list",
+      "ok": true,
+      "output": {
+        "kind": "json-text",
+        "parsed": {
+          "ok": true,
+          "sleeves": [
+            {
+              "sleeve_id": "public-basic-envoy",
+              "title": "Public Basic Envoy",
+              "primary_shell_block_id": "primary.sample",
+              "block_count": 7
+            },
+            {
+              "sleeve_id": "public-coder-envoy",
+              "title": "Public Coder Envoy",
+              "primary_shell_block_id": "primary.sample",
+              "block_count": 7
+            }
+          ]
+        }
+      },
+      "raw": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"ok\": true,\n  \"sleeves\": [\n    {\n      \"sleeve_id\": \"public-basic-envoy\",\n      \"title\": \"Public Basic Envoy\",\n      \"primary_shell_block_id\": \"primary.sample\",\n      \"block_count\": 7\n    },\n    {\n      \"sleeve_id\": \"public-coder-envoy\",\n      \"title\": \"Public Coder Envoy\",\n      \"primary_shell_block_id\": \"primary.sample\",\n      \"block_count\": 7\n    }\n  ]\n}"
+          }
+        ]
+      }
+    }
+  ]
+}
