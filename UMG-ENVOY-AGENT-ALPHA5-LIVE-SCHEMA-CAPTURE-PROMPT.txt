@@ -1,0 +1,13 @@
+Inspect the installed UMG Envoy Agent tool surface and enumerate every available UMG Envoy Agent tool. For each tool, capture:
+- tool name
+- short purpose
+- input schema / accepted args
+- minimal valid invocation
+- expected output shape
+- safe test prompt
+
+Then run:
+1. umg_envoy_status
+2. umg_envoy_sleeve_list
+
+Return the results as a clean markdown table plus raw per-tool notes. Do not mutate anything. Treat this as read-only validation only.
