@@ -21,7 +21,17 @@ export type RealLibraryResolverErrorCode =
   | "HOLD_SLEEVE_SOURCE_PATH_OUTSIDE_ALLOWLIST"
   | "HOLD_SLEEVE_FILE_MISSING"
   | "HOLD_SLEEVE_PARSE_FAILED"
-  | "HOLD_SLEEVE_SHAPE_UNKNOWN";
+  | "HOLD_SLEEVE_SHAPE_UNKNOWN"
+  | "HOLD_SHALLOW_LOAD_TARGET_REF_REQUIRED_STEP8B"
+  | "HOLD_SHALLOW_LOAD_TARGET_NOT_CLASSIFIED_STEP8B"
+  | "HOLD_SHALLOW_LOAD_TARGET_NOT_AVAILABLE_STEP8B"
+  | "HOLD_SHALLOW_LOAD_TARGET_PATH_FORBIDDEN_STEP8B"
+  | "HOLD_SHALLOW_LOAD_TARGET_PATH_OUTSIDE_ALLOWLIST_STEP8B"
+  | "HOLD_SHALLOW_LOAD_TARGET_FILE_MISSING_STEP8B"
+  | "HOLD_SHALLOW_LOAD_TARGET_PARSE_FAILED_STEP8B"
+  | "HOLD_SHALLOW_LOAD_TARGET_KIND_UNSUPPORTED_STEP8B"
+  | "HOLD_SHALLOW_LOAD_RECURSION_ATTEMPTED_STEP8B"
+  | "HOLD_SHALLOW_LOAD_EXECUTION_ATTEMPTED_STEP8B";
 
 export type RealLibrarySleeveResolutionStatus =
   | "LOADABLE_PUBLIC_CURATED"
@@ -84,6 +94,7 @@ export interface RealLibrarySleeveInspectInput {
   id?: string;
   libraryRoot?: string;
   mode?: string;
+  shallowLoadTargetRef?: string;
 }
 
 export interface RealLibrarySleeveInspectTrace {
@@ -214,6 +225,36 @@ export interface RealLibraryReferenceClassificationMap {
   references: RealLibraryReferenceClassificationRecord[];
 }
 
+export interface RealLibraryShallowLoadedTargetSummary {
+  topLevelKeys: string[];
+  identityKeys: string[];
+  metadataKeys: string[];
+  neoblockKeys: string[];
+  provenanceKeys: string[];
+  id?: string;
+  kind?: string;
+  moltType?: string;
+  status?: string;
+  contentPreview?: string;
+}
+
+export interface RealLibraryTargetShallowLoadResult {
+  performed: true;
+  requestedRef: string;
+  loadedRef: string;
+  inferredKind: "neoblock";
+  candidatePath: string;
+  resolvedPathAllowed: true;
+  targetFileLoaded: true;
+  targetParseStatus: "PARSED_JSON";
+  status: "SHALLOW_TARGET_LOADED_STEP8B";
+  recursiveResolution: "RECURSIVE_RESOLUTION_NOT_PERFORMED_STEP8B";
+  execution: "EXECUTION_NOT_PERFORMED_STEP8B";
+  summary: RealLibraryShallowLoadedTargetSummary;
+  warnings: string[];
+  errors: string[];
+}
+
 export interface RealLibrarySleeveInspectSummary {
   id?: string;
   name?: string;
@@ -233,6 +274,7 @@ export interface RealLibrarySleeveInspectSummary {
   };
   referenceClassification: RealLibraryReferenceClassificationMap;
   targetAvailability: RealLibraryTargetAvailabilityMap;
+  targetShallowLoad?: RealLibraryTargetShallowLoadResult;
   referenceCounts: {
     neostacks: number;
     neoblocks: number;
@@ -638,6 +680,87 @@ function matchIndexEntry(entry: Record<string, unknown>, rawRef: string): { matc
     return { matched: true, aliasMatch: true, candidateId, candidatePath };
   }
   return { matched: false, aliasMatch: false, candidateId, candidatePath };
+}
+
+const STEP8B_ALLOWED_TARGET_ROOT = path.join("AI", "NEOBLOCKS");
+const STEP8B_FORBIDDEN_TARGET_SEGMENTS = [
+  "archive",
+  "backup",
+  "backups",
+  "plugin-backups",
+  "artifacts",
+  "artifact",
+  "staging",
+  "publish-stage",
+  "release-clean",
+  "resleever",
+  "umg_envoy_resleever",
+  "vendor",
+  "human",
+  "blocks"
+] as const;
+
+function validateStep8BTargetPath(libraryRoot: string, candidatePath: string): string {
+  const allowedRoot = path.join(libraryRoot, STEP8B_ALLOWED_TARGET_ROOT);
+  const resolvedPath = path.resolve(libraryRoot, candidatePath);
+  const parts = resolvedPath.split(/[\\/]+/).map((segment) => segment.trim().toLowerCase()).filter(Boolean);
+  if (parts.some((segment) => STEP8B_FORBIDDEN_TARGET_SEGMENTS.includes(segment as (typeof STEP8B_FORBIDDEN_TARGET_SEGMENTS)[number]))) {
+    throw new Error("HOLD_SHALLOW_LOAD_TARGET_PATH_FORBIDDEN_STEP8B");
+  }
+  if (!(resolvedPath.startsWith(allowedRoot + path.sep) || resolvedPath === allowedRoot)) {
+    throw new Error("HOLD_SHALLOW_LOAD_TARGET_PATH_OUTSIDE_ALLOWLIST_STEP8B");
+  }
+  return resolvedPath;
+}
+
+function loadTargetJsonShallow(resolvedPath: string): Record<string, unknown> {
+  return readJsonFileSafe(resolvedPath) as Record<string, unknown>;
+}
+
+function summarizeLoadedNeoBlockTarget(payload: Record<string, unknown>): RealLibraryShallowLoadedTargetSummary {
+  const identity = (payload.identity && typeof payload.identity === "object" && !Array.isArray(payload.identity)) ? payload.identity as Record<string, unknown> : {};
+  const metadata = (payload.metadata && typeof payload.metadata === "object" && !Array.isArray(payload.metadata)) ? payload.metadata as Record<string, unknown> : {};
+  const provenance = (payload.provenance && typeof payload.provenance === "object" && !Array.isArray(payload.provenance)) ? payload.provenance as Record<string, unknown> : {};
+  const neoblockList = Array.isArray(payload.neoblocks) ? payload.neoblocks : [];
+  const firstNeoBlock = neoblockList.find((entry) => entry && typeof entry === "object" && !Array.isArray(entry)) as Record<string, unknown> | undefined;
+  const neoblock = (payload.neoblock && typeof payload.neoblock === "object" && !Array.isArray(payload.neoblock)) ? payload.neoblock as Record<string, unknown> : (firstNeoBlock ?? {});
+  const content = normalizeString(neoblock.content);
+  return {
+    topLevelKeys: Object.keys(payload).sort(),
+    identityKeys: Object.keys(identity).sort(),
+    metadataKeys: Object.keys(metadata).sort(),
+    neoblockKeys: Object.keys(neoblock).sort(),
+    provenanceKeys: Object.keys(provenance).sort(),
+    id: normalizeString(identity.id) ?? normalizeString(neoblock.id),
+    kind: normalizeString(identity.kind) ?? normalizeString(neoblock.kind),
+    moltType: normalizeString(identity.molt_type) ?? normalizeString(neoblock.molt_type),
+    status: normalizeString(metadata.status) ?? normalizeString(neoblock.status),
+    contentPreview: content ? content.slice(0, 160) : undefined
+  };
+}
+
+function resolveApprovedTargetForShallowLoad(
+  summary: RealLibrarySleeveInspectSummary,
+  shallowLoadTargetRef: string
+): RealLibraryTargetAvailabilityRecord {
+  if (!shallowLoadTargetRef || shallowLoadTargetRef.trim().length === 0) {
+    throw new Error("HOLD_SHALLOW_LOAD_TARGET_REF_REQUIRED_STEP8B");
+  }
+  const classified = summary.referenceClassification.references.find((ref) => ref.rawRef === shallowLoadTargetRef);
+  if (!classified) {
+    throw new Error("HOLD_SHALLOW_LOAD_TARGET_NOT_CLASSIFIED_STEP8B");
+  }
+  if (classified.inferredKind !== "neoblock") {
+    throw new Error("HOLD_SHALLOW_LOAD_TARGET_KIND_UNSUPPORTED_STEP8B");
+  }
+  const availability = summary.targetAvailability.references.find((ref) => ref.rawRef === shallowLoadTargetRef);
+  if (!availability) {
+    throw new Error("HOLD_SHALLOW_LOAD_TARGET_NOT_AVAILABLE_STEP8B");
+  }
+  if (availability.resolutionStatus !== "TARGET_INDEX_ENTRY_FOUND_PATH_ALLOWED_NOT_LOADED_STEP7" || !availability.candidatePath || availability.candidatePathAllowed !== true) {
+    throw new Error("HOLD_SHALLOW_LOAD_TARGET_NOT_AVAILABLE_STEP8B");
+  }
+  return availability;
 }
 
 function buildTargetAvailability(
@@ -1194,6 +1317,57 @@ export function inspectRealLibraryPublicCuratedSleeve(input: RealLibrarySleeveIn
     ...summaryBase,
     targetAvailability: buildTargetAvailability(summaryBase.referenceClassification, catalogResult.libraryRoot)
   };
+
+  if (input.shallowLoadTargetRef) {
+    try {
+      const availability = resolveApprovedTargetForShallowLoad(summary, input.shallowLoadTargetRef);
+      const resolvedPath = validateStep8BTargetPath(catalogResult.libraryRoot, availability.candidatePath!);
+      if (!fs.existsSync(resolvedPath)) {
+        return buildInspectFailure(input, "HOLD_SHALLOW_LOAD_TARGET_FILE_MISSING_STEP8B", `Shallow-load target file missing: ${availability.candidatePath}`, trace, catalogResult.libraryRoot, match);
+      }
+      const parsedTarget = loadTargetJsonShallow(resolvedPath);
+      if (!parsedTarget || typeof parsedTarget !== "object" || Array.isArray(parsedTarget)) {
+        return buildInspectFailure(input, "HOLD_SHALLOW_LOAD_TARGET_PARSE_FAILED_STEP8B", `Shallow-load target shape invalid: ${availability.candidatePath}`, trace, catalogResult.libraryRoot, match);
+      }
+      summary.targetShallowLoad = {
+        performed: true,
+        requestedRef: input.shallowLoadTargetRef,
+        loadedRef: availability.rawRef,
+        inferredKind: "neoblock",
+        candidatePath: availability.candidatePath!,
+        resolvedPathAllowed: true,
+        targetFileLoaded: true,
+        targetParseStatus: "PARSED_JSON",
+        status: "SHALLOW_TARGET_LOADED_STEP8B",
+        recursiveResolution: "RECURSIVE_RESOLUTION_NOT_PERFORMED_STEP8B",
+        execution: "EXECUTION_NOT_PERFORMED_STEP8B",
+        summary: summarizeLoadedNeoBlockTarget(parsedTarget as Record<string, unknown>),
+        warnings: [],
+        errors: []
+      };
+    } catch (error) {
+      const code = error instanceof Error ? error.message : String(error);
+      if (code === "HOLD_SHALLOW_LOAD_TARGET_PATH_FORBIDDEN_STEP8B") {
+        return buildInspectFailure(input, "HOLD_SHALLOW_LOAD_TARGET_PATH_FORBIDDEN_STEP8B", `Shallow-load target path forbidden: ${input.shallowLoadTargetRef}`, trace, catalogResult.libraryRoot, match);
+      }
+      if (code === "HOLD_SHALLOW_LOAD_TARGET_PATH_OUTSIDE_ALLOWLIST_STEP8B") {
+        return buildInspectFailure(input, "HOLD_SHALLOW_LOAD_TARGET_PATH_OUTSIDE_ALLOWLIST_STEP8B", `Shallow-load target path outside allowlist: ${input.shallowLoadTargetRef}`, trace, catalogResult.libraryRoot, match);
+      }
+      if (code === "HOLD_SHALLOW_LOAD_TARGET_KIND_UNSUPPORTED_STEP8B") {
+        return buildInspectFailure(input, "HOLD_SHALLOW_LOAD_TARGET_KIND_UNSUPPORTED_STEP8B", `Unsupported shallow-load target kind: ${input.shallowLoadTargetRef}`, trace, catalogResult.libraryRoot, match);
+      }
+      if (code === "HOLD_SHALLOW_LOAD_TARGET_REF_REQUIRED_STEP8B") {
+        return buildInspectFailure(input, "HOLD_SHALLOW_LOAD_TARGET_REF_REQUIRED_STEP8B", "shallowLoadTargetRef is required for Step 8B shallow load.", trace, catalogResult.libraryRoot, match);
+      }
+      if (code === "HOLD_SHALLOW_LOAD_TARGET_NOT_CLASSIFIED_STEP8B") {
+        return buildInspectFailure(input, "HOLD_SHALLOW_LOAD_TARGET_NOT_CLASSIFIED_STEP8B", `Requested shallow-load target not classified: ${input.shallowLoadTargetRef}`, trace, catalogResult.libraryRoot, match);
+      }
+      if (code === "HOLD_SHALLOW_LOAD_TARGET_NOT_AVAILABLE_STEP8B") {
+        return buildInspectFailure(input, "HOLD_SHALLOW_LOAD_TARGET_NOT_AVAILABLE_STEP8B", `Requested shallow-load target not available: ${input.shallowLoadTargetRef}`, trace, catalogResult.libraryRoot, match);
+      }
+      return buildInspectFailure(input, "HOLD_SHALLOW_LOAD_TARGET_PARSE_FAILED_STEP8B", `Failed to shallow-load target: ${input.shallowLoadTargetRef}`, trace, catalogResult.libraryRoot, match);
+    }
+  }
 
   return {
     ok: true,

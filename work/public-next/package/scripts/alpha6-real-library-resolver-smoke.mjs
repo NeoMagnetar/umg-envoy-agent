@@ -137,6 +137,38 @@ record("inspect rejects unknown sleeveId", () => {
   return result.errors[0];
 });
 
+record("step8b shallow-loads exactly one approved target without recursion or execution", () => {
+  const result = inspectRealLibraryPublicCuratedSleeve({
+    sleeveId: "neomagnetar-dynamic-persona-v1",
+    shallowLoadTargetRef: "primary.sample"
+  });
+  assert(result.ok === true, "expected ok=true");
+  assert(result.summary?.targetShallowLoad?.performed === true, "expected targetShallowLoad.performed=true");
+  assert(result.summary?.targetShallowLoad?.requestedRef === "primary.sample", "expected requestedRef=primary.sample");
+  assert(result.summary?.targetShallowLoad?.loadedRef === "primary.sample", "expected loadedRef=primary.sample");
+  assert(result.summary?.targetShallowLoad?.targetFileLoaded === true, "expected targetFileLoaded=true");
+  assert(result.summary?.targetShallowLoad?.targetParseStatus === "PARSED_JSON", "expected targetParseStatus=PARSED_JSON");
+  assert(result.summary?.targetShallowLoad?.resolvedPathAllowed === true, "expected resolvedPathAllowed=true");
+  assert(result.summary?.targetShallowLoad?.summary.id === "primary.sample", "expected summary.id=primary.sample");
+  assert(result.summary?.targetShallowLoad?.summary.kind === "neoblock", "expected summary.kind=neoblock");
+  assert(result.summary?.targetShallowLoad?.summary.moltType === "Primary", "expected summary.moltType=Primary");
+  assert(result.summary?.targetShallowLoad?.summary.status === "alpha6_sample_target", "expected summary.status=alpha6_sample_target");
+  assert((result.summary?.targetShallowLoad?.summary.contentPreview ?? "").includes("Sample Primary NeoBlock target"), "expected contentPreview for primary.sample");
+  assert(result.summary?.targetShallowLoad?.recursiveResolution === "RECURSIVE_RESOLUTION_NOT_PERFORMED_STEP8B", "expected recursiveResolution=RECURSIVE_RESOLUTION_NOT_PERFORMED_STEP8B");
+  assert(result.summary?.targetShallowLoad?.execution === "EXECUTION_NOT_PERFORMED_STEP8B", "expected execution=EXECUTION_NOT_PERFORMED_STEP8B");
+  return result.summary?.targetShallowLoad;
+});
+
+record("step8b rejects invalid shallowLoadTargetRef cleanly", () => {
+  const result = inspectRealLibraryPublicCuratedSleeve({
+    sleeveId: "neomagnetar-dynamic-persona-v1",
+    shallowLoadTargetRef: "missing.sample"
+  });
+  assert(result.ok === false, "expected ok=false");
+  assert(result.errors[0]?.code === "HOLD_SHALLOW_LOAD_TARGET_NOT_CLASSIFIED_STEP8B", `expected HOLD_SHALLOW_LOAD_TARGET_NOT_CLASSIFIED_STEP8B, got ${result.errors[0]?.code}`);
+  return result.errors[0];
+});
+
 record("inspect does not recursively resolve full graph", () => {
   const result = inspectRealLibraryPublicCuratedSleeve({
     sleeveId: "slv-operator"
