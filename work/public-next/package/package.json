@@ -12,6 +12,8 @@
     "dist/plugin-entry-public.d.ts",
     "dist/public-path-builder.js",
     "dist/public-path-builder.d.ts",
+    "dist/real-library-resolver.js",
+    "dist/real-library-resolver.d.ts",
     "dist/types.js",
     "dist/types.d.ts",
     "dist/umg-path-parser.js",
