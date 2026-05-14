@@ -58,6 +58,24 @@ record("inspect succeeds for one LOADABLE_PUBLIC_CURATED entry", () => {
   return { sleeveId: result.sleeveId, resolutionStatus: result.resolutionStatus, summary: result.summary };
 });
 
+record("step5 explicit reference extraction reports top-level public-curated refs without recursion", () => {
+  const result = inspectRealLibraryPublicCuratedSleeve({
+    sleeveId: "neomagnetar-dynamic-persona-v1"
+  });
+  assert(result.ok === true, "expected ok=true");
+  assert(result.summary?.referenceCounts.neoblocks === 7, `expected 7 neoblock refs, got ${result.summary?.referenceCounts.neoblocks}`);
+  assert(result.summary?.referenceCounts.tools === 0, `expected 0 tool refs, got ${result.summary?.referenceCounts.tools}`);
+  assert(Array.isArray(result.summary?.explicitReferences.neoblocks), "expected explicit neoblock list");
+  assert(result.summary?.explicitReferences.neoblocks.includes("primary.sample"), "expected primary.sample block ref");
+  assert(result.trace.recursiveResolution === "not_performed_step3", "expected recursiveResolution=not_performed_step3");
+  return {
+    sleeveId: result.sleeveId,
+    referenceCounts: result.summary?.referenceCounts,
+    explicitReferences: result.summary?.explicitReferences,
+    recursiveResolution: result.trace.recursiveResolution
+  };
+});
+
 record("inspect rejects REJECTED_FORBIDDEN_SOURCE_PATH entry", () => {
   const result = inspectRealLibraryPublicCuratedSleeve({
     sleeveId: "sample-basic-minimal"

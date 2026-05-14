@@ -104,6 +104,14 @@ export interface RealLibrarySleeveInspectSummary {
   topLevelKeys: string[];
   metadataKeys: string[];
   sleeveKeys: string[];
+  explicitReferences: {
+    neostacks: string[];
+    neoblocks: string[];
+    moltBlocks: string[];
+    tools: string[];
+    gates: string[];
+    triggers: string[];
+  };
   referenceCounts: {
     neostacks: number;
     neoblocks: number;
@@ -413,12 +421,73 @@ function countCandidateList(record: Record<string, unknown>, keys: string[]): nu
   return 0;
 }
 
+function firstCandidateArray(record: Record<string, unknown>, keys: string[]): unknown[] {
+  for (const key of keys) {
+    const value = record[key];
+    if (Array.isArray(value)) {
+      return value;
+    }
+  }
+  return [];
+}
+
+function extractStringRefs(items: unknown[], preferredKeys: string[]): string[] {
+  const refs: string[] = [];
+  for (const item of items) {
+    if (typeof item === "string" && item.trim().length > 0) {
+      refs.push(item.trim());
+      continue;
+    }
+    if (!item || typeof item !== "object" || Array.isArray(item)) {
+      continue;
+    }
+    const record = item as Record<string, unknown>;
+    for (const key of preferredKeys) {
+      const value = record[key];
+      if (typeof value === "string" && value.trim().length > 0) {
+        refs.push(value.trim());
+        break;
+      }
+    }
+  }
+  return refs;
+}
+
+function mergeRefLists(...lists: string[][]): string[] {
+  return Array.from(new Set(lists.flat().filter((value) => value.trim().length > 0)));
+}
+
 function summarizeSleevePayload(
   payload: Record<string, unknown>,
   sleeve: RealLibraryCatalogSleeveEntry
 ): RealLibrarySleeveInspectSummary {
   const metadata = (payload.metadata && typeof payload.metadata === "object" && !Array.isArray(payload.metadata)) ? payload.metadata as Record<string, unknown> : {};
   const sleeveObject = (payload.sleeve && typeof payload.sleeve === "object" && !Array.isArray(payload.sleeve)) ? payload.sleeve as Record<string, unknown> : {};
+
+  const neostacks = mergeRefLists(
+    extractStringRefs(firstCandidateArray(payload, ["neostacks", "neoStacks", "stacks", "stack_refs", "stackRefs"]), ["stack_id", "id", "ref", "name"]),
+    extractStringRefs(firstCandidateArray(sleeveObject, ["neostacks", "neoStacks", "stacks", "stack_refs", "stackRefs"]), ["stack_id", "id", "ref", "name"])
+  );
+  const neoblocks = mergeRefLists(
+    extractStringRefs(firstCandidateArray(payload, ["neoblocks", "neoBlocks", "blocks", "block_refs", "blockRefs"]), ["block_id", "id", "ref", "name"]),
+    extractStringRefs(firstCandidateArray(sleeveObject, ["neoblocks", "neoBlocks", "blocks", "block_refs", "blockRefs"]), ["block_id", "id", "ref", "name"])
+  );
+  const moltBlocks = mergeRefLists(
+    extractStringRefs(firstCandidateArray(payload, ["moltBlocks", "molt_blocks", "molt", "molt_refs", "moltRefs"]), ["molt_block_id", "block_id", "id", "ref", "name"]),
+    extractStringRefs(firstCandidateArray(sleeveObject, ["moltBlocks", "molt_blocks", "molt", "molt_refs", "moltRefs"]), ["molt_block_id", "block_id", "id", "ref", "name"])
+  );
+  const tools = mergeRefLists(
+    extractStringRefs(firstCandidateArray(payload, ["tools", "tool_requests", "toolRequests"]), ["name", "tool", "tool_id", "id", "ref"]),
+    extractStringRefs(firstCandidateArray(sleeveObject, ["tools", "tool_requests", "toolRequests"]), ["name", "tool", "tool_id", "id", "ref"])
+  );
+  const gates = mergeRefLists(
+    extractStringRefs(firstCandidateArray(payload, ["gates", "gate_refs", "gateRefs"]), ["gate_id", "id", "ref", "name", "state"]),
+    extractStringRefs(firstCandidateArray(sleeveObject, ["gates", "gate_refs", "gateRefs"]), ["gate_id", "id", "ref", "name", "state"])
+  );
+  const triggers = mergeRefLists(
+    extractStringRefs(firstCandidateArray(payload, ["triggers", "trigger_refs", "triggerRefs"]), ["trigger_id", "id", "ref", "name"]),
+    extractStringRefs(firstCandidateArray(sleeveObject, ["triggers", "trigger_refs", "triggerRefs"]), ["trigger_id", "id", "ref", "name"])
+  );
 
   return {
     id: normalizeString(payload.id) ?? normalizeString(payload.sleeve_id) ?? normalizeString((payload.identity as Record<string, unknown> | undefined)?.id) ?? sleeve.id,
@@ -429,13 +498,21 @@ function summarizeSleevePayload(
     topLevelKeys: Object.keys(payload).sort(),
     metadataKeys: Object.keys(metadata).sort(),
     sleeveKeys: Object.keys(sleeveObject).sort(),
+    explicitReferences: {
+      neostacks,
+      neoblocks,
+      moltBlocks,
+      tools,
+      gates,
+      triggers
+    },
     referenceCounts: {
-      neostacks: countCandidateList(sleeveObject, ["neostacks", "neoStacks", "stacks", "stack_refs", "stackRefs"]),
-      neoblocks: countCandidateList(sleeveObject, ["neoblocks", "neoBlocks", "blocks", "block_refs", "blockRefs"]),
-      moltBlocks: countCandidateList(sleeveObject, ["moltBlocks", "molt_blocks", "molt", "molt_refs", "moltRefs"]),
-      tools: countCandidateList(sleeveObject, ["tools", "tool_requests", "toolRequests"]),
-      gates: countCandidateList(sleeveObject, ["gates", "gate_refs", "gateRefs"]),
-      triggers: countCandidateList(sleeveObject, ["triggers", "trigger_refs", "triggerRefs"])
+      neostacks: neostacks.length,
+      neoblocks: neoblocks.length,
+      moltBlocks: moltBlocks.length,
+      tools: tools.length,
+      gates: gates.length,
+      triggers: triggers.length
     }
   };
 }
