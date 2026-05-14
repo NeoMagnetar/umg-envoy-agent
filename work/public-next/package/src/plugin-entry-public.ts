@@ -260,7 +260,8 @@ function statusPayload(config?: PluginConfig) {
       "umg_envoy_sleeve_list",
       "umg_envoy_sleeve_inspect",
       "umg_envoy_sleeve_demo",
-      "umg_envoy_real_library_status"
+      "umg_envoy_real_library_status",
+      "umg_envoy_real_sleeve_list"
     ]
   };
 }
@@ -270,6 +271,25 @@ function realLibraryStatus() {
     libraryRoot: "C:\\.openclaw\\workspace\\UMG-Block-Library",
     mode: "public_curated"
   });
+}
+
+function realSleeveList() {
+  const result = realLibraryStatus();
+  return {
+    ok: result.ok,
+    mode: result.mode,
+    libraryRoot: result.libraryRoot,
+    entrypoint: result.entrypoint,
+    catalogLoaded: result.catalogLoaded,
+    sleeveCount: result.sleeveCount,
+    loadableSleeveCount: result.loadableSleeveCount,
+    rejectedSleeveCount: result.rejectedSleeveCount,
+    unloadableSleeveCount: result.unloadableSleeveCount,
+    sleeves: result.sleeves,
+    warnings: result.warnings,
+    errors: result.errors,
+    trace: result.trace
+  };
 }
 
 function searchBlocks(query: string, metaUrl = import.meta.url) {
@@ -472,6 +492,7 @@ function registerCliBridge(api: any, config?: PluginConfig) {
     root.command("sleeve-inspect").requiredOption("--sleeve <id>").action(async (opts: { sleeve: string }) => console.log(JSON.stringify(sleeveInspect(opts.sleeve, config), null, 2)));
     root.command("sleeve-demo").option("--sleeve <id>").option("--message <text>").action(async (opts: { sleeve?: string; message?: string }) => console.log(JSON.stringify(sleeveDemo(opts.sleeve, opts.message), null, 2)));
     root.command("real-library-status").action(async () => console.log(JSON.stringify(realLibraryStatus(), null, 2)));
+    root.command("real-sleeve-list").action(async () => console.log(JSON.stringify(realSleeveList(), null, 2)));
     root.command("parse-path").requiredOption("--file <path>").action(async (opts: { file: string }) => console.log(JSON.stringify(parseUMGPath(fs.readFileSync(opts.file, "utf8")), null, 2)));
     root.command("validate-path").requiredOption("--file <path>").action(async (opts: { file: string }) => { const issues = validateUMGPath(parseUMGPath(fs.readFileSync(opts.file, "utf8"))); console.log(JSON.stringify({ ok: issues.every((issue) => issue.severity !== "error"), issues }, null, 2)); });
     root.command("render-path").requiredOption("--file <path>").action(async (opts: { file: string }) => { const raw = fs.readFileSync(opts.file, "utf8"); const parsed = opts.file.toLowerCase().endsWith(".json") ? JSON.parse(raw) : parseUMGPath(raw); console.log(renderUMGPath(parsed)); });
@@ -502,6 +523,7 @@ const entry = {
     api.registerTool({ name: "umg_envoy_sleeve_inspect", description: "Inspect a bundled public sleeve and its readonly runtime.", parameters: Type.Object({ sleeveId: Type.String() }, { additionalProperties: false }), async execute(input: { sleeveId: string }) { return { content: [{ type: "text", text: JSON.stringify(sleeveInspect(input.sleeveId, config), null, 2) }] }; } }, { optional: true });
     api.registerTool({ name: "umg_envoy_sleeve_demo", description: "Show a sleeve-scoped public readonly demo payload.", parameters: Type.Object({ sleeveId: Type.Optional(Type.String()), message: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input: { sleeveId?: string; message?: string }) { return { content: [{ type: "text", text: JSON.stringify(sleeveDemo(input.sleeveId, input.message), null, 2) }] }; } }, { optional: true });
     api.registerTool({ name: "umg_envoy_real_library_status", description: "Load the real public-curated sleeve catalog from the selected UMG Block Library root in readonly mode.", parameters: Type.Object({}, { additionalProperties: false }), async execute() { return { content: [{ type: "text", text: JSON.stringify(realLibraryStatus(), null, 2) }] }; } }, { optional: true });
+    api.registerTool({ name: "umg_envoy_real_sleeve_list", description: "Return safe curated sleeve summaries from the real UMG Block Library in readonly mode.", parameters: Type.Object({}, { additionalProperties: false }), async execute() { return { content: [{ type: "text", text: JSON.stringify(realSleeveList(), null, 2) }] }; } }, { optional: true });
   }
 };
 
