@@ -58,7 +58,7 @@ record("inspect succeeds for one LOADABLE_PUBLIC_CURATED entry", () => {
   return { sleeveId: result.sleeveId, resolutionStatus: result.resolutionStatus, summary: result.summary };
 });
 
-record("step6 reference classification map reports deterministic classified refs without resolution", () => {
+record("step7 target availability checks classified refs without loading targets", () => {
   const result = inspectRealLibraryPublicCuratedSleeve({
     sleeveId: "neomagnetar-dynamic-persona-v1"
   });
@@ -73,25 +73,35 @@ record("step6 reference classification map reports deterministic classified refs
     "trigger.sample"
   ];
   const classification = result.summary?.referenceClassification;
+  const availability = result.summary?.targetAvailability;
+  assert(Array.isArray(result.summary?.explicitReferences.neoblocks), "expected explicit neoblock list");
+  assert(result.summary?.explicitReferences.neoblocks.length === 7, `expected 7 explicit refs, got ${result.summary?.explicitReferences.neoblocks.length}`);
   assert(classification?.performed === true, "expected referenceClassification.performed=true");
   assert(classification?.references.length === 7, `expected 7 classified refs, got ${classification?.references.length}`);
-  assert(classification?.counts.total === 7, `expected total=7, got ${classification?.counts.total}`);
   assert(classification?.counts.neoblock === 7, `expected neoblock=7, got ${classification?.counts.neoblock}`);
-  assert(classification?.counts.unknown === 0, `expected unknown=0, got ${classification?.counts.unknown}`);
-  assert(classification?.counts.malformed === 0, `expected malformed=0, got ${classification?.counts.malformed}`);
-  assert(classification?.counts.duplicate === 0, `expected duplicate=0, got ${classification?.counts.duplicate}`);
+  assert(availability?.performed === true, "expected targetAvailability.performed=true");
+  assert(availability?.references.length === 7, `expected 7 availability refs, got ${availability?.references.length}`);
+  assert(availability?.targetFileLoads === "not_performed_step7", "expected targetFileLoads=not_performed_step7");
+  assert(availability?.recursiveResolution === "not_performed_step7", "expected recursiveResolution=not_performed_step7");
+  assert(availability?.execution === "not_performed", "expected execution=not_performed");
+  assert((availability?.indexesLoaded.some((idx) => idx.path === "AI/MANIFESTS/neoblock-library-index.json" && idx.parseStatus === "PARSED_JSON" && idx.shapeStatus === "NORMALIZED")) === true, "expected neoblock index parsed and normalized");
   for (const ref of expectedRefs) {
-    const matches = classification?.references.filter((entry) => entry.rawRef === ref) ?? [];
-    assert(matches.length === 1, `expected exactly one classified entry for ${ref}, got ${matches.length}`);
-    assert(matches[0].resolutionStatus === "CLASSIFIED_NOT_RESOLVED_STEP6", `expected CLASSIFIED_NOT_RESOLVED_STEP6 for ${ref}`);
+    const matches = availability?.references.filter((entry) => entry.rawRef === ref) ?? [];
+    assert(matches.length === 1, `expected exactly one availability entry for ${ref}, got ${matches.length}`);
+    assert(matches[0].targetFileLoaded === false, `expected targetFileLoaded=false for ${ref}`);
+    assert(matches[0].resolutionStatus === "TARGET_INDEX_ENTRY_NOT_FOUND_STEP7", `expected TARGET_INDEX_ENTRY_NOT_FOUND_STEP7 for ${ref}, got ${matches[0].resolutionStatus}`);
   }
-  assert(result.trace.recursiveResolution === "not_performed_step6", "expected recursiveResolution=not_performed_step6");
-  assert(result.trace.targetFileLoads === "not_performed", "expected targetFileLoads=not_performed");
+  assert(availability?.counts.notFound === 7, `expected notFound=7, got ${availability?.counts.notFound}`);
+  assert(availability?.counts.parseFailed === 0, `expected parseFailed=0, got ${availability?.counts.parseFailed}`);
+  assert(availability?.counts.shapeUnknown === 0, `expected shapeUnknown=0, got ${availability?.counts.shapeUnknown}`);
+  assert(result.trace.recursiveResolution === "not_performed_step7", "expected recursiveResolution=not_performed_step7");
+  assert(result.trace.targetFileLoads === "not_performed_step7", "expected targetFileLoads=not_performed_step7");
   assert(result.trace.execution === "not_performed", "expected execution=not_performed");
   return {
     sleeveId: result.sleeveId,
     referenceCounts: result.summary?.referenceCounts,
     referenceClassification: classification,
+    targetAvailability: availability,
     trace: result.trace
   };
 });
@@ -129,8 +139,8 @@ record("inspect does not recursively resolve full graph", () => {
   const result = inspectRealLibraryPublicCuratedSleeve({
     sleeveId: "slv-operator"
   });
-  assert(result.trace.recursiveResolution === "not_performed_step6", "expected recursiveResolution=not_performed_step6");
-  assert(result.trace.targetFileLoads === "not_performed", "expected targetFileLoads=not_performed");
+  assert(result.trace.recursiveResolution === "not_performed_step7", "expected recursiveResolution=not_performed_step7");
+  assert(result.trace.targetFileLoads === "not_performed_step7", "expected targetFileLoads=not_performed_step7");
   assert(result.trace.execution === "not_performed", "expected execution=not_performed");
   return result.trace;
 });

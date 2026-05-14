@@ -92,11 +92,72 @@ export interface RealLibrarySleeveInspectTrace {
   sourcePathPolicy?: "public_curated_allowlist_only";
   fileLoaded?: boolean;
   parseCheck?: "passed" | "failed";
-  recursiveResolution?: "not_performed_step3" | "not_performed_step6";
-  targetFileLoads?: "not_performed";
+  recursiveResolution?: "not_performed_step3" | "not_performed_step6" | "not_performed_step7";
+  targetFileLoads?: "not_performed" | "not_performed_step7";
   execution?: "not_performed";
   directSourceMode?: "not_implemented";
   publicCuratedPolicy?: "strict";
+}
+
+export type RealLibraryTargetAvailabilityStatus =
+  | "TARGET_INDEX_ENTRY_FOUND_NOT_LOADED_STEP7"
+  | "TARGET_INDEX_ENTRY_FOUND_PATH_ALLOWED_NOT_LOADED_STEP7"
+  | "TARGET_INDEX_ENTRY_FOUND_PATH_FORBIDDEN_NOT_LOADED_STEP7"
+  | "TARGET_INDEX_ENTRY_FOUND_PATH_MISSING_NOT_LOADED_STEP7"
+  | "TARGET_INDEX_ENTRY_NOT_FOUND_STEP7"
+  | "TARGET_LOOKUP_INDEX_MISSING_STEP7"
+  | "TARGET_LOOKUP_INDEX_READ_FAILED_STEP7"
+  | "TARGET_LOOKUP_INDEX_PARSE_FAILED_STEP7"
+  | "TARGET_LOOKUP_INDEX_SHAPE_UNKNOWN_STEP7"
+  | "TARGET_KIND_UNSUPPORTED_STEP7"
+  | "TARGET_AVAILABILITY_UNKNOWN_STEP7";
+
+export interface RealLibraryTargetAvailabilityIndexDiagnostic {
+  path: string;
+  exists: boolean;
+  parseStatus: "PARSED_JSON" | "PARSE_FAILED" | "READ_FAILED" | "MISSING";
+  shapeStatus: "NORMALIZED" | "SHAPE_UNKNOWN" | "NOT_APPLICABLE";
+  entryCount: number;
+  notes?: string[];
+}
+
+export interface RealLibraryTargetAvailabilityRecord {
+  rawRef: string;
+  inferredKind: RealLibraryReferenceInferredKind;
+  moltHint?: string;
+  lookupIndexes: string[];
+  indexEntryFound: boolean;
+  candidateId?: string;
+  candidatePath?: string;
+  candidatePathAllowed?: boolean;
+  targetFileLoaded: false;
+  resolutionStatus: RealLibraryTargetAvailabilityStatus;
+  warnings: string[];
+  errors: string[];
+}
+
+export interface RealLibraryTargetAvailabilityMap {
+  performed: true;
+  mode: "public_curated";
+  targetFileLoads: "not_performed_step7";
+  recursiveResolution: "not_performed_step7";
+  execution: "not_performed";
+  indexesLoaded: RealLibraryTargetAvailabilityIndexDiagnostic[];
+  indexesMissing: RealLibraryTargetAvailabilityIndexDiagnostic[];
+  indexesFailed: RealLibraryTargetAvailabilityIndexDiagnostic[];
+  counts: {
+    total: number;
+    found: number;
+    notFound: number;
+    allowedPath: number;
+    forbiddenPath: number;
+    missing: number;
+    unsupported: number;
+    unknown: number;
+    parseFailed: number;
+    shapeUnknown: number;
+  };
+  references: RealLibraryTargetAvailabilityRecord[];
 }
 
 export type RealLibraryReferenceClassificationStatus =
@@ -171,6 +232,7 @@ export interface RealLibrarySleeveInspectSummary {
     triggers: string[];
   };
   referenceClassification: RealLibraryReferenceClassificationMap;
+  targetAvailability: RealLibraryTargetAvailabilityMap;
   referenceCounts: {
     neostacks: number;
     neoblocks: number;
@@ -280,6 +342,12 @@ function buildInspectFailure(
 
 function normalizeString(value: unknown): string | undefined {
   return typeof value === "string" && value.trim().length > 0 ? value : undefined;
+}
+
+function readJsonFileSafe(filePath: string): unknown {
+  const raw = fs.readFileSync(filePath, "utf8");
+  const sanitized = raw.replace(/^\uFEFF/, "").replace(/^ï»¿/, "");
+  return JSON.parse(sanitized);
 }
 
 function classifySleeveEntry(
@@ -423,7 +491,7 @@ export function resolveRealLibraryPublicCurated(input: RealLibraryResolverInput)
 
   let parsed: unknown;
   try {
-    parsed = JSON.parse(fs.readFileSync(entrypointAbsolute, "utf8"));
+    parsed = readJsonFileSafe(entrypointAbsolute);
   } catch (error) {
     trace.parseCheck = "failed";
     const message = error instanceof Error ? error.message : String(error);
@@ -514,6 +582,320 @@ function extractStringRefs(items: unknown[], preferredKeys: string[]): string[] 
 
 function mergeRefLists(...lists: string[][]): string[] {
   return Array.from(new Set(lists.flat().filter((value) => value.trim().length > 0)));
+}
+
+const STEP7_ALLOWED_INDEXES = {
+  neoblock: "AI/MANIFESTS/neoblock-library-index.json",
+  moltBlock: "AI/MANIFESTS/molt-block-library-index.json",
+  neostack: "AI/MANIFESTS/neostack-library-index.json",
+  gate: "AI/MANIFESTS/gate-library-index.json"
+} as const;
+
+function isPathUnderRoot(candidatePath: string, root: string): boolean {
+  const normalizedCandidate = path.resolve(candidatePath);
+  const normalizedRoot = path.resolve(root);
+  return normalizedCandidate.startsWith(normalizedRoot + path.sep) || normalizedCandidate === normalizedRoot;
+}
+
+function normalizeRelativeDisplayPath(absolutePath: string, libraryRoot: string): string {
+  return path.relative(libraryRoot, absolutePath).replace(/\\/g, "/");
+}
+
+function collectIndexEntries(parsed: unknown): Record<string, unknown>[] | null {
+  if (Array.isArray(parsed)) {
+    const entries = parsed.filter((entry) => entry && typeof entry === "object" && !Array.isArray(entry)) as Record<string, unknown>[];
+    return entries.length === parsed.length ? entries : null;
+  }
+  if (!parsed || typeof parsed !== "object") {
+    return null;
+  }
+
+  const record = parsed as Record<string, unknown>;
+  for (const key of ["items", "neoblocks", "blocks", "entries", "catalog"]) {
+    const value = record[key];
+    if (Array.isArray(value)) {
+      return value.filter((entry) => entry && typeof entry === "object" && !Array.isArray(entry)) as Record<string, unknown>[];
+    }
+  }
+
+  const values = Object.values(record);
+  if (values.length > 0 && values.every((value) => value && typeof value === "object" && !Array.isArray(value))) {
+    return values as Record<string, unknown>[];
+  }
+
+  return null;
+}
+
+function matchIndexEntry(entry: Record<string, unknown>, rawRef: string): { matched: boolean; aliasMatch: boolean; candidateId?: string; candidatePath?: string } {
+  const candidateId = normalizeString(entry.id) ?? normalizeString(entry.block_id) ?? normalizeString(entry.neoblock_id) ?? normalizeString(entry.ref) ?? normalizeString(entry.name);
+  const candidatePath = normalizeString(entry.path) ?? normalizeString(entry.source_path) ?? normalizeString(entry.file) ?? normalizeString(entry.file_path);
+  const exactFields = [entry.id, entry.block_id, entry.neoblock_id, entry.ref, entry.name].map((value) => normalizeString(value)).filter(Boolean) as string[];
+  if (exactFields.includes(rawRef)) {
+    return { matched: true, aliasMatch: false, candidateId, candidatePath };
+  }
+  const lower = rawRef.toLowerCase();
+  if (exactFields.some((value) => value.toLowerCase() === lower)) {
+    return { matched: true, aliasMatch: true, candidateId, candidatePath };
+  }
+  return { matched: false, aliasMatch: false, candidateId, candidatePath };
+}
+
+function buildTargetAvailability(
+  classification: RealLibraryReferenceClassificationMap,
+  libraryRoot: string
+): RealLibraryTargetAvailabilityMap {
+  const indexesLoaded: RealLibraryTargetAvailabilityIndexDiagnostic[] = [];
+  const indexesMissing: RealLibraryTargetAvailabilityIndexDiagnostic[] = [];
+  const indexesFailed: RealLibraryTargetAvailabilityIndexDiagnostic[] = [];
+  const parsedIndexes = new Map<string, Record<string, unknown>[] | null>();
+  const indexFailureKind = new Map<string, "missing" | "read_failed" | "parse_failed" | "shape_unknown">();
+
+  for (const relativeIndexPath of Object.values(STEP7_ALLOWED_INDEXES)) {
+    const absoluteIndexPath = path.join(libraryRoot, ...relativeIndexPath.split("/"));
+    if (!fs.existsSync(absoluteIndexPath)) {
+      indexesMissing.push({
+        path: relativeIndexPath,
+        exists: false,
+        parseStatus: "MISSING",
+        shapeStatus: "NOT_APPLICABLE",
+        entryCount: 0,
+      });
+      indexFailureKind.set(relativeIndexPath, "missing");
+      continue;
+    }
+
+    let parsed: unknown;
+    try {
+      parsed = readJsonFileSafe(absoluteIndexPath);
+    } catch (error) {
+      indexesFailed.push({
+        path: relativeIndexPath,
+        exists: true,
+        parseStatus: "PARSE_FAILED",
+        shapeStatus: "NOT_APPLICABLE",
+        entryCount: 0,
+        notes: [error instanceof Error ? error.message : String(error)]
+      });
+      parsedIndexes.set(relativeIndexPath, null);
+      indexFailureKind.set(relativeIndexPath, "parse_failed");
+      continue;
+    }
+
+    const entries = collectIndexEntries(parsed);
+    if (!entries) {
+      indexesFailed.push({
+        path: relativeIndexPath,
+        exists: true,
+        parseStatus: "PARSED_JSON",
+        shapeStatus: "SHAPE_UNKNOWN",
+        entryCount: 0,
+      });
+      parsedIndexes.set(relativeIndexPath, null);
+      indexFailureKind.set(relativeIndexPath, "shape_unknown");
+      continue;
+    }
+
+    indexesLoaded.push({
+      path: relativeIndexPath,
+      exists: true,
+      parseStatus: "PARSED_JSON",
+      shapeStatus: "NORMALIZED",
+      entryCount: entries.length,
+    });
+    parsedIndexes.set(relativeIndexPath, entries);
+  }
+
+  const references: RealLibraryTargetAvailabilityRecord[] = classification.references.map((ref) => {
+    const warnings = [...ref.warnings];
+    const errors = [...ref.errors];
+    const lookupIndexes: string[] = [];
+
+    if (ref.inferredKind === "unknown" || ref.inferredKind === "malformed") {
+      return {
+        rawRef: ref.rawRef,
+        inferredKind: ref.inferredKind,
+        moltHint: ref.moltHint,
+        lookupIndexes,
+        indexEntryFound: false,
+        targetFileLoaded: false,
+        resolutionStatus: "TARGET_AVAILABILITY_UNKNOWN_STEP7",
+        warnings,
+        errors
+      };
+    }
+
+    const indexPath = ref.inferredKind === "neoblock"
+      ? STEP7_ALLOWED_INDEXES.neoblock
+      : ref.inferredKind === "moltBlock"
+        ? STEP7_ALLOWED_INDEXES.moltBlock
+        : ref.inferredKind === "neostack"
+          ? STEP7_ALLOWED_INDEXES.neostack
+          : ref.inferredKind === "gate"
+            ? STEP7_ALLOWED_INDEXES.gate
+            : undefined;
+
+    if (!indexPath) {
+      return {
+        rawRef: ref.rawRef,
+        inferredKind: ref.inferredKind,
+        moltHint: ref.moltHint,
+        lookupIndexes,
+        indexEntryFound: false,
+        targetFileLoaded: false,
+        resolutionStatus: "TARGET_KIND_UNSUPPORTED_STEP7",
+        warnings,
+        errors
+      };
+    }
+
+    lookupIndexes.push(indexPath);
+
+    const failureKind = indexFailureKind.get(indexPath);
+    if (failureKind === "missing") {
+      return {
+        rawRef: ref.rawRef,
+        inferredKind: ref.inferredKind,
+        moltHint: ref.moltHint,
+        lookupIndexes,
+        indexEntryFound: false,
+        targetFileLoaded: false,
+        resolutionStatus: "TARGET_LOOKUP_INDEX_MISSING_STEP7",
+        warnings,
+        errors
+      };
+    }
+
+    if (failureKind === "parse_failed") {
+      return {
+        rawRef: ref.rawRef,
+        inferredKind: ref.inferredKind,
+        moltHint: ref.moltHint,
+        lookupIndexes,
+        indexEntryFound: false,
+        targetFileLoaded: false,
+        resolutionStatus: "TARGET_LOOKUP_INDEX_PARSE_FAILED_STEP7",
+        warnings,
+        errors
+      };
+    }
+
+    if (failureKind === "shape_unknown") {
+      return {
+        rawRef: ref.rawRef,
+        inferredKind: ref.inferredKind,
+        moltHint: ref.moltHint,
+        lookupIndexes,
+        indexEntryFound: false,
+        targetFileLoaded: false,
+        resolutionStatus: "TARGET_LOOKUP_INDEX_SHAPE_UNKNOWN_STEP7",
+        warnings,
+        errors
+      };
+    }
+
+    const entries = parsedIndexes.get(indexPath) ?? [];
+    let matchedEntry: { candidateId?: string; candidatePath?: string; aliasMatch: boolean } | undefined;
+    for (const entry of entries) {
+      const match = matchIndexEntry(entry, ref.rawRef);
+      if (match.matched) {
+        matchedEntry = match;
+        break;
+      }
+    }
+
+    if (!matchedEntry) {
+      return {
+        rawRef: ref.rawRef,
+        inferredKind: ref.inferredKind,
+        moltHint: ref.moltHint,
+        lookupIndexes,
+        indexEntryFound: false,
+        targetFileLoaded: false,
+        resolutionStatus: "TARGET_INDEX_ENTRY_NOT_FOUND_STEP7",
+        warnings,
+        errors
+      };
+    }
+
+    if (matchedEntry.aliasMatch) {
+      warnings.push("ALIAS_MATCH_USED_STEP7");
+    }
+
+    const candidatePath = matchedEntry.candidatePath;
+    if (!candidatePath) {
+      return {
+        rawRef: ref.rawRef,
+        inferredKind: ref.inferredKind,
+        moltHint: ref.moltHint,
+        lookupIndexes,
+        indexEntryFound: true,
+        candidateId: matchedEntry.candidateId,
+        targetFileLoaded: false,
+        resolutionStatus: "TARGET_INDEX_ENTRY_FOUND_NOT_LOADED_STEP7",
+        warnings,
+        errors
+      };
+    }
+
+    const absoluteCandidatePath = path.resolve(libraryRoot, candidatePath);
+    const candidatePathAllowed = isPathUnderRoot(absoluteCandidatePath, libraryRoot) && !hasForbiddenSegment(absoluteCandidatePath) && !/artifacts|vendor/i.test(absoluteCandidatePath);
+
+    if (!candidatePathAllowed) {
+      return {
+        rawRef: ref.rawRef,
+        inferredKind: ref.inferredKind,
+        moltHint: ref.moltHint,
+        lookupIndexes,
+        indexEntryFound: true,
+        candidateId: matchedEntry.candidateId,
+        candidatePath: normalizeRelativeDisplayPath(absoluteCandidatePath, libraryRoot),
+        candidatePathAllowed: false,
+        targetFileLoaded: false,
+        resolutionStatus: "TARGET_INDEX_ENTRY_FOUND_PATH_FORBIDDEN_NOT_LOADED_STEP7",
+        warnings,
+        errors
+      };
+    }
+
+    return {
+      rawRef: ref.rawRef,
+      inferredKind: ref.inferredKind,
+      moltHint: ref.moltHint,
+      lookupIndexes,
+      indexEntryFound: true,
+      candidateId: matchedEntry.candidateId,
+      candidatePath: normalizeRelativeDisplayPath(absoluteCandidatePath, libraryRoot),
+      candidatePathAllowed: true,
+      targetFileLoaded: false,
+      resolutionStatus: "TARGET_INDEX_ENTRY_FOUND_PATH_ALLOWED_NOT_LOADED_STEP7",
+      warnings,
+      errors
+    };
+  });
+
+  return {
+    performed: true,
+    mode: "public_curated",
+    targetFileLoads: "not_performed_step7",
+    recursiveResolution: "not_performed_step7",
+    execution: "not_performed",
+    indexesLoaded,
+    indexesMissing,
+    indexesFailed,
+    counts: {
+      total: references.length,
+      found: references.filter((ref) => ref.indexEntryFound).length,
+      notFound: references.filter((ref) => ref.resolutionStatus === "TARGET_INDEX_ENTRY_NOT_FOUND_STEP7").length,
+      allowedPath: references.filter((ref) => ref.resolutionStatus === "TARGET_INDEX_ENTRY_FOUND_PATH_ALLOWED_NOT_LOADED_STEP7").length,
+      forbiddenPath: references.filter((ref) => ref.resolutionStatus === "TARGET_INDEX_ENTRY_FOUND_PATH_FORBIDDEN_NOT_LOADED_STEP7").length,
+      missing: references.filter((ref) => ref.resolutionStatus === "TARGET_LOOKUP_INDEX_MISSING_STEP7").length,
+      unsupported: references.filter((ref) => ref.resolutionStatus === "TARGET_KIND_UNSUPPORTED_STEP7").length,
+      unknown: references.filter((ref) => ref.resolutionStatus === "TARGET_AVAILABILITY_UNKNOWN_STEP7").length,
+      parseFailed: references.filter((ref) => ref.resolutionStatus === "TARGET_LOOKUP_INDEX_PARSE_FAILED_STEP7").length,
+      shapeUnknown: references.filter((ref) => ref.resolutionStatus === "TARGET_LOOKUP_INDEX_SHAPE_UNKNOWN_STEP7").length,
+    },
+    references
+  };
 }
 
 function classifyExplicitReferences(explicitReferences: RealLibrarySleeveInspectSummary["explicitReferences"]): RealLibraryReferenceClassificationMap {
@@ -674,6 +1056,8 @@ function summarizeSleevePayload(
     triggers
   };
 
+  const referenceClassification = classifyExplicitReferences(explicitReferences);
+
   return {
     id: normalizeString(payload.id) ?? normalizeString(payload.sleeve_id) ?? normalizeString((payload.identity as Record<string, unknown> | undefined)?.id) ?? sleeve.id,
     name: normalizeString(payload.name) ?? normalizeString((payload.identity as Record<string, unknown> | undefined)?.name) ?? sleeve.name,
@@ -684,7 +1068,30 @@ function summarizeSleevePayload(
     metadataKeys: Object.keys(metadata).sort(),
     sleeveKeys: Object.keys(sleeveObject).sort(),
     explicitReferences,
-    referenceClassification: classifyExplicitReferences(explicitReferences),
+    referenceClassification,
+    targetAvailability: {
+      performed: true,
+      mode: "public_curated",
+      targetFileLoads: "not_performed_step7",
+      recursiveResolution: "not_performed_step7",
+      execution: "not_performed",
+      indexesLoaded: [],
+      indexesMissing: [],
+      indexesFailed: [],
+      counts: {
+        total: 0,
+        found: 0,
+        notFound: 0,
+        allowedPath: 0,
+        forbiddenPath: 0,
+        missing: 0,
+        unsupported: 0,
+        unknown: 0,
+        parseFailed: 0,
+        shapeUnknown: 0
+      },
+      references: []
+    },
     referenceCounts: {
       neostacks: neostacks.length,
       neoblocks: neoblocks.length,
@@ -699,8 +1106,8 @@ function summarizeSleevePayload(
 export function inspectRealLibraryPublicCuratedSleeve(input: RealLibrarySleeveInspectInput): RealLibrarySleeveInspectResult {
   const trace: RealLibrarySleeveInspectTrace = {
     sourcePathPolicy: "public_curated_allowlist_only",
-    recursiveResolution: "not_performed_step6",
-    targetFileLoads: "not_performed",
+    recursiveResolution: "not_performed_step7",
+    targetFileLoads: "not_performed_step7",
     execution: "not_performed",
     directSourceMode: "not_implemented",
     publicCuratedPolicy: "strict"
@@ -769,7 +1176,7 @@ export function inspectRealLibraryPublicCuratedSleeve(input: RealLibrarySleeveIn
 
   let parsed: unknown;
   try {
-    parsed = JSON.parse(fs.readFileSync(match.resolvedSourcePath, "utf8"));
+    parsed = readJsonFileSafe(match.resolvedSourcePath);
   } catch (error) {
     trace.parseCheck = "failed";
     const message = error instanceof Error ? error.message : String(error);
@@ -782,7 +1189,11 @@ export function inspectRealLibraryPublicCuratedSleeve(input: RealLibrarySleeveIn
   }
 
   const payload = parsed as Record<string, unknown>;
-  const summary = summarizeSleevePayload(payload, match);
+  const summaryBase = summarizeSleevePayload(payload, match);
+  const summary: RealLibrarySleeveInspectSummary = {
+    ...summaryBase,
+    targetAvailability: buildTargetAvailability(summaryBase.referenceClassification, catalogResult.libraryRoot)
+  };
 
   return {
     ok: true,
