@@ -156,7 +156,29 @@ record("step8b shallow-loads exactly one approved target without recursion or ex
   assert((result.summary?.targetShallowLoad?.summary.contentPreview ?? "").includes("Sample Primary NeoBlock target"), "expected contentPreview for primary.sample");
   assert(result.summary?.targetShallowLoad?.recursiveResolution === "RECURSIVE_RESOLUTION_NOT_PERFORMED_STEP8B", "expected recursiveResolution=RECURSIVE_RESOLUTION_NOT_PERFORMED_STEP8B");
   assert(result.summary?.targetShallowLoad?.execution === "EXECUTION_NOT_PERFORMED_STEP8B", "expected execution=EXECUTION_NOT_PERFORMED_STEP8B");
-  return result.summary?.targetShallowLoad;
+  assert(result.summary?.runtimeSummary?.performed === true, "expected runtimeSummary.performed=true");
+  assert(result.summary?.runtimeSummary?.mode === "public_curated", "expected runtimeSummary.mode=public_curated");
+  assert(result.summary?.runtimeSummary?.sleeveId === "neomagnetar-dynamic-persona-v1", "expected runtimeSummary.sleeveId");
+  assert(result.summary?.runtimeSummary?.explicitReferenceCount === 7, `expected explicitReferenceCount=7, got ${result.summary?.runtimeSummary?.explicitReferenceCount}`);
+  assert(result.summary?.runtimeSummary?.classifiedReferenceCount === 7, `expected classifiedReferenceCount=7, got ${result.summary?.runtimeSummary?.classifiedReferenceCount}`);
+  assert(result.summary?.runtimeSummary?.targetAvailabilityCount === 7, `expected targetAvailabilityCount=7, got ${result.summary?.runtimeSummary?.targetAvailabilityCount}`);
+  assert(result.summary?.runtimeSummary?.targetAvailabilityFound === 7, `expected targetAvailabilityFound=7, got ${result.summary?.runtimeSummary?.targetAvailabilityFound}`);
+  assert(result.summary?.runtimeSummary?.targetAvailabilityAllowed === 7, `expected targetAvailabilityAllowed=7, got ${result.summary?.runtimeSummary?.targetAvailabilityAllowed}`);
+  assert(result.summary?.runtimeSummary?.shallowLoadedTargetCount === 1, `expected shallowLoadedTargetCount=1, got ${result.summary?.runtimeSummary?.shallowLoadedTargetCount}`);
+  assert(result.summary?.runtimeSummary?.shallowLoadedTargets[0]?.ref === "primary.sample", "expected shallowLoadedTargets[0].ref=primary.sample");
+  assert(result.summary?.runtimeSummary?.shallowLoadedTargets[0]?.kind === "neoblock", "expected shallowLoadedTargets[0].kind=neoblock");
+  assert(result.summary?.runtimeSummary?.shallowLoadedTargets[0]?.moltType === "Primary", "expected shallowLoadedTargets[0].moltType=Primary");
+  assert(result.summary?.runtimeSummary?.notLoadedTargetCount === 6, `expected notLoadedTargetCount=6, got ${result.summary?.runtimeSummary?.notLoadedTargetCount}`);
+  for (const ref of ["directive.sample", "instruction.sample", "subject.sample", "philosophy.sample", "blueprint.sample", "trigger.sample"]) {
+    assert(result.summary?.runtimeSummary?.notLoadedTargets.includes(ref), `expected notLoadedTargets to include ${ref}`);
+  }
+  assert(result.summary?.runtimeSummary?.runtimeBoundary.recursiveResolution === "not_performed_step8c", "expected runtimeBoundary.recursiveResolution=not_performed_step8c");
+  assert(result.summary?.runtimeSummary?.runtimeBoundary.execution === "not_performed", "expected runtimeBoundary.execution=not_performed");
+  assert(result.summary?.runtimeSummary?.runtimeBoundary.directSourceMode === "not_enabled", "expected runtimeBoundary.directSourceMode=not_enabled");
+  assert(result.summary?.runtimeSummary?.runtimeBoundary.archiveFallback === "not_allowed", "expected runtimeBoundary.archiveFallback=not_allowed");
+  assert(result.summary?.runtimeSummary?.runtimeBoundary.humanLaneMachineLoading === "not_allowed", "expected runtimeBoundary.humanLaneMachineLoading=not_allowed");
+  assert(result.summary?.runtimeSummary?.runtimeBoundary.resleeverLoading === "not_allowed", "expected runtimeBoundary.resleeverLoading=not_allowed");
+  return { targetShallowLoad: result.summary?.targetShallowLoad, runtimeSummary: result.summary?.runtimeSummary };
 });
 
 record("step8b rejects invalid shallowLoadTargetRef cleanly", () => {

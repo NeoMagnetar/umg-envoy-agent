@@ -255,6 +255,38 @@ export interface RealLibraryTargetShallowLoadResult {
   errors: string[];
 }
 
+export interface RealLibraryRuntimeSummary {
+  performed: true;
+  mode: "public_curated";
+  libraryRoot: string;
+  sleeveId: string;
+  sleeveLoaded: true;
+  explicitReferenceCount: number;
+  classifiedReferenceCount: number;
+  targetAvailabilityCount: number;
+  targetAvailabilityFound: number;
+  targetAvailabilityAllowed: number;
+  shallowLoadedTargetCount: number;
+  shallowLoadedTargets: Array<{
+    ref: string;
+    kind: string;
+    moltType?: string;
+    status?: string;
+    loadStatus: string;
+  }>;
+  notLoadedTargetCount: number;
+  notLoadedTargets: string[];
+  runtimeBoundary: {
+    recursiveResolution: "not_performed_step8c";
+    execution: "not_performed";
+    directSourceMode: "not_enabled";
+    archiveFallback: "not_allowed";
+    humanLaneMachineLoading: "not_allowed";
+    resleeverLoading: "not_allowed";
+  };
+  nextCapability: "single_target_expansion_or_runtime_dashboard_projection";
+}
+
 export interface RealLibrarySleeveInspectSummary {
   id?: string;
   name?: string;
@@ -275,6 +307,7 @@ export interface RealLibrarySleeveInspectSummary {
   referenceClassification: RealLibraryReferenceClassificationMap;
   targetAvailability: RealLibraryTargetAvailabilityMap;
   targetShallowLoad?: RealLibraryTargetShallowLoadResult;
+  runtimeSummary?: RealLibraryRuntimeSummary | { performed: false; reason: "targetShallowLoad_not_successful" };
   referenceCounts: {
     neostacks: number;
     neoblocks: number;
@@ -761,6 +794,62 @@ function resolveApprovedTargetForShallowLoad(
     throw new Error("HOLD_SHALLOW_LOAD_TARGET_NOT_AVAILABLE_STEP8B");
   }
   return availability;
+}
+
+function buildStep8CRuntimeSummary(
+  summary: RealLibrarySleeveInspectSummary,
+  libraryRoot: string,
+  sleeveId: string
+): RealLibraryRuntimeSummary | { performed: false; reason: "targetShallowLoad_not_successful" } {
+  if (!summary.targetShallowLoad || summary.targetShallowLoad.performed !== true || summary.targetShallowLoad.loadedRef !== "primary.sample") {
+    return {
+      performed: false,
+      reason: "targetShallowLoad_not_successful"
+    };
+  }
+
+  const explicitReferenceCount = summary.explicitReferences.neoblocks.length + summary.explicitReferences.neostacks.length + summary.explicitReferences.moltBlocks.length + summary.explicitReferences.tools.length + summary.explicitReferences.gates.length + summary.explicitReferences.triggers.length;
+  const classifiedReferenceCount = summary.referenceClassification.references.length;
+  const targetAvailabilityCount = summary.targetAvailability.references.length;
+  const targetAvailabilityFound = summary.targetAvailability.counts.found;
+  const targetAvailabilityAllowed = summary.targetAvailability.counts.allowedPath;
+  const shallowLoadedTargets = [{
+    ref: summary.targetShallowLoad.loadedRef,
+    kind: summary.targetShallowLoad.summary.kind ?? summary.targetShallowLoad.inferredKind,
+    moltType: summary.targetShallowLoad.summary.moltType,
+    status: summary.targetShallowLoad.summary.status,
+    loadStatus: summary.targetShallowLoad.status
+  }];
+  const loadedRefSet = new Set(shallowLoadedTargets.map((entry) => entry.ref));
+  const notLoadedTargets = summary.referenceClassification.references
+    .filter((entry) => entry.inferredKind === "neoblock" && !loadedRefSet.has(entry.rawRef))
+    .map((entry) => entry.rawRef);
+
+  return {
+    performed: true,
+    mode: "public_curated",
+    libraryRoot,
+    sleeveId,
+    sleeveLoaded: true,
+    explicitReferenceCount,
+    classifiedReferenceCount,
+    targetAvailabilityCount,
+    targetAvailabilityFound,
+    targetAvailabilityAllowed,
+    shallowLoadedTargetCount: shallowLoadedTargets.length,
+    shallowLoadedTargets,
+    notLoadedTargetCount: notLoadedTargets.length,
+    notLoadedTargets,
+    runtimeBoundary: {
+      recursiveResolution: "not_performed_step8c",
+      execution: "not_performed",
+      directSourceMode: "not_enabled",
+      archiveFallback: "not_allowed",
+      humanLaneMachineLoading: "not_allowed",
+      resleeverLoading: "not_allowed"
+    },
+    nextCapability: "single_target_expansion_or_runtime_dashboard_projection"
+  };
 }
 
 function buildTargetAvailability(
@@ -1345,6 +1434,7 @@ export function inspectRealLibraryPublicCuratedSleeve(input: RealLibrarySleeveIn
         warnings: [],
         errors: []
       };
+      summary.runtimeSummary = buildStep8CRuntimeSummary(summary, catalogResult.libraryRoot, match.id);
     } catch (error) {
       const code = error instanceof Error ? error.message : String(error);
       if (code === "HOLD_SHALLOW_LOAD_TARGET_PATH_FORBIDDEN_STEP8B") {
