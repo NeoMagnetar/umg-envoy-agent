@@ -1434,7 +1434,10 @@ export function inspectRealLibraryPublicCuratedSleeve(input: RealLibrarySleeveIn
         warnings: [],
         errors: []
       };
-      summary.runtimeSummary = buildStep8CRuntimeSummary(summary, catalogResult.libraryRoot, match.id);
+      const runtimeSummarySleeveId = typeof match.id === "string" && match.id.length > 0
+        ? match.id
+        : (typeof summary.id === "string" && summary.id.length > 0 ? summary.id : input.sleeveId!);
+      summary.runtimeSummary = buildStep8CRuntimeSummary(summary, catalogResult.libraryRoot, runtimeSummarySleeveId);
     } catch (error) {
       const code = error instanceof Error ? error.message : String(error);
       if (code === "HOLD_SHALLOW_LOAD_TARGET_PATH_FORBIDDEN_STEP8B") {
