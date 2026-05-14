@@ -34,8 +34,8 @@ record("sleeve list still returns 3 catalog entries", () => {
   return { sleeveCount: curated.sleeveCount };
 });
 
-record("loadable count remains stable for current catalog", () => {
-  assert(curated.loadableSleeveCount === 0, `expected 0 loadable sleeves for current catalog snapshot, got ${curated.loadableSleeveCount}`);
+record("loadable count is now at least one for normalized catalog", () => {
+  assert(curated.loadableSleeveCount >= 1, `expected at least 1 loadable sleeve for normalized catalog snapshot, got ${curated.loadableSleeveCount}`);
   return { loadableSleeveCount: curated.loadableSleeveCount, sleeves: curated.sleeves.map((sleeve) => ({ id: sleeve.id, resolutionStatus: sleeve.resolutionStatus })) };
 });
 
@@ -46,6 +46,16 @@ record("inspect returns non-loadable hold for current slv-operator catalog targe
   assert(result.ok === false, "expected ok=false");
   assert(result.errors[0]?.code === "HOLD_SLEEVE_NOT_LOADABLE_PUBLIC_CURATED", "expected HOLD_SLEEVE_NOT_LOADABLE_PUBLIC_CURATED");
   return result.errors[0];
+});
+
+record("inspect succeeds for one LOADABLE_PUBLIC_CURATED entry", () => {
+  const result = inspectRealLibraryPublicCuratedSleeve({
+    sleeveId: "neomagnetar-dynamic-persona-v1"
+  });
+  assert(result.ok === true, "expected ok=true");
+  assert(result.loaded === true, "expected loaded=true");
+  assert(result.resolutionStatus === "LOADABLE_PUBLIC_CURATED", "expected LOADABLE_PUBLIC_CURATED");
+  return { sleeveId: result.sleeveId, resolutionStatus: result.resolutionStatus, summary: result.summary };
 });
 
 record("inspect rejects REJECTED_FORBIDDEN_SOURCE_PATH entry", () => {
