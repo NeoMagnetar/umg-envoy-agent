@@ -92,7 +92,65 @@ export interface RealLibrarySleeveInspectTrace {
   sourcePathPolicy?: "public_curated_allowlist_only";
   fileLoaded?: boolean;
   parseCheck?: "passed" | "failed";
-  recursiveResolution?: "not_performed_step3";
+  recursiveResolution?: "not_performed_step3" | "not_performed_step6";
+  targetFileLoads?: "not_performed";
+  execution?: "not_performed";
+  directSourceMode?: "not_implemented";
+  publicCuratedPolicy?: "strict";
+}
+
+export type RealLibraryReferenceClassificationStatus =
+  | "CLASSIFIED_NOT_RESOLVED_STEP6"
+  | "CLASSIFIED_UNKNOWN_NOT_RESOLVED_STEP6"
+  | "MALFORMED_REFERENCE_NOT_RESOLVED_STEP6"
+  | "DUPLICATE_REFERENCE_NOT_RESOLVED_STEP6";
+
+export type RealLibraryReferenceInferredKind =
+  | "neoblock"
+  | "neostack"
+  | "moltBlock"
+  | "tool"
+  | "gate"
+  | "trigger"
+  | "unknown"
+  | "malformed";
+
+export interface RealLibraryReferenceClassificationRecord {
+  rawRef: string;
+  sourceField: string;
+  declaredBucket: "neoblock" | "neostack" | "moltBlock" | "tool" | "gate" | "trigger";
+  inferredKind: RealLibraryReferenceInferredKind;
+  moltHint?: string;
+  normalizedRef: string;
+  namespace?: string;
+  name?: string;
+  resolutionStatus: RealLibraryReferenceClassificationStatus;
+  targetLookupMode: "not_performed";
+  duplicateOf?: string;
+  warnings: string[];
+  errors: string[];
+}
+
+export interface RealLibraryReferenceClassificationMap {
+  performed: true;
+  recursiveResolution: "not_performed_step6";
+  targetFileLoads: "not_performed";
+  execution: "not_performed";
+  directSourceMode: "not_implemented";
+  publicCuratedPolicy: "strict";
+  counts: {
+    total: number;
+    neoblock: number;
+    neostack: number;
+    moltBlock: number;
+    tool: number;
+    gate: number;
+    trigger: number;
+    unknown: number;
+    malformed: number;
+    duplicate: number;
+  };
+  references: RealLibraryReferenceClassificationRecord[];
 }
 
 export interface RealLibrarySleeveInspectSummary {
@@ -112,6 +170,7 @@ export interface RealLibrarySleeveInspectSummary {
     gates: string[];
     triggers: string[];
   };
+  referenceClassification: RealLibraryReferenceClassificationMap;
   referenceCounts: {
     neostacks: number;
     neoblocks: number;
@@ -457,6 +516,123 @@ function mergeRefLists(...lists: string[][]): string[] {
   return Array.from(new Set(lists.flat().filter((value) => value.trim().length > 0)));
 }
 
+function classifyExplicitReferences(explicitReferences: RealLibrarySleeveInspectSummary["explicitReferences"]): RealLibraryReferenceClassificationMap {
+  const references: RealLibraryReferenceClassificationRecord[] = [];
+  const seen = new Map<string, string>();
+
+  const knownNeoblockHints = new Set(["primary", "directive", "instruction", "subject", "philosophy", "blueprint", "trigger"]);
+
+  const pushBucket = (
+    refs: string[],
+    sourceField: string,
+    declaredBucket: RealLibraryReferenceClassificationRecord["declaredBucket"]
+  ) => {
+    for (const raw of refs) {
+      const rawRef = typeof raw === "string" ? raw.trim() : "";
+      const warnings: string[] = [];
+      const errors: string[] = [];
+
+      if (rawRef.length === 0) {
+        references.push({
+          rawRef,
+          sourceField,
+          declaredBucket,
+          inferredKind: "malformed",
+          normalizedRef: rawRef,
+          resolutionStatus: "MALFORMED_REFERENCE_NOT_RESOLVED_STEP6",
+          targetLookupMode: "not_performed",
+          warnings,
+          errors: ["empty reference string"],
+        });
+        continue;
+      }
+
+      const normalizedRef = rawRef;
+      const parts = normalizedRef.split(".");
+      const namespace = parts.length === 2 && parts[0] && parts[1] ? parts[0] : undefined;
+      const name = parts.length === 2 && parts[0] && parts[1] ? parts[1] : undefined;
+      const duplicateOf = seen.get(normalizedRef);
+
+      let inferredKind: RealLibraryReferenceInferredKind = declaredBucket;
+      let resolutionStatus: RealLibraryReferenceClassificationStatus = "CLASSIFIED_NOT_RESOLVED_STEP6";
+      let moltHint: string | undefined;
+
+      if (duplicateOf) {
+        inferredKind = declaredBucket;
+        resolutionStatus = "DUPLICATE_REFERENCE_NOT_RESOLVED_STEP6";
+        warnings.push(`duplicate reference of ${duplicateOf}`);
+      } else if (!namespace || !name) {
+        inferredKind = "malformed";
+        resolutionStatus = "MALFORMED_REFERENCE_NOT_RESOLVED_STEP6";
+        errors.push("reference must use namespace.name shape");
+      } else if (declaredBucket === "neoblock") {
+        if (knownNeoblockHints.has(namespace)) {
+          inferredKind = "neoblock";
+          moltHint = namespace;
+        } else {
+          inferredKind = "unknown";
+          resolutionStatus = "CLASSIFIED_UNKNOWN_NOT_RESOLVED_STEP6";
+          warnings.push(`unrecognized neoblock namespace: ${namespace}`);
+        }
+      } else {
+        inferredKind = declaredBucket;
+      }
+
+      const record: RealLibraryReferenceClassificationRecord = {
+        rawRef,
+        sourceField,
+        declaredBucket,
+        inferredKind,
+        moltHint,
+        normalizedRef,
+        namespace,
+        name,
+        resolutionStatus,
+        targetLookupMode: "not_performed",
+        duplicateOf,
+        warnings,
+        errors,
+      };
+
+      references.push(record);
+      if (!duplicateOf) {
+        seen.set(normalizedRef, normalizedRef);
+      }
+    }
+  };
+
+  pushBucket(explicitReferences.neoblocks, "block_refs", "neoblock");
+  pushBucket(explicitReferences.neostacks, "neostacks", "neostack");
+  pushBucket(explicitReferences.moltBlocks, "moltBlocks", "moltBlock");
+  pushBucket(explicitReferences.tools, "tool_requests", "tool");
+  pushBucket(explicitReferences.gates, "gate_refs", "gate");
+  pushBucket(explicitReferences.triggers, "trigger_refs", "trigger");
+
+  const counts = {
+    total: references.length,
+    neoblock: references.filter((ref) => ref.inferredKind === "neoblock" && ref.resolutionStatus !== "DUPLICATE_REFERENCE_NOT_RESOLVED_STEP6").length,
+    neostack: references.filter((ref) => ref.inferredKind === "neostack" && ref.resolutionStatus !== "DUPLICATE_REFERENCE_NOT_RESOLVED_STEP6").length,
+    moltBlock: references.filter((ref) => ref.inferredKind === "moltBlock" && ref.resolutionStatus !== "DUPLICATE_REFERENCE_NOT_RESOLVED_STEP6").length,
+    tool: references.filter((ref) => ref.inferredKind === "tool" && ref.resolutionStatus !== "DUPLICATE_REFERENCE_NOT_RESOLVED_STEP6").length,
+    gate: references.filter((ref) => ref.inferredKind === "gate" && ref.resolutionStatus !== "DUPLICATE_REFERENCE_NOT_RESOLVED_STEP6").length,
+    trigger: references.filter((ref) => ref.inferredKind === "trigger" && ref.resolutionStatus !== "DUPLICATE_REFERENCE_NOT_RESOLVED_STEP6").length,
+    unknown: references.filter((ref) => ref.inferredKind === "unknown").length,
+    malformed: references.filter((ref) => ref.inferredKind === "malformed").length,
+    duplicate: references.filter((ref) => ref.resolutionStatus === "DUPLICATE_REFERENCE_NOT_RESOLVED_STEP6").length,
+  };
+
+  return {
+    performed: true,
+    recursiveResolution: "not_performed_step6",
+    targetFileLoads: "not_performed",
+    execution: "not_performed",
+    directSourceMode: "not_implemented",
+    publicCuratedPolicy: "strict",
+    counts,
+    references,
+  };
+}
+
 function summarizeSleevePayload(
   payload: Record<string, unknown>,
   sleeve: RealLibraryCatalogSleeveEntry
@@ -489,6 +665,15 @@ function summarizeSleevePayload(
     extractStringRefs(firstCandidateArray(sleeveObject, ["triggers", "trigger_refs", "triggerRefs"]), ["trigger_id", "id", "ref", "name"])
   );
 
+  const explicitReferences = {
+    neostacks,
+    neoblocks,
+    moltBlocks,
+    tools,
+    gates,
+    triggers
+  };
+
   return {
     id: normalizeString(payload.id) ?? normalizeString(payload.sleeve_id) ?? normalizeString((payload.identity as Record<string, unknown> | undefined)?.id) ?? sleeve.id,
     name: normalizeString(payload.name) ?? normalizeString((payload.identity as Record<string, unknown> | undefined)?.name) ?? sleeve.name,
@@ -498,14 +683,8 @@ function summarizeSleevePayload(
     topLevelKeys: Object.keys(payload).sort(),
     metadataKeys: Object.keys(metadata).sort(),
     sleeveKeys: Object.keys(sleeveObject).sort(),
-    explicitReferences: {
-      neostacks,
-      neoblocks,
-      moltBlocks,
-      tools,
-      gates,
-      triggers
-    },
+    explicitReferences,
+    referenceClassification: classifyExplicitReferences(explicitReferences),
     referenceCounts: {
       neostacks: neostacks.length,
       neoblocks: neoblocks.length,
@@ -520,7 +699,11 @@ function summarizeSleevePayload(
 export function inspectRealLibraryPublicCuratedSleeve(input: RealLibrarySleeveInspectInput): RealLibrarySleeveInspectResult {
   const trace: RealLibrarySleeveInspectTrace = {
     sourcePathPolicy: "public_curated_allowlist_only",
-    recursiveResolution: "not_performed_step3"
+    recursiveResolution: "not_performed_step6",
+    targetFileLoads: "not_performed",
+    execution: "not_performed",
+    directSourceMode: "not_implemented",
+    publicCuratedPolicy: "strict"
   };
   const sleeveId = input.sleeveId ?? input.id;
   const libraryRoot = input.libraryRoot ?? DEFAULT_LIBRARY_ROOT;

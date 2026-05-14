@@ -58,21 +58,41 @@ record("inspect succeeds for one LOADABLE_PUBLIC_CURATED entry", () => {
   return { sleeveId: result.sleeveId, resolutionStatus: result.resolutionStatus, summary: result.summary };
 });
 
-record("step5 explicit reference extraction reports top-level public-curated refs without recursion", () => {
+record("step6 reference classification map reports deterministic classified refs without resolution", () => {
   const result = inspectRealLibraryPublicCuratedSleeve({
     sleeveId: "neomagnetar-dynamic-persona-v1"
   });
   assert(result.ok === true, "expected ok=true");
-  assert(result.summary?.referenceCounts.neoblocks === 7, `expected 7 neoblock refs, got ${result.summary?.referenceCounts.neoblocks}`);
-  assert(result.summary?.referenceCounts.tools === 0, `expected 0 tool refs, got ${result.summary?.referenceCounts.tools}`);
-  assert(Array.isArray(result.summary?.explicitReferences.neoblocks), "expected explicit neoblock list");
-  assert(result.summary?.explicitReferences.neoblocks.includes("primary.sample"), "expected primary.sample block ref");
-  assert(result.trace.recursiveResolution === "not_performed_step3", "expected recursiveResolution=not_performed_step3");
+  const expectedRefs = [
+    "primary.sample",
+    "directive.sample",
+    "instruction.sample",
+    "subject.sample",
+    "philosophy.sample",
+    "blueprint.sample",
+    "trigger.sample"
+  ];
+  const classification = result.summary?.referenceClassification;
+  assert(classification?.performed === true, "expected referenceClassification.performed=true");
+  assert(classification?.references.length === 7, `expected 7 classified refs, got ${classification?.references.length}`);
+  assert(classification?.counts.total === 7, `expected total=7, got ${classification?.counts.total}`);
+  assert(classification?.counts.neoblock === 7, `expected neoblock=7, got ${classification?.counts.neoblock}`);
+  assert(classification?.counts.unknown === 0, `expected unknown=0, got ${classification?.counts.unknown}`);
+  assert(classification?.counts.malformed === 0, `expected malformed=0, got ${classification?.counts.malformed}`);
+  assert(classification?.counts.duplicate === 0, `expected duplicate=0, got ${classification?.counts.duplicate}`);
+  for (const ref of expectedRefs) {
+    const matches = classification?.references.filter((entry) => entry.rawRef === ref) ?? [];
+    assert(matches.length === 1, `expected exactly one classified entry for ${ref}, got ${matches.length}`);
+    assert(matches[0].resolutionStatus === "CLASSIFIED_NOT_RESOLVED_STEP6", `expected CLASSIFIED_NOT_RESOLVED_STEP6 for ${ref}`);
+  }
+  assert(result.trace.recursiveResolution === "not_performed_step6", "expected recursiveResolution=not_performed_step6");
+  assert(result.trace.targetFileLoads === "not_performed", "expected targetFileLoads=not_performed");
+  assert(result.trace.execution === "not_performed", "expected execution=not_performed");
   return {
     sleeveId: result.sleeveId,
     referenceCounts: result.summary?.referenceCounts,
-    explicitReferences: result.summary?.explicitReferences,
-    recursiveResolution: result.trace.recursiveResolution
+    referenceClassification: classification,
+    trace: result.trace
   };
 });
 
@@ -109,7 +129,9 @@ record("inspect does not recursively resolve full graph", () => {
   const result = inspectRealLibraryPublicCuratedSleeve({
     sleeveId: "slv-operator"
   });
-  assert(result.trace.recursiveResolution === "not_performed_step3", "expected recursiveResolution=not_performed_step3");
+  assert(result.trace.recursiveResolution === "not_performed_step6", "expected recursiveResolution=not_performed_step6");
+  assert(result.trace.targetFileLoads === "not_performed", "expected targetFileLoads=not_performed");
+  assert(result.trace.execution === "not_performed", "expected execution=not_performed");
   return result.trace;
 });
 
