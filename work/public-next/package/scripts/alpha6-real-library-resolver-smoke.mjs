@@ -89,9 +89,11 @@ record("step7 target availability checks classified refs without loading targets
     const matches = availability?.references.filter((entry) => entry.rawRef === ref) ?? [];
     assert(matches.length === 1, `expected exactly one availability entry for ${ref}, got ${matches.length}`);
     assert(matches[0].targetFileLoaded === false, `expected targetFileLoaded=false for ${ref}`);
-    assert(matches[0].resolutionStatus === "TARGET_INDEX_ENTRY_NOT_FOUND_STEP7", `expected TARGET_INDEX_ENTRY_NOT_FOUND_STEP7 for ${ref}, got ${matches[0].resolutionStatus}`);
+    assert(matches[0].resolutionStatus === "TARGET_INDEX_ENTRY_FOUND_PATH_ALLOWED_NOT_LOADED_STEP7", `expected TARGET_INDEX_ENTRY_FOUND_PATH_ALLOWED_NOT_LOADED_STEP7 for ${ref}, got ${matches[0].resolutionStatus}`);
   }
-  assert(availability?.counts.notFound === 7, `expected notFound=7, got ${availability?.counts.notFound}`);
+  assert(availability?.counts.found === 7, `expected found=7, got ${availability?.counts.found}`);
+  assert(availability?.counts.allowedPath === 7, `expected allowedPath=7, got ${availability?.counts.allowedPath}`);
+  assert(availability?.counts.notFound === 0, `expected notFound=0, got ${availability?.counts.notFound}`);
   assert(availability?.counts.parseFailed === 0, `expected parseFailed=0, got ${availability?.counts.parseFailed}`);
   assert(availability?.counts.shapeUnknown === 0, `expected shapeUnknown=0, got ${availability?.counts.shapeUnknown}`);
   assert(result.trace.recursiveResolution === "not_performed_step7", "expected recursiveResolution=not_performed_step7");

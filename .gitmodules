@@ -1,0 +1,3 @@
+[submodule "UMG-Block-Library"]
+	path = UMG-Block-Library
+	url = https://github.com/NeoMagnetar/UMG-Block-Library.git
