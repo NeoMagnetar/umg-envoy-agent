@@ -1,0 +1,105 @@
+{
+  "release": "0.3.0-alpha.6",
+  "package": "umg-envoy-agent",
+  "status": "development",
+  "active_product": "UMG Envoy Agent",
+  "strategy": "one_project_ship_list_control",
+  "active_package_lane": "work/public-next/package",
+  "active_library_root": "UMG-Block-Library",
+  "modes": {
+    "default": "bundled-public",
+    "real_library": "public_curated",
+    "direct_source": "not_enabled"
+  },
+  "tool_surface": {
+    "alpha5_original_tools": 15,
+    "alpha6_current_total_tools": 18,
+    "real_library_tools": [
+      "umg_envoy_real_library_status",
+      "umg_envoy_real_sleeve_list",
+      "umg_envoy_real_sleeve_inspect"
+    ]
+  },
+  "ship_allowlist": [
+    "package.json",
+    "openclaw.plugin.json",
+    "README.md",
+    "PUBLIC-VARIANT-README.md",
+    "dist/",
+    "public-content/"
+  ],
+  "runtime_allowlist": [
+    "dist/",
+    "public-content/",
+    "sleeves/manifests/catalog.json",
+    "sleeves/"
+  ],
+  "external_readonly_roots": [
+    "UMG-Block-Library"
+  ],
+  "library_machine_lanes": [
+    "AI/MANIFESTS/",
+    "AI/SLEEVES/",
+    "AI/MOLT-BLOCKS/",
+    "AI/NEOBLOCKS/",
+    "AI/NEOSTACKS/",
+    "AI/GATES/"
+  ],
+  "library_public_curated_lanes": [
+    "sleeves/",
+    "sleeves/manifests/"
+  ],
+  "reference_only_lanes": [
+    "HUMAN/",
+    "blocks/molt/",
+    "docs/"
+  ],
+  "do_not_load": [
+    "artifacts/",
+    "archive/",
+    "backups/",
+    "plugin-backups/",
+    "release-staging/",
+    "umg-envoy-agent-release-clean/",
+    "umg-envoy-agent-publish-stage/",
+    "UMG_Envoy_Resleever/",
+    "vendor/",
+    "scratch/",
+    "tmp-*",
+    "inspect/",
+    "review/",
+    "HUMAN/"
+  ],
+  "do_not_ship": [
+    "artifacts/",
+    "archive/",
+    "backups/",
+    "plugin-backups/",
+    "release-staging/",
+    "umg-envoy-agent-release-clean/",
+    "umg-envoy-agent-publish-stage/",
+    "UMG_Envoy_Resleever/",
+    "vendor/",
+    "node_modules/",
+    "*.tgz",
+    "*.zip",
+    "*.log"
+  ],
+  "runtime_rules": {
+    "read_only": true,
+    "allow_shell_calls": false,
+    "allow_child_process": false,
+    "allow_local_writes": false,
+    "allow_tool_execution": false,
+    "allow_direct_source_mode": false,
+    "allow_archive_fallback": false,
+    "allow_human_lane_machine_loading": false,
+    "allow_resleever_loading": false
+  },
+  "step8_gate": {
+    "requires_stabilization_plan": true,
+    "requires_clean_cached_index": true,
+    "requires_no_broad_staging": true,
+    "requires_explicit_active_lane": true
+  }
+}
