@@ -19,6 +19,7 @@ const FORBIDDEN_SEGMENTS = [
 ];
 const PUBLIC_CURATED_ENTRYPOINT = path.join("sleeves", "manifests", "catalog.json");
 const PUBLIC_CURATED_ALLOWLIST = path.join("sleeves") + path.sep;
+const DEFAULT_LIBRARY_ROOT = "C:\\.openclaw\\workspace\\UMG-Block-Library";
 function normalizeInputRoot(libraryRoot) {
     return path.resolve(libraryRoot);
 }
@@ -42,6 +43,22 @@ function buildFailure(input, code, message, trace, normalizedRoot) {
         unloadableSleeveCount: 0,
         sleeves: [],
         warnings: [],
+        errors: [{ code, message }],
+        trace
+    };
+}
+function buildInspectFailure(input, code, message, trace, normalizedRoot, sleeveEntry) {
+    return {
+        ok: false,
+        mode: input.mode ?? "public_curated",
+        libraryRoot: normalizedRoot,
+        sleeveId: input.sleeveId ?? input.id,
+        sourcePath: sleeveEntry?.sourcePath,
+        resolvedSourcePath: sleeveEntry?.resolvedSourcePath,
+        resolutionStatus: sleeveEntry?.resolutionStatus,
+        loaded: false,
+        summary: null,
+        warnings: sleeveEntry?.warnings ?? [],
         errors: [{ code, message }],
         trace
     };
@@ -211,6 +228,123 @@ export function resolveRealLibraryPublicCurated(input) {
         sleeves,
         warnings,
         errors,
+        trace
+    };
+}
+function countCandidateList(record, keys) {
+    for (const key of keys) {
+        const value = record[key];
+        if (Array.isArray(value)) {
+            return value.length;
+        }
+    }
+    return 0;
+}
+function summarizeSleevePayload(payload, sleeve) {
+    const metadata = (payload.metadata && typeof payload.metadata === "object" && !Array.isArray(payload.metadata)) ? payload.metadata : {};
+    const sleeveObject = (payload.sleeve && typeof payload.sleeve === "object" && !Array.isArray(payload.sleeve)) ? payload.sleeve : {};
+    return {
+        id: normalizeString(payload.id) ?? normalizeString(payload.sleeve_id) ?? normalizeString(payload.identity?.id) ?? sleeve.id,
+        name: normalizeString(payload.name) ?? normalizeString(payload.identity?.name) ?? sleeve.name,
+        title: normalizeString(payload.title) ?? normalizeString(metadata.title) ?? sleeve.title,
+        version: normalizeString(payload.version) ?? normalizeString(metadata.version) ?? normalizeString(payload.identity?.version),
+        status: normalizeString(payload.status) ?? sleeve.status,
+        topLevelKeys: Object.keys(payload).sort(),
+        metadataKeys: Object.keys(metadata).sort(),
+        sleeveKeys: Object.keys(sleeveObject).sort(),
+        referenceCounts: {
+            neostacks: countCandidateList(sleeveObject, ["neostacks", "neoStacks", "stacks", "stack_refs", "stackRefs"]),
+            neoblocks: countCandidateList(sleeveObject, ["neoblocks", "neoBlocks", "blocks", "block_refs", "blockRefs"]),
+            moltBlocks: countCandidateList(sleeveObject, ["moltBlocks", "molt_blocks", "molt", "molt_refs", "moltRefs"]),
+            tools: countCandidateList(sleeveObject, ["tools", "tool_requests", "toolRequests"]),
+            gates: countCandidateList(sleeveObject, ["gates", "gate_refs", "gateRefs"]),
+            triggers: countCandidateList(sleeveObject, ["triggers", "trigger_refs", "triggerRefs"])
+        }
+    };
+}
+export function inspectRealLibraryPublicCuratedSleeve(input) {
+    const trace = {
+        sourcePathPolicy: "public_curated_allowlist_only",
+        recursiveResolution: "not_performed_step3"
+    };
+    const sleeveId = input.sleeveId ?? input.id;
+    const libraryRoot = input.libraryRoot ?? DEFAULT_LIBRARY_ROOT;
+    const mode = input.mode ?? "public_curated";
+    const normalizedRoot = normalizeInputRoot(libraryRoot);
+    if (!sleeveId || sleeveId.trim().length === 0) {
+        return buildInspectFailure(input, "HOLD_SLEEVE_ID_REQUIRED", "sleeveId is required for curated sleeve inspection.", trace, normalizedRoot);
+    }
+    const catalogResult = resolveRealLibraryPublicCurated({ libraryRoot, mode });
+    trace.catalogLoaded = catalogResult.catalogLoaded;
+    trace.parseCheck = catalogResult.trace.parseCheck;
+    if (!catalogResult.ok) {
+        return {
+            ok: false,
+            mode,
+            libraryRoot: catalogResult.libraryRoot,
+            sleeveId,
+            loaded: false,
+            summary: null,
+            warnings: catalogResult.warnings,
+            errors: catalogResult.errors,
+            trace
+        };
+    }
+    const match = catalogResult.sleeves.find((sleeve) => sleeve.id === sleeveId || sleeve.name === sleeveId || sleeve.title === sleeveId);
+    if (!match) {
+        trace.sleeveMatched = false;
+        return buildInspectFailure(input, "HOLD_SLEEVE_NOT_FOUND", `Curated sleeve not found: ${sleeveId}`, trace, catalogResult.libraryRoot);
+    }
+    trace.sleeveMatched = true;
+    if (match.resolutionStatus !== "LOADABLE_PUBLIC_CURATED") {
+        const code = match.resolutionStatus === "REJECTED_FORBIDDEN_SOURCE_PATH"
+            ? "HOLD_SLEEVE_SOURCE_PATH_FORBIDDEN"
+            : match.resolutionStatus === "NOT_LOADABLE_OUTSIDE_PUBLIC_CURATED_ALLOWLIST"
+                ? "HOLD_SLEEVE_SOURCE_PATH_OUTSIDE_ALLOWLIST"
+                : "HOLD_SLEEVE_NOT_LOADABLE_PUBLIC_CURATED";
+        return buildInspectFailure(input, code, `Sleeve is not safely loadable for public_curated inspection: ${sleeveId}`, trace, catalogResult.libraryRoot, match);
+    }
+    if (!match.resolvedSourcePath) {
+        return buildInspectFailure(input, "HOLD_SLEEVE_NOT_LOADABLE_PUBLIC_CURATED", `Sleeve resolved path missing for: ${sleeveId}`, trace, catalogResult.libraryRoot, match);
+    }
+    const allowlistRoot = path.join(catalogResult.libraryRoot, PUBLIC_CURATED_ALLOWLIST);
+    if (!(match.resolvedSourcePath.startsWith(allowlistRoot) || match.resolvedSourcePath === allowlistRoot.slice(0, -1))) {
+        return buildInspectFailure(input, "HOLD_SLEEVE_SOURCE_PATH_OUTSIDE_ALLOWLIST", `Sleeve path outside allowlist: ${match.resolvedSourcePath}`, trace, catalogResult.libraryRoot, match);
+    }
+    if (hasForbiddenSegment(match.resolvedSourcePath)) {
+        return buildInspectFailure(input, "HOLD_SLEEVE_SOURCE_PATH_FORBIDDEN", `Sleeve path forbidden: ${match.resolvedSourcePath}`, trace, catalogResult.libraryRoot, match);
+    }
+    if (!fs.existsSync(match.resolvedSourcePath)) {
+        return buildInspectFailure(input, "HOLD_SLEEVE_FILE_MISSING", `Sleeve file missing: ${match.resolvedSourcePath}`, trace, catalogResult.libraryRoot, match);
+    }
+    trace.fileLoaded = true;
+    let parsed;
+    try {
+        parsed = JSON.parse(fs.readFileSync(match.resolvedSourcePath, "utf8"));
+    }
+    catch (error) {
+        trace.parseCheck = "failed";
+        const message = error instanceof Error ? error.message : String(error);
+        return buildInspectFailure(input, "HOLD_SLEEVE_PARSE_FAILED", `Failed to parse sleeve JSON: ${message}`, trace, catalogResult.libraryRoot, match);
+    }
+    trace.parseCheck = "passed";
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+        return buildInspectFailure(input, "HOLD_SLEEVE_SHAPE_UNKNOWN", `Sleeve JSON shape unknown for: ${sleeveId}`, trace, catalogResult.libraryRoot, match);
+    }
+    const payload = parsed;
+    const summary = summarizeSleevePayload(payload, match);
+    return {
+        ok: true,
+        mode,
+        libraryRoot: catalogResult.libraryRoot,
+        sleeveId,
+        sourcePath: match.sourcePath,
+        resolvedSourcePath: match.resolvedSourcePath,
+        resolutionStatus: match.resolutionStatus,
+        loaded: true,
+        summary,
+        warnings: [...catalogResult.warnings, ...match.warnings],
+        errors: [],
         trace
     };
 }

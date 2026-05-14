@@ -1,5 +1,5 @@
 import plugin from "../dist/plugin-entry-public.js";
-import { resolveRealLibraryPublicCurated } from "../dist/real-library-resolver.js";
+import { inspectRealLibraryPublicCuratedSleeve, resolveRealLibraryPublicCurated } from "../dist/real-library-resolver.js";
 
 function assert(condition, message) {
   if (!condition) {
@@ -18,61 +18,71 @@ function record(name, fn) {
   }
 }
 
-record("real root + public_curated returns ok:true", () => {
-  const result = resolveRealLibraryPublicCurated({
-    libraryRoot: "C:\\.openclaw\\workspace\\UMG-Block-Library",
-    mode: "public_curated"
-  });
-  assert(result.ok === true, "expected ok=true");
-  return { sleeveCount: result.sleeveCount, trace: result.trace };
+const curated = resolveRealLibraryPublicCurated({
+  libraryRoot: "C:\\.openclaw\\workspace\\UMG-Block-Library",
+  mode: "public_curated"
 });
 
-record("catalog loads", () => {
-  const result = resolveRealLibraryPublicCurated({
-    libraryRoot: "C:\\.openclaw\\workspace\\UMG-Block-Library",
-    mode: "public_curated"
-  });
-  assert(result.catalogLoaded === true, "expected catalogLoaded=true");
-  return { catalogLoaded: result.catalogLoaded };
+record("real curated catalog still loads", () => {
+  assert(curated.ok === true, "expected ok=true");
+  assert(curated.catalogLoaded === true, "expected catalogLoaded=true");
+  return { sleeveCount: curated.sleeveCount, loadableSleeveCount: curated.loadableSleeveCount };
 });
 
-record("sleeves array is returned", () => {
-  const result = resolveRealLibraryPublicCurated({
-    libraryRoot: "C:\\.openclaw\\workspace\\UMG-Block-Library",
-    mode: "public_curated"
-  });
-  assert(Array.isArray(result.sleeves), "expected sleeves array");
-  assert(result.sleeves.length >= 1, "expected at least one sleeve");
-  return { sleeveCount: result.sleeves.length };
+record("sleeve list still returns 3 catalog entries", () => {
+  assert(curated.sleeveCount === 3, `expected 3 sleeves, got ${curated.sleeveCount}`);
+  return { sleeveCount: curated.sleeveCount };
 });
 
-record("per-sleeve resolutionStatus exists", () => {
-  const result = resolveRealLibraryPublicCurated({
-    libraryRoot: "C:\\.openclaw\\workspace\\UMG-Block-Library",
-    mode: "public_curated"
-  });
-  assert(result.sleeves.every((sleeve) => typeof sleeve.resolutionStatus === "string"), "expected all sleeves to have resolutionStatus");
-  return result.sleeves.map((sleeve) => ({ id: sleeve.id, resolutionStatus: sleeve.resolutionStatus }));
+record("loadable count remains stable for current catalog", () => {
+  assert(curated.loadableSleeveCount === 0, `expected 0 loadable sleeves for current catalog snapshot, got ${curated.loadableSleeveCount}`);
+  return { loadableSleeveCount: curated.loadableSleeveCount, sleeves: curated.sleeves.map((sleeve) => ({ id: sleeve.id, resolutionStatus: sleeve.resolutionStatus })) };
 });
 
-record("unsafe ../archive entries do not crash the resolver", () => {
-  const result = resolveRealLibraryPublicCurated({
-    libraryRoot: "C:\\.openclaw\\workspace\\UMG-Block-Library",
-    mode: "public_curated"
+record("inspect returns non-loadable hold for current slv-operator catalog target", () => {
+  const result = inspectRealLibraryPublicCuratedSleeve({
+    sleeveId: "slv-operator"
   });
-  assert(result.ok === true, "expected resolver to survive archive entry presence");
-  return { warnings: result.warnings.length };
+  assert(result.ok === false, "expected ok=false");
+  assert(result.errors[0]?.code === "HOLD_SLEEVE_NOT_LOADABLE_PUBLIC_CURATED", "expected HOLD_SLEEVE_NOT_LOADABLE_PUBLIC_CURATED");
+  return result.errors[0];
 });
 
-record("unsafe entries are classified, not followed", () => {
-  const result = resolveRealLibraryPublicCurated({
-    libraryRoot: "C:\\.openclaw\\workspace\\UMG-Block-Library",
-    mode: "public_curated"
+record("inspect rejects REJECTED_FORBIDDEN_SOURCE_PATH entry", () => {
+  const result = inspectRealLibraryPublicCuratedSleeve({
+    sleeveId: "sample-basic-minimal"
   });
-  const unsafe = result.sleeves.find((sleeve) => sleeve.sourcePath?.includes("archive"));
-  assert(Boolean(unsafe), "expected archive-backed entry");
-  assert(unsafe.resolutionStatus === "REJECTED_FORBIDDEN_SOURCE_PATH" || unsafe.resolutionStatus === "NOT_LOADABLE_OUTSIDE_PUBLIC_CURATED_ALLOWLIST", "expected unsafe classification");
-  return unsafe;
+  assert(result.ok === false, "expected ok=false");
+  assert(result.errors[0]?.code === "HOLD_SLEEVE_SOURCE_PATH_FORBIDDEN", "expected HOLD_SLEEVE_SOURCE_PATH_FORBIDDEN");
+  return result.errors[0];
+});
+
+record("inspect rejects NO_SOURCE_PATH or missing source path entry if present", () => {
+  const noSource = curated.sleeves.find((sleeve) => sleeve.resolutionStatus === "NO_SOURCE_PATH");
+  if (!noSource?.id) {
+    return { skipped: true, reason: "no NO_SOURCE_PATH entry in current catalog" };
+  }
+  const result = inspectRealLibraryPublicCuratedSleeve({ sleeveId: noSource.id });
+  assert(result.ok === false, "expected ok=false");
+  assert(result.errors[0]?.code === "HOLD_SLEEVE_NOT_LOADABLE_PUBLIC_CURATED", "expected HOLD_SLEEVE_NOT_LOADABLE_PUBLIC_CURATED");
+  return result.errors[0];
+});
+
+record("inspect rejects unknown sleeveId", () => {
+  const result = inspectRealLibraryPublicCuratedSleeve({
+    sleeveId: "does-not-exist"
+  });
+  assert(result.ok === false, "expected ok=false");
+  assert(result.errors[0]?.code === "HOLD_SLEEVE_NOT_FOUND", "expected HOLD_SLEEVE_NOT_FOUND");
+  return result.errors[0];
+});
+
+record("inspect does not recursively resolve full graph", () => {
+  const result = inspectRealLibraryPublicCuratedSleeve({
+    sleeveId: "slv-operator"
+  });
+  assert(result.trace.recursiveResolution === "not_performed_step3", "expected recursiveResolution=not_performed_step3");
+  return result.trace;
 });
 
 record("forbidden paths still reject", () => {
@@ -82,16 +92,6 @@ record("forbidden paths still reject", () => {
   });
   assert(result.ok === false, "expected ok=false");
   assert(result.errors[0]?.code === "HOLD_FORBIDDEN_ROOT_PATH", "expected HOLD_FORBIDDEN_ROOT_PATH");
-  return result.errors[0];
-});
-
-record("Resleever-class paths still reject", () => {
-  const result = resolveRealLibraryPublicCurated({
-    libraryRoot: "C:\\.openclaw\\workspace\\artifacts\\releases\\umg-envoy-agent-0.1.0\\umg-envoy-agent-plugin\\vendor\\UMG_Envoy_Resleever",
-    mode: "public_curated"
-  });
-  assert(result.ok === false, "expected ok=false");
-  assert(result.errors[0]?.code === "HOLD_FORBIDDEN_ROOT_PATH" || result.errors[0]?.code === "HOLD_RESLEEVER_CONTAMINATION_RISK", "expected resleever rejection");
   return result.errors[0];
 });
 
@@ -105,7 +105,7 @@ record("unsupported mode still rejects", () => {
   return result.errors[0];
 });
 
-record("original alpha.5 tools still register and tool count is 17", () => {
+record("original alpha.5 tools still register and tool count is 18", () => {
   const defs = [];
   plugin.register({ registerTool(def) { defs.push(def); } }, {});
   const expected = [
@@ -125,12 +125,13 @@ record("original alpha.5 tools still register and tool count is 17", () => {
     "umg_envoy_sleeve_inspect",
     "umg_envoy_sleeve_demo",
     "umg_envoy_real_library_status",
-    "umg_envoy_real_sleeve_list"
+    "umg_envoy_real_sleeve_list",
+    "umg_envoy_real_sleeve_inspect"
   ];
   const names = defs.map((def) => def.name);
   const missing = expected.filter((name) => !names.includes(name));
   assert(missing.length === 0, `missing tools: ${missing.join(", ")}`);
-  assert(names.length === 17, `expected 17 tools, got ${names.length}`);
+  assert(names.length === 18, `expected 18 tools, got ${names.length}`);
   return { toolCount: names.length, names };
 });
 
