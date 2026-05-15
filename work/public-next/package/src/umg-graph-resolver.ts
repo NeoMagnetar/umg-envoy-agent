@@ -415,6 +415,102 @@ export interface UmgRuntimeIrPathResult {
   errors: string[];
 }
 
+export interface UmgRuntimeIrMatrixRequest {
+  sleeveId?: string;
+  includeDormant?: boolean;
+  includeExcludedLanes?: boolean;
+  includeEdges?: boolean;
+  includeNlProjection?: boolean;
+  libraryRoot?: string;
+}
+
+export interface UmgRuntimeIrMatrixNode {
+  id: string;
+  kind: "sleeve" | "neostack_marker" | "neoblock" | "moltblock" | "lane" | "note";
+  label: string;
+  state: UmgActivationState;
+  reason: string;
+  sourcePath: string | null;
+  resolutionStatus: string | null;
+  moltType: string | null;
+  metadata: Record<string, unknown>;
+}
+
+export interface UmgRuntimeIrMatrixEdge {
+  from: string;
+  to: string;
+  relation: "contains_marker" | "references" | "available_ref" | "exposes_molt_summary" | "excludes_lane" | "documents_state";
+  state: UmgActivationState;
+  reason: string;
+}
+
+export interface UmgRuntimeIrMatrixStateBuckets {
+  ON: string[];
+  OFF: string[];
+  DORMANT: string[];
+  REFERENCE_ONLY: string[];
+  WATCHING: string[];
+  BLOCKED: string[];
+  REJECTED: string[];
+  MISSING: string[];
+  FORMAT: string[];
+  CONTEXTUAL: string[];
+  SHADOWED: string[];
+}
+
+export interface UmgRuntimeIrMatrixSummary {
+  nodeCount: number;
+  edgeCount: number;
+  routeNodeCount: number;
+  activeNodeCount: number;
+  dormantNodeCount: number;
+  excludedLaneCount: number;
+  declaredNeoStackCount: number;
+  explicitNeoBlockRefCount: number;
+  loadedTargetCount: number;
+  visibleMoltBlockCount: number;
+}
+
+export interface UmgRuntimeIrMatrix {
+  nodes: UmgRuntimeIrMatrixNode[];
+  edges: UmgRuntimeIrMatrixEdge[];
+  stateBuckets: UmgRuntimeIrMatrixStateBuckets;
+  route: UmgRuntimeIrPathNode[];
+  dormantRefs: Array<{
+    kind: "neoblock";
+    id: string;
+    state: UmgActivationState;
+    reason: string;
+  }>;
+  excludedLanes: UmgGraphExcludedLane[];
+}
+
+export interface UmgRuntimeIrMatrixResult {
+  ok: boolean;
+  mode: "public_curated";
+  readOnly: true;
+  execution: "not_performed";
+  directSource: "not_enabled";
+  requested: {
+    sleeveId: string;
+    includeDormant: boolean;
+    includeExcludedLanes: boolean;
+    includeEdges: boolean;
+    includeNlProjection: boolean;
+  };
+  activeSleeve: {
+    sleeveId: string;
+    title: string | null;
+    state: UmgActivationState;
+  };
+  matrix: UmgRuntimeIrMatrix;
+  summary: UmgRuntimeIrMatrixSummary;
+  notes: UmgRuntimeIrPathNote[];
+  nlProjection: string;
+  warnings: string[];
+  errors: string[];
+}
+
 const DEFAULT_LIBRARY_ROOT = "C:\\.openclaw\\workspace\\UMG-Block-Library";
 const DEFAULT_CURRENT_SLEEVE_ID = "neomagnetar-dynamic-persona-v1";
 const DEFAULT_SHALLOW_LOAD_TARGET_REF = "primary.sample";
@@ -1591,6 +1687,251 @@ export function getRuntimeIrPath(input?: UmgRuntimeIrPathRequest): UmgRuntimeIrP
     },
     notes,
     nlProjection: nlLines.join("\n"),
+    warnings: inspect.warnings,
+    errors: inspect.errors.map((error) => `${error.code}: ${error.message}`)
+  };
+}
+
+export function getRuntimeIrMatrixFull(input?: UmgRuntimeIrMatrixRequest): UmgRuntimeIrMatrixResult {
+  const sleeveId = input?.sleeveId ?? DEFAULT_CURRENT_SLEEVE_ID;
+  const includeDormant = input?.includeDormant ?? true;
+  const includeExcludedLanes = input?.includeExcludedLanes ?? true;
+  const includeEdges = input?.includeEdges ?? true;
+  const includeNlProjection = input?.includeNlProjection ?? true;
+  const libraryRoot = input?.libraryRoot ?? DEFAULT_LIBRARY_ROOT;
+
+  const inspect = inspectRealLibraryPublicCuratedSleeve({
+    sleeveId,
+    libraryRoot,
+    mode: "public_curated",
+    shallowLoadTargetRef: DEFAULT_SHALLOW_LOAD_TARGET_REF
+  });
+
+  if (!inspect.ok || !inspect.summary) {
+    const firstCode = inspect.errors[0]?.code ?? "HOLD_RUNTIME_IR_MATRIX_UNAVAILABLE";
+    throw new Error(firstCode);
+  }
+
+  const pathResult = getRuntimeIrPath({ sleeveId, includeDormant, includeExcludedLanes, libraryRoot });
+  const summary = inspect.summary;
+
+  const nodes: UmgRuntimeIrMatrixNode[] = [
+    {
+      id: summary.id ?? sleeveId,
+      kind: "sleeve",
+      label: summary.title ?? summary.name ?? summary.id ?? sleeveId,
+      state: "ON",
+      reason: "active_public_curated_sleeve",
+      sourcePath: inspect.sourcePath ?? null,
+      resolutionStatus: inspect.resolutionStatus ?? null,
+      moltType: null,
+      metadata: {}
+    },
+    {
+      id: "NO_DECLARED_NEOSTACKS",
+      kind: "neostack_marker",
+      label: "none_declared",
+      state: "REFERENCE_ONLY",
+      reason: "NO_DECLARED_NEOSTACKS",
+      sourcePath: null,
+      resolutionStatus: null,
+      moltType: null,
+      metadata: {}
+    },
+    {
+      id: DEFAULT_SHALLOW_LOAD_TARGET_REF,
+      kind: "neoblock",
+      label: DEFAULT_SHALLOW_LOAD_TARGET_REF,
+      state: "ON",
+      reason: "shallow_loaded_target",
+      sourcePath: summary.targetShallowLoad?.candidatePath ?? null,
+      resolutionStatus: "SHALLOW_LOADED",
+      moltType: summary.targetShallowLoad?.summary.moltType ?? "Primary",
+      metadata: {}
+    },
+    {
+      id: `${DEFAULT_SHALLOW_LOAD_TARGET_REF}::${summary.targetShallowLoad?.summary.moltType ?? "Primary"}`,
+      kind: "moltblock",
+      label: `${DEFAULT_SHALLOW_LOAD_TARGET_REF} / ${summary.targetShallowLoad?.summary.moltType ?? "Primary"}`,
+      state: "ON",
+      reason: "VISIBLE_MOLT_SUMMARY",
+      sourcePath: summary.targetShallowLoad?.candidatePath ?? null,
+      resolutionStatus: "SHALLOW_LOADED",
+      moltType: summary.targetShallowLoad?.summary.moltType ?? "Primary",
+      metadata: {}
+    }
+  ];
+
+  if (includeDormant) {
+    for (const ref of summary.explicitReferences.neoblocks.filter((ref) => ref !== DEFAULT_SHALLOW_LOAD_TARGET_REF)) {
+      nodes.push({
+        id: ref,
+        kind: "neoblock",
+        label: ref,
+        state: "DORMANT",
+        reason: "TARGET_AVAILABLE_NOT_LOADED",
+        sourcePath: null,
+        resolutionStatus: "TARGET_AVAILABLE_NOT_LOADED",
+        moltType: inferMoltTypeFromRefId(ref),
+        metadata: {}
+      });
+    }
+  }
+
+  if (includeExcludedLanes) {
+    for (const lane of buildExcludedLanes()) {
+      nodes.push({
+        id: lane.lane,
+        kind: "lane",
+        label: lane.lane,
+        state: lane.state,
+        reason: lane.reason,
+        sourcePath: null,
+        resolutionStatus: lane.reason,
+        moltType: null,
+        metadata: {}
+      });
+    }
+  }
+
+  const edges: UmgRuntimeIrMatrixEdge[] = includeEdges ? [
+    {
+      from: summary.id ?? sleeveId,
+      to: "NO_DECLARED_NEOSTACKS",
+      relation: "contains_marker",
+      state: "REFERENCE_ONLY",
+      reason: "current_sleeve_has_no_declared_neostacks"
+    },
+    {
+      from: summary.id ?? sleeveId,
+      to: DEFAULT_SHALLOW_LOAD_TARGET_REF,
+      relation: "references",
+      state: "ON",
+      reason: "explicit_neoblock_refs_fallback"
+    },
+    {
+      from: DEFAULT_SHALLOW_LOAD_TARGET_REF,
+      to: `${DEFAULT_SHALLOW_LOAD_TARGET_REF}::${summary.targetShallowLoad?.summary.moltType ?? "Primary"}`,
+      relation: "exposes_molt_summary",
+      state: "ON",
+      reason: "shallow_loaded_target"
+    },
+    ...summary.explicitReferences.neoblocks
+      .filter((ref) => ref !== DEFAULT_SHALLOW_LOAD_TARGET_REF && includeDormant)
+      .map((ref) => ({
+        from: summary.id ?? sleeveId,
+        to: ref,
+        relation: "available_ref" as const,
+        state: "DORMANT" as const,
+        reason: "target_available_not_loaded"
+      })),
+    ...buildExcludedLanes().filter(() => includeExcludedLanes).map((lane) => ({
+      from: summary.id ?? sleeveId,
+      to: lane.lane,
+      relation: "excludes_lane" as const,
+      state: lane.state,
+      reason: lane.reason
+    }))
+  ] : [];
+
+  const stateBuckets: UmgRuntimeIrMatrixStateBuckets = {
+    ON: nodes.filter((node) => node.state === "ON").map((node) => node.id),
+    OFF: nodes.filter((node) => node.state === "OFF").map((node) => node.id),
+    DORMANT: nodes.filter((node) => node.state === "DORMANT").map((node) => node.id),
+    REFERENCE_ONLY: nodes.filter((node) => node.state === "REFERENCE_ONLY").map((node) => node.id),
+    WATCHING: nodes.filter((node) => node.state === "WATCHING").map((node) => node.id),
+    BLOCKED: nodes.filter((node) => node.state === "BLOCKED").map((node) => node.id),
+    REJECTED: nodes.filter((node) => node.state === "REJECTED").map((node) => node.id),
+    MISSING: nodes.filter((node) => node.state === "MISSING").map((node) => node.id),
+    FORMAT: nodes.filter((node) => node.state === "FORMAT").map((node) => node.id),
+    CONTEXTUAL: nodes.filter((node) => node.state === "CONTEXTUAL").map((node) => node.id),
+    SHADOWED: nodes.filter((node) => node.state === "SHADOWED").map((node) => node.id)
+  };
+
+  const notes: UmgRuntimeIrPathNote[] = [
+    {
+      code: "VISIBLE_GRAPH_ONLY",
+      message: "This matrix represents the currently visible read-only graph. It does not recursively load all targets."
+    },
+    {
+      code: "NO_DECLARED_NEOSTACKS",
+      message: "The selected sleeve has no declared NeoStack objects, so explicit NeoBlock refs are shown directly under the sleeve."
+    },
+    {
+      code: "SHALLOW_ROUTE_ONLY",
+      message: "Only primary.sample is shallow-loaded as the active target. Other refs are available but dormant."
+    }
+  ];
+
+  const nlProjection = includeNlProjection ? [
+    "Runtime IR Matrix:",
+    "Nodes:",
+    `- SLEEVE ${summary.id ?? sleeveId} [ON]`,
+    `- NEOSTACK none_declared [REFERENCE_ONLY: NO_DECLARED_NEOSTACKS]`,
+    `- NEOBLOCK primary.sample [ON: SHALLOW_LOADED]`,
+    `- MOLTBLOCK primary.sample / ${summary.targetShallowLoad?.summary.moltType ?? "Primary"} [ON: VISIBLE_MOLT_SUMMARY]`,
+    ...summary.explicitReferences.neoblocks
+      .filter((ref) => ref !== DEFAULT_SHALLOW_LOAD_TARGET_REF && includeDormant)
+      .map((ref) => `- NEOBLOCK ${ref} [DORMANT: TARGET_AVAILABLE_NOT_LOADED]`),
+    "",
+    "Edges:",
+    `- sleeve → none_declared [contains_marker]`,
+    `- sleeve → primary.sample [references]`,
+    `- primary.sample → primary.sample / ${summary.targetShallowLoad?.summary.moltType ?? "Primary"} [exposes_molt_summary]`,
+    ...summary.explicitReferences.neoblocks
+      .filter((ref) => ref !== DEFAULT_SHALLOW_LOAD_TARGET_REF && includeDormant)
+      .map((ref) => `- sleeve → ${ref} [available_ref]`),
+    "",
+    "Excluded Lanes:",
+    ...buildExcludedLanes().filter(() => includeExcludedLanes).map((lane) => `- ${lane.lane} [${lane.state}: ${lane.reason}]`),
+    "",
+    "Route:",
+    `SLEEVE ${summary.id ?? sleeveId}`,
+    `→ NEOSTACK none_declared`,
+    `→ NEOBLOCK primary.sample`,
+    `→ MOLTBLOCK primary.sample / ${summary.targetShallowLoad?.summary.moltType ?? "Primary"}`
+  ].join("\n") : "";
+
+  return {
+    ok: true,
+    mode: "public_curated",
+    readOnly: true,
+    execution: "not_performed",
+    directSource: "not_enabled",
+    requested: {
+      sleeveId: summary.id ?? sleeveId,
+      includeDormant,
+      includeExcludedLanes,
+      includeEdges,
+      includeNlProjection
+    },
+    activeSleeve: {
+      sleeveId: summary.id ?? sleeveId,
+      title: summary.title ?? summary.name ?? null,
+      state: "ON"
+    },
+    matrix: {
+      nodes,
+      edges,
+      stateBuckets,
+      route: pathResult.path,
+      dormantRefs: pathResult.dormantRefs,
+      excludedLanes: includeExcludedLanes ? buildExcludedLanes() : []
+    },
+    summary: {
+      nodeCount: nodes.length,
+      edgeCount: edges.length,
+      routeNodeCount: pathResult.path.length,
+      activeNodeCount: nodes.filter((node) => node.state === "ON").length,
+      dormantNodeCount: nodes.filter((node) => node.state === "DORMANT").length,
+      excludedLaneCount: includeExcludedLanes ? buildExcludedLanes().length : 0,
+      declaredNeoStackCount: summary.explicitReferences.neostacks.length,
+      explicitNeoBlockRefCount: summary.explicitReferences.neoblocks.length,
+      loadedTargetCount: summary.runtimeSummary?.performed ? summary.runtimeSummary.shallowLoadedTargetCount : 0,
+      visibleMoltBlockCount: summary.targetShallowLoad?.performed ? 1 : 0
+    },
+    notes,
+    nlProjection,
     warnings: inspect.warnings,
     errors: inspect.errors.map((error) => `${error.code}: ${error.message}`)
   };
