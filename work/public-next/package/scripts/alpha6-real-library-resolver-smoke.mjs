@@ -250,7 +250,8 @@ record("original alpha.6 tools still register unchanged", () => {
   assert(names.includes("umg_envoy_current_sleeve_status"), "expected Step 1 tool present");
   assert(names.includes("umg_envoy_sleeve_tree"), "expected Step 2 tool present");
   assert(names.includes("umg_envoy_neostack_inspect"), "expected Step 3 tool present");
-  assert(names.length === 21, `expected 21 tools after Step 3 addition, got ${names.length}`);
+  assert(names.includes("umg_envoy_neoblock_inspect"), "expected Step 4 tool present");
+  assert(names.length === 22, `expected 22 tools after Step 4 addition, got ${names.length}`);
   return { toolCount: names.length, names };
 });
 

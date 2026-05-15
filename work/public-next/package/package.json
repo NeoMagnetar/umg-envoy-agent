@@ -44,7 +44,8 @@
     "alpha6:real-library-resolver:smoke": "node scripts/alpha6-real-library-resolver-smoke.mjs",
     "alpha7:graph-resolver:smoke": "node scripts/alpha7-graph-resolver-smoke.mjs",
     "alpha7:sleeve-tree:smoke": "node scripts/alpha7-sleeve-tree-smoke.mjs",
-    "alpha7:neostack-inspector:smoke": "node scripts/alpha7-neostack-inspector-smoke.mjs"
+    "alpha7:neostack-inspector:smoke": "node scripts/alpha7-neostack-inspector-smoke.mjs",
+    "alpha7:neoblock-inspector:smoke": "node scripts/alpha7-neoblock-inspector-smoke.mjs"
   },
   "engines": {
     "node": ">=22"

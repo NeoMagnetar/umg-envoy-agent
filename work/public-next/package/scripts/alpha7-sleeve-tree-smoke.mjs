@@ -28,7 +28,8 @@ record("all previous tools still register and sleeve tree tool is added", () => 
   assert(currentSleeveTool, "current sleeve status tool missing");
   assert(sleeveTreeTool, "sleeve tree tool missing");
   assert(neostackTool, "neostack inspector tool missing");
-  assert(names.length === 21, `expected 21 tools, got ${names.length}`);
+  assert(names.includes("umg_envoy_neoblock_inspect"), "expected neoblock inspector tool present");
+  assert(names.length === 22, `expected 22 tools, got ${names.length}`);
   return { toolCount: names.length, names };
 });
 
