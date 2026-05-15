@@ -50,7 +50,8 @@ record("package registers existing tools plus current sleeve status", () => {
   assert(names.includes("umg_envoy_neostack_inspect"), "expected umg_envoy_neostack_inspect");
   assert(names.includes("umg_envoy_neoblock_inspect"), "expected umg_envoy_neoblock_inspect");
   assert(names.includes("umg_envoy_moltblock_inspect"), "expected umg_envoy_moltblock_inspect");
-  assert(names.length === 23, `expected 23 tools, got ${names.length}`);
+  assert(names.includes("umg_envoy_runtime_ir_path"), "expected umg_envoy_runtime_ir_path");
+  assert(names.length === 24, `expected 24 tools, got ${names.length}`);
   return { toolCount: names.length, names };
 });
 

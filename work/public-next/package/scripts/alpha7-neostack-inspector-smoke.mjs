@@ -26,7 +26,8 @@ record("all previous tools still register and neostack inspector is added", () =
   assert(neostackTool, "neostack inspector tool missing");
   assert(names.includes("umg_envoy_neoblock_inspect"), "expected umg_envoy_neoblock_inspect");
   assert(names.includes("umg_envoy_moltblock_inspect"), "expected umg_envoy_moltblock_inspect");
-  assert(names.length === 23, `expected 23 tools, got ${names.length}`);
+  assert(names.includes("umg_envoy_runtime_ir_path"), "expected umg_envoy_runtime_ir_path");
+  assert(names.length === 24, `expected 24 tools, got ${names.length}`);
   return { toolCount: names.length, names };
 });
 

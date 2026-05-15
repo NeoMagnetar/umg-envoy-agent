@@ -5,7 +5,7 @@ import { renderUMGPath } from "./umg-path-renderer.js";
 import { validateUMGPath } from "./umg-path-validator.js";
 import { buildPublicPath } from "./public-path-builder.js";
 import { inspectRealLibraryPublicCuratedSleeve, resolveRealLibraryPublicCurated } from "./real-library-resolver.js";
-import { getCurrentSleeveStatus, getSleeveTree, inspectNeoStack, inspectNeoBlock, inspectMoltBlock } from "./umg-graph-resolver.js";
+import { getCurrentSleeveStatus, getSleeveTree, inspectNeoStack, inspectNeoBlock, inspectMoltBlock, getRuntimeIrPath } from "./umg-graph-resolver.js";
 import type {
   BlockLibrarySummary,
   PluginConfig,
@@ -323,6 +323,10 @@ function moltblockInspect(moltBlockId?: string, sleeveId?: string, neoblockId?: 
   return inspectMoltBlock({ moltBlockId, sleeveId, neoblockId, libraryRoot });
 }
 
+function runtimeIrPath(sleeveId?: string, includeDormant?: boolean, includeExcludedLanes?: boolean, libraryRoot?: string) {
+  return getRuntimeIrPath({ sleeveId, includeDormant, includeExcludedLanes, libraryRoot });
+}
+
 function searchBlocks(query: string, metaUrl = import.meta.url) {
   const q = query.trim().toLowerCase();
   const blocks = loadBlocks(publicContentRoot(metaUrl));
@@ -530,6 +534,7 @@ function registerCliBridge(api: any, config?: PluginConfig) {
     root.command("neostack-inspect").option("--sleeve <id>").option("--neostack <id>").option("--include-neoblocks <bool>").option("--library-root <path>").action(async (opts: { sleeve?: string; neostack?: string; includeNeoblocks?: string; libraryRoot?: string }) => console.log(JSON.stringify(neostackInspect(opts.sleeve, opts.neostack, opts.includeNeoblocks ? opts.includeNeoblocks !== 'false' : undefined, opts.libraryRoot), null, 2)));
     root.command("neoblock-inspect").option("--neoblock <id>").option("--sleeve <id>").option("--include-moltblocks <bool>").option("--library-root <path>").action(async (opts: { neoblock?: string; sleeve?: string; includeMoltblocks?: string; libraryRoot?: string }) => console.log(JSON.stringify(neoblockInspect(opts.neoblock, opts.sleeve, opts.includeMoltblocks ? opts.includeMoltblocks !== 'false' : undefined, opts.libraryRoot), null, 2)));
     root.command("moltblock-inspect").option("--moltblock <id>").option("--sleeve <id>").option("--neoblock <id>").option("--library-root <path>").action(async (opts: { moltblock?: string; sleeve?: string; neoblock?: string; libraryRoot?: string }) => console.log(JSON.stringify(moltblockInspect(opts.moltblock, opts.sleeve, opts.neoblock, opts.libraryRoot), null, 2)));
+    root.command("runtime-ir-path").option("--sleeve <id>").option("--include-dormant <bool>").option("--include-excluded-lanes <bool>").option("--library-root <path>").action(async (opts: { sleeve?: string; includeDormant?: string; includeExcludedLanes?: string; libraryRoot?: string }) => console.log(JSON.stringify(runtimeIrPath(opts.sleeve, opts.includeDormant ? opts.includeDormant !== 'false' : undefined, opts.includeExcludedLanes ? opts.includeExcludedLanes !== 'false' : undefined, opts.libraryRoot), null, 2)));
     root.command("parse-path").requiredOption("--file <path>").action(async (opts: { file: string }) => console.log(JSON.stringify(parseUMGPath(fs.readFileSync(opts.file, "utf8")), null, 2)));
     root.command("validate-path").requiredOption("--file <path>").action(async (opts: { file: string }) => { const issues = validateUMGPath(parseUMGPath(fs.readFileSync(opts.file, "utf8"))); console.log(JSON.stringify({ ok: issues.every((issue) => issue.severity !== "error"), issues }, null, 2)); });
     root.command("render-path").requiredOption("--file <path>").action(async (opts: { file: string }) => { const raw = fs.readFileSync(opts.file, "utf8"); const parsed = opts.file.toLowerCase().endsWith(".json") ? JSON.parse(raw) : parseUMGPath(raw); console.log(renderUMGPath(parsed)); });
@@ -567,6 +572,7 @@ const entry = {
     api.registerTool({ name: "umg_envoy_neostack_inspect", description: "Inspect one declared NeoStack inside a selected sleeve.", parameters: Type.Object({ sleeveId: Type.Optional(Type.String()), neostackId: Type.Optional(Type.String()), includeNeoBlocks: Type.Optional(Type.Boolean()), libraryRoot: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input: { sleeveId?: string; neostackId?: string; includeNeoBlocks?: boolean; libraryRoot?: string }) { return { content: [{ type: "text", text: JSON.stringify(neostackInspect(input.sleeveId, input.neostackId, input.includeNeoBlocks, input.libraryRoot), null, 2) }] }; } }, { optional: true });
     api.registerTool({ name: "umg_envoy_neoblock_inspect", description: "Inspect one NeoBlock reference from the active/current public_curated graph.", parameters: Type.Object({ neoblockId: Type.Optional(Type.String()), sleeveId: Type.Optional(Type.String()), includeMoltBlocks: Type.Optional(Type.Boolean()), libraryRoot: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input: { neoblockId?: string; sleeveId?: string; includeMoltBlocks?: boolean; libraryRoot?: string }) { return { content: [{ type: "text", text: JSON.stringify(neoblockInspect(input.neoblockId, input.sleeveId, input.includeMoltBlocks, input.libraryRoot), null, 2) }] }; } }, { optional: true });
     api.registerTool({ name: "umg_envoy_moltblock_inspect", description: "Inspect one shallow-visible MOLT block from the active/current public_curated graph.", parameters: Type.Object({ moltBlockId: Type.Optional(Type.String()), sleeveId: Type.Optional(Type.String()), neoblockId: Type.Optional(Type.String()), libraryRoot: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input: { moltBlockId?: string; sleeveId?: string; neoblockId?: string; libraryRoot?: string }) { return { content: [{ type: "text", text: JSON.stringify(moltblockInspect(input.moltBlockId, input.sleeveId, input.neoblockId, input.libraryRoot), null, 2) }] }; } }, { optional: true });
+    api.registerTool({ name: "umg_envoy_runtime_ir_path", description: "Return the current read-only UMG runtime path from the visible graph.", parameters: Type.Object({ sleeveId: Type.Optional(Type.String()), includeDormant: Type.Optional(Type.Boolean()), includeExcludedLanes: Type.Optional(Type.Boolean()), libraryRoot: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input: { sleeveId?: string; includeDormant?: boolean; includeExcludedLanes?: boolean; libraryRoot?: string }) { return { content: [{ type: "text", text: JSON.stringify(runtimeIrPath(input.sleeveId, input.includeDormant, input.includeExcludedLanes, input.libraryRoot), null, 2) }] }; } }, { optional: true });
   }
 };
 

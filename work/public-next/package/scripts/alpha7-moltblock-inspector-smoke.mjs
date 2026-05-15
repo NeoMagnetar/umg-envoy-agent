@@ -24,7 +24,8 @@ const tool = defs.find((def) => def.name === "umg_envoy_moltblock_inspect");
 
 record("all previous tools still register and moltblock inspector is added", () => {
   assert(tool, "moltblock inspector tool missing");
-  assert(names.length === 23, `expected 23 tools, got ${names.length}`);
+  assert(names.includes("umg_envoy_runtime_ir_path"), "expected umg_envoy_runtime_ir_path");
+  assert(names.length === 24, `expected 24 tools, got ${names.length}`);
   return { toolCount: names.length, names };
 });
 

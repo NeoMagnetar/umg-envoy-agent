@@ -340,6 +340,81 @@ export interface UmgMoltBlockInspectResult {
   errors: string[];
 }
 
+export interface UmgRuntimeIrPathRequest {
+  sleeveId?: string;
+  includeDormant?: boolean;
+  includeExcludedLanes?: boolean;
+  libraryRoot?: string;
+}
+
+export interface UmgRuntimeIrPathNode {
+  order: number;
+  kind: "sleeve" | "neostack" | "neoblock" | "moltblock";
+  id: string | null;
+  label: string;
+  state: UmgActivationState;
+  reason: string;
+  sourcePath: string | null;
+  resolutionStatus: string | null;
+}
+
+export interface UmgRuntimeIrPathEdge {
+  from: string;
+  to: string;
+  relation: "references" | "exposes_molt_summary";
+  state: UmgActivationState;
+  reason: string;
+}
+
+export interface UmgRuntimeIrPathSummary {
+  pathNodeCount: number;
+  edgeCount: number;
+  activeNodeCount: number;
+  dormantRefCount: number;
+  excludedLaneCount: number;
+  declaredNeoStackCount: number;
+  explicitNeoBlockRefCount: number;
+  loadedTargetCount: number;
+  visibleMoltBlockCount: number;
+}
+
+export interface UmgRuntimeIrPathNote {
+  code: string;
+  message: string;
+}
+
+export interface UmgRuntimeIrPathResult {
+  ok: boolean;
+  mode: "public_curated";
+  readOnly: true;
+  execution: "not_performed";
+  directSource: "not_enabled";
+  requested: {
+    sleeveId: string;
+    includeDormant: boolean;
+    includeExcludedLanes: boolean;
+  };
+  activeSleeve: {
+    sleeveId: string;
+    title: string | null;
+    state: UmgActivationState;
+  };
+  path: UmgRuntimeIrPathNode[];
+  edges: UmgRuntimeIrPathEdge[];
+  dormantRefs: Array<{
+    kind: "neoblock";
+    id: string;
+    state: UmgActivationState;
+    reason: string;
+  }>;
+  excludedLanes: UmgGraphExcludedLane[];
+  summary: UmgRuntimeIrPathSummary;
+  notes: UmgRuntimeIrPathNote[];
+  nlProjection: string;
+  warnings: string[];
+  errors: string[];
+}
+
 const DEFAULT_LIBRARY_ROOT = "C:\\.openclaw\\workspace\\UMG-Block-Library";
 const DEFAULT_CURRENT_SLEEVE_ID = "neomagnetar-dynamic-persona-v1";
 const DEFAULT_SHALLOW_LOAD_TARGET_REF = "primary.sample";
@@ -1359,6 +1434,163 @@ export function inspectMoltBlock(input?: UmgMoltBlockInspectRequest): UmgMoltBlo
       warnings: visible.warnings
     },
     notes: [],
+    warnings: inspect.warnings,
+    errors: inspect.errors.map((error) => `${error.code}: ${error.message}`)
+  };
+}
+
+export function getRuntimeIrPath(input?: UmgRuntimeIrPathRequest): UmgRuntimeIrPathResult {
+  const sleeveId = input?.sleeveId ?? DEFAULT_CURRENT_SLEEVE_ID;
+  const includeDormant = input?.includeDormant ?? true;
+  const includeExcludedLanes = input?.includeExcludedLanes ?? true;
+  const libraryRoot = input?.libraryRoot ?? DEFAULT_LIBRARY_ROOT;
+
+  const inspect = inspectRealLibraryPublicCuratedSleeve({
+    sleeveId,
+    libraryRoot,
+    mode: "public_curated",
+    shallowLoadTargetRef: DEFAULT_SHALLOW_LOAD_TARGET_REF
+  });
+
+  if (!inspect.ok || !inspect.summary) {
+    const firstCode = inspect.errors[0]?.code ?? "HOLD_RUNTIME_IR_PATH_UNAVAILABLE";
+    throw new Error(firstCode);
+  }
+
+  const summary = inspect.summary;
+  const path: UmgRuntimeIrPathNode[] = [
+    {
+      order: 1,
+      kind: "sleeve",
+      id: summary.id ?? sleeveId,
+      label: summary.title ?? summary.name ?? summary.id ?? sleeveId,
+      state: "ON",
+      reason: "active_public_curated_sleeve",
+      sourcePath: inspect.sourcePath ?? null,
+      resolutionStatus: inspect.resolutionStatus ?? null
+    },
+    {
+      order: 2,
+      kind: "neostack",
+      id: null,
+      label: "NO_DECLARED_NEOSTACKS",
+      state: "REFERENCE_ONLY",
+      reason: "current_sleeve_has_no_declared_neostacks",
+      sourcePath: null,
+      resolutionStatus: null
+    },
+    {
+      order: 3,
+      kind: "neoblock",
+      id: DEFAULT_SHALLOW_LOAD_TARGET_REF,
+      label: DEFAULT_SHALLOW_LOAD_TARGET_REF,
+      state: "ON",
+      reason: "shallow_loaded_target",
+      sourcePath: summary.targetShallowLoad?.candidatePath ?? null,
+      resolutionStatus: "SHALLOW_LOADED"
+    },
+    {
+      order: 4,
+      kind: "moltblock",
+      id: DEFAULT_SHALLOW_LOAD_TARGET_REF,
+      label: summary.targetShallowLoad?.summary.moltType ?? "Primary",
+      state: "ON",
+      reason: "visible_molt_summary_from_shallow_loaded_target",
+      sourcePath: summary.targetShallowLoad?.candidatePath ?? null,
+      resolutionStatus: "SHALLOW_LOADED"
+    }
+  ];
+
+  const edges: UmgRuntimeIrPathEdge[] = [
+    {
+      from: summary.id ?? sleeveId,
+      to: DEFAULT_SHALLOW_LOAD_TARGET_REF,
+      relation: "references",
+      state: "ON",
+      reason: "explicit_neoblock_refs_fallback"
+    },
+    {
+      from: DEFAULT_SHALLOW_LOAD_TARGET_REF,
+      to: DEFAULT_SHALLOW_LOAD_TARGET_REF,
+      relation: "exposes_molt_summary",
+      state: "ON",
+      reason: "shallow_loaded_target"
+    }
+  ];
+
+  const dormantRefs = includeDormant
+    ? summary.explicitReferences.neoblocks
+        .filter((ref) => ref !== DEFAULT_SHALLOW_LOAD_TARGET_REF)
+        .map((ref) => ({ kind: "neoblock" as const, id: ref, state: "DORMANT" as const, reason: "target_available_not_loaded" }))
+    : [];
+
+  const excludedLanes = includeExcludedLanes ? buildExcludedLanes() : [];
+  const notes: UmgRuntimeIrPathNote[] = [
+    {
+      code: "NO_DECLARED_NEOSTACKS",
+      message: "The selected sleeve exposes explicit NeoBlock refs directly under the sleeve."
+    },
+    {
+      code: "SHALLOW_ROUTE_ONLY",
+      message: "Only the current shallow-loaded target is represented as active. Available refs are dormant and not recursively loaded."
+    }
+  ];
+
+  const nlLines = [
+    "Runtime IR Path:",
+    `- SLEEVE ${summary.id ?? sleeveId} [ON]`,
+    `- NEOSTACK none_declared [REFERENCE_ONLY: NO_DECLARED_NEOSTACKS]`,
+    `- NEOBLOCK ${DEFAULT_SHALLOW_LOAD_TARGET_REF} [ON: SHALLOW_LOADED]`,
+    `- MOLTBLOCK ${DEFAULT_SHALLOW_LOAD_TARGET_REF} / ${summary.targetShallowLoad?.summary.moltType ?? "Primary"} [ON: VISIBLE_MOLT_SUMMARY]`
+  ];
+
+  if (includeDormant) {
+    nlLines.push("", "Dormant NeoBlock Refs:");
+    for (const ref of dormantRefs) {
+      nlLines.push(`- ${ref.id} [${ref.state}: TARGET_AVAILABLE_NOT_LOADED]`);
+    }
+  }
+
+  if (includeExcludedLanes) {
+    nlLines.push("", "Excluded Lanes:");
+    for (const lane of excludedLanes) {
+      nlLines.push(`- ${lane.lane} [${lane.state}: ${lane.reason}]`);
+    }
+  }
+
+  return {
+    ok: true,
+    mode: "public_curated",
+    readOnly: true,
+    execution: "not_performed",
+    directSource: "not_enabled",
+    requested: {
+      sleeveId: summary.id ?? sleeveId,
+      includeDormant,
+      includeExcludedLanes
+    },
+    activeSleeve: {
+      sleeveId: summary.id ?? sleeveId,
+      title: summary.title ?? summary.name ?? null,
+      state: "ON"
+    },
+    path,
+    edges,
+    dormantRefs,
+    excludedLanes,
+    summary: {
+      pathNodeCount: path.length,
+      edgeCount: edges.length,
+      activeNodeCount: path.filter((node) => node.state === "ON").length,
+      dormantRefCount: dormantRefs.length,
+      excludedLaneCount: excludedLanes.length,
+      declaredNeoStackCount: summary.explicitReferences.neostacks.length,
+      explicitNeoBlockRefCount: summary.explicitReferences.neoblocks.length,
+      loadedTargetCount: summary.runtimeSummary?.performed ? summary.runtimeSummary.shallowLoadedTargetCount : 0,
+      visibleMoltBlockCount: summary.targetShallowLoad?.performed ? 1 : 0
+    },
+    notes,
+    nlProjection: nlLines.join("\n"),
     warnings: inspect.warnings,
     errors: inspect.errors.map((error) => `${error.code}: ${error.message}`)
   };

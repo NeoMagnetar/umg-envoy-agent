@@ -30,7 +30,8 @@ record("all previous tools still register and sleeve tree tool is added", () => 
   assert(neostackTool, "neostack inspector tool missing");
   assert(names.includes("umg_envoy_neoblock_inspect"), "expected neoblock inspector tool present");
   assert(names.includes("umg_envoy_moltblock_inspect"), "expected moltblock inspector tool present");
-  assert(names.length === 23, `expected 23 tools, got ${names.length}`);
+  assert(names.includes("umg_envoy_runtime_ir_path"), "expected runtime ir path tool present");
+  assert(names.length === 24, `expected 24 tools, got ${names.length}`);
   return { toolCount: names.length, names };
 });
 
