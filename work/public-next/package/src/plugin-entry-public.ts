@@ -5,6 +5,7 @@ import { renderUMGPath } from "./umg-path-renderer.js";
 import { validateUMGPath } from "./umg-path-validator.js";
 import { buildPublicPath } from "./public-path-builder.js";
 import { inspectRealLibraryPublicCuratedSleeve, resolveRealLibraryPublicCurated } from "./real-library-resolver.js";
+import { getCurrentSleeveStatus } from "./umg-graph-resolver.js";
 import type {
   BlockLibrarySummary,
   PluginConfig,
@@ -302,6 +303,10 @@ function realSleeveInspect(sleeveId: string, libraryRoot?: string, shallowLoadTa
   });
 }
 
+function currentSleeveStatus(sleeveId?: string, libraryRoot?: string) {
+  return getCurrentSleeveStatus({ sleeveId, libraryRoot });
+}
+
 function searchBlocks(query: string, metaUrl = import.meta.url) {
   const q = query.trim().toLowerCase();
   const blocks = loadBlocks(publicContentRoot(metaUrl));
@@ -504,6 +509,7 @@ function registerCliBridge(api: any, config?: PluginConfig) {
     root.command("real-library-status").action(async () => console.log(JSON.stringify(realLibraryStatus(), null, 2)));
     root.command("real-sleeve-list").action(async () => console.log(JSON.stringify(realSleeveList(), null, 2)));
     root.command("real-sleeve-inspect").requiredOption("--sleeve <id>").option("--library-root <path>").option("--shallow-load-target-ref <ref>").action(async (opts: { sleeve: string; libraryRoot?: string; shallowLoadTargetRef?: string }) => console.log(JSON.stringify(realSleeveInspect(opts.sleeve, opts.libraryRoot, opts.shallowLoadTargetRef), null, 2)));
+    root.command("current-sleeve-status").option("--sleeve <id>").option("--library-root <path>").action(async (opts: { sleeve?: string; libraryRoot?: string }) => console.log(JSON.stringify(currentSleeveStatus(opts.sleeve, opts.libraryRoot), null, 2)));
     root.command("parse-path").requiredOption("--file <path>").action(async (opts: { file: string }) => console.log(JSON.stringify(parseUMGPath(fs.readFileSync(opts.file, "utf8")), null, 2)));
     root.command("validate-path").requiredOption("--file <path>").action(async (opts: { file: string }) => { const issues = validateUMGPath(parseUMGPath(fs.readFileSync(opts.file, "utf8"))); console.log(JSON.stringify({ ok: issues.every((issue) => issue.severity !== "error"), issues }, null, 2)); });
     root.command("render-path").requiredOption("--file <path>").action(async (opts: { file: string }) => { const raw = fs.readFileSync(opts.file, "utf8"); const parsed = opts.file.toLowerCase().endsWith(".json") ? JSON.parse(raw) : parseUMGPath(raw); console.log(renderUMGPath(parsed)); });
@@ -536,6 +542,7 @@ const entry = {
     api.registerTool({ name: "umg_envoy_real_library_status", description: "Load the real public-curated sleeve catalog from the selected UMG Block Library root in readonly mode.", parameters: Type.Object({}, { additionalProperties: false }), async execute() { return { content: [{ type: "text", text: JSON.stringify(realLibraryStatus(), null, 2) }] }; } }, { optional: true });
     api.registerTool({ name: "umg_envoy_real_sleeve_list", description: "Return safe curated sleeve summaries from the real UMG Block Library in readonly mode.", parameters: Type.Object({}, { additionalProperties: false }), async execute() { return { content: [{ type: "text", text: JSON.stringify(realSleeveList(), null, 2) }] }; } }, { optional: true });
     api.registerTool({ name: "umg_envoy_real_sleeve_inspect", description: "Inspect one safe loadable public-curated sleeve from the real UMG Block Library in readonly mode.", parameters: Type.Object({ sleeveId: Type.String(), libraryRoot: Type.Optional(Type.String()), shallowLoadTargetRef: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input: { sleeveId: string; libraryRoot?: string; shallowLoadTargetRef?: string }) { return { content: [{ type: "text", text: JSON.stringify(realSleeveInspect(input.sleeveId, input.libraryRoot, input.shallowLoadTargetRef), null, 2) }] }; } }, { optional: true });
+    api.registerTool({ name: "umg_envoy_current_sleeve_status", description: "Return the current/inferred public_curated sleeve graph status in a compact read-only form.", parameters: Type.Object({ sleeveId: Type.Optional(Type.String()), libraryRoot: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input: { sleeveId?: string; libraryRoot?: string }) { return { content: [{ type: "text", text: JSON.stringify(currentSleeveStatus(input.sleeveId, input.libraryRoot), null, 2) }] }; } }, { optional: true });
   }
 };
 

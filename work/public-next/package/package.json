@@ -41,7 +41,8 @@
     "umg:alpha-demo:smoke": "node -e \"import('./dist/plugin-entry-public.js').then(async (m) => { const entry = m.default; const defs = []; entry.register({ registerTool(def) { defs.push(def); } }, {}); const alpha = defs.find(d => d.name === 'umg_envoy_alpha_demo'); if (!alpha) { throw new Error('umg_envoy_alpha_demo missing'); } const result = await alpha.execute({ message: 'Give me a concise demo', sleeveId: 'public-basic-envoy' }); console.log(result.content[0].text); const parsed = JSON.parse(result.content[0].text); if (!parsed.ok) process.exit(1); })\"",
     "umg:operational-sleeve:smoke": "node -e \"import('./dist/plugin-entry-public.js').then(async (m) => { const entry = m.default; const defs = []; entry.register({ registerTool(def) { defs.push(def); } }, {}); const inspect = defs.find(d => d.name === 'umg_envoy_sleeve_inspect'); if (!inspect) { throw new Error('umg_envoy_sleeve_inspect missing'); } const result = await inspect.execute({ sleeveId: 'public-basic-envoy' }); console.log(result.content[0].text); const parsed = JSON.parse(result.content[0].text); if (!parsed.ok) process.exit(1); })\"",
     "pack:dry": "npm pack --dry-run",
-    "alpha6:real-library-resolver:smoke": "node scripts/alpha6-real-library-resolver-smoke.mjs"
+    "alpha6:real-library-resolver:smoke": "node scripts/alpha6-real-library-resolver-smoke.mjs",
+    "alpha7:graph-resolver:smoke": "node scripts/alpha7-graph-resolver-smoke.mjs"
   },
   "engines": {
     "node": ">=22"

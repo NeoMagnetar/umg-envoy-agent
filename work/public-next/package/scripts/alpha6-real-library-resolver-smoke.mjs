@@ -221,7 +221,7 @@ record("unsupported mode still rejects", () => {
   return result.errors[0];
 });
 
-record("original alpha.5 tools still register and tool count is 18", () => {
+record("original alpha.6 tools still register unchanged", () => {
   const defs = [];
   plugin.register({ registerTool(def) { defs.push(def); } }, {});
   const expected = [
@@ -247,7 +247,8 @@ record("original alpha.5 tools still register and tool count is 18", () => {
   const names = defs.map((def) => def.name);
   const missing = expected.filter((name) => !names.includes(name));
   assert(missing.length === 0, `missing tools: ${missing.join(", ")}`);
-  assert(names.length === 18, `expected 18 tools, got ${names.length}`);
+  assert(names.includes("umg_envoy_current_sleeve_status"), "expected new Step 1 tool present");
+  assert(names.length === 19, `expected 19 tools after Step 1 addition, got ${names.length}`);
   return { toolCount: names.length, names };
 });
 
