@@ -282,6 +282,64 @@ export interface UmgNeoBlockInspectResult {
   errors: string[];
 }
 
+export interface UmgMoltBlockInspectRequest {
+  moltBlockId?: string;
+  sleeveId?: string;
+  neoblockId?: string;
+  libraryRoot?: string;
+}
+
+export interface UmgMoltBlockHold {
+  code: string;
+  message: string;
+}
+
+export interface UmgMoltBlockInspectSummary {
+  moltBlockId: string;
+  moltType: string | null;
+  moltTypeSource: "shallow_loaded_target" | "inferred_from_ref_id" | "unknown";
+  state: UmgActivationState;
+  source: "shallow_loaded_target";
+  sourcePath: string | null;
+  contentPreview: string | null;
+  mergeKey: string | null;
+  stackKey: string | null;
+  stackRank: number | null;
+  warnings: string[];
+}
+
+export interface UmgMoltBlockInspectResult {
+  ok: boolean;
+  mode: "public_curated";
+  readOnly: true;
+  execution: "not_performed";
+  directSource: "not_enabled";
+  requested: {
+    sleeveId: string;
+    neoblockId: string | null;
+    moltBlockId: string | null;
+  };
+  hold?: UmgMoltBlockHold;
+  activeSleeve: {
+    sleeveId: string;
+    title: string | null;
+    sourcePath: string | null;
+    resolutionStatus: string | null;
+  };
+  parentNeoBlock: {
+    neoblockId: string;
+    state: UmgActivationState;
+    resolutionStatus: string;
+  } | null;
+  moltBlock: UmgMoltBlockInspectSummary | null;
+  notes: Array<{
+    code: string;
+    message: string;
+  }>;
+  warnings: string[];
+  errors: string[];
+}
+
 const DEFAULT_LIBRARY_ROOT = "C:\\.openclaw\\workspace\\UMG-Block-Library";
 const DEFAULT_CURRENT_SLEEVE_ID = "neomagnetar-dynamic-persona-v1";
 const DEFAULT_SHALLOW_LOAD_TARGET_REF = "primary.sample";
@@ -1124,6 +1182,183 @@ export function inspectNeoBlock(input?: UmgNeoBlockInspectRequest): UmgNeoBlockI
     neoblock,
     moltBlocks,
     notes,
+    warnings: inspect.warnings,
+    errors: inspect.errors.map((error) => `${error.code}: ${error.message}`)
+  };
+}
+
+export function inspectMoltBlock(input?: UmgMoltBlockInspectRequest): UmgMoltBlockInspectResult {
+  const sleeveId = input?.sleeveId ?? DEFAULT_CURRENT_SLEEVE_ID;
+  const neoblockId = input?.neoblockId ?? null;
+  const moltBlockId = input?.moltBlockId ?? null;
+  const libraryRoot = input?.libraryRoot ?? DEFAULT_LIBRARY_ROOT;
+
+  const baseResult = {
+    mode: "public_curated" as const,
+    readOnly: true as const,
+    execution: "not_performed" as const,
+    directSource: "not_enabled" as const,
+    requested: {
+      sleeveId,
+      neoblockId,
+      moltBlockId
+    }
+  };
+
+  if (!moltBlockId) {
+    return {
+      ok: false,
+      ...baseResult,
+      hold: {
+        code: "HOLD_MOLTBLOCK_ID_REQUIRED",
+        message: "A moltBlockId is required for MOLT block inspection."
+      },
+      activeSleeve: {
+        sleeveId,
+        title: null,
+        sourcePath: null,
+        resolutionStatus: null
+      },
+      parentNeoBlock: null,
+      moltBlock: null,
+      notes: [],
+      warnings: [],
+      errors: []
+    };
+  }
+
+  const inspect = inspectRealLibraryPublicCuratedSleeve({
+    sleeveId,
+    libraryRoot,
+    mode: "public_curated",
+    shallowLoadTargetRef: DEFAULT_SHALLOW_LOAD_TARGET_REF
+  });
+
+  if (!inspect.ok || !inspect.summary) {
+    const firstCode = inspect.errors[0]?.code ?? "HOLD_SLEEVE_NOT_LOADABLE_PUBLIC_CURATED";
+    return {
+      ok: false,
+      ...baseResult,
+      hold: {
+        code: firstCode,
+        message: inspect.errors[0]?.message ?? "Sleeve could not be inspected in public_curated mode."
+      },
+      activeSleeve: {
+        sleeveId,
+        title: null,
+        sourcePath: null,
+        resolutionStatus: inspect.resolutionStatus ?? null
+      },
+      parentNeoBlock: null,
+      moltBlock: null,
+      notes: [],
+      warnings: inspect.warnings,
+      errors: inspect.errors.map((error) => `${error.code}: ${error.message}`)
+    };
+  }
+
+  const summary = inspect.summary;
+  const activeSleeve = {
+    sleeveId: summary.id ?? sleeveId,
+    title: summary.title ?? summary.name ?? null,
+    sourcePath: inspect.sourcePath ?? null,
+    resolutionStatus: inspect.resolutionStatus ?? null
+  };
+
+  const visibleMoltBlocks = summary.targetShallowLoad?.performed === true
+    ? [{
+        moltBlockId: summary.targetShallowLoad.loadedRef,
+        parentNeoBlockId: summary.targetShallowLoad.loadedRef,
+        moltType: summary.targetShallowLoad.summary.moltType ?? inferMoltTypeFromRefId(summary.targetShallowLoad.loadedRef),
+        contentPreview: summary.targetShallowLoad.summary.contentPreview ?? null,
+        sourcePath: summary.targetShallowLoad.candidatePath ?? null,
+        warnings: summary.targetShallowLoad.warnings ?? []
+      }]
+    : [];
+
+  if (neoblockId) {
+    if (!summary.explicitReferences.neoblocks.includes(neoblockId)) {
+      return {
+        ok: false,
+        ...baseResult,
+        hold: {
+          code: "HOLD_NEOBLOCK_REF_NOT_FOUND_IN_SLEEVE",
+          message: `NeoBlock ref not found in sleeve: ${neoblockId}`
+        },
+        activeSleeve,
+        parentNeoBlock: null,
+        moltBlock: null,
+        notes: [],
+        warnings: inspect.warnings,
+        errors: inspect.errors.map((error) => `${error.code}: ${error.message}`)
+      };
+    }
+
+    if (!(summary.targetShallowLoad?.performed === true && summary.targetShallowLoad.loadedRef === neoblockId)) {
+      const snapshot = buildCurrentSleeveGraphSnapshot({ sleeveId, libraryRoot });
+      const node = findNode(snapshot, neoblockId);
+      return {
+        ok: false,
+        ...baseResult,
+        hold: {
+          code: "HOLD_NEOBLOCK_TARGET_AVAILABLE_NOT_LOADED",
+          message: "The parent NeoBlock target is available but was not shallow-loaded in the current Alpha.7 route, so its MOLT blocks are not visible."
+        },
+        activeSleeve,
+        parentNeoBlock: {
+          neoblockId,
+          state: node?.state ?? "DORMANT",
+          resolutionStatus: "TARGET_AVAILABLE_NOT_LOADED"
+        },
+        moltBlock: null,
+        notes: [],
+        warnings: inspect.warnings,
+        errors: inspect.errors.map((error) => `${error.code}: ${error.message}`)
+      };
+    }
+  }
+
+  const visible = visibleMoltBlocks.find((entry) => entry.moltBlockId === moltBlockId);
+  if (!visible) {
+    return {
+      ok: false,
+      ...baseResult,
+      hold: {
+        code: "HOLD_MOLTBLOCK_NOT_FOUND_IN_VISIBLE_GRAPH",
+        message: `MOLT block not found in visible graph: ${moltBlockId}`
+      },
+      activeSleeve,
+      parentNeoBlock: null,
+      moltBlock: null,
+      notes: [],
+      warnings: inspect.warnings,
+      errors: inspect.errors.map((error) => `${error.code}: ${error.message}`)
+    };
+  }
+
+  return {
+    ok: true,
+    ...baseResult,
+    activeSleeve,
+    parentNeoBlock: {
+      neoblockId: visible.parentNeoBlockId,
+      state: "ON",
+      resolutionStatus: "SHALLOW_LOADED"
+    },
+    moltBlock: {
+      moltBlockId: visible.moltBlockId,
+      moltType: visible.moltType,
+      moltTypeSource: "shallow_loaded_target",
+      state: "ON",
+      source: "shallow_loaded_target",
+      sourcePath: visible.sourcePath,
+      contentPreview: visible.contentPreview,
+      mergeKey: null,
+      stackKey: null,
+      stackRank: null,
+      warnings: visible.warnings
+    },
+    notes: [],
     warnings: inspect.warnings,
     errors: inspect.errors.map((error) => `${error.code}: ${error.message}`)
   };

@@ -24,7 +24,8 @@ const neoblockTool = defs.find((def) => def.name === "umg_envoy_neoblock_inspect
 
 record("all previous tools still register and neoblock inspector is added", () => {
   assert(neoblockTool, "neoblock inspector tool missing");
-  assert(names.length === 22, `expected 22 tools, got ${names.length}`);
+  assert(names.includes("umg_envoy_moltblock_inspect"), "expected umg_envoy_moltblock_inspect");
+  assert(names.length === 23, `expected 23 tools, got ${names.length}`);
   return { toolCount: names.length, names };
 });
 
