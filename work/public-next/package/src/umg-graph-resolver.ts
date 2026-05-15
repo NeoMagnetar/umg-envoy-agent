@@ -511,6 +511,84 @@ export interface UmgRuntimeIrMatrixResult {
   errors: string[];
 }
 
+export interface UmgResponseEnvelopeDraftRequest {
+  sleeveId?: string;
+  trigger?: string;
+  directive?: string;
+  instruction?: string;
+  subject?: string;
+  primary?: string;
+  philosophy?: string;
+  blueprint?: string;
+  formalResponseContent?: string;
+  includeIrMatrix?: boolean;
+  includeMetadata?: boolean;
+  libraryRoot?: string;
+}
+
+export interface UmgResponseEnvelopeActiveStack {
+  activeSleeve: string;
+  activeSleeveTitle: string | null;
+  runtimeMode: string;
+  toolExecution: "off";
+  directSource: "off";
+  activeRoute: string[];
+  dormantRefCount: number;
+  excludedLaneCount: number;
+}
+
+export interface UmgResponseEnvelopeIntuition {
+  text: string;
+  confidence: "bounded";
+  limitations: string[];
+}
+
+export interface UmgResponseEnvelopeMoltMap {
+  Trigger: string;
+  Directive: string;
+  Instruction: string;
+  Subject: string;
+  Primary: string;
+  Philosophy: string;
+  Blueprint: string;
+}
+
+export interface UmgResponseEnvelopeMetadata {
+  ActiveSleeve: string;
+  Mode: string;
+  Scope: string;
+  Domain: string;
+  Project: string;
+  State: string;
+  ToolCount: number;
+  Execution: string;
+  DirectSource: string;
+  Surface: string;
+  SpecVersion: string;
+}
+
+export interface UmgResponseEnvelopeDraftResult {
+  ok: boolean;
+  mode: "public_curated";
+  readOnly: true;
+  execution: "not_performed";
+  directSource: "not_enabled";
+  requested: {
+    sleeveId: string;
+    includeIrMatrix: boolean;
+    includeMetadata: boolean;
+  };
+  activeStack: UmgResponseEnvelopeActiveStack;
+  envoyIntuition: UmgResponseEnvelopeIntuition;
+  moltMap: UmgResponseEnvelopeMoltMap;
+  formalResponseContent: string;
+  irMatrix: UmgRuntimeIrMatrixResult | null;
+  metadata: UmgResponseEnvelopeMetadata | null;
+  nlProjection: string;
+  warnings: string[];
+  errors: string[];
+}
+
 const DEFAULT_LIBRARY_ROOT = "C:\\.openclaw\\workspace\\UMG-Block-Library";
 const DEFAULT_CURRENT_SLEEVE_ID = "neomagnetar-dynamic-persona-v1";
 const DEFAULT_SHALLOW_LOAD_TARGET_REF = "primary.sample";
@@ -1934,5 +2012,136 @@ export function getRuntimeIrMatrixFull(input?: UmgRuntimeIrMatrixRequest): UmgRu
     nlProjection,
     warnings: inspect.warnings,
     errors: inspect.errors.map((error) => `${error.code}: ${error.message}`)
+  };
+}
+
+export function renderResponseEnvelopeDraft(input?: UmgResponseEnvelopeDraftRequest): UmgResponseEnvelopeDraftResult {
+  const sleeveId = input?.sleeveId ?? DEFAULT_CURRENT_SLEEVE_ID;
+  const includeIrMatrix = input?.includeIrMatrix ?? true;
+  const includeMetadata = input?.includeMetadata ?? true;
+  const libraryRoot = input?.libraryRoot ?? DEFAULT_LIBRARY_ROOT;
+
+  const path = getRuntimeIrPath({ sleeveId, includeDormant: true, includeExcludedLanes: true, libraryRoot });
+  const matrix = includeIrMatrix ? getRuntimeIrMatrixFull({ sleeveId, includeDormant: true, includeExcludedLanes: true, includeEdges: true, includeNlProjection: true, libraryRoot }) : null;
+
+  const activeStack: UmgResponseEnvelopeActiveStack = {
+    activeSleeve: path.activeSleeve.sleeveId,
+    activeSleeveTitle: path.activeSleeve.title,
+    runtimeMode: "public_curated",
+    toolExecution: "off",
+    directSource: "off",
+    activeRoute: [
+      `SLEEVE ${path.activeSleeve.sleeveId} [ON]`,
+      `NEOSTACK none_declared [REFERENCE_ONLY]`,
+      `NEOBLOCK primary.sample [ON]`,
+      `MOLTBLOCK primary.sample / Primary [ON]`
+    ],
+    dormantRefCount: path.summary.dormantRefCount,
+    excludedLaneCount: path.summary.excludedLaneCount
+  };
+
+  const envoyIntuition: UmgResponseEnvelopeIntuition = {
+    text: "The active sleeve is readable. The current route is shallow-loaded and non-executing. The matrix is visible-graph-only.",
+    confidence: "bounded",
+    limitations: [
+      "no recursive loading",
+      "no execution",
+      "no direct_source",
+      "no HUMAN/archive/Resleever machine loading"
+    ]
+  };
+
+  const moltMap: UmgResponseEnvelopeMoltMap = {
+    Trigger: input?.trigger ?? "user_request",
+    Directive: input?.directive ?? "n/a",
+    Instruction: input?.instruction ?? "n/a",
+    Subject: input?.subject ?? "n/a",
+    Primary: input?.primary ?? "n/a",
+    Philosophy: input?.philosophy ?? "n/a",
+    Blueprint: input?.blueprint ?? "n/a"
+  };
+
+  const formalResponseContent = input?.formalResponseContent ?? "[formal response content placeholder]";
+
+  const metadata: UmgResponseEnvelopeMetadata | null = includeMetadata ? {
+    ActiveSleeve: path.activeSleeve.sleeveId,
+    Mode: "public_curated_readonly",
+    Scope: "response_envelope_draft",
+    Domain: "OPENCLAW / UMG",
+    Project: "UMG Envoy Agent",
+    State: "visible_graph_only",
+    ToolCount: 26,
+    Execution: "not_performed",
+    DirectSource: "not_enabled",
+    Surface: "plugin_tool",
+    SpecVersion: "alpha7.response_envelope_draft.v1"
+  } : null;
+
+  const nlLines = [
+    "Active Stack:",
+    `- Active Sleeve: ${activeStack.activeSleeve}`,
+    `- Active Sleeve Title: ${activeStack.activeSleeveTitle}`,
+    `- Runtime Mode: ${activeStack.runtimeMode}`,
+    `- Active Route: SLEEVE → NEOBLOCK primary.sample → MOLTBLOCK Primary`,
+    `- Tool Execution: ${activeStack.toolExecution}`,
+    `- Direct Source: ${activeStack.directSource}`,
+    "",
+    `(Envoy Intuition: ${envoyIntuition.text})`,
+    "",
+    "Current Context — MOLT Map:",
+    `Trigger: ${moltMap.Trigger}`,
+    `Directive: ${moltMap.Directive}`,
+    `Instruction: ${moltMap.Instruction}`,
+    `Subject: ${moltMap.Subject}`,
+    `Primary: ${moltMap.Primary}`,
+    `Philosophy: ${moltMap.Philosophy}`,
+    `Blueprint: ${moltMap.Blueprint}`,
+    "",
+    "Formal Response Content:",
+    formalResponseContent
+  ];
+
+  if (includeIrMatrix && matrix) {
+    nlLines.push("", matrix.nlProjection);
+  }
+
+  if (includeMetadata && metadata) {
+    nlLines.push(
+      "",
+      "Metadata:",
+      `ActiveSleeve: ${metadata.ActiveSleeve}`,
+      `Mode: ${metadata.Mode}`,
+      `Scope: ${metadata.Scope}`,
+      `Domain: ${metadata.Domain}`,
+      `Project: ${metadata.Project}`,
+      `State: ${metadata.State}`,
+      `ToolCount: ${metadata.ToolCount}`,
+      `Execution: ${metadata.Execution}`,
+      `DirectSource: ${metadata.DirectSource}`,
+      `Surface: ${metadata.Surface}`,
+      `SpecVersion: ${metadata.SpecVersion}`
+    );
+  }
+
+  return {
+    ok: true,
+    mode: "public_curated",
+    readOnly: true,
+    execution: "not_performed",
+    directSource: "not_enabled",
+    requested: {
+      sleeveId: path.activeSleeve.sleeveId,
+      includeIrMatrix,
+      includeMetadata
+    },
+    activeStack,
+    envoyIntuition,
+    moltMap,
+    formalResponseContent,
+    irMatrix: matrix,
+    metadata,
+    nlProjection: nlLines.join("\n"),
+    warnings: path.warnings,
+    errors: path.errors
   };
 }

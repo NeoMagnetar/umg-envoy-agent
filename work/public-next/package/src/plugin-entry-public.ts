@@ -5,7 +5,7 @@ import { renderUMGPath } from "./umg-path-renderer.js";
 import { validateUMGPath } from "./umg-path-validator.js";
 import { buildPublicPath } from "./public-path-builder.js";
 import { inspectRealLibraryPublicCuratedSleeve, resolveRealLibraryPublicCurated } from "./real-library-resolver.js";
-import { getCurrentSleeveStatus, getSleeveTree, inspectNeoStack, inspectNeoBlock, inspectMoltBlock, getRuntimeIrPath, getRuntimeIrMatrixFull } from "./umg-graph-resolver.js";
+import { getCurrentSleeveStatus, getSleeveTree, inspectNeoStack, inspectNeoBlock, inspectMoltBlock, getRuntimeIrPath, getRuntimeIrMatrixFull, renderResponseEnvelopeDraft } from "./umg-graph-resolver.js";
 import type {
   BlockLibrarySummary,
   PluginConfig,
@@ -331,6 +331,36 @@ function runtimeIrMatrixFull(sleeveId?: string, includeDormant?: boolean, includ
   return getRuntimeIrMatrixFull({ sleeveId, includeDormant, includeExcludedLanes, includeEdges, includeNlProjection, libraryRoot });
 }
 
+function responseEnvelopeDraft(
+  sleeveId?: string,
+  trigger?: string,
+  directive?: string,
+  instruction?: string,
+  subject?: string,
+  primary?: string,
+  philosophy?: string,
+  blueprint?: string,
+  formalResponseContent?: string,
+  includeIrMatrix?: boolean,
+  includeMetadata?: boolean,
+  libraryRoot?: string
+) {
+  return renderResponseEnvelopeDraft({
+    sleeveId,
+    trigger,
+    directive,
+    instruction,
+    subject,
+    primary,
+    philosophy,
+    blueprint,
+    formalResponseContent,
+    includeIrMatrix,
+    includeMetadata,
+    libraryRoot
+  });
+}
+
 function searchBlocks(query: string, metaUrl = import.meta.url) {
   const q = query.trim().toLowerCase();
   const blocks = loadBlocks(publicContentRoot(metaUrl));
@@ -540,6 +570,7 @@ function registerCliBridge(api: any, config?: PluginConfig) {
     root.command("moltblock-inspect").option("--moltblock <id>").option("--sleeve <id>").option("--neoblock <id>").option("--library-root <path>").action(async (opts: { moltblock?: string; sleeve?: string; neoblock?: string; libraryRoot?: string }) => console.log(JSON.stringify(moltblockInspect(opts.moltblock, opts.sleeve, opts.neoblock, opts.libraryRoot), null, 2)));
     root.command("runtime-ir-path").option("--sleeve <id>").option("--include-dormant <bool>").option("--include-excluded-lanes <bool>").option("--library-root <path>").action(async (opts: { sleeve?: string; includeDormant?: string; includeExcludedLanes?: string; libraryRoot?: string }) => console.log(JSON.stringify(runtimeIrPath(opts.sleeve, opts.includeDormant ? opts.includeDormant !== 'false' : undefined, opts.includeExcludedLanes ? opts.includeExcludedLanes !== 'false' : undefined, opts.libraryRoot), null, 2)));
     root.command("runtime-ir-matrix-full").option("--sleeve <id>").option("--include-dormant <bool>").option("--include-excluded-lanes <bool>").option("--include-edges <bool>").option("--include-nl-projection <bool>").option("--library-root <path>").action(async (opts: { sleeve?: string; includeDormant?: string; includeExcludedLanes?: string; includeEdges?: string; includeNlProjection?: string; libraryRoot?: string }) => console.log(JSON.stringify(runtimeIrMatrixFull(opts.sleeve, opts.includeDormant ? opts.includeDormant !== 'false' : undefined, opts.includeExcludedLanes ? opts.includeExcludedLanes !== 'false' : undefined, opts.includeEdges ? opts.includeEdges !== 'false' : undefined, opts.includeNlProjection ? opts.includeNlProjection !== 'false' : undefined, opts.libraryRoot), null, 2)));
+    root.command("response-envelope-draft").option("--sleeve <id>").option("--trigger <text>").option("--directive <text>").option("--instruction <text>").option("--subject <text>").option("--primary <text>").option("--philosophy <text>").option("--blueprint <text>").option("--formal-response-content <text>").option("--include-ir-matrix <bool>").option("--include-metadata <bool>").option("--library-root <path>").action(async (opts: { sleeve?: string; trigger?: string; directive?: string; instruction?: string; subject?: string; primary?: string; philosophy?: string; blueprint?: string; formalResponseContent?: string; includeIrMatrix?: string; includeMetadata?: string; libraryRoot?: string }) => console.log(JSON.stringify(responseEnvelopeDraft(opts.sleeve, opts.trigger, opts.directive, opts.instruction, opts.subject, opts.primary, opts.philosophy, opts.blueprint, opts.formalResponseContent, opts.includeIrMatrix ? opts.includeIrMatrix !== 'false' : undefined, opts.includeMetadata ? opts.includeMetadata !== 'false' : undefined, opts.libraryRoot), null, 2)));
     root.command("parse-path").requiredOption("--file <path>").action(async (opts: { file: string }) => console.log(JSON.stringify(parseUMGPath(fs.readFileSync(opts.file, "utf8")), null, 2)));
     root.command("validate-path").requiredOption("--file <path>").action(async (opts: { file: string }) => { const issues = validateUMGPath(parseUMGPath(fs.readFileSync(opts.file, "utf8"))); console.log(JSON.stringify({ ok: issues.every((issue) => issue.severity !== "error"), issues }, null, 2)); });
     root.command("render-path").requiredOption("--file <path>").action(async (opts: { file: string }) => { const raw = fs.readFileSync(opts.file, "utf8"); const parsed = opts.file.toLowerCase().endsWith(".json") ? JSON.parse(raw) : parseUMGPath(raw); console.log(renderUMGPath(parsed)); });
@@ -579,6 +610,7 @@ const entry = {
     api.registerTool({ name: "umg_envoy_moltblock_inspect", description: "Inspect one shallow-visible MOLT block from the active/current public_curated graph.", parameters: Type.Object({ moltBlockId: Type.Optional(Type.String()), sleeveId: Type.Optional(Type.String()), neoblockId: Type.Optional(Type.String()), libraryRoot: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input: { moltBlockId?: string; sleeveId?: string; neoblockId?: string; libraryRoot?: string }) { return { content: [{ type: "text", text: JSON.stringify(moltblockInspect(input.moltBlockId, input.sleeveId, input.neoblockId, input.libraryRoot), null, 2) }] }; } }, { optional: true });
     api.registerTool({ name: "umg_envoy_runtime_ir_path", description: "Return the current read-only UMG runtime path from the visible graph.", parameters: Type.Object({ sleeveId: Type.Optional(Type.String()), includeDormant: Type.Optional(Type.Boolean()), includeExcludedLanes: Type.Optional(Type.Boolean()), libraryRoot: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input: { sleeveId?: string; includeDormant?: boolean; includeExcludedLanes?: boolean; libraryRoot?: string }) { return { content: [{ type: "text", text: JSON.stringify(runtimeIrPath(input.sleeveId, input.includeDormant, input.includeExcludedLanes, input.libraryRoot), null, 2) }] }; } }, { optional: true });
     api.registerTool({ name: "umg_envoy_runtime_ir_matrix_full", description: "Return the current visible UMG graph as a read-only IR matrix with nodes, edges, states, route path, dormant refs, excluded lanes, and NL projection.", parameters: Type.Object({ sleeveId: Type.Optional(Type.String()), includeDormant: Type.Optional(Type.Boolean()), includeExcludedLanes: Type.Optional(Type.Boolean()), includeEdges: Type.Optional(Type.Boolean()), includeNlProjection: Type.Optional(Type.Boolean()), libraryRoot: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input: { sleeveId?: string; includeDormant?: boolean; includeExcludedLanes?: boolean; includeEdges?: boolean; includeNlProjection?: boolean; libraryRoot?: string }) { return { content: [{ type: "text", text: JSON.stringify(runtimeIrMatrixFull(input.sleeveId, input.includeDormant, input.includeExcludedLanes, input.includeEdges, input.includeNlProjection, input.libraryRoot), null, 2) }] }; } }, { optional: true });
+    api.registerTool({ name: "umg_envoy_response_envelope_draft", description: "Return a draft UMG-style response envelope using the current visible graph, runtime IR matrix, and supplied MOLT map fields.", parameters: Type.Object({ sleeveId: Type.Optional(Type.String()), trigger: Type.Optional(Type.String()), directive: Type.Optional(Type.String()), instruction: Type.Optional(Type.String()), subject: Type.Optional(Type.String()), primary: Type.Optional(Type.String()), philosophy: Type.Optional(Type.String()), blueprint: Type.Optional(Type.String()), formalResponseContent: Type.Optional(Type.String()), includeIrMatrix: Type.Optional(Type.Boolean()), includeMetadata: Type.Optional(Type.Boolean()), libraryRoot: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input: { sleeveId?: string; trigger?: string; directive?: string; instruction?: string; subject?: string; primary?: string; philosophy?: string; blueprint?: string; formalResponseContent?: string; includeIrMatrix?: boolean; includeMetadata?: boolean; libraryRoot?: string }) { return { content: [{ type: "text", text: JSON.stringify(responseEnvelopeDraft(input.sleeveId, input.trigger, input.directive, input.instruction, input.subject, input.primary, input.philosophy, input.blueprint, input.formalResponseContent, input.includeIrMatrix, input.includeMetadata, input.libraryRoot), null, 2) }] }; } }, { optional: true });
   }
 };
 

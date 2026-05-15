@@ -32,7 +32,8 @@ record("all previous tools still register and sleeve tree tool is added", () => 
   assert(names.includes("umg_envoy_moltblock_inspect"), "expected moltblock inspector tool present");
   assert(names.includes("umg_envoy_runtime_ir_path"), "expected runtime ir path tool present");
   assert(names.includes("umg_envoy_runtime_ir_matrix_full"), "expected runtime ir matrix full tool present");
-  assert(names.length === 25, `expected 25 tools, got ${names.length}`);
+  assert(names.includes("umg_envoy_response_envelope_draft"), "expected response envelope draft tool present");
+  assert(names.length === 26, `expected 26 tools, got ${names.length}`);
   return { toolCount: names.length, names };
 });
 

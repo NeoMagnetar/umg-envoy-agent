@@ -21,7 +21,8 @@ const tool = defs.find((def) => def.name === "umg_envoy_runtime_ir_matrix_full")
 
 record("all previous tools still register and runtime ir matrix full is added", () => {
   assert(tool, "runtime ir matrix full tool missing");
-  assert(names.length === 25, `expected 25 tools, got ${names.length}`);
+  assert(names.includes("umg_envoy_response_envelope_draft"), "expected umg_envoy_response_envelope_draft");
+  assert(names.length === 26, `expected 26 tools, got ${names.length}`);
   return { toolCount: names.length, names };
 });
 

@@ -254,7 +254,8 @@ record("original alpha.6 tools still register unchanged", () => {
   assert(names.includes("umg_envoy_moltblock_inspect"), "expected Step 5 tool present");
   assert(names.includes("umg_envoy_runtime_ir_path"), "expected Step 6 tool present");
   assert(names.includes("umg_envoy_runtime_ir_matrix_full"), "expected Step 7 tool present");
-  assert(names.length === 25, `expected 25 tools after Step 7 addition, got ${names.length}`);
+  assert(names.includes("umg_envoy_response_envelope_draft"), "expected Step 8 tool present");
+  assert(names.length === 26, `expected 26 tools after Step 8 addition, got ${names.length}`);
   return { toolCount: names.length, names };
 });
 
