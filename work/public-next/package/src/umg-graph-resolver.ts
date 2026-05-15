@@ -163,6 +163,64 @@ export interface UmgSleeveTreeResult {
   errors: string[];
 }
 
+export interface UmgNeoStackInspectRequest {
+  sleeveId?: string;
+  neostackId?: string;
+  includeNeoBlocks?: boolean;
+  libraryRoot?: string;
+}
+
+export interface UmgNeoStackHold {
+  code: string;
+  message: string;
+}
+
+export interface UmgNeoStackSummary {
+  neostackId: string;
+  title: string | null;
+  state: UmgActivationState;
+  sourcePath: string | null;
+  resolutionStatus: string | null;
+  containedNeoBlockCount: number;
+  gateCount: number;
+  triggerCount: number;
+  warnings: string[];
+}
+
+export interface UmgNeoStackInspectResult {
+  ok: boolean;
+  mode: "public_curated";
+  readOnly: true;
+  execution: "not_performed";
+  directSource: "not_enabled";
+  requested: {
+    sleeveId: string;
+    neostackId: string | null;
+    includeNeoBlocks: boolean;
+  };
+  hold?: UmgNeoStackHold;
+  activeSleeve: {
+    sleeveId: string;
+    title: string | null;
+    sourcePath: string | null;
+    resolutionStatus: string | null;
+  };
+  neostack: UmgNeoStackSummary | null;
+  sleeveSummary: {
+    sleeveId: string;
+    declaredNeoStackCount: number;
+    explicitNeoBlockRefCount: number;
+    childrenMode: UmgSleeveTreeChildrenMode;
+  };
+  fallback: {
+    kind: "explicit_neoblock_refs" | "none";
+    available: boolean;
+    refs: string[];
+  };
+  warnings: string[];
+  errors: string[];
+}
+
 const DEFAULT_LIBRARY_ROOT = "C:\\.openclaw\\workspace\\UMG-Block-Library";
 const DEFAULT_CURRENT_SLEEVE_ID = "neomagnetar-dynamic-persona-v1";
 const DEFAULT_SHALLOW_LOAD_TARGET_REF = "primary.sample";
@@ -195,6 +253,21 @@ function findNode(snapshot: UmgGraphSnapshot, id: string): UmgGraphNode | undefi
   return snapshot.nodes.find((node) => node.id === id);
 }
 
+function buildExcludedLanes(): UmgGraphExcludedLane[] {
+  return [
+    { lane: "archive", state: "OFF", reason: "forbidden" },
+    { lane: "HUMAN", state: "REFERENCE_ONLY", reason: "not_machine_loaded" },
+    { lane: "Resleever", state: "OFF", reason: "not_allowed" },
+    { lane: "direct_source", state: "OFF", reason: "not_enabled" }
+  ];
+}
+
+function getFallbackChildrenMode(declaredNeoStackCount: number, explicitNeoBlockRefCount: number): UmgSleeveTreeChildrenMode {
+  if (declaredNeoStackCount > 0) return "DECLARED_NEOSTACKS";
+  if (explicitNeoBlockRefCount > 0) return "EXPLICIT_NEOBLOCK_REFS_FALLBACK";
+  return "EMPTY";
+}
+
 export function buildCurrentSleeveGraphSnapshot(input?: { sleeveId?: string; libraryRoot?: string }): UmgGraphSnapshot {
   const sleeveId = input?.sleeveId ?? DEFAULT_CURRENT_SLEEVE_ID;
   const libraryRoot = input?.libraryRoot ?? DEFAULT_LIBRARY_ROOT;
@@ -215,12 +288,7 @@ export function buildCurrentSleeveGraphSnapshot(input?: { sleeveId?: string; lib
       activeSleeveId: sleeveId,
       nodes: [],
       edges: [],
-      excludedLanes: [
-        { lane: "archive", state: "OFF", reason: "forbidden" },
-        { lane: "HUMAN", state: "REFERENCE_ONLY", reason: "not_machine_loaded" },
-        { lane: "Resleever", state: "OFF", reason: "not_allowed" },
-        { lane: "direct_source", state: "OFF", reason: "not_enabled" }
-      ],
+      excludedLanes: buildExcludedLanes(),
       warnings: inspect.warnings,
       errors: inspect.errors.map((error) => `${error.code}: ${error.message}`)
     };
@@ -335,12 +403,7 @@ export function buildCurrentSleeveGraphSnapshot(input?: { sleeveId?: string; lib
     activeSleeveId: summary.id ?? sleeveId,
     nodes,
     edges,
-    excludedLanes: [
-      { lane: "archive", state: "OFF", reason: "forbidden" },
-      { lane: "HUMAN", state: "REFERENCE_ONLY", reason: "not_machine_loaded" },
-      { lane: "Resleever", state: "OFF", reason: "not_allowed" },
-      { lane: "direct_source", state: "OFF", reason: "not_enabled" }
-    ],
+    excludedLanes: buildExcludedLanes(),
     warnings: inspect.warnings,
     errors: inspect.errors.map((error) => `${error.code}: ${error.message}`)
   };
@@ -393,12 +456,7 @@ export function getCurrentSleeveStatus(input?: { sleeveId?: string; libraryRoot?
       triggerSummary: { count: 0, ids: [] },
       activationStateSummary: createActivationStateSummary(),
       currentRoute: [],
-      excludedLanes: [
-        { lane: "archive", state: "OFF", reason: "forbidden" },
-        { lane: "HUMAN", state: "REFERENCE_ONLY", reason: "not_machine_loaded" },
-        { lane: "Resleever", state: "OFF", reason: "not_allowed" },
-        { lane: "direct_source", state: "OFF", reason: "not_enabled" }
-      ],
+      excludedLanes: buildExcludedLanes(),
       warnings: inspect.warnings,
       errors: inspect.errors.map((error) => `${error.code}: ${error.message}`)
     };
@@ -641,5 +699,170 @@ export function getSleeveTree(input?: { sleeveId?: string; libraryRoot?: string;
     excludedLanes: snapshot.excludedLanes,
     warnings: snapshot.warnings,
     errors: snapshot.errors
+  };
+}
+
+export function inspectNeoStack(input?: UmgNeoStackInspectRequest): UmgNeoStackInspectResult {
+  const sleeveId = input?.sleeveId ?? DEFAULT_CURRENT_SLEEVE_ID;
+  const neostackId = input?.neostackId ?? null;
+  const includeNeoBlocks = input?.includeNeoBlocks ?? true;
+  const libraryRoot = input?.libraryRoot ?? DEFAULT_LIBRARY_ROOT;
+
+  const baseResult = {
+    mode: "public_curated" as const,
+    readOnly: true as const,
+    execution: "not_performed" as const,
+    directSource: "not_enabled" as const,
+    requested: {
+      sleeveId,
+      neostackId,
+      includeNeoBlocks
+    }
+  };
+
+  if (!neostackId) {
+    return {
+      ok: false,
+      ...baseResult,
+      hold: {
+        code: "HOLD_NEOSTACK_ID_REQUIRED",
+        message: "A neostackId is required for NeoStack inspection."
+      },
+      activeSleeve: {
+        sleeveId,
+        title: null,
+        sourcePath: null,
+        resolutionStatus: null
+      },
+      neostack: null,
+      sleeveSummary: {
+        sleeveId,
+        declaredNeoStackCount: 0,
+        explicitNeoBlockRefCount: 0,
+        childrenMode: "EMPTY"
+      },
+      fallback: {
+        kind: "none",
+        available: false,
+        refs: []
+      },
+      warnings: [],
+      errors: []
+    };
+  }
+
+  const inspect = inspectRealLibraryPublicCuratedSleeve({
+    sleeveId,
+    libraryRoot,
+    mode: "public_curated",
+    shallowLoadTargetRef: DEFAULT_SHALLOW_LOAD_TARGET_REF
+  });
+
+  if (!inspect.ok || !inspect.summary) {
+    const firstCode = inspect.errors[0]?.code ?? "HOLD_SLEEVE_NOT_LOADABLE_PUBLIC_CURATED";
+    return {
+      ok: false,
+      ...baseResult,
+      hold: {
+        code: firstCode,
+        message: inspect.errors[0]?.message ?? "Sleeve could not be inspected in public_curated mode."
+      },
+      activeSleeve: {
+        sleeveId,
+        title: null,
+        sourcePath: null,
+        resolutionStatus: inspect.resolutionStatus ?? null
+      },
+      neostack: null,
+      sleeveSummary: {
+        sleeveId,
+        declaredNeoStackCount: 0,
+        explicitNeoBlockRefCount: 0,
+        childrenMode: "EMPTY"
+      },
+      fallback: {
+        kind: "none",
+        available: false,
+        refs: []
+      },
+      warnings: inspect.warnings,
+      errors: inspect.errors.map((error) => `${error.code}: ${error.message}`)
+    };
+  }
+
+  const summary = inspect.summary;
+  const declaredNeoStackCount = summary.explicitReferences.neostacks.length;
+  const explicitNeoBlockRefs = summary.explicitReferences.neoblocks;
+  const childrenMode = getFallbackChildrenMode(declaredNeoStackCount, explicitNeoBlockRefs.length);
+
+  const commonResult = {
+    activeSleeve: {
+      sleeveId: summary.id ?? sleeveId,
+      title: summary.title ?? summary.name ?? null,
+      sourcePath: inspect.sourcePath ?? null,
+      resolutionStatus: inspect.resolutionStatus ?? null
+    },
+    sleeveSummary: {
+      sleeveId: summary.id ?? sleeveId,
+      declaredNeoStackCount,
+      explicitNeoBlockRefCount: explicitNeoBlockRefs.length,
+      childrenMode
+    },
+    fallback: {
+      kind: childrenMode === "EXPLICIT_NEOBLOCK_REFS_FALLBACK" ? "explicit_neoblock_refs" as const : "none" as const,
+      available: explicitNeoBlockRefs.length > 0,
+      refs: explicitNeoBlockRefs
+    },
+    warnings: inspect.warnings,
+    errors: inspect.errors.map((error) => `${error.code}: ${error.message}`)
+  };
+
+  if (declaredNeoStackCount === 0) {
+    return {
+      ok: false,
+      ...baseResult,
+      hold: {
+        code: "HOLD_NO_DECLARED_NEOSTACKS_FOR_SLEEVE",
+        message: "The selected sleeve has no declared NeoStack objects. It exposes explicit NeoBlock refs directly under the sleeve."
+      },
+      neostack: null,
+      ...commonResult
+    };
+  }
+
+  const snapshot = buildCurrentSleeveGraphSnapshot({ sleeveId, libraryRoot });
+  const node = findNode(snapshot, neostackId);
+  if (!node || node.kind !== "neostack") {
+    return {
+      ok: false,
+      ...baseResult,
+      hold: {
+        code: "HOLD_NEOSTACK_NOT_FOUND_IN_SLEEVE",
+        message: `NeoStack not declared in sleeve: ${neostackId}`
+      },
+      neostack: null,
+      ...commonResult
+    };
+  }
+
+  return {
+    ok: true,
+    ...baseResult,
+    activeSleeve: commonResult.activeSleeve,
+    neostack: {
+      neostackId: node.id,
+      title: node.label,
+      state: node.state,
+      sourcePath: node.sourcePath,
+      resolutionStatus: node.resolutionStatus,
+      containedNeoBlockCount: includeNeoBlocks ? 0 : 0,
+      gateCount: 0,
+      triggerCount: 0,
+      warnings: node.warnings
+    },
+    sleeveSummary: commonResult.sleeveSummary,
+    fallback: commonResult.fallback,
+    warnings: commonResult.warnings,
+    errors: commonResult.errors
   };
 }

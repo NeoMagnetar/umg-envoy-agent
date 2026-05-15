@@ -22,11 +22,13 @@ plugin.register({ registerTool(def) { defs.push(def); } }, {});
 const names = defs.map((def) => def.name);
 const currentSleeveTool = defs.find((def) => def.name === "umg_envoy_current_sleeve_status");
 const sleeveTreeTool = defs.find((def) => def.name === "umg_envoy_sleeve_tree");
+const neostackTool = defs.find((def) => def.name === "umg_envoy_neostack_inspect");
 
 record("all previous tools still register and sleeve tree tool is added", () => {
   assert(currentSleeveTool, "current sleeve status tool missing");
   assert(sleeveTreeTool, "sleeve tree tool missing");
-  assert(names.length === 20, `expected 20 tools, got ${names.length}`);
+  assert(neostackTool, "neostack inspector tool missing");
+  assert(names.length === 21, `expected 21 tools, got ${names.length}`);
   return { toolCount: names.length, names };
 });
 
