@@ -247,8 +247,9 @@ record("original alpha.6 tools still register unchanged", () => {
   const names = defs.map((def) => def.name);
   const missing = expected.filter((name) => !names.includes(name));
   assert(missing.length === 0, `missing tools: ${missing.join(", ")}`);
-  assert(names.includes("umg_envoy_current_sleeve_status"), "expected new Step 1 tool present");
-  assert(names.length === 19, `expected 19 tools after Step 1 addition, got ${names.length}`);
+  assert(names.includes("umg_envoy_current_sleeve_status"), "expected Step 1 tool present");
+  assert(names.includes("umg_envoy_sleeve_tree"), "expected Step 2 tool present");
+  assert(names.length === 20, `expected 20 tools after Step 2 addition, got ${names.length}`);
   return { toolCount: names.length, names };
 });
 

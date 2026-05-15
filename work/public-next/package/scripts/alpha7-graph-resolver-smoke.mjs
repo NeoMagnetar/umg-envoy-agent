@@ -22,7 +22,7 @@ plugin.register({ registerTool(def) { defs.push(def); } }, {});
 const names = defs.map((def) => def.name);
 const currentSleeveTool = defs.find((def) => def.name === "umg_envoy_current_sleeve_status");
 
-record("package registers existing Alpha.6 tools plus current sleeve status", () => {
+record("package registers existing tools plus current sleeve status", () => {
   const expectedAlpha6 = [
     "umg_envoy_status",
     "umg_envoy_library_status",
@@ -46,7 +46,8 @@ record("package registers existing Alpha.6 tools plus current sleeve status", ()
   const missing = expectedAlpha6.filter((name) => !names.includes(name));
   assert(missing.length === 0, `missing Alpha.6 tools: ${missing.join(", ")}`);
   assert(names.includes("umg_envoy_current_sleeve_status"), "expected umg_envoy_current_sleeve_status");
-  assert(names.length === 19, `expected 19 tools, got ${names.length}`);
+  assert(names.includes("umg_envoy_sleeve_tree"), "expected umg_envoy_sleeve_tree");
+  assert(names.length === 20, `expected 20 tools, got ${names.length}`);
   return { toolCount: names.length, names };
 });
 

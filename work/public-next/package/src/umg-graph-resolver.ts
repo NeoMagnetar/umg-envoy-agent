@@ -17,6 +17,7 @@ export const UMG_ACTIVATION_STATES = [
 export type UmgActivationState = typeof UMG_ACTIVATION_STATES[number];
 export type UmgGraphNodeKind = "sleeve" | "neostack" | "neoblock" | "moltblock" | "gate" | "trigger" | "tool" | "lane";
 export type UmgGraphEdgeRelation = "contains" | "references" | "resolves_to" | "may_activate" | "constrains" | "formats" | "excludes" | "blocked_by";
+export type UmgSleeveTreeChildrenMode = "DECLARED_NEOSTACKS" | "EXPLICIT_NEOBLOCK_REFS_FALLBACK" | "EMPTY" | "BLOCKED";
 
 export interface UmgGraphNode {
   id: string;
@@ -40,6 +41,19 @@ export interface UmgGraphExcludedLane {
   lane: string;
   state: UmgActivationState;
   reason: string;
+}
+
+export interface UmgSleeveTreeNode {
+  kind: "sleeve" | "neostack" | "neoblock" | "moltblock" | "gate" | "trigger" | "lane";
+  id: string;
+  label: string;
+  state: UmgActivationState;
+  sourcePath: string | null;
+  resolutionStatus: string | null;
+  children: UmgSleeveTreeNode[];
+  childrenMode?: UmgSleeveTreeChildrenMode;
+  notes: string[];
+  warnings: string[];
 }
 
 export interface UmgGraphSnapshot {
@@ -120,6 +134,35 @@ export interface UmgCurrentSleeveStatus {
   errors: string[];
 }
 
+export interface UmgSleeveTreeResult {
+  ok: boolean;
+  mode: "public_curated";
+  readOnly: true;
+  execution: "not_performed";
+  directSource: "not_enabled";
+  requested: {
+    sleeveId: string;
+    depth: number;
+  };
+  tree: UmgSleeveTreeNode;
+  summary: {
+    declaredNeoStackCount: number;
+    displayedNeoStackCount: number;
+    explicitNeoBlockRefCount: number;
+    displayedNeoBlockCount: number;
+    displayedMoltBlockCount: number;
+    loadedTargetCount: number;
+    depthApplied: number;
+  };
+  notes: Array<{
+    code: string;
+    message: string;
+  }>;
+  excludedLanes: UmgGraphExcludedLane[];
+  warnings: string[];
+  errors: string[];
+}
+
 const DEFAULT_LIBRARY_ROOT = "C:\\.openclaw\\workspace\\UMG-Block-Library";
 const DEFAULT_CURRENT_SLEEVE_ID = "neomagnetar-dynamic-persona-v1";
 const DEFAULT_SHALLOW_LOAD_TARGET_REF = "primary.sample";
@@ -146,6 +189,10 @@ function increment(summary: Record<UmgActivationState, number>, state: UmgActiva
 
 function uniqueSorted(values: string[]): string[] {
   return Array.from(new Set(values.filter((value) => value.trim().length > 0))).sort();
+}
+
+function findNode(snapshot: UmgGraphSnapshot, id: string): UmgGraphNode | undefined {
+  return snapshot.nodes.find((node) => node.id === id);
 }
 
 export function buildCurrentSleeveGraphSnapshot(input?: { sleeveId?: string; libraryRoot?: string }): UmgGraphSnapshot {
@@ -444,6 +491,153 @@ export function getCurrentSleeveStatus(input?: { sleeveId?: string; libraryRoot?
         state: "ON"
       }
     ],
+    excludedLanes: snapshot.excludedLanes,
+    warnings: snapshot.warnings,
+    errors: snapshot.errors
+  };
+}
+
+export function getSleeveTree(input?: { sleeveId?: string; libraryRoot?: string; depth?: number }): UmgSleeveTreeResult {
+  const requestedDepth = input?.depth ?? 2;
+  if (!Number.isInteger(requestedDepth) || requestedDepth < 1 || requestedDepth > 4) {
+    throw new Error("HOLD_INVALID_TREE_DEPTH");
+  }
+
+  const sleeveId = input?.sleeveId ?? DEFAULT_CURRENT_SLEEVE_ID;
+  const libraryRoot = input?.libraryRoot ?? DEFAULT_LIBRARY_ROOT;
+  const inspect = inspectRealLibraryPublicCuratedSleeve({
+    sleeveId,
+    libraryRoot,
+    mode: "public_curated",
+    shallowLoadTargetRef: DEFAULT_SHALLOW_LOAD_TARGET_REF
+  });
+
+  if (!inspect.ok || !inspect.summary) {
+    const firstCode = inspect.errors[0]?.code ?? "HOLD_SLEEVE_NOT_LOADABLE_PUBLIC_CURATED";
+    throw new Error(firstCode);
+  }
+
+  const snapshot = buildCurrentSleeveGraphSnapshot({ sleeveId, libraryRoot });
+  const summary = inspect.summary;
+  const rootId = summary.id ?? sleeveId;
+  const rootNode = findNode(snapshot, rootId);
+  if (!rootNode) {
+    throw new Error("HOLD_SLEEVE_NOT_FOUND");
+  }
+
+  const notes: Array<{ code: string; message: string }> = [];
+  const tree: UmgSleeveTreeNode = {
+    kind: "sleeve",
+    id: rootNode.id,
+    label: rootNode.label,
+    state: rootNode.state,
+    sourcePath: rootNode.sourcePath,
+    resolutionStatus: rootNode.resolutionStatus,
+    children: [],
+    childrenMode: "EMPTY",
+    notes: [],
+    warnings: rootNode.warnings
+  };
+
+  const explicitRefNodes = summary.explicitReferences.neoblocks
+    .map((id) => findNode(snapshot, id))
+    .filter((node): node is UmgGraphNode => Boolean(node));
+  const shallowMoltNode = findNode(snapshot, "molt:Primary");
+
+  if (requestedDepth >= 2) {
+    if (summary.explicitReferences.neostacks.length > 0) {
+      tree.childrenMode = "DECLARED_NEOSTACKS";
+      tree.children = summary.explicitReferences.neostacks
+        .map((id) => findNode(snapshot, id))
+        .filter((node): node is UmgGraphNode => Boolean(node))
+        .map((node) => ({
+          kind: "neostack" as const,
+          id: node.id,
+          label: node.label,
+          state: node.state,
+          sourcePath: node.sourcePath,
+          resolutionStatus: node.resolutionStatus,
+          children: [],
+          notes: [],
+          warnings: node.warnings
+        }));
+    } else if (explicitRefNodes.length > 0) {
+      tree.childrenMode = "EXPLICIT_NEOBLOCK_REFS_FALLBACK";
+      tree.notes.push("NO_DECLARED_NEOSTACKS");
+      notes.push({
+        code: "NO_DECLARED_NEOSTACKS",
+        message: "The current sleeve has no declared NeoStack objects. Explicit NeoBlock refs are displayed directly under the sleeve."
+      });
+      tree.children = explicitRefNodes.map((node) => {
+        const child: UmgSleeveTreeNode = {
+          kind: "neoblock",
+          id: node.id,
+          label: node.label,
+          state: node.state,
+          sourcePath: node.sourcePath,
+          resolutionStatus: node.resolutionStatus,
+          children: [],
+          notes: [],
+          warnings: node.warnings
+        };
+        if (node.state === "DORMANT") {
+          child.notes.push("target_available_not_loaded");
+        }
+        if (requestedDepth >= 4 && node.id === DEFAULT_SHALLOW_LOAD_TARGET_REF && shallowMoltNode) {
+          child.children.push({
+            kind: "moltblock",
+            id: shallowMoltNode.id,
+            label: shallowMoltNode.label,
+            state: shallowMoltNode.state,
+            sourcePath: shallowMoltNode.sourcePath,
+            resolutionStatus: shallowMoltNode.resolutionStatus,
+            children: [],
+            notes: ["shallow_visible_only"],
+            warnings: shallowMoltNode.warnings
+          });
+        }
+        return child;
+      });
+    } else {
+      tree.childrenMode = "EMPTY";
+    }
+  }
+
+  if (requestedDepth === 1) {
+    tree.children = [];
+  }
+
+  const displayedNeoStackCount = tree.children.filter((child) => child.kind === "neostack").length;
+  const displayedNeoBlockCount = tree.childrenMode === "EXPLICIT_NEOBLOCK_REFS_FALLBACK"
+    ? tree.children.filter((child) => child.kind === "neoblock").length
+    : tree.children.flatMap((child) => child.children).filter((child) => child.kind === "neoblock").length;
+  const displayedMoltBlockCount = tree.children
+    .flatMap((child) => child.children)
+    .filter((child) => child.kind === "moltblock").length;
+
+  return {
+    ok: true,
+    mode: "public_curated",
+    readOnly: true,
+    execution: "not_performed",
+    directSource: "not_enabled",
+    requested: {
+      sleeveId: rootNode.id,
+      depth: requestedDepth
+    },
+    tree,
+    summary: {
+      declaredNeoStackCount: summary.explicitReferences.neostacks.length,
+      displayedNeoStackCount,
+      explicitNeoBlockRefCount: summary.explicitReferences.neoblocks.length,
+      displayedNeoBlockCount,
+      displayedMoltBlockCount,
+      loadedTargetCount: summary.runtimeSummary && "performed" in summary.runtimeSummary && summary.runtimeSummary.performed === true
+        ? summary.runtimeSummary.shallowLoadedTargetCount
+        : 0,
+      depthApplied: requestedDepth
+    },
+    notes,
     excludedLanes: snapshot.excludedLanes,
     warnings: snapshot.warnings,
     errors: snapshot.errors
