@@ -1,0 +1,35 @@
+import entry from '../dist/plugin-entry.js';
+const defs = [];
+await entry.register({ registerTool(def){ defs.push(def); }, registerCli(){} }, {});
+for (const name of ['umg_envoy_block_library_status','umg_envoy_block_library_manifest_index','umg_envoy_block_library_manifest_entry_lookup','umg_envoy_block_library_target_shallow_load_gate','umg_envoy_block_library_target_shallow_load_single']) {
+  if (!defs.find(d => d.name === name)) throw new Error(`${name} missing`);
+}
+const tool = defs.find(d => d.name === 'umg_envoy_block_library_target_shallow_load_single');
+const run = async (input) => JSON.parse((await tool.execute(input)).content[0].text);
+const primary = await run({ entryId: 'primary.sample', manifestKind: 'neoblock' });
+if (!primary.ok || primary.gate.payloadLoaded !== true || primary.gate.recursiveLoad !== false) throw new Error('primary shallow load failed');
+if (primary.target.loadStatus !== 'shallow_loaded') throw new Error('primary loadStatus drift');
+if (primary.payload.parseStatus !== 'PARSED_JSON') throw new Error('primary parseStatus drift');
+if (!Array.isArray(primary.payload.topLevelKeys)) throw new Error('primary topLevelKeys missing');
+if (primary.payload.contentPreview && primary.payload.contentPreview.length > 501) throw new Error('primary preview not bounded');
+const directive = await run({ entryId: 'directive.sample', manifestKind: 'neoblock' });
+if (!directive.ok || directive.gate.payloadLoaded !== true) throw new Error('directive shallow load failed');
+const trigger = await run({ entryId: 'trigger.sample', manifestKind: 'neoblock' });
+if (!trigger.ok || trigger.gate.payloadLoaded !== true) throw new Error('trigger shallow load failed');
+const forbidden = await run({ sourcePath: 'archive/sample-basic_minimal.json', manifestKind: 'public_curated_catalog' });
+if (forbidden.gate.decision !== 'DENY_FORBIDDEN_TARGET' || forbidden.payload !== null) throw new Error('forbidden deny failed');
+const slv = await run({ sourcePath: 'SLV.OPERATOR.json', manifestKind: 'public_curated_catalog' });
+if (slv.gate.decision !== 'DENY_OUTSIDE_ALLOWLIST' || slv.payload !== null) throw new Error('SLV deny failed');
+const persona = await run({ sourcePath: 'sleeve-neomagnetar-dynamic-persona-v1.json', manifestKind: 'public_curated_catalog' });
+if (persona.gate.decision !== 'DENY_OUTSIDE_ALLOWLIST' || persona.payload !== null) throw new Error('persona deny failed');
+const missing = await run({ entryId: 'missing.sample' });
+if (!missing.errors.some(e => e.code === 'HOLD_MANIFEST_ENTRY_NOT_FOUND')) throw new Error('missing hold failed');
+const noQuery = await run({});
+if (!noQuery.errors.some(e => e.code === 'HOLD_SHALLOW_SINGLE_LOAD_QUERY_REQUIRED')) throw new Error('no query hold failed');
+const badKind = await run({ entryId: 'primary.sample', manifestKind: 'nonsense' });
+if (!badKind.errors.some(e => e.code === 'HOLD_MANIFEST_KIND_UNSUPPORTED')) throw new Error('bad kind hold failed');
+const recursive = await run({ entryId: 'primary.sample', manifestKind: 'neoblock', loadMode: 'recursive' });
+if (!recursive.errors.some(e => e.code === 'HOLD_SHALLOW_SINGLE_LOAD_MODE_UNSUPPORTED')) throw new Error('recursive hold failed');
+const raw = await run({ entryId: 'primary.sample', manifestKind: 'neoblock', includeRaw: true });
+if (!raw.errors.some(e => e.code === 'HOLD_RAW_TARGET_DUMP_NOT_SUPPORTED')) throw new Error('raw hold failed');
+console.log(JSON.stringify({ ok: true, primary, directive, trigger, forbidden, slv, persona }, null, 2));

@@ -32,7 +32,12 @@ export type BlockLibraryHoldCode =
   | "HOLD_TARGET_REFERENCE_ONLY"
   | "HOLD_TARGET_MISSING_ON_DISK"
   | "HOLD_TARGET_SHAPE_UNKNOWN"
-  | "HOLD_SHALLOW_LOAD_GATE_UNAVAILABLE";
+  | "HOLD_SHALLOW_LOAD_GATE_UNAVAILABLE"
+  | "HOLD_SHALLOW_SINGLE_LOAD_QUERY_REQUIRED"
+  | "HOLD_SHALLOW_SINGLE_LOAD_MODE_UNSUPPORTED"
+  | "HOLD_RAW_TARGET_DUMP_NOT_SUPPORTED"
+  | "HOLD_TARGET_PARSE_FAILED"
+  | "HOLD_SHALLOW_SINGLE_LOAD_UNAVAILABLE";
 
 export interface BlockLibraryLaneStatus {
   lane: string;
@@ -136,7 +141,7 @@ export interface BlockLibraryManifestEntryLookupMatch {
   targetExists: boolean;
   targetPolicy: "ALLOWED_NOT_LOADED" | "MISSING_ON_DISK" | "FORBIDDEN_TARGET" | "OUTSIDE_ALLOWLIST_TARGET" | "REFERENCE_ONLY_TARGET" | "SHAPE_UNKNOWN" | "NO_SOURCE_PATH";
   resolutionStatus: string;
-  loadStatus: "not_loaded";
+  loadStatus: "not_loaded" | "shallow_loaded";
   warnings: string[];
 }
 
@@ -212,6 +217,43 @@ export interface BlockLibraryTargetShallowLoadGateResult {
   };
   target: BlockLibraryManifestEntryLookupMatch | null;
   entry: BlockLibraryManifestEntryLookupMatch | null;
+  warnings: string[];
+  errors: Array<{ code: BlockLibraryHoldCode; message: string }>;
+}
+
+export interface BlockLibraryTargetShallowLoadSingleResult {
+  ok: boolean;
+  version: string;
+  entrypoint: string;
+  mode: "real_block_library_target_shallow_load_single";
+  readOnly: true;
+  execution: "not_performed";
+  directSource: "not_enabled";
+  query: {
+    entryId: string | null;
+    sourcePath: string | null;
+    manifestKind: BlockLibraryManifestKind;
+    loadMode: string;
+  };
+  gate: {
+    decision: BlockLibraryShallowLoadDecision;
+    canShallowLoad: boolean;
+    reasonCodes: string[];
+    nextSafeAction: BlockLibraryNextSafeAction;
+    payloadLoaded: boolean;
+    recursiveLoad: false;
+  };
+  target: (BlockLibraryManifestEntryLookupMatch & { absolutePath: string | null; loadStatus: "not_loaded" | "shallow_loaded" }) | null;
+  payload: {
+    parseStatus: "PARSED_JSON" | "PARSE_FAILED";
+    shapeStatus: "SHALLOW_SUMMARY_READY" | "SHALLOW_SUMMARY_UNAVAILABLE";
+    topLevelKeys: string[];
+    identity: Record<string, unknown>;
+    metadata: Record<string, unknown>;
+    provenance: Record<string, unknown>;
+    contentPreview: string | null;
+    referenceSummary: Record<string, number>;
+  } | null;
   warnings: string[];
   errors: Array<{ code: BlockLibraryHoldCode; message: string }>;
 }
@@ -966,6 +1008,175 @@ export function getBlockLibraryTargetShallowLoadGate(
     warnings: [],
     errors: []
   };
+}
+
+function boundedPreview(value: unknown, maxChars = 500): string | null {
+  if (typeof value === 'string') {
+    return value.length > maxChars ? `${value.slice(0, maxChars)}…` : value;
+  }
+  if (value == null) {
+    return null;
+  }
+  const text = JSON.stringify(value);
+  return text.length > maxChars ? `${text.slice(0, maxChars)}…` : text;
+}
+
+function countRefs(payload: Record<string, unknown>): Record<string, number> {
+  const countArray = (key: string) => Array.isArray(payload[key]) ? payload[key].length : 0;
+  const refs = typeof payload.neoblock === 'object' && payload.neoblock !== null ? payload.neoblock as Record<string, unknown> : {};
+  return {
+    block_refs: countArray('block_refs'),
+    tool_requests: countArray('tool_requests'),
+    gates: countArray('gates'),
+    triggers: countArray('triggers'),
+    neostack_refs: Array.isArray(refs.refs) ? refs.refs.length : 0,
+    neoblock_refs: countArray('neoblock_refs'),
+    molt_refs: countArray('molt_refs')
+  };
+}
+
+export function getBlockLibraryTargetShallowLoadSingle(
+  version: string,
+  entrypoint = "dist/plugin-entry.js",
+  root = DEFAULT_LIBRARY_ROOT,
+  input: {
+    entryId?: string;
+    sourcePath?: string;
+    manifestKind?: BlockLibraryManifestKind;
+    loadMode?: string;
+    includeContentPreview?: boolean;
+    includeRaw?: boolean;
+  } = {}
+): BlockLibraryTargetShallowLoadSingleResult {
+  const manifestKind = input.manifestKind ?? 'all';
+  const loadMode = input.loadMode ?? 'shallow_single';
+  const base = {
+    version,
+    entrypoint,
+    mode: 'real_block_library_target_shallow_load_single' as const,
+    readOnly: true as const,
+    execution: 'not_performed' as const,
+    directSource: 'not_enabled' as const,
+    query: {
+      entryId: input.entryId ?? null,
+      sourcePath: input.sourcePath ?? null,
+      manifestKind,
+      loadMode
+    }
+  };
+  if (input.includeRaw) {
+    return {
+      ok: false,
+      ...base,
+      gate: { decision: 'DENY_SHAPE_UNKNOWN', canShallowLoad: false, reasonCodes: ['PAYLOAD_NOT_LOADED'], nextSafeAction: 'NEXT_SAFE_ACTION_REVIEW_POLICY', payloadLoaded: false, recursiveLoad: false },
+      target: null,
+      payload: null,
+      warnings: [],
+      errors: [{ code: 'HOLD_RAW_TARGET_DUMP_NOT_SUPPORTED', message: 'includeRaw=true is not supported.' }]
+    };
+  }
+  if (!input.entryId && !input.sourcePath) {
+    return {
+      ok: false,
+      ...base,
+      gate: { decision: 'DENY_QUERY_REQUIRED', canShallowLoad: false, reasonCodes: ['QUERY_REQUIRED'], nextSafeAction: 'NEXT_SAFE_ACTION_REVIEW_POLICY', payloadLoaded: false, recursiveLoad: false },
+      target: null,
+      payload: null,
+      warnings: [],
+      errors: [{ code: 'HOLD_SHALLOW_SINGLE_LOAD_QUERY_REQUIRED', message: 'Provide entryId or sourcePath.' }]
+    };
+  }
+  if (loadMode !== 'shallow_single') {
+    return {
+      ok: false,
+      ...base,
+      gate: { decision: 'DENY_UNSUPPORTED_LOAD_MODE', canShallowLoad: false, reasonCodes: ['RECURSIVE_LOAD_NOT_ALLOWED'], nextSafeAction: 'NEXT_SAFE_ACTION_REVIEW_POLICY', payloadLoaded: false, recursiveLoad: false },
+      target: null,
+      payload: null,
+      warnings: [],
+      errors: [{ code: 'HOLD_SHALLOW_SINGLE_LOAD_MODE_UNSUPPORTED', message: `Unsupported loadMode: ${loadMode}` }]
+    };
+  }
+  const gate = getBlockLibraryTargetShallowLoadGate(version, entrypoint, root, {
+    entryId: input.entryId,
+    sourcePath: input.sourcePath,
+    manifestKind,
+    intendedLoadMode: 'shallow'
+  });
+  if (!gate.gate.canShallowLoad || !gate.target?.sourcePath) {
+    const first = gate.errors[0]?.code;
+    let code: BlockLibraryHoldCode = 'HOLD_SHALLOW_SINGLE_LOAD_UNAVAILABLE';
+    if (first === 'HOLD_MANIFEST_ENTRY_NOT_FOUND') code = 'HOLD_MANIFEST_ENTRY_NOT_FOUND';
+    else if (first === 'HOLD_MANIFEST_KIND_UNSUPPORTED') code = 'HOLD_MANIFEST_KIND_UNSUPPORTED';
+    else if (first === 'HOLD_SHALLOW_LOAD_GATE_QUERY_REQUIRED') code = 'HOLD_SHALLOW_SINGLE_LOAD_QUERY_REQUIRED';
+    else if (gate.gate.decision === 'DENY_FORBIDDEN_TARGET') code = 'HOLD_TARGET_FORBIDDEN';
+    else if (gate.gate.decision === 'DENY_OUTSIDE_ALLOWLIST') code = 'HOLD_TARGET_OUTSIDE_ALLOWLIST';
+    else if (gate.gate.decision === 'DENY_TARGET_MISSING') code = 'HOLD_TARGET_MISSING_ON_DISK';
+    return {
+      ok: false,
+      ...base,
+      gate: { ...gate.gate, payloadLoaded: false, recursiveLoad: false },
+      target: gate.target ? { ...gate.target, absolutePath: null, loadStatus: 'not_loaded' } : null,
+      payload: null,
+      warnings: gate.warnings,
+      errors: gate.errors.length ? gate.errors : [{ code, message: 'Shallow single load denied.' }]
+    };
+  }
+  const absolutePath = path.join(path.resolve(root), ...gate.target.sourcePath.split('/'));
+  if (!safeExists(absolutePath)) {
+    return {
+      ok: false,
+      ...base,
+      gate: { decision: 'DENY_TARGET_MISSING', canShallowLoad: false, reasonCodes: ['TARGET_INDEX_ENTRY_FOUND', 'TARGET_PATH_ALLOWED', 'TARGET_MISSING_ON_DISK', 'PAYLOAD_NOT_LOADED'], nextSafeAction: 'NEXT_SAFE_ACTION_FIX_INDEX_OR_TARGET', payloadLoaded: false, recursiveLoad: false },
+      target: { ...gate.target, absolutePath, loadStatus: 'not_loaded' },
+      payload: null,
+      warnings: [],
+      errors: [{ code: 'HOLD_TARGET_MISSING_ON_DISK', message: `Target missing on disk: ${absolutePath}` }]
+    };
+  }
+  try {
+    const parsed = readJsonFile(absolutePath);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      return {
+        ok: false,
+        ...base,
+        gate: { ...gate.gate, payloadLoaded: false, recursiveLoad: false },
+        target: { ...gate.target, absolutePath, loadStatus: 'not_loaded' },
+        payload: null,
+        warnings: [],
+        errors: [{ code: 'HOLD_TARGET_SHAPE_UNKNOWN', message: 'Target payload shape is not a JSON object.' }]
+      };
+    }
+    const obj = parsed as Record<string, unknown>;
+    return {
+      ok: true,
+      ...base,
+      gate: { ...gate.gate, payloadLoaded: true, recursiveLoad: false },
+      target: { ...gate.target, absolutePath, loadStatus: 'shallow_loaded' },
+      payload: {
+        parseStatus: 'PARSED_JSON',
+        shapeStatus: 'SHALLOW_SUMMARY_READY',
+        topLevelKeys: Object.keys(obj),
+        identity: typeof obj.identity === 'object' && obj.identity ? obj.identity as Record<string, unknown> : {},
+        metadata: typeof obj.metadata === 'object' && obj.metadata ? obj.metadata as Record<string, unknown> : {},
+        provenance: typeof obj.provenance === 'object' && obj.provenance ? obj.provenance as Record<string, unknown> : {},
+        contentPreview: input.includeContentPreview === false ? null : boundedPreview((obj.neoblock as any)?.content ?? obj.content ?? obj),
+        referenceSummary: countRefs(obj)
+      },
+      warnings: [],
+      errors: []
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      ...base,
+      gate: { ...gate.gate, payloadLoaded: false, recursiveLoad: false },
+      target: { ...gate.target, absolutePath, loadStatus: 'not_loaded' },
+      payload: null,
+      warnings: [],
+      errors: [{ code: 'HOLD_TARGET_PARSE_FAILED', message: String(error) }]
+    };
+  }
 }
 
 export function getBlockLibraryStatus(version: string, entrypoint = "dist/plugin-entry.js", root = DEFAULT_LIBRARY_ROOT): BlockLibraryStatusResult {
