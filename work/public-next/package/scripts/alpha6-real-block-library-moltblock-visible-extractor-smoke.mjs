@@ -1,0 +1,38 @@
+import entry from '../dist/plugin-entry.js';
+const defs = [];
+await entry.register({ registerTool(def){ defs.push(def); }, registerCli(){} }, {});
+for (const name of ['umg_envoy_block_library_status','umg_envoy_block_library_manifest_index','umg_envoy_block_library_manifest_entry_lookup','umg_envoy_block_library_target_shallow_load_gate','umg_envoy_block_library_target_shallow_load_single','umg_envoy_block_library_target_shallow_summary_normalize','umg_envoy_block_library_neoblock_inspect','umg_envoy_block_library_moltblock_visible_extract']) {
+  if (!defs.find(d => d.name === name)) throw new Error(`${name} missing`);
+}
+const tool = defs.find(d => d.name === 'umg_envoy_block_library_moltblock_visible_extract');
+const run = async (input) => JSON.parse((await tool.execute(input)).content[0].text);
+const primary = await run({ neoblockId: 'primary.sample' });
+if (!primary.ok) throw new Error('primary extract failed');
+if (primary.visibleMoltExtraction.extractStatus !== 'VISIBLE_MOLT_EXTRACTED') throw new Error('primary extractStatus drift');
+if (primary.visibleMoltExtraction.sourceNeoblockId !== 'primary.sample') throw new Error('primary sourceNeoblockId drift');
+if (primary.visibleMoltExtraction.moltType !== 'Primary') throw new Error('primary moltType drift');
+if (primary.sourceNeoblock.payloadLoaded !== true || primary.sourceNeoblock.recursiveLoad !== false) throw new Error('primary gate flags drift');
+if (primary.visibleMoltExtraction.referenceSummary.resolvedRefs !== 0 || primary.visibleMoltExtraction.referenceSummary.loadedRefs !== 0) throw new Error('primary refs should not resolve/load');
+if (primary.execution !== 'not_performed' || primary.directSource !== 'not_enabled') throw new Error('primary runtime safety drift');
+const directive = await run({ neoblockId: 'directive.sample' });
+if (directive.visibleMoltExtraction.moltType !== 'Directive') throw new Error('directive moltType drift');
+const trigger = await run({ neoblockId: 'trigger.sample' });
+if (trigger.visibleMoltExtraction.moltType !== 'Trigger') throw new Error('trigger moltType drift');
+if (trigger.execution !== 'not_performed') throw new Error('trigger execution drift');
+const forbidden = await run({ sourcePath: 'archive/sample-basic_minimal.json', manifestKind: 'public_curated_catalog' });
+if (!forbidden.errors.some(e => e.code === 'HOLD_TARGET_FORBIDDEN')) throw new Error('forbidden hold failed');
+const slv = await run({ sourcePath: 'SLV.OPERATOR.json', manifestKind: 'public_curated_catalog' });
+if (!slv.errors.some(e => e.code === 'HOLD_TARGET_OUTSIDE_ALLOWLIST')) throw new Error('SLV hold failed');
+const persona = await run({ sourcePath: 'sleeve-neomagnetar-dynamic-persona-v1.json', manifestKind: 'public_curated_catalog' });
+if (!persona.errors.some(e => e.code === 'HOLD_TARGET_OUTSIDE_ALLOWLIST')) throw new Error('persona hold failed');
+const missing = await run({ neoblockId: 'missing.sample' });
+if (!missing.errors.some(e => e.code === 'HOLD_MANIFEST_ENTRY_NOT_FOUND')) throw new Error('missing hold failed');
+const noQuery = await run({});
+if (!noQuery.errors.some(e => e.code === 'HOLD_VISIBLE_MOLT_EXTRACT_QUERY_REQUIRED')) throw new Error('noQuery hold failed');
+const badKind = await run({ neoblockId: 'primary.sample', manifestKind: 'nonsense' });
+if (!badKind.errors.some(e => e.code === 'HOLD_MANIFEST_KIND_UNSUPPORTED')) throw new Error('bad kind hold failed');
+const badProfile = await run({ neoblockId: 'primary.sample', summaryProfile: 'nonsense' });
+if (!badProfile.errors.some(e => e.code === 'HOLD_SHALLOW_SUMMARY_PROFILE_UNSUPPORTED')) throw new Error('bad profile hold failed');
+const raw = await run({ neoblockId: 'primary.sample', includeRaw: true });
+if (!raw.errors.some(e => e.code === 'HOLD_RAW_TARGET_DUMP_NOT_SUPPORTED')) throw new Error('raw hold failed');
+console.log(JSON.stringify({ ok: true, primary, directive, trigger }, null, 2));

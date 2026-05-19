@@ -42,7 +42,10 @@ export type BlockLibraryHoldCode =
   | "HOLD_SHALLOW_SUMMARY_NORMALIZATION_UNAVAILABLE"
   | "HOLD_NEOBLOCK_INSPECT_QUERY_REQUIRED"
   | "HOLD_TARGET_NOT_NEOBLOCK"
-  | "HOLD_NEOBLOCK_INSPECT_UNAVAILABLE";
+  | "HOLD_NEOBLOCK_INSPECT_UNAVAILABLE"
+  | "HOLD_VISIBLE_MOLT_EXTRACT_QUERY_REQUIRED"
+  | "HOLD_VISIBLE_MOLT_NOT_FOUND"
+  | "HOLD_VISIBLE_MOLT_EXTRACT_UNAVAILABLE";
 
 export interface BlockLibraryLaneStatus {
   lane: string;
@@ -373,6 +376,65 @@ export interface BlockLibraryNeoblockInspectResult {
       loadedRefs: number;
     } | null;
     provenance: Record<string, unknown> | null;
+    contentPreview: string | null;
+    limitations: string[];
+  } | null;
+  warnings: string[];
+  errors: Array<{ code: BlockLibraryHoldCode; message: string }>;
+}
+
+export interface BlockLibraryMoltblockVisibleExtractResult {
+  ok: boolean;
+  version: string;
+  entrypoint: string;
+  mode: "real_block_library_moltblock_visible_extract";
+  readOnly: true;
+  execution: "not_performed";
+  directSource: "not_enabled";
+  query: {
+    neoblockId: string | null;
+    entryId: string | null;
+    sourcePath: string | null;
+    manifestKind: BlockLibraryManifestKind;
+    summaryProfile: string;
+  };
+  sourceNeoblock: {
+    inspectStatus: "NEOBLOCK_INSPECTED" | "NEOBLOCK_DENIED_BY_GATE" | "NEOBLOCK_NOT_FOUND" | "NEOBLOCK_TARGET_NOT_NEOBLOCK" | "NEOBLOCK_TARGET_FORBIDDEN" | "NEOBLOCK_TARGET_OUTSIDE_ALLOWLIST" | "NEOBLOCK_SHAPE_UNKNOWN" | "NEOBLOCK_PARSE_FAILED";
+    neoblockId: string | null;
+    artifactKind: string | null;
+    moltType: string | null;
+    payloadLoaded: boolean;
+    recursiveLoad: false;
+  } | null;
+  visibleMoltExtraction: {
+    extractStatus: "VISIBLE_MOLT_EXTRACTED" | "VISIBLE_MOLT_NOT_FOUND" | "VISIBLE_MOLT_DENIED_BY_GATE" | "VISIBLE_MOLT_SOURCE_NOT_NEOBLOCK" | "VISIBLE_MOLT_SOURCE_FORBIDDEN" | "VISIBLE_MOLT_SOURCE_OUTSIDE_ALLOWLIST" | "VISIBLE_MOLT_SHAPE_UNKNOWN" | "VISIBLE_MOLT_PARSE_FAILED";
+    moltBlockId: string | null;
+    sourceNeoblockId: string | null;
+    moltType: string | null;
+    moltTypeSource: "neoblock_inspection" | null;
+    role: string | null;
+    title: string | null;
+    status: string | null;
+    contentSummary: Record<string, unknown> | null;
+    moltFields: Record<string, unknown>;
+    instructionLikeFields: Record<string, unknown>;
+    triggerLikeFields: Record<string, unknown>;
+    blueprintLikeFields: Record<string, unknown>;
+    philosophyLikeFields: Record<string, unknown>;
+    subjectLikeFields: Record<string, unknown>;
+    primaryLikeFields: Record<string, unknown>;
+    referenceSummary: {
+      blockRefs: number;
+      neoblockRefs: number;
+      neostackRefs: number;
+      moltBlockRefs: number;
+      toolRequests: number;
+      gates: number;
+      triggers: number;
+      unknownRefs: number;
+      resolvedRefs: number;
+      loadedRefs: number;
+    } | null;
     contentPreview: string | null;
     limitations: string[];
   } | null;
@@ -1587,6 +1649,203 @@ export function getBlockLibraryNeoblockInspect(
       limitations: ['single_neoblock_only', 'no_recursive_loading', 'no_reference_resolution', 'no_execution']
     },
     warnings: normalized.warnings,
+    errors: []
+  };
+}
+
+function pickVisibleFields(source: Record<string, unknown>, keys: string[]): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const key of keys) {
+    if (key in source) out[key] = source[key];
+  }
+  return out;
+}
+
+export function getBlockLibraryMoltblockVisibleExtract(
+  version: string,
+  entrypoint = "dist/plugin-entry.js",
+  root = DEFAULT_LIBRARY_ROOT,
+  input: {
+    neoblockId?: string;
+    entryId?: string;
+    sourcePath?: string;
+    manifestKind?: BlockLibraryManifestKind;
+    summaryProfile?: string;
+    includeContentPreview?: boolean;
+    includeReferenceSummary?: boolean;
+    includeRaw?: boolean;
+  } = {}
+): BlockLibraryMoltblockVisibleExtractResult {
+  const entryId = input.neoblockId ?? input.entryId;
+  const manifestKind = input.manifestKind ?? 'neoblock';
+  const summaryProfile = input.summaryProfile ?? 'standard';
+  const base = {
+    version,
+    entrypoint,
+    mode: 'real_block_library_moltblock_visible_extract' as const,
+    readOnly: true as const,
+    execution: 'not_performed' as const,
+    directSource: 'not_enabled' as const,
+    query: {
+      neoblockId: input.neoblockId ?? null,
+      entryId: entryId ?? null,
+      sourcePath: input.sourcePath ?? null,
+      manifestKind,
+      summaryProfile
+    }
+  };
+  if (!entryId && !input.sourcePath) {
+    return {
+      ok: false,
+      ...base,
+      sourceNeoblock: null,
+      visibleMoltExtraction: null,
+      warnings: [],
+      errors: [{ code: 'HOLD_VISIBLE_MOLT_EXTRACT_QUERY_REQUIRED', message: 'Provide neoblockId, entryId, or sourcePath.' }]
+    };
+  }
+  const inspected = getBlockLibraryNeoblockInspect(version, entrypoint, root, {
+    neoblockId: input.neoblockId,
+    entryId: input.entryId,
+    sourcePath: input.sourcePath,
+    manifestKind,
+    summaryProfile,
+    includeContentPreview: input.includeContentPreview !== false,
+    includeReferenceSummary: input.includeReferenceSummary !== false,
+    includeRaw: Boolean(input.includeRaw)
+  });
+  const sourceNeoblock = {
+    inspectStatus: inspected.neoblockInspection?.inspectStatus ?? 'NEOBLOCK_DENIED_BY_GATE',
+    neoblockId: inspected.neoblockInspection?.neoblockId ?? entryId ?? null,
+    artifactKind: inspected.neoblockInspection?.artifactKind ?? null,
+    moltType: inspected.neoblockInspection?.moltType ?? null,
+    payloadLoaded: inspected.gate.payloadLoaded,
+    recursiveLoad: false as const
+  };
+  if (!inspected.ok || !inspected.neoblockInspection) {
+    const first = inspected.errors[0]?.code;
+    let extractStatus: BlockLibraryMoltblockVisibleExtractResult['visibleMoltExtraction'] extends infer T ? any : never = 'VISIBLE_MOLT_DENIED_BY_GATE';
+    if (first === 'HOLD_TARGET_FORBIDDEN') extractStatus = 'VISIBLE_MOLT_SOURCE_FORBIDDEN';
+    else if (first === 'HOLD_TARGET_OUTSIDE_ALLOWLIST') extractStatus = 'VISIBLE_MOLT_SOURCE_OUTSIDE_ALLOWLIST';
+    else if (first === 'HOLD_TARGET_PARSE_FAILED') extractStatus = 'VISIBLE_MOLT_PARSE_FAILED';
+    else if (first === 'HOLD_TARGET_SHAPE_UNKNOWN') extractStatus = 'VISIBLE_MOLT_SHAPE_UNKNOWN';
+    return {
+      ok: false,
+      ...base,
+      sourceNeoblock,
+      visibleMoltExtraction: {
+        extractStatus,
+        moltBlockId: inspected.neoblockInspection?.neoblockId ?? entryId ?? null,
+        sourceNeoblockId: inspected.neoblockInspection?.neoblockId ?? entryId ?? null,
+        moltType: inspected.neoblockInspection?.moltType ?? null,
+        moltTypeSource: inspected.neoblockInspection?.moltType ? 'neoblock_inspection' : null,
+        role: inspected.neoblockInspection?.role ?? null,
+        title: inspected.neoblockInspection?.title ?? null,
+        status: inspected.neoblockInspection?.status ?? null,
+        contentSummary: inspected.neoblockInspection?.contentSummary ?? null,
+        moltFields: {},
+        instructionLikeFields: {},
+        triggerLikeFields: {},
+        blueprintLikeFields: {},
+        philosophyLikeFields: {},
+        subjectLikeFields: {},
+        primaryLikeFields: {},
+        referenceSummary: inspected.neoblockInspection?.referenceSummary ?? null,
+        contentPreview: inspected.neoblockInspection?.contentPreview ?? null,
+        limitations: ['visible_molt_only', 'single_neoblock_source', 'no_external_moltblock_loading', 'no_recursive_loading', 'no_trigger_evaluation', 'no_execution']
+      },
+      warnings: inspected.warnings,
+      errors: inspected.errors
+    };
+  }
+  if (inspected.neoblockInspection.artifactKind !== 'neoblock') {
+    return {
+      ok: false,
+      ...base,
+      sourceNeoblock,
+      visibleMoltExtraction: {
+        extractStatus: 'VISIBLE_MOLT_SOURCE_NOT_NEOBLOCK',
+        moltBlockId: inspected.neoblockInspection.neoblockId,
+        sourceNeoblockId: inspected.neoblockInspection.neoblockId,
+        moltType: inspected.neoblockInspection.moltType,
+        moltTypeSource: inspected.neoblockInspection.moltType ? 'neoblock_inspection' : null,
+        role: inspected.neoblockInspection.role,
+        title: inspected.neoblockInspection.title,
+        status: inspected.neoblockInspection.status,
+        contentSummary: inspected.neoblockInspection.contentSummary,
+        moltFields: {},
+        instructionLikeFields: {},
+        triggerLikeFields: {},
+        blueprintLikeFields: {},
+        philosophyLikeFields: {},
+        subjectLikeFields: {},
+        primaryLikeFields: {},
+        referenceSummary: inspected.neoblockInspection.referenceSummary,
+        contentPreview: inspected.neoblockInspection.contentPreview,
+        limitations: ['visible_molt_only', 'single_neoblock_source', 'no_external_moltblock_loading', 'no_recursive_loading', 'no_trigger_evaluation', 'no_execution']
+      },
+      warnings: inspected.warnings,
+      errors: [{ code: 'HOLD_TARGET_NOT_NEOBLOCK', message: 'Target artifactKind is not neoblock.' }]
+    };
+  }
+  const contentSummary = inspected.neoblockInspection.contentSummary ?? null;
+  const visibleMolt = contentSummary && typeof contentSummary === 'object' ? contentSummary : null;
+  if (!visibleMolt || !inspected.neoblockInspection.moltType) {
+    return {
+      ok: false,
+      ...base,
+      sourceNeoblock,
+      visibleMoltExtraction: {
+        extractStatus: 'VISIBLE_MOLT_NOT_FOUND',
+        moltBlockId: inspected.neoblockInspection.neoblockId,
+        sourceNeoblockId: inspected.neoblockInspection.neoblockId,
+        moltType: inspected.neoblockInspection.moltType,
+        moltTypeSource: inspected.neoblockInspection.moltType ? 'neoblock_inspection' : null,
+        role: inspected.neoblockInspection.role,
+        title: inspected.neoblockInspection.title,
+        status: inspected.neoblockInspection.status,
+        contentSummary,
+        moltFields: {},
+        instructionLikeFields: {},
+        triggerLikeFields: {},
+        blueprintLikeFields: {},
+        philosophyLikeFields: {},
+        subjectLikeFields: {},
+        primaryLikeFields: {},
+        referenceSummary: inspected.neoblockInspection.referenceSummary,
+        contentPreview: inspected.neoblockInspection.contentPreview,
+        limitations: ['visible_molt_only', 'single_neoblock_source', 'no_external_moltblock_loading', 'no_recursive_loading', 'no_trigger_evaluation', 'no_execution']
+      },
+      warnings: inspected.warnings,
+      errors: [{ code: 'HOLD_VISIBLE_MOLT_NOT_FOUND', message: 'Visible MOLT data not found in shallow-loaded NeoBlock.' }]
+    };
+  }
+  return {
+    ok: true,
+    ...base,
+    sourceNeoblock,
+    visibleMoltExtraction: {
+      extractStatus: 'VISIBLE_MOLT_EXTRACTED',
+      moltBlockId: inspected.neoblockInspection.neoblockId,
+      sourceNeoblockId: inspected.neoblockInspection.neoblockId,
+      moltType: inspected.neoblockInspection.moltType,
+      moltTypeSource: 'neoblock_inspection',
+      role: inspected.neoblockInspection.role,
+      title: inspected.neoblockInspection.title,
+      status: inspected.neoblockInspection.status,
+      contentSummary,
+      moltFields: visibleMolt,
+      instructionLikeFields: pickVisibleFields(visibleMolt, ['instruction', 'instructions', 'steps', 'actions', 'directive']),
+      triggerLikeFields: pickVisibleFields(visibleMolt, ['trigger', 'triggers', 'conditions', 'condition']),
+      blueprintLikeFields: pickVisibleFields(visibleMolt, ['blueprint', 'plan', 'schema', 'structure']),
+      philosophyLikeFields: pickVisibleFields(visibleMolt, ['philosophy', 'principles', 'beliefs', 'values']),
+      subjectLikeFields: pickVisibleFields(visibleMolt, ['subject', 'subjects', 'topic', 'topics']),
+      primaryLikeFields: pickVisibleFields(visibleMolt, ['primary', 'goal', 'objective', 'content', 'value']),
+      referenceSummary: input.includeReferenceSummary === false ? { blockRefs: 0, neoblockRefs: 0, neostackRefs: 0, moltBlockRefs: 0, toolRequests: 0, gates: 0, triggers: 0, unknownRefs: 0, resolvedRefs: 0, loadedRefs: 0 } : inspected.neoblockInspection.referenceSummary,
+      contentPreview: input.includeContentPreview === false ? null : inspected.neoblockInspection.contentPreview,
+      limitations: ['visible_molt_only', 'single_neoblock_source', 'no_external_moltblock_loading', 'no_recursive_loading', 'no_trigger_evaluation', 'no_execution']
+    },
+    warnings: inspected.warnings,
     errors: []
   };
 }
