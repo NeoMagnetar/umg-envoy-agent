@@ -39,7 +39,10 @@ export type BlockLibraryHoldCode =
   | "HOLD_TARGET_PARSE_FAILED"
   | "HOLD_SHALLOW_SINGLE_LOAD_UNAVAILABLE"
   | "HOLD_SHALLOW_SUMMARY_PROFILE_UNSUPPORTED"
-  | "HOLD_SHALLOW_SUMMARY_NORMALIZATION_UNAVAILABLE";
+  | "HOLD_SHALLOW_SUMMARY_NORMALIZATION_UNAVAILABLE"
+  | "HOLD_NEOBLOCK_INSPECT_QUERY_REQUIRED"
+  | "HOLD_TARGET_NOT_NEOBLOCK"
+  | "HOLD_NEOBLOCK_INSPECT_UNAVAILABLE";
 
 export interface BlockLibraryLaneStatus {
   lane: string;
@@ -300,6 +303,62 @@ export interface BlockLibraryTargetShallowSummaryNormalizeResult {
     identity: Record<string, unknown> | null;
     metadata: Record<string, unknown> | null;
     content: Record<string, unknown> | null;
+    moltSummary: Record<string, unknown> | null;
+    referenceSummary: {
+      blockRefs: number;
+      neoblockRefs: number;
+      neostackRefs: number;
+      moltBlockRefs: number;
+      toolRequests: number;
+      gates: number;
+      triggers: number;
+      unknownRefs: number;
+      resolvedRefs: number;
+      loadedRefs: number;
+    } | null;
+    provenance: Record<string, unknown> | null;
+    contentPreview: string | null;
+    limitations: string[];
+  } | null;
+  warnings: string[];
+  errors: Array<{ code: BlockLibraryHoldCode; message: string }>;
+}
+
+export interface BlockLibraryNeoblockInspectResult {
+  ok: boolean;
+  version: string;
+  entrypoint: string;
+  mode: "real_block_library_neoblock_inspect";
+  readOnly: true;
+  execution: "not_performed";
+  directSource: "not_enabled";
+  query: {
+    neoblockId: string | null;
+    entryId: string | null;
+    sourcePath: string | null;
+    manifestKind: BlockLibraryManifestKind;
+    summaryProfile: string;
+  };
+  gate: {
+    decision: BlockLibraryShallowLoadDecision;
+    canShallowLoad: boolean;
+    reasonCodes: string[];
+    nextSafeAction: BlockLibraryNextSafeAction;
+    payloadLoaded: boolean;
+    recursiveLoad: false;
+  };
+  target: (BlockLibraryManifestEntryLookupMatch & { absolutePath: string | null; loadStatus: "not_loaded" | "shallow_loaded" }) | null;
+  neoblockInspection: {
+    inspectStatus: "NEOBLOCK_INSPECTED" | "NEOBLOCK_DENIED_BY_GATE" | "NEOBLOCK_NOT_FOUND" | "NEOBLOCK_TARGET_NOT_NEOBLOCK" | "NEOBLOCK_TARGET_FORBIDDEN" | "NEOBLOCK_TARGET_OUTSIDE_ALLOWLIST" | "NEOBLOCK_SHAPE_UNKNOWN" | "NEOBLOCK_PARSE_FAILED";
+    neoblockId: string | null;
+    artifactKind: string | null;
+    moltType: string | null;
+    role: string | null;
+    title: string | null;
+    status: string | null;
+    identity: Record<string, unknown> | null;
+    metadata: Record<string, unknown> | null;
+    contentSummary: Record<string, unknown> | null;
     moltSummary: Record<string, unknown> | null;
     referenceSummary: {
       blockRefs: number;
@@ -1388,6 +1447,146 @@ export function getBlockLibraryTargetShallowSummaryNormalize(
       limitations: ['single_target_only', 'no_recursive_loading', 'no_execution']
     },
     warnings,
+    errors: []
+  };
+}
+
+export function getBlockLibraryNeoblockInspect(
+  version: string,
+  entrypoint = "dist/plugin-entry.js",
+  root = DEFAULT_LIBRARY_ROOT,
+  input: {
+    neoblockId?: string;
+    entryId?: string;
+    sourcePath?: string;
+    manifestKind?: BlockLibraryManifestKind;
+    summaryProfile?: string;
+    includeContentPreview?: boolean;
+    includeReferenceSummary?: boolean;
+    includeRaw?: boolean;
+  } = {}
+): BlockLibraryNeoblockInspectResult {
+  const entryId = input.neoblockId ?? input.entryId;
+  const manifestKind = input.manifestKind ?? 'neoblock';
+  const base = {
+    version,
+    entrypoint,
+    mode: 'real_block_library_neoblock_inspect' as const,
+    readOnly: true as const,
+    execution: 'not_performed' as const,
+    directSource: 'not_enabled' as const,
+    query: {
+      neoblockId: input.neoblockId ?? null,
+      entryId: entryId ?? null,
+      sourcePath: input.sourcePath ?? null,
+      manifestKind,
+      summaryProfile: input.summaryProfile ?? 'standard'
+    }
+  };
+  if (!entryId && !input.sourcePath) {
+    return {
+      ok: false,
+      ...base,
+      gate: { decision: 'DENY_QUERY_REQUIRED', canShallowLoad: false, reasonCodes: ['QUERY_REQUIRED'], nextSafeAction: 'NEXT_SAFE_ACTION_REVIEW_POLICY', payloadLoaded: false, recursiveLoad: false },
+      target: null,
+      neoblockInspection: null,
+      warnings: [],
+      errors: [{ code: 'HOLD_NEOBLOCK_INSPECT_QUERY_REQUIRED', message: 'Provide neoblockId, entryId, or sourcePath.' }]
+    };
+  }
+  const normalized = getBlockLibraryTargetShallowSummaryNormalize(version, entrypoint, root, {
+    entryId,
+    sourcePath: input.sourcePath,
+    manifestKind,
+    summaryProfile: input.summaryProfile ?? 'standard',
+    includeContentPreview: input.includeContentPreview !== false,
+    includeReferenceSummary: input.includeReferenceSummary !== false,
+    includeRaw: Boolean(input.includeRaw)
+  });
+  if (!normalized.ok || !normalized.normalizedSummary || !normalized.target) {
+    const first = normalized.errors[0]?.code;
+    let inspectStatus: BlockLibraryNeoblockInspectResult['neoblockInspection'] extends infer T ? any : never = 'NEOBLOCK_DENIED_BY_GATE';
+    if (first === 'HOLD_MANIFEST_ENTRY_NOT_FOUND') inspectStatus = 'NEOBLOCK_NOT_FOUND';
+    else if (first === 'HOLD_TARGET_FORBIDDEN') inspectStatus = 'NEOBLOCK_TARGET_FORBIDDEN';
+    else if (first === 'HOLD_TARGET_OUTSIDE_ALLOWLIST') inspectStatus = 'NEOBLOCK_TARGET_OUTSIDE_ALLOWLIST';
+    else if (first === 'HOLD_TARGET_PARSE_FAILED') inspectStatus = 'NEOBLOCK_PARSE_FAILED';
+    else if (first === 'HOLD_TARGET_SHAPE_UNKNOWN') inspectStatus = 'NEOBLOCK_SHAPE_UNKNOWN';
+    return {
+      ok: false,
+      ...base,
+      gate: normalized.gate,
+      target: normalized.target,
+      neoblockInspection: {
+        inspectStatus,
+        neoblockId: entryId ?? null,
+        artifactKind: normalized.normalizedSummary?.artifactKind ?? null,
+        moltType: normalized.normalizedSummary?.moltType ?? null,
+        role: normalized.normalizedSummary?.role ?? null,
+        title: normalized.normalizedSummary?.displayName ?? null,
+        status: normalized.normalizedSummary?.status ?? null,
+        identity: normalized.normalizedSummary?.identity ?? null,
+        metadata: normalized.normalizedSummary?.metadata ?? null,
+        contentSummary: normalized.normalizedSummary?.content ?? null,
+        moltSummary: normalized.normalizedSummary?.moltSummary ?? null,
+        referenceSummary: normalized.normalizedSummary?.referenceSummary ?? null,
+        provenance: normalized.normalizedSummary?.provenance ?? null,
+        contentPreview: normalized.normalizedSummary?.contentPreview ?? null,
+        limitations: ['single_neoblock_only', 'no_recursive_loading', 'no_reference_resolution', 'no_execution']
+      },
+      warnings: normalized.warnings,
+      errors: normalized.errors
+    };
+  }
+  if (normalized.normalizedSummary.artifactKind !== 'neoblock') {
+    return {
+      ok: false,
+      ...base,
+      gate: normalized.gate,
+      target: normalized.target,
+      neoblockInspection: {
+        inspectStatus: 'NEOBLOCK_TARGET_NOT_NEOBLOCK',
+        neoblockId: normalized.normalizedSummary.artifactId,
+        artifactKind: normalized.normalizedSummary.artifactKind,
+        moltType: normalized.normalizedSummary.moltType,
+        role: normalized.normalizedSummary.role,
+        title: normalized.normalizedSummary.displayName,
+        status: normalized.normalizedSummary.status,
+        identity: normalized.normalizedSummary.identity,
+        metadata: normalized.normalizedSummary.metadata,
+        contentSummary: normalized.normalizedSummary.content,
+        moltSummary: normalized.normalizedSummary.moltSummary,
+        referenceSummary: normalized.normalizedSummary.referenceSummary,
+        provenance: normalized.normalizedSummary.provenance,
+        contentPreview: normalized.normalizedSummary.contentPreview,
+        limitations: ['single_neoblock_only', 'no_recursive_loading', 'no_reference_resolution', 'no_execution']
+      },
+      warnings: normalized.warnings,
+      errors: [{ code: 'HOLD_TARGET_NOT_NEOBLOCK', message: 'Target artifactKind is not neoblock.' }]
+    };
+  }
+  return {
+    ok: true,
+    ...base,
+    gate: normalized.gate,
+    target: normalized.target,
+    neoblockInspection: {
+      inspectStatus: 'NEOBLOCK_INSPECTED',
+      neoblockId: normalized.normalizedSummary.artifactId,
+      artifactKind: normalized.normalizedSummary.artifactKind,
+      moltType: normalized.normalizedSummary.moltType,
+      role: normalized.normalizedSummary.role,
+      title: normalized.normalizedSummary.displayName,
+      status: normalized.normalizedSummary.status,
+      identity: normalized.normalizedSummary.identity,
+      metadata: normalized.normalizedSummary.metadata,
+      contentSummary: normalized.normalizedSummary.content,
+      moltSummary: normalized.normalizedSummary.moltSummary,
+      referenceSummary: normalized.normalizedSummary.referenceSummary,
+      provenance: normalized.normalizedSummary.provenance,
+      contentPreview: normalized.normalizedSummary.contentPreview,
+      limitations: ['single_neoblock_only', 'no_recursive_loading', 'no_reference_resolution', 'no_execution']
+    },
+    warnings: normalized.warnings,
     errors: []
   };
 }
