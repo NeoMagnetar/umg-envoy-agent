@@ -26,7 +26,7 @@ if (!dupe.conflicts.some(c => c.field === 'Primary')) throw new Error('dupe conf
 const denied = await run({ neoblockIds: ['primary.sample','missing.sample'] });
 if (denied.composition.compositionStatus !== 'MOLT_MAP_COMPOSED_WITH_DENIED_FRAGMENTS') throw new Error('denied status drift');
 if (denied.composition.deniedFragmentCount !== 1) throw new Error('denied count drift');
-if (!denied.fragmentResults.some(r => r.neoblockId === 'missing.sample' && r.errors.some(e => e.code === 'HOLD_MANIFEST_ENTRY_NOT_FOUND'))) throw new Error('missing denied detail drift');
+if (!denied.fragmentResults.some(r => r.requestedId === 'missing.sample' && r.errorCodes.includes('HOLD_MANIFEST_ENTRY_NOT_FOUND'))) throw new Error('missing denied detail drift');
 const empty = await run({ neoblockIds: [] });
 if (!empty.errors.some(e => e.code === 'HOLD_MOLT_MAP_COMPOSE_QUERY_REQUIRED')) throw new Error('empty hold drift');
 const badProjection = await run({ neoblockIds: ['primary.sample'], projectionFormat: 'nonsense' });

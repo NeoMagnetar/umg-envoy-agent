@@ -522,6 +522,15 @@ export interface BlockLibraryMoltMapComposeResult {
   version: string;
   entrypoint: string;
   mode: "real_block_library_molt_map_compose";
+  outputContract: {
+    contractId: "umg.molt_map.compose.v1";
+    contractStatus: "NORMALIZED";
+    fieldOrder: Array<"Trigger" | "Directive" | "Instruction" | "Subject" | "Primary" | "Philosophy" | "Blueprint">;
+    missingFieldValue: "n/a";
+    sourceMode: "explicit_neoblock_ids";
+    recursiveLoad: false;
+    fullLibraryScan: false;
+  };
   readOnly: true;
   execution: "not_performed";
   directSource: "not_enabled";
@@ -544,17 +553,39 @@ export interface BlockLibraryMoltMapComposeResult {
     deniedFragmentCount: number;
     recursiveLoad: false;
     fullLibraryScan: false;
+    activeSleeveInspection: false;
+    neostackInspection: false;
+    triggerEvaluation: "not_performed";
+    execution: "not_performed";
   };
   moltMap: Record<"Trigger" | "Directive" | "Instruction" | "Subject" | "Primary" | "Philosophy" | "Blueprint", {
     value: string;
+    fieldStatus: "FIELD_COMPOSED" | "FIELD_MISSING" | "FIELD_CONFLICT_REPORTED" | "FIELD_DENIED_FRAGMENT";
     sourceNeoblockId: string | null;
     moltType: string | null;
     fragmentStatus: string | null;
     provenance: Record<string, unknown> | null;
+    contentPreview: string | null;
+    limitations: string[];
   }>;
-  fragmentResults: Array<{ neoblockId: string; ok: boolean; field: string | null; fragmentStatus: string | null; errors: Array<{ code: BlockLibraryHoldCode; message: string }> }>;
+  fragmentResults: Array<{ requestedId: string; ok: boolean; field: string | null; moltType: string | null; fragmentStatus: "MOLT_MAP_FRAGMENT_READY" | "MOLT_MAP_FRAGMENT_DENIED" | null; hold: BlockLibraryHoldCode | null; errorCodes: BlockLibraryHoldCode[]; sourcePath: string | null; manifestPath: string | null; payloadLoaded: boolean; recursiveLoad: false; execution: "not_performed" }>;
   conflicts: Array<{ field: string; chosenNeoblockId: string | null; ignoredNeoblockIds: string[] }>;
   nlProjection: string | null;
+  audit: {
+    normalizationStatus: "COMPOSER_OUTPUT_NORMALIZED";
+    contractId: "umg.molt_map.compose.v1";
+    inputMode: "explicit_neoblock_ids";
+    fullLibraryScan: "not_performed";
+    recursiveLoad: "not_performed";
+    referencedTargetLoading: "not_performed";
+    externalMoltBlockFileLoading: "not_performed";
+    activeSleeveInspection: "not_performed";
+    neostackInspection: "not_performed";
+    triggerEvaluation: "not_performed";
+    execution: "not_performed";
+    directSource: "not_enabled";
+    libraryMutation: "not_performed";
+  };
   warnings: string[];
   errors: Array<{ code: BlockLibraryHoldCode; message: string }>;
 }
@@ -1837,11 +1868,20 @@ export function getBlockLibraryMoltMapCompose(
   const conflictPolicy = input.conflictPolicy ?? 'report_only';
   const normalizedProjectionFormat: 'nl' | 'json' | 'both' = projectionFormat === 'nl' || projectionFormat === 'json' || projectionFormat === 'both' ? projectionFormat : 'both';
   const normalizedConflictPolicy: 'first_wins' | 'report_only' = conflictPolicy === 'first_wins' || conflictPolicy === 'report_only' ? conflictPolicy : 'report_only';
-  const baseMoltMap = Object.fromEntries(MOLT_MAP_FIELD_ORDER.map((field) => [field, { value: 'n/a', sourceNeoblockId: null, moltType: null, fragmentStatus: null, provenance: input.includeFieldProvenance === false ? null : null }])) as BlockLibraryMoltMapComposeResult['moltMap'];
+  const baseMoltMap = Object.fromEntries(MOLT_MAP_FIELD_ORDER.map((field) => [field, { value: 'n/a', fieldStatus: 'FIELD_MISSING' as const, sourceNeoblockId: null, moltType: null, fragmentStatus: null, provenance: null, contentPreview: null, limitations: ['field_missing', 'not_in_explicit_input'] }])) as BlockLibraryMoltMapComposeResult['moltMap'];
   const base = {
     version,
     entrypoint,
     mode: 'real_block_library_molt_map_compose' as const,
+    outputContract: {
+      contractId: 'umg.molt_map.compose.v1' as const,
+      contractStatus: 'NORMALIZED' as const,
+      fieldOrder: [...MOLT_MAP_FIELD_ORDER],
+      missingFieldValue: 'n/a' as const,
+      sourceMode: 'explicit_neoblock_ids' as const,
+      recursiveLoad: false as const,
+      fullLibraryScan: false as const
+    },
     readOnly: true as const,
     execution: 'not_performed' as const,
     directSource: 'not_enabled' as const,
@@ -1863,12 +1903,31 @@ export function getBlockLibraryMoltMapCompose(
       duplicateFieldCount: 0,
       deniedFragmentCount: 0,
       recursiveLoad: false as const,
-      fullLibraryScan: false as const
+      fullLibraryScan: false as const,
+      activeSleeveInspection: false as const,
+      neostackInspection: false as const,
+      triggerEvaluation: 'not_performed' as const,
+      execution: 'not_performed' as const
     },
     moltMap: baseMoltMap,
     fragmentResults: [] as BlockLibraryMoltMapComposeResult['fragmentResults'],
     conflicts: [] as BlockLibraryMoltMapComposeResult['conflicts'],
     nlProjection: null as string | null,
+    audit: {
+      normalizationStatus: 'COMPOSER_OUTPUT_NORMALIZED' as const,
+      contractId: 'umg.molt_map.compose.v1' as const,
+      inputMode: 'explicit_neoblock_ids' as const,
+      fullLibraryScan: 'not_performed' as const,
+      recursiveLoad: 'not_performed' as const,
+      referencedTargetLoading: 'not_performed' as const,
+      externalMoltBlockFileLoading: 'not_performed' as const,
+      activeSleeveInspection: 'not_performed' as const,
+      neostackInspection: 'not_performed' as const,
+      triggerEvaluation: 'not_performed' as const,
+      execution: 'not_performed' as const,
+      directSource: 'not_enabled' as const,
+      libraryMutation: 'not_performed' as const
+    },
     warnings: [] as string[],
     errors: [] as Array<{ code: BlockLibraryHoldCode; message: string }>
   };
@@ -1889,6 +1948,7 @@ export function getBlockLibraryMoltMapCompose(
   }
   const fragmentResults: BlockLibraryMoltMapComposeResult['fragmentResults'] = [];
   const conflicts: BlockLibraryMoltMapComposeResult['conflicts'] = [];
+  const deniedFields = new Set<MOLTMapField>();
   const moltMap = { ...baseMoltMap };
   let composedFieldCount = 0;
   let duplicateFieldCount = 0;
@@ -1904,8 +1964,22 @@ export function getBlockLibraryMoltMapCompose(
       includeRaw: false
     });
     const field = fragment.moltMapFragment?.moltMapField ?? null;
-    const fragmentStatus = fragment.moltMapFragment?.fragmentStatus ?? null;
-    fragmentResults.push({ neoblockId, ok: fragment.ok, field, fragmentStatus, errors: fragment.errors });
+    const hold = fragment.errors[0]?.code ?? null;
+    const errorCodes = fragment.errors.map((error) => error.code);
+    fragmentResults.push({
+      requestedId: neoblockId,
+      ok: fragment.ok,
+      field,
+      moltType: fragment.moltMapFragment?.moltType ?? null,
+      fragmentStatus: fragment.ok ? 'MOLT_MAP_FRAGMENT_READY' : 'MOLT_MAP_FRAGMENT_DENIED',
+      hold,
+      errorCodes,
+      sourcePath: fragment.moltMapFragment?.provenance?.sourcePath ?? null,
+      manifestPath: fragment.moltMapFragment?.provenance?.manifestPath ?? null,
+      payloadLoaded: fragment.sourceNeoblock?.payloadLoaded ?? false,
+      recursiveLoad: false,
+      execution: 'not_performed'
+    });
     if (!fragment.ok || !field || !fragment.moltMapFragment) {
       deniedFragmentCount += 1;
       continue;
@@ -1913,6 +1987,11 @@ export function getBlockLibraryMoltMapCompose(
     if (moltMap[field].sourceNeoblockId) {
       duplicateFieldCount += 1;
       conflicts.push({ field, chosenNeoblockId: moltMap[field].sourceNeoblockId, ignoredNeoblockIds: [neoblockId] });
+      moltMap[field] = {
+        ...moltMap[field],
+        fieldStatus: 'FIELD_CONFLICT_REPORTED',
+        limitations: [...moltMap[field].limitations.filter((v) => v !== 'field_missing' && v !== 'not_in_explicit_input'), 'duplicate_field_reported']
+      };
       if (normalizedConflictPolicy === 'first_wins') {
         continue;
       }
@@ -1920,14 +1999,17 @@ export function getBlockLibraryMoltMapCompose(
     }
     moltMap[field] = {
       value: fragment.moltMapFragment.fieldValue ?? 'n/a',
+      fieldStatus: 'FIELD_COMPOSED',
       sourceNeoblockId: fragment.moltMapFragment.sourceNeoblockId,
       moltType: fragment.moltMapFragment.moltType,
       fragmentStatus: fragment.moltMapFragment.fragmentStatus,
-      provenance: input.includeFieldProvenance === false ? null : fragment.moltMapFragment.provenance
+      provenance: input.includeFieldProvenance === false ? null : fragment.moltMapFragment.provenance,
+      contentPreview: input.includeContentPreview === false ? null : fragment.moltMapFragment.contentPreview,
+      limitations: fragment.moltMapFragment.limitations
     };
     composedFieldCount += 1;
   }
-  const missingFieldCount = MOLT_MAP_FIELD_ORDER.filter((field) => moltMap[field].sourceNeoblockId === null).length;
+  const missingFieldCount = MOLT_MAP_FIELD_ORDER.filter((field) => moltMap[field].fieldStatus === 'FIELD_MISSING').length;
   let compositionStatus: BlockLibraryMoltMapComposeResult['composition']['compositionStatus'] = 'MOLT_MAP_COMPOSED';
   if (duplicateFieldCount > 0) compositionStatus = 'MOLT_MAP_COMPOSED_WITH_CONFLICTS';
   else if (deniedFragmentCount > 0) compositionStatus = 'MOLT_MAP_COMPOSED_WITH_DENIED_FRAGMENTS';
