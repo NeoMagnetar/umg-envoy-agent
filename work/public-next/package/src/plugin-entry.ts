@@ -9,7 +9,7 @@ import { parseUMGPath } from "./umg-path-parser.js";
 import { renderUMGPath } from "./umg-path-renderer.js";
 import { validateUMGPath } from "./umg-path-validator.js";
 import { buildPublicPath } from "./public-path-builder.js";
-import { defaultBlockLibraryRoot, getBlockLibraryManifestEntryLookup, getBlockLibraryManifestIndex, getBlockLibraryStatus } from "./block-library-resolver.js";
+import { defaultBlockLibraryRoot, getBlockLibraryManifestEntryLookup, getBlockLibraryManifestIndex, getBlockLibraryStatus, getBlockLibraryTargetShallowLoadGate } from "./block-library-resolver.js";
 import type { PluginConfig } from "./types.js";
 
 function effectiveConfig(config?: PluginConfig) {
@@ -52,7 +52,8 @@ function statusPayload(config?: PluginConfig) {
       "umg_envoy_matrix_status",
       "umg_envoy_block_library_status",
       "umg_envoy_block_library_manifest_index",
-      "umg_envoy_block_library_manifest_entry_lookup"
+      "umg_envoy_block_library_manifest_entry_lookup",
+      "umg_envoy_block_library_target_shallow_load_gate"
     ]
   };
 }
@@ -170,6 +171,17 @@ function registerCliBridge(api: any, config?: PluginConfig) {
       .action(async (opts: { entryId?: string; sourcePath?: string; manifestKind?: any; includeManifestSummary?: boolean; includeRaw?: boolean; root?: string }) => {
         console.log(JSON.stringify(getBlockLibraryManifestEntryLookup("0.3.0-alpha.6", "dist/plugin-entry.js", opts.root ?? defaultBlockLibraryRoot(), { entryId: opts.entryId, sourcePath: opts.sourcePath, manifestKind: opts.manifestKind ?? 'all', includeManifestSummary: opts.includeManifestSummary !== false, includeRaw: Boolean(opts.includeRaw) }), null, 2));
       });
+
+    root.command("block-library-target-shallow-load-gate")
+      .option("--entry-id <id>")
+      .option("--source-path <path>")
+      .option("--manifest-kind <kind>")
+      .option("--intended-load-mode <mode>")
+      .option("--no-include-entry-summary")
+      .option("--root <path>")
+      .action(async (opts: { entryId?: string; sourcePath?: string; manifestKind?: any; intendedLoadMode?: string; includeEntrySummary?: boolean; root?: string }) => {
+        console.log(JSON.stringify(getBlockLibraryTargetShallowLoadGate("0.3.0-alpha.6", "dist/plugin-entry.js", opts.root ?? defaultBlockLibraryRoot(), { entryId: opts.entryId, sourcePath: opts.sourcePath, manifestKind: opts.manifestKind ?? 'all', intendedLoadMode: opts.intendedLoadMode ?? 'shallow', includeEntrySummary: opts.includeEntrySummary !== false }), null, 2));
+      });
   }, { commands: ["umg-envoy"] });
 }
 
@@ -195,6 +207,7 @@ const entry = {
     api.registerTool({ name: "umg_envoy_block_library_status", description: "Report read-only real UMG Block Library resolver status for the official alpha6 runtime.", parameters: Type.Object({ root: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input: { root?: string }) { return { content: [{ type: "text", text: JSON.stringify(getBlockLibraryStatus("0.3.0-alpha.6", "dist/plugin-entry.js", input.root ?? defaultBlockLibraryRoot()), null, 2) }] }; } }, { optional: true });
     api.registerTool({ name: "umg_envoy_block_library_manifest_index", description: "Inspect approved block-library manifest/index files without loading target payloads.", parameters: Type.Object({ root: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input: { root?: string }) { return { content: [{ type: "text", text: JSON.stringify(getBlockLibraryManifestIndex("0.3.0-alpha.6", "dist/plugin-entry.js", input.root ?? defaultBlockLibraryRoot()), null, 2) }] }; } }, { optional: true });
     api.registerTool({ name: "umg_envoy_block_library_manifest_entry_lookup", description: "Look up a single manifest/index entry without loading the target payload.", parameters: Type.Object({ entryId: Type.Optional(Type.String()), sourcePath: Type.Optional(Type.String()), manifestKind: Type.Optional(Type.String()), includeManifestSummary: Type.Optional(Type.Boolean()), includeRaw: Type.Optional(Type.Boolean()), root: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input: { entryId?: string; sourcePath?: string; manifestKind?: any; includeManifestSummary?: boolean; includeRaw?: boolean; root?: string }) { return { content: [{ type: "text", text: JSON.stringify(getBlockLibraryManifestEntryLookup("0.3.0-alpha.6", "dist/plugin-entry.js", input.root ?? defaultBlockLibraryRoot(), { entryId: input.entryId, sourcePath: input.sourcePath, manifestKind: input.manifestKind ?? 'all', includeManifestSummary: input.includeManifestSummary !== false, includeRaw: Boolean(input.includeRaw) }), null, 2) }] }; } }, { optional: true });
+    api.registerTool({ name: "umg_envoy_block_library_target_shallow_load_gate", description: "Determine whether a manifest-indexed target is eligible for future shallow loading without loading the payload.", parameters: Type.Object({ entryId: Type.Optional(Type.String()), sourcePath: Type.Optional(Type.String()), manifestKind: Type.Optional(Type.String()), intendedLoadMode: Type.Optional(Type.String()), includeEntrySummary: Type.Optional(Type.Boolean()), root: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input: { entryId?: string; sourcePath?: string; manifestKind?: any; intendedLoadMode?: string; includeEntrySummary?: boolean; root?: string }) { return { content: [{ type: "text", text: JSON.stringify(getBlockLibraryTargetShallowLoadGate("0.3.0-alpha.6", "dist/plugin-entry.js", input.root ?? defaultBlockLibraryRoot(), { entryId: input.entryId, sourcePath: input.sourcePath, manifestKind: input.manifestKind ?? 'all', intendedLoadMode: input.intendedLoadMode ?? 'shallow', includeEntrySummary: input.includeEntrySummary !== false }), null, 2) }] }; } }, { optional: true });
   }
 };
 

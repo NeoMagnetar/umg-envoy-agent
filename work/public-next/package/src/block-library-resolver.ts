@@ -24,7 +24,15 @@ export type BlockLibraryHoldCode =
   | "HOLD_RAW_ENTRY_DUMP_NOT_SUPPORTED"
   | "HOLD_ENTRY_SOURCE_PATH_FORBIDDEN"
   | "HOLD_ENTRY_SOURCE_PATH_OUTSIDE_ALLOWLIST"
-  | "HOLD_ENTRY_SHAPE_UNKNOWN";
+  | "HOLD_ENTRY_SHAPE_UNKNOWN"
+  | "HOLD_SHALLOW_LOAD_GATE_QUERY_REQUIRED"
+  | "HOLD_SHALLOW_LOAD_MODE_UNSUPPORTED"
+  | "HOLD_TARGET_FORBIDDEN"
+  | "HOLD_TARGET_OUTSIDE_ALLOWLIST"
+  | "HOLD_TARGET_REFERENCE_ONLY"
+  | "HOLD_TARGET_MISSING_ON_DISK"
+  | "HOLD_TARGET_SHAPE_UNKNOWN"
+  | "HOLD_SHALLOW_LOAD_GATE_UNAVAILABLE";
 
 export interface BlockLibraryLaneStatus {
   lane: string;
@@ -157,6 +165,53 @@ export interface BlockLibraryManifestEntryLookupResult {
     shapeUnknownManifestCount: number;
     totalEntryCount: number;
   };
+  warnings: string[];
+  errors: Array<{ code: BlockLibraryHoldCode; message: string }>;
+}
+
+export type BlockLibraryShallowLoadDecision =
+  | "ALLOW_SHALLOW_LOAD"
+  | "DENY_FORBIDDEN_TARGET"
+  | "DENY_OUTSIDE_ALLOWLIST"
+  | "DENY_REFERENCE_ONLY_TARGET"
+  | "DENY_TARGET_MISSING"
+  | "DENY_ENTRY_NOT_FOUND"
+  | "DENY_QUERY_REQUIRED"
+  | "DENY_UNSUPPORTED_MANIFEST_KIND"
+  | "DENY_UNSUPPORTED_LOAD_MODE"
+  | "DENY_SHAPE_UNKNOWN";
+
+export type BlockLibraryNextSafeAction =
+  | "NEXT_SAFE_ACTION_SHALLOW_LOAD_ALLOWED"
+  | "NEXT_SAFE_ACTION_DO_NOT_LOAD"
+  | "NEXT_SAFE_ACTION_FIX_INDEX_OR_TARGET"
+  | "NEXT_SAFE_ACTION_USE_REFERENCE_ONLY_VIEW"
+  | "NEXT_SAFE_ACTION_REVIEW_POLICY";
+
+export interface BlockLibraryTargetShallowLoadGateResult {
+  ok: boolean;
+  version: string;
+  entrypoint: string;
+  mode: "real_block_library_target_shallow_load_gate";
+  readOnly: true;
+  execution: "not_performed";
+  directSource: "not_enabled";
+  query: {
+    entryId: string | null;
+    sourcePath: string | null;
+    manifestKind: BlockLibraryManifestKind;
+    intendedLoadMode: string;
+  };
+  gate: {
+    decision: BlockLibraryShallowLoadDecision;
+    canShallowLoad: boolean;
+    reasonCodes: string[];
+    nextSafeAction: BlockLibraryNextSafeAction;
+    payloadLoaded: false;
+    recursiveLoad: false;
+  };
+  target: BlockLibraryManifestEntryLookupMatch | null;
+  entry: BlockLibraryManifestEntryLookupMatch | null;
   warnings: string[];
   errors: Array<{ code: BlockLibraryHoldCode; message: string }>;
 }
@@ -708,6 +763,206 @@ export function getBlockLibraryManifestEntryLookup(
       shapeUnknownManifestCount: index.summary.shapeUnknownManifestCount,
       totalEntryCount: index.summary.totalEntryCount
     },
+    warnings: [],
+    errors: []
+  };
+}
+
+export function getBlockLibraryTargetShallowLoadGate(
+  version: string,
+  entrypoint = "dist/plugin-entry.js",
+  root = DEFAULT_LIBRARY_ROOT,
+  input: {
+    entryId?: string;
+    sourcePath?: string;
+    manifestKind?: BlockLibraryManifestKind;
+    intendedLoadMode?: string;
+    includeEntrySummary?: boolean;
+  } = {}
+): BlockLibraryTargetShallowLoadGateResult {
+  const manifestKind = input.manifestKind ?? "all";
+  const intendedLoadMode = input.intendedLoadMode ?? "shallow";
+  const base = {
+    version,
+    entrypoint,
+    mode: "real_block_library_target_shallow_load_gate" as const,
+    readOnly: true as const,
+    execution: "not_performed" as const,
+    directSource: "not_enabled" as const,
+    query: {
+      entryId: input.entryId ?? null,
+      sourcePath: input.sourcePath ?? null,
+      manifestKind,
+      intendedLoadMode
+    }
+  };
+  if (!input.entryId && !input.sourcePath) {
+    return {
+      ok: false,
+      ...base,
+      gate: {
+        decision: "DENY_QUERY_REQUIRED",
+        canShallowLoad: false,
+        reasonCodes: ["QUERY_REQUIRED"],
+        nextSafeAction: "NEXT_SAFE_ACTION_REVIEW_POLICY",
+        payloadLoaded: false,
+        recursiveLoad: false
+      },
+      target: null,
+      entry: null,
+      warnings: [],
+      errors: [{ code: "HOLD_SHALLOW_LOAD_GATE_QUERY_REQUIRED", message: "Provide entryId or sourcePath." }]
+    };
+  }
+  if (intendedLoadMode !== "shallow") {
+    return {
+      ok: false,
+      ...base,
+      gate: {
+        decision: "DENY_UNSUPPORTED_LOAD_MODE",
+        canShallowLoad: false,
+        reasonCodes: ["RECURSIVE_LOAD_NOT_ALLOWED"],
+        nextSafeAction: "NEXT_SAFE_ACTION_REVIEW_POLICY",
+        payloadLoaded: false,
+        recursiveLoad: false
+      },
+      target: null,
+      entry: null,
+      warnings: [],
+      errors: [{ code: "HOLD_SHALLOW_LOAD_MODE_UNSUPPORTED", message: `Unsupported intendedLoadMode: ${intendedLoadMode}` }]
+    };
+  }
+  const lookup = getBlockLibraryManifestEntryLookup(version, entrypoint, root, {
+    entryId: input.entryId,
+    sourcePath: input.sourcePath,
+    manifestKind,
+    includeManifestSummary: input.includeEntrySummary !== false,
+    includeRaw: false
+  });
+  if (!lookup.ok) {
+    const code = lookup.errors[0]?.code;
+    if (code === "HOLD_MANIFEST_ENTRY_NOT_FOUND") {
+      return {
+        ok: false,
+        ...base,
+        gate: {
+          decision: "DENY_ENTRY_NOT_FOUND",
+          canShallowLoad: false,
+          reasonCodes: ["TARGET_INDEX_ENTRY_NOT_FOUND"],
+          nextSafeAction: "NEXT_SAFE_ACTION_FIX_INDEX_OR_TARGET",
+          payloadLoaded: false,
+          recursiveLoad: false
+        },
+        target: null,
+        entry: null,
+        warnings: [],
+        errors: lookup.errors
+      };
+    }
+    if (code === "HOLD_MANIFEST_KIND_UNSUPPORTED") {
+      return {
+        ok: false,
+        ...base,
+        gate: {
+          decision: "DENY_UNSUPPORTED_MANIFEST_KIND",
+          canShallowLoad: false,
+          reasonCodes: ["MANIFEST_KIND_UNSUPPORTED"],
+          nextSafeAction: "NEXT_SAFE_ACTION_REVIEW_POLICY",
+          payloadLoaded: false,
+          recursiveLoad: false
+        },
+        target: null,
+        entry: null,
+        warnings: [],
+        errors: lookup.errors
+      };
+    }
+    return {
+      ok: false,
+      ...base,
+      gate: {
+        decision: "DENY_SHAPE_UNKNOWN",
+        canShallowLoad: false,
+        reasonCodes: ["DIRECT_SOURCE_NOT_ENABLED"],
+        nextSafeAction: "NEXT_SAFE_ACTION_REVIEW_POLICY",
+        payloadLoaded: false,
+        recursiveLoad: false
+      },
+      target: null,
+      entry: null,
+      warnings: [],
+      errors: [{ code: "HOLD_SHALLOW_LOAD_GATE_UNAVAILABLE", message: "Shallow load gate unavailable." }, ...lookup.errors]
+    };
+  }
+  const match = lookup.matches[0] ?? null;
+  if (!match) {
+    return {
+      ok: false,
+      ...base,
+      gate: {
+        decision: "DENY_SHAPE_UNKNOWN",
+        canShallowLoad: false,
+        reasonCodes: ["DIRECT_SOURCE_NOT_ENABLED"],
+        nextSafeAction: "NEXT_SAFE_ACTION_REVIEW_POLICY",
+        payloadLoaded: false,
+        recursiveLoad: false
+      },
+      target: null,
+      entry: null,
+      warnings: [],
+      errors: [{ code: "HOLD_SHALLOW_LOAD_GATE_UNAVAILABLE", message: "Lookup returned no match." }]
+    };
+  }
+
+  let decision: BlockLibraryShallowLoadDecision;
+  let nextSafeAction: BlockLibraryNextSafeAction;
+  let reasonCodes: string[];
+  switch (match.targetPolicy) {
+    case "ALLOWED_NOT_LOADED":
+      decision = "ALLOW_SHALLOW_LOAD";
+      nextSafeAction = "NEXT_SAFE_ACTION_SHALLOW_LOAD_ALLOWED";
+      reasonCodes = ["TARGET_INDEX_ENTRY_FOUND", "TARGET_PATH_ALLOWED", "TARGET_EXISTS", "PAYLOAD_NOT_LOADED"];
+      break;
+    case "MISSING_ON_DISK":
+      decision = "DENY_TARGET_MISSING";
+      nextSafeAction = "NEXT_SAFE_ACTION_FIX_INDEX_OR_TARGET";
+      reasonCodes = ["TARGET_INDEX_ENTRY_FOUND", "TARGET_PATH_ALLOWED", "TARGET_MISSING_ON_DISK", "PAYLOAD_NOT_LOADED"];
+      break;
+    case "FORBIDDEN_TARGET":
+      decision = "DENY_FORBIDDEN_TARGET";
+      nextSafeAction = "NEXT_SAFE_ACTION_DO_NOT_LOAD";
+      reasonCodes = ["FORBIDDEN_TARGET", "POLICY_EXCLUDED", "PAYLOAD_NOT_LOADED"];
+      break;
+    case "OUTSIDE_ALLOWLIST_TARGET":
+      decision = "DENY_OUTSIDE_ALLOWLIST";
+      nextSafeAction = "NEXT_SAFE_ACTION_REVIEW_POLICY";
+      reasonCodes = ["OUTSIDE_ALLOWLIST_TARGET", "POLICY_BLOCKED", "PAYLOAD_NOT_LOADED"];
+      break;
+    case "REFERENCE_ONLY_TARGET":
+      decision = "DENY_REFERENCE_ONLY_TARGET";
+      nextSafeAction = "NEXT_SAFE_ACTION_USE_REFERENCE_ONLY_VIEW";
+      reasonCodes = ["REFERENCE_ONLY_TARGET", "POLICY_BLOCKED", "PAYLOAD_NOT_LOADED"];
+      break;
+    default:
+      decision = "DENY_SHAPE_UNKNOWN";
+      nextSafeAction = "NEXT_SAFE_ACTION_REVIEW_POLICY";
+      reasonCodes = ["DIRECT_SOURCE_NOT_ENABLED", "PAYLOAD_NOT_LOADED"];
+      break;
+  }
+
+  return {
+    ok: decision === "ALLOW_SHALLOW_LOAD",
+    ...base,
+    gate: {
+      decision,
+      canShallowLoad: decision === "ALLOW_SHALLOW_LOAD",
+      reasonCodes,
+      nextSafeAction,
+      payloadLoaded: false,
+      recursiveLoad: false
+    },
+    target: match,
+    entry: match,
     warnings: [],
     errors: []
   };
