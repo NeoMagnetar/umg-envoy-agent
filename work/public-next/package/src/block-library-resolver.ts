@@ -45,7 +45,10 @@ export type BlockLibraryHoldCode =
   | "HOLD_NEOBLOCK_INSPECT_UNAVAILABLE"
   | "HOLD_VISIBLE_MOLT_EXTRACT_QUERY_REQUIRED"
   | "HOLD_VISIBLE_MOLT_NOT_FOUND"
-  | "HOLD_VISIBLE_MOLT_EXTRACT_UNAVAILABLE";
+  | "HOLD_VISIBLE_MOLT_EXTRACT_UNAVAILABLE"
+  | "HOLD_MOLT_MAP_FRAGMENT_QUERY_REQUIRED"
+  | "HOLD_MOLT_MAP_FRAGMENT_PROJECTION_FORMAT_UNSUPPORTED"
+  | "HOLD_MOLT_MAP_FRAGMENT_UNAVAILABLE";
 
 export interface BlockLibraryLaneStatus {
   lane: string;
@@ -438,6 +441,72 @@ export interface BlockLibraryMoltblockVisibleExtractResult {
     contentPreview: string | null;
     limitations: string[];
   } | null;
+  warnings: string[];
+  errors: Array<{ code: BlockLibraryHoldCode; message: string }>;
+}
+
+export interface BlockLibraryMoltMapFragmentResult {
+  ok: boolean;
+  version: string;
+  entrypoint: string;
+  mode: "real_block_library_molt_map_fragment";
+  readOnly: true;
+  execution: "not_performed";
+  directSource: "not_enabled";
+  query: {
+    neoblockId: string | null;
+    entryId: string | null;
+    sourcePath: string | null;
+    manifestKind: BlockLibraryManifestKind;
+    summaryProfile: string;
+    projectionFormat: "nl" | "json" | "both";
+  };
+  sourceNeoblock: {
+    inspectStatus: "NEOBLOCK_INSPECTED" | "NEOBLOCK_DENIED_BY_GATE" | "NEOBLOCK_NOT_FOUND" | "NEOBLOCK_TARGET_NOT_NEOBLOCK" | "NEOBLOCK_TARGET_FORBIDDEN" | "NEOBLOCK_TARGET_OUTSIDE_ALLOWLIST" | "NEOBLOCK_SHAPE_UNKNOWN" | "NEOBLOCK_PARSE_FAILED";
+    neoblockId: string | null;
+    artifactKind: string | null;
+    moltType: string | null;
+    payloadLoaded: boolean;
+    recursiveLoad: false;
+  } | null;
+  visibleMoltExtraction: {
+    extractStatus: "VISIBLE_MOLT_EXTRACTED" | "VISIBLE_MOLT_NOT_FOUND" | "VISIBLE_MOLT_DENIED_BY_GATE" | "VISIBLE_MOLT_SOURCE_NOT_NEOBLOCK" | "VISIBLE_MOLT_SOURCE_FORBIDDEN" | "VISIBLE_MOLT_SOURCE_OUTSIDE_ALLOWLIST" | "VISIBLE_MOLT_SHAPE_UNKNOWN" | "VISIBLE_MOLT_PARSE_FAILED";
+    sourceNeoblockId: string | null;
+    moltBlockId: string | null;
+    moltType: string | null;
+    moltTypeSource: "neoblock_inspection" | null;
+    triggerEvaluation: "not_performed";
+  } | null;
+  moltMapFragment: {
+    fragmentStatus: "MOLT_MAP_FRAGMENT_READY" | "MOLT_MAP_FRAGMENT_DENIED_BY_GATE" | "MOLT_MAP_FRAGMENT_VISIBLE_MOLT_NOT_FOUND" | "MOLT_MAP_FRAGMENT_SOURCE_NOT_NEOBLOCK" | "MOLT_MAP_FRAGMENT_SOURCE_FORBIDDEN" | "MOLT_MAP_FRAGMENT_SOURCE_OUTSIDE_ALLOWLIST" | "MOLT_MAP_FRAGMENT_SHAPE_UNKNOWN" | "MOLT_MAP_FRAGMENT_PARSE_FAILED";
+    fragmentKind: "single_visible_molt";
+    sourceNeoblockId: string | null;
+    moltBlockId: string | null;
+    moltType: string | null;
+    moltMapField: "Trigger" | "Directive" | "Instruction" | "Subject" | "Primary" | "Philosophy" | "Blueprint" | null;
+    fieldValue: string | null;
+    fieldSource: "visible_molt_extraction" | null;
+    contentPreview: string | null;
+    referenceSummary: {
+      blockRefs: number;
+      neoblockRefs: number;
+      neostackRefs: number;
+      moltBlockRefs: number;
+      toolRequests: number;
+      gates: number;
+      triggers: number;
+      unknownRefs: number;
+      resolvedRefs: number;
+      loadedRefs: number;
+    } | null;
+    provenance: {
+      manifestPath: string | null;
+      sourcePath: string | null;
+      loadedFrom: "single_shallow_target" | null;
+    } | null;
+    limitations: string[];
+  } | null;
+  nlProjection: string | null;
   warnings: string[];
   errors: Array<{ code: BlockLibraryHoldCode; message: string }>;
 }
@@ -1659,6 +1728,188 @@ function pickVisibleFields(source: Record<string, unknown>, keys: string[]): Rec
     if (key in source) out[key] = source[key];
   }
   return out;
+}
+
+function asBoundedText(value: unknown): string | null {
+  if (typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  return trimmed.length > 500 ? `${trimmed.slice(0, 500)}…` : trimmed;
+}
+
+function deriveFragmentFieldValue(extracted: NonNullable<BlockLibraryMoltblockVisibleExtractResult['visibleMoltExtraction']>): string | null {
+  const summary = extracted.contentSummary ?? {};
+  return asBoundedText(summary['content'])
+    ?? asBoundedText(summary['summary'])
+    ?? asBoundedText(summary['text'])
+    ?? asBoundedText(extracted.contentPreview)
+    ?? asBoundedText(extracted.title)
+    ?? asBoundedText((extracted.moltFields ?? {})['displayName'])
+    ?? (extracted.moltType && extracted.sourceNeoblockId ? `${extracted.moltType} (${extracted.sourceNeoblockId})` : null);
+}
+
+function mapMoltTypeToFragmentField(moltType: string | null): BlockLibraryMoltMapFragmentResult['moltMapFragment'] extends infer T ? any : never {
+  switch (moltType) {
+    case 'Trigger':
+    case 'Directive':
+    case 'Instruction':
+    case 'Subject':
+    case 'Primary':
+    case 'Philosophy':
+    case 'Blueprint':
+      return moltType;
+    default:
+      return null;
+  }
+}
+
+export function getBlockLibraryMoltMapFragment(
+  version: string,
+  entrypoint = 'dist/plugin-entry.js',
+  root = DEFAULT_LIBRARY_ROOT,
+  input: {
+    neoblockId?: string;
+    entryId?: string;
+    sourcePath?: string;
+    manifestKind?: BlockLibraryManifestKind;
+    summaryProfile?: string;
+    projectionFormat?: 'nl' | 'json' | 'both' | string;
+    includeContentPreview?: boolean;
+    includeReferenceSummary?: boolean;
+    includeRaw?: boolean;
+  } = {}
+): BlockLibraryMoltMapFragmentResult {
+  const entryId = input.neoblockId ?? input.entryId;
+  const manifestKind = input.manifestKind ?? 'neoblock';
+  const summaryProfile = input.summaryProfile ?? 'standard';
+  const projectionFormat = (input.projectionFormat ?? 'both') as 'nl' | 'json' | 'both' | string;
+  const normalizedProjectionFormat: 'nl' | 'json' | 'both' = (projectionFormat === 'nl' || projectionFormat === 'json' || projectionFormat === 'both') ? projectionFormat : 'both';
+  const base = {
+    version,
+    entrypoint,
+    mode: 'real_block_library_molt_map_fragment' as const,
+    readOnly: true as const,
+    execution: 'not_performed' as const,
+    directSource: 'not_enabled' as const,
+    query: {
+      neoblockId: input.neoblockId ?? null,
+      entryId: entryId ?? null,
+      sourcePath: input.sourcePath ?? null,
+      manifestKind,
+      summaryProfile,
+      projectionFormat: normalizedProjectionFormat
+    }
+  };
+  if (!entryId && !input.sourcePath) {
+    return {
+      ok: false,
+      ...base,
+      sourceNeoblock: null,
+      visibleMoltExtraction: null,
+      moltMapFragment: null,
+      nlProjection: null,
+      warnings: [],
+      errors: [{ code: 'HOLD_MOLT_MAP_FRAGMENT_QUERY_REQUIRED', message: 'Provide neoblockId, entryId, or sourcePath.' }]
+    };
+  }
+  if (!['nl', 'json', 'both'].includes(projectionFormat)) {
+    return {
+      ok: false,
+      ...base,
+      sourceNeoblock: null,
+      visibleMoltExtraction: null,
+      moltMapFragment: null,
+      nlProjection: null,
+      warnings: [],
+      errors: [{ code: 'HOLD_MOLT_MAP_FRAGMENT_PROJECTION_FORMAT_UNSUPPORTED', message: `Unsupported projectionFormat: ${projectionFormat}` }]
+    };
+  }
+  const extracted = getBlockLibraryMoltblockVisibleExtract(version, entrypoint, root, {
+    neoblockId: input.neoblockId,
+    entryId: input.entryId,
+    sourcePath: input.sourcePath,
+    manifestKind,
+    summaryProfile,
+    includeContentPreview: input.includeContentPreview !== false,
+    includeReferenceSummary: input.includeReferenceSummary !== false,
+    includeRaw: Boolean(input.includeRaw)
+  });
+  const visible = extracted.visibleMoltExtraction;
+  const sourceNeoblock = extracted.sourceNeoblock;
+  const visibleSummary = visible ? {
+    extractStatus: visible.extractStatus,
+    sourceNeoblockId: visible.sourceNeoblockId,
+    moltBlockId: visible.moltBlockId,
+    moltType: visible.moltType,
+    moltTypeSource: visible.moltTypeSource,
+    triggerEvaluation: 'not_performed' as const
+  } : null;
+  if (!extracted.ok || !visible || !sourceNeoblock) {
+    let fragmentStatus: BlockLibraryMoltMapFragmentResult['moltMapFragment'] extends infer T ? any : never = 'MOLT_MAP_FRAGMENT_DENIED_BY_GATE';
+    const first = extracted.errors[0]?.code;
+    if (first === 'HOLD_TARGET_FORBIDDEN') fragmentStatus = 'MOLT_MAP_FRAGMENT_SOURCE_FORBIDDEN';
+    else if (first === 'HOLD_TARGET_OUTSIDE_ALLOWLIST') fragmentStatus = 'MOLT_MAP_FRAGMENT_SOURCE_OUTSIDE_ALLOWLIST';
+    else if (first === 'HOLD_VISIBLE_MOLT_NOT_FOUND') fragmentStatus = 'MOLT_MAP_FRAGMENT_VISIBLE_MOLT_NOT_FOUND';
+    else if (first === 'HOLD_TARGET_NOT_NEOBLOCK') fragmentStatus = 'MOLT_MAP_FRAGMENT_SOURCE_NOT_NEOBLOCK';
+    else if (first === 'HOLD_TARGET_PARSE_FAILED') fragmentStatus = 'MOLT_MAP_FRAGMENT_PARSE_FAILED';
+    else if (first === 'HOLD_TARGET_SHAPE_UNKNOWN') fragmentStatus = 'MOLT_MAP_FRAGMENT_SHAPE_UNKNOWN';
+    return {
+      ok: false,
+      ...base,
+      sourceNeoblock,
+      visibleMoltExtraction: visibleSummary,
+      moltMapFragment: {
+        fragmentStatus,
+        fragmentKind: 'single_visible_molt',
+        sourceNeoblockId: visible?.sourceNeoblockId ?? entryId ?? null,
+        moltBlockId: visible?.moltBlockId ?? entryId ?? null,
+        moltType: visible?.moltType ?? null,
+        moltMapField: mapMoltTypeToFragmentField(visible?.moltType ?? null),
+        fieldValue: null,
+        fieldSource: visible ? 'visible_molt_extraction' : null,
+        contentPreview: visible?.contentPreview ?? null,
+        referenceSummary: visible?.referenceSummary ?? null,
+        provenance: null,
+        limitations: ['single_fragment_only', 'not_full_molt_map', 'no_recursive_loading', 'no_reference_resolution', 'no_trigger_evaluation', 'no_execution']
+      },
+      nlProjection: null,
+      warnings: extracted.warnings,
+      errors: extracted.errors
+    };
+  }
+  const moltMapField = mapMoltTypeToFragmentField(visible.moltType);
+  const fieldValue = deriveFragmentFieldValue(visible);
+  const provenance = extracted.ok && (extracted as any).sourceNeoblock ? {
+    manifestPath: ((extracted as any).target?.manifestPath ?? 'AI/MANIFESTS/neoblock-library-index.json') as string | null,
+    sourcePath: ((extracted as any).target?.sourcePath ?? base.query.sourcePath ?? null) as string | null,
+    loadedFrom: 'single_shallow_target' as const
+  } : { manifestPath: 'AI/MANIFESTS/neoblock-library-index.json', sourcePath: base.query.sourcePath, loadedFrom: 'single_shallow_target' as const };
+  const nlProjection = (projectionFormat === 'nl' || projectionFormat === 'both') && moltMapField
+    ? `Current Context — MOLT Map Fragment:\n${moltMapField}: ${fieldValue ?? 'n/a'}`
+    : null;
+  return {
+    ok: true,
+    ...base,
+    sourceNeoblock,
+    visibleMoltExtraction: visibleSummary,
+    moltMapFragment: {
+      fragmentStatus: 'MOLT_MAP_FRAGMENT_READY',
+      fragmentKind: 'single_visible_molt',
+      sourceNeoblockId: visible.sourceNeoblockId,
+      moltBlockId: visible.moltBlockId,
+      moltType: visible.moltType,
+      moltMapField,
+      fieldValue,
+      fieldSource: 'visible_molt_extraction',
+      contentPreview: visible.contentPreview,
+      referenceSummary: visible.referenceSummary,
+      provenance,
+      limitations: ['single_fragment_only', 'not_full_molt_map', 'no_recursive_loading', 'no_reference_resolution', 'no_trigger_evaluation', 'no_execution']
+    },
+    nlProjection,
+    warnings: extracted.warnings,
+    errors: []
+  };
 }
 
 export function getBlockLibraryMoltblockVisibleExtract(
