@@ -53,7 +53,12 @@ export type BlockLibraryHoldCode =
   | "HOLD_MOLT_MAP_COMPOSE_INPUT_LIMIT_EXCEEDED"
   | "HOLD_MOLT_MAP_COMPOSE_PROJECTION_FORMAT_UNSUPPORTED"
   | "HOLD_MOLT_MAP_COMPOSE_CONFLICT_POLICY_UNSUPPORTED"
-  | "HOLD_MOLT_MAP_COMPOSE_UNAVAILABLE";
+  | "HOLD_MOLT_MAP_COMPOSE_UNAVAILABLE"
+  | "HOLD_RESPONSE_ENVELOPE_FRAGMENT_QUERY_REQUIRED"
+  | "HOLD_RESPONSE_ENVELOPE_FRAGMENT_PROJECTION_FORMAT_UNSUPPORTED"
+  | "HOLD_RESPONSE_ENVELOPE_FRAGMENT_COMPOSER_NOT_NORMALIZED"
+  | "HOLD_RESPONSE_ENVELOPE_FRAGMENT_COMPOSER_FAILED"
+  | "HOLD_RESPONSE_ENVELOPE_FRAGMENT_UNAVAILABLE";
 
 export interface BlockLibraryLaneStatus {
   lane: string;
@@ -586,6 +591,55 @@ export interface BlockLibraryMoltMapComposeResult {
     directSource: "not_enabled";
     libraryMutation: "not_performed";
   };
+  warnings: string[];
+  errors: Array<{ code: BlockLibraryHoldCode; message: string }>;
+}
+
+export interface BlockLibraryResponseEnvelopeFragmentResult {
+  ok: boolean;
+  version: string;
+  entrypoint: string;
+  mode: "real_block_library_response_envelope_fragment";
+  outputContract: {
+    contractId: "umg.response_envelope.fragment.v1";
+    contractStatus: "NORMALIZED";
+    sourceContractId: "umg.molt_map.compose.v1";
+    sourceMode: "explicit_neoblock_ids";
+    automaticResponseTakeover: false;
+    recursiveLoad: false;
+    fullLibraryScan: false;
+  };
+  readOnly: true;
+  execution: "not_performed";
+  directSource: "not_enabled";
+  query: {
+    neoblockIds: string[];
+    project: string;
+    currentState: string;
+    activeTool: string;
+    formalResponseContent: string;
+    projectionFormat: "nl" | "json" | "both";
+    includeMetadata: boolean;
+    includeAudit: boolean;
+  };
+  sourceComposition: BlockLibraryMoltMapComposeResult | null;
+  responseEnvelopeFragment: {
+    fragmentStatus: "RESPONSE_ENVELOPE_FRAGMENT_READY" | "RESPONSE_ENVELOPE_FRAGMENT_READY_WITH_SOURCE_WARNINGS" | "RESPONSE_ENVELOPE_FRAGMENT_DENIED" | "RESPONSE_ENVELOPE_FRAGMENT_COMPOSER_FAILED" | "RESPONSE_ENVELOPE_FRAGMENT_UNAVAILABLE";
+    fragmentKind: "explicit_molt_map_envelope";
+    sections: {
+      activeStack: Record<string, unknown>;
+      envoyIntuition: Record<string, unknown>;
+      currentContextMoltMap: Record<string, unknown>;
+      formalResponseContent: Record<string, unknown>;
+      metadata: Record<string, unknown>;
+      audit: Record<string, unknown>;
+    };
+    sectionOrder: Array<"Active Stack" | "Envoy Intuition" | "Current Context — MOLT Map" | "Formal Response Content" | "Metadata">;
+    automaticResponseTakeover: false;
+    limitations: string[];
+  } | null;
+  nlProjection: string | null;
+  audit: Record<string, unknown>;
   warnings: string[];
   errors: Array<{ code: BlockLibraryHoldCode; message: string }>;
 }
@@ -2033,6 +2087,236 @@ export function getBlockLibraryMoltMapCompose(
     fragmentResults,
     conflicts,
     nlProjection,
+    errors: []
+  };
+}
+
+function asBoundedParagraph(value: string | undefined, max = 300): string {
+  const trimmed = (value ?? '').trim();
+  if (!trimmed) return '(Self-evaluation: The composed MOLT Map is normalized and ready for envelope rendering. This fragment does not modify runtime response behavior.)';
+  return trimmed.length > max ? `${trimmed.slice(0, max)}…` : trimmed;
+}
+
+function asBoundedDisplayText(value: string | undefined, max = 1500): string {
+  const trimmed = (value ?? '').trim();
+  if (!trimmed) return 'n/a';
+  return trimmed.length > max ? `${trimmed.slice(0, max)}…` : trimmed;
+}
+
+function currentUtcDateParts(): { date: string; time: string } {
+  const now = new Date();
+  return {
+    date: now.toISOString().slice(0, 10),
+    time: now.toISOString().slice(11, 19)
+  };
+}
+
+export function getBlockLibraryResponseEnvelopeFragment(
+  version: string,
+  entrypoint = 'dist/plugin-entry.js',
+  root = DEFAULT_LIBRARY_ROOT,
+  input: {
+    neoblockIds?: string[];
+    project?: string;
+    currentState?: string;
+    activeTool?: string;
+    formalResponseContent?: string;
+    envoyIntuition?: string;
+    projectionFormat?: 'nl' | 'json' | 'both' | string;
+    includeMetadata?: boolean;
+    includeAudit?: boolean;
+    includeRaw?: boolean;
+  } = {}
+): BlockLibraryResponseEnvelopeFragmentResult {
+  const neoblockIds = input.neoblockIds ?? [];
+  const projectionFormat = input.projectionFormat ?? 'both';
+  const normalizedProjectionFormat: 'nl' | 'json' | 'both' = projectionFormat === 'nl' || projectionFormat === 'json' || projectionFormat === 'both' ? projectionFormat : 'both';
+  const utc = currentUtcDateParts();
+  const base = {
+    version,
+    entrypoint,
+    mode: 'real_block_library_response_envelope_fragment' as const,
+    outputContract: {
+      contractId: 'umg.response_envelope.fragment.v1' as const,
+      contractStatus: 'NORMALIZED' as const,
+      sourceContractId: 'umg.molt_map.compose.v1' as const,
+      sourceMode: 'explicit_neoblock_ids' as const,
+      automaticResponseTakeover: false as const,
+      recursiveLoad: false as const,
+      fullLibraryScan: false as const
+    },
+    readOnly: true as const,
+    execution: 'not_performed' as const,
+    directSource: 'not_enabled' as const,
+    query: {
+      neoblockIds,
+      project: input.project ?? 'UMG Envoy Agent / OpenClaw',
+      currentState: input.currentState ?? 'RESPONSE_ENVELOPE_FRAGMENT_DRAFT',
+      activeTool: input.activeTool ?? 'umg_envoy_block_library_response_envelope_fragment',
+      formalResponseContent: asBoundedDisplayText(input.formalResponseContent),
+      projectionFormat: normalizedProjectionFormat,
+      includeMetadata: input.includeMetadata !== false,
+      includeAudit: input.includeAudit !== false
+    }
+  };
+  if (!neoblockIds.length) {
+    return {
+      ok: false,
+      ...base,
+      sourceComposition: null,
+      responseEnvelopeFragment: {
+        fragmentStatus: 'RESPONSE_ENVELOPE_FRAGMENT_DENIED',
+        fragmentKind: 'explicit_molt_map_envelope',
+        sections: { activeStack: {}, envoyIntuition: {}, currentContextMoltMap: {}, formalResponseContent: {}, metadata: {}, audit: {} },
+        sectionOrder: ['Active Stack', 'Envoy Intuition', 'Current Context — MOLT Map', 'Formal Response Content', 'Metadata'],
+        automaticResponseTakeover: false,
+        limitations: ['explicit_fragment_only', 'not_global_response_format', 'no_active_sleeve_discovery', 'no_neostack_inspection', 'no_recursive_loading', 'no_execution']
+      },
+      nlProjection: null,
+      audit: {},
+      warnings: [],
+      errors: [{ code: 'HOLD_RESPONSE_ENVELOPE_FRAGMENT_QUERY_REQUIRED', message: 'Provide at least one neoblockId.' }]
+    };
+  }
+  if (!['nl', 'json', 'both'].includes(projectionFormat)) {
+    return {
+      ok: false,
+      ...base,
+      sourceComposition: null,
+      responseEnvelopeFragment: {
+        fragmentStatus: 'RESPONSE_ENVELOPE_FRAGMENT_DENIED',
+        fragmentKind: 'explicit_molt_map_envelope',
+        sections: { activeStack: {}, envoyIntuition: {}, currentContextMoltMap: {}, formalResponseContent: {}, metadata: {}, audit: {} },
+        sectionOrder: ['Active Stack', 'Envoy Intuition', 'Current Context — MOLT Map', 'Formal Response Content', 'Metadata'],
+        automaticResponseTakeover: false,
+        limitations: ['explicit_fragment_only', 'not_global_response_format', 'no_active_sleeve_discovery', 'no_neostack_inspection', 'no_recursive_loading', 'no_execution']
+      },
+      nlProjection: null,
+      audit: {},
+      warnings: [],
+      errors: [{ code: 'HOLD_RESPONSE_ENVELOPE_FRAGMENT_PROJECTION_FORMAT_UNSUPPORTED', message: `Unsupported projectionFormat: ${projectionFormat}` }]
+    };
+  }
+  if (input.includeRaw) {
+    return {
+      ok: false,
+      ...base,
+      sourceComposition: null,
+      responseEnvelopeFragment: {
+        fragmentStatus: 'RESPONSE_ENVELOPE_FRAGMENT_DENIED',
+        fragmentKind: 'explicit_molt_map_envelope',
+        sections: { activeStack: {}, envoyIntuition: {}, currentContextMoltMap: {}, formalResponseContent: {}, metadata: {}, audit: {} },
+        sectionOrder: ['Active Stack', 'Envoy Intuition', 'Current Context — MOLT Map', 'Formal Response Content', 'Metadata'],
+        automaticResponseTakeover: false,
+        limitations: ['explicit_fragment_only', 'not_global_response_format', 'no_active_sleeve_discovery', 'no_neostack_inspection', 'no_recursive_loading', 'no_execution']
+      },
+      nlProjection: null,
+      audit: {},
+      warnings: [],
+      errors: [{ code: 'HOLD_RAW_TARGET_DUMP_NOT_SUPPORTED', message: 'Raw target dump is not supported.' }]
+    };
+  }
+  const sourceComposition = getBlockLibraryMoltMapCompose(version, entrypoint, root, {
+    neoblockIds,
+    projectionFormat: 'both',
+    includeFieldProvenance: true,
+    includeContentPreview: true,
+    includeRaw: false
+  });
+  if (!sourceComposition.outputContract || sourceComposition.outputContract.contractStatus !== 'NORMALIZED' || sourceComposition.outputContract.contractId !== 'umg.molt_map.compose.v1') {
+    return {
+      ok: false,
+      ...base,
+      sourceComposition,
+      responseEnvelopeFragment: {
+        fragmentStatus: 'RESPONSE_ENVELOPE_FRAGMENT_COMPOSER_FAILED',
+        fragmentKind: 'explicit_molt_map_envelope',
+        sections: { activeStack: {}, envoyIntuition: {}, currentContextMoltMap: {}, formalResponseContent: {}, metadata: {}, audit: {} },
+        sectionOrder: ['Active Stack', 'Envoy Intuition', 'Current Context — MOLT Map', 'Formal Response Content', 'Metadata'],
+        automaticResponseTakeover: false,
+        limitations: ['explicit_fragment_only', 'not_global_response_format', 'no_active_sleeve_discovery', 'no_neostack_inspection', 'no_recursive_loading', 'no_execution']
+      },
+      nlProjection: null,
+      audit: sourceComposition.audit,
+      warnings: [],
+      errors: [{ code: 'HOLD_RESPONSE_ENVELOPE_FRAGMENT_COMPOSER_NOT_NORMALIZED', message: 'Composer output contract is not normalized.' }]
+    };
+  }
+  if (!sourceComposition.ok) {
+    return {
+      ok: false,
+      ...base,
+      sourceComposition,
+      responseEnvelopeFragment: {
+        fragmentStatus: 'RESPONSE_ENVELOPE_FRAGMENT_COMPOSER_FAILED',
+        fragmentKind: 'explicit_molt_map_envelope',
+        sections: { activeStack: {}, envoyIntuition: {}, currentContextMoltMap: {}, formalResponseContent: {}, metadata: {}, audit: {} },
+        sectionOrder: ['Active Stack', 'Envoy Intuition', 'Current Context — MOLT Map', 'Formal Response Content', 'Metadata'],
+        automaticResponseTakeover: false,
+        limitations: ['explicit_fragment_only', 'not_global_response_format', 'no_active_sleeve_discovery', 'no_neostack_inspection', 'no_recursive_loading', 'no_execution']
+      },
+      nlProjection: null,
+      audit: sourceComposition.audit,
+      warnings: [],
+      errors: [{ code: 'HOLD_RESPONSE_ENVELOPE_FRAGMENT_COMPOSER_FAILED', message: 'Composer failed.' }, ...sourceComposition.errors]
+    };
+  }
+  const deniedWarnings = sourceComposition.fragmentResults.filter((result) => !result.ok && result.hold).map((result) => `${result.requestedId}: ${result.hold}`);
+  const fragmentStatus = sourceComposition.composition.deniedFragmentCount > 0 ? 'RESPONSE_ENVELOPE_FRAGMENT_READY_WITH_SOURCE_WARNINGS' as const : 'RESPONSE_ENVELOPE_FRAGMENT_READY' as const;
+  const activeStackLines = [
+    'Active Stack:',
+    `- Project: ${base.query.project}`,
+    `- Current State: ${base.query.currentState}`,
+    `- Active Tool: ${base.query.activeTool}`,
+    '- Source Contract: umg.molt_map.compose.v1',
+    '- Envelope Contract: umg.response_envelope.fragment.v1',
+    '- Boundary: explicit fragment only; no automatic response takeover'
+  ];
+  const envoyIntuitionLine = `Envoy Intuition:\n${asBoundedParagraph(input.envoyIntuition)}`;
+  const currentContext = sourceComposition.nlProjection ?? 'Current Context — MOLT Map:\nTrigger: n/a\nDirective: n/a\nInstruction: n/a\nSubject: n/a\nPrimary: n/a\nPhilosophy: n/a\nBlueprint: n/a';
+  const formalResponse = `Formal Response Content:\n${base.query.formalResponseContent}`;
+  const metadataLines = [
+    'Metadata:',
+    '- ActiveSleeve: UMG.Envoy.Agent.Alpha6.ResponseEnvelopeFragment',
+    '- Mode: Response envelope fragment',
+    '- Scope: Render explicit normalized MOLT Map into envelope fragment',
+    '- Domain: OPENCLAW / UMG',
+    '- Project: UMG Envoy Agent',
+    `- State: ${base.query.currentState}`,
+    '- Output: NL envelope fragment plus JSON contract',
+    '- Meta: No automatic response takeover',
+    '- Surface: OpenClaw tool output',
+    '- Session: n/a',
+    '- ChatCount: n/a',
+    `- Date: ${utc.date}`,
+    `- Time: ${utc.time}`,
+    '- SpecVersion: UMG_OUTPUT_STYLE.v1.1'
+  ];
+  const nlProjection = normalizedProjectionFormat === 'nl' || normalizedProjectionFormat === 'both'
+    ? [activeStackLines.join('\n'), envoyIntuitionLine, currentContext, formalResponse, base.query.includeMetadata ? metadataLines.join('\n') : null].filter(Boolean).join('\n\n')
+    : null;
+  return {
+    ok: true,
+    ...base,
+    sourceComposition,
+    responseEnvelopeFragment: {
+      fragmentStatus,
+      fragmentKind: 'explicit_molt_map_envelope',
+      sections: {
+        activeStack: { project: base.query.project, currentState: base.query.currentState, activeTool: base.query.activeTool, sourceContract: 'umg.molt_map.compose.v1', envelopeContract: 'umg.response_envelope.fragment.v1', boundary: 'explicit fragment only; no automatic response takeover' },
+        envoyIntuition: { text: asBoundedParagraph(input.envoyIntuition) },
+        currentContextMoltMap: { nlProjection: currentContext, fieldOrder: [...MOLT_MAP_FIELD_ORDER] },
+        formalResponseContent: { text: base.query.formalResponseContent },
+        metadata: base.query.includeMetadata ? { activeSleeve: 'UMG.Envoy.Agent.Alpha6.ResponseEnvelopeFragment', mode: 'Response envelope fragment', scope: 'Render explicit normalized MOLT Map into envelope fragment', domain: 'OPENCLAW / UMG', project: 'UMG Envoy Agent', state: base.query.currentState, output: 'NL envelope fragment plus JSON contract', meta: 'No automatic response takeover', surface: 'OpenClaw tool output', session: 'n/a', chatCount: 'n/a', date: utc.date, time: utc.time, specVersion: 'UMG_OUTPUT_STYLE.v1.1' } : {},
+        audit: base.query.includeAudit ? sourceComposition.audit : {}
+      },
+      sectionOrder: ['Active Stack', 'Envoy Intuition', 'Current Context — MOLT Map', 'Formal Response Content', 'Metadata'],
+      automaticResponseTakeover: false,
+      limitations: ['explicit_fragment_only', 'not_global_response_format', 'no_active_sleeve_discovery', 'no_neostack_inspection', 'no_recursive_loading', 'no_execution']
+    },
+    nlProjection,
+    audit: sourceComposition.audit,
+    warnings: deniedWarnings.length ? [`Denied source fragments: ${deniedWarnings.join('; ')}`] : [],
     errors: []
   };
 }
