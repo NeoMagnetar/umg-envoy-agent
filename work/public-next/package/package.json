@@ -46,6 +46,7 @@
     "alpha6:real-block-library-manifest-entry-lookup:smoke": "node scripts/alpha6-real-block-library-manifest-entry-lookup-smoke.mjs",
     "alpha6:real-block-library-target-shallow-load-gate:smoke": "node scripts/alpha6-real-block-library-target-shallow-load-gate-smoke.mjs",
     "alpha6:real-block-library-target-shallow-load-single:smoke": "node scripts/alpha6-real-block-library-target-shallow-load-single-smoke.mjs",
+    "alpha6:real-block-library-target-shallow-summary-normalization:smoke": "node scripts/alpha6-real-block-library-target-shallow-summary-normalization-smoke.mjs",
     "alpha6:path-valid:smoke": "node scripts/alpha6-path-valid-smoke.mjs",
     "alpha6:path-invalid:smoke": "node scripts/alpha6-path-invalid-smoke.mjs",
     "alpha7:graph-resolver:smoke": "node scripts/alpha7-graph-resolver-smoke.mjs",

@@ -37,7 +37,9 @@ export type BlockLibraryHoldCode =
   | "HOLD_SHALLOW_SINGLE_LOAD_MODE_UNSUPPORTED"
   | "HOLD_RAW_TARGET_DUMP_NOT_SUPPORTED"
   | "HOLD_TARGET_PARSE_FAILED"
-  | "HOLD_SHALLOW_SINGLE_LOAD_UNAVAILABLE";
+  | "HOLD_SHALLOW_SINGLE_LOAD_UNAVAILABLE"
+  | "HOLD_SHALLOW_SUMMARY_PROFILE_UNSUPPORTED"
+  | "HOLD_SHALLOW_SUMMARY_NORMALIZATION_UNAVAILABLE";
 
 export interface BlockLibraryLaneStatus {
   lane: string;
@@ -253,6 +255,67 @@ export interface BlockLibraryTargetShallowLoadSingleResult {
     provenance: Record<string, unknown>;
     contentPreview: string | null;
     referenceSummary: Record<string, number>;
+    rawObject?: Record<string, unknown>;
+  } | null;
+  warnings: string[];
+  errors: Array<{ code: BlockLibraryHoldCode; message: string }>;
+}
+
+export interface BlockLibraryTargetShallowSummaryNormalizeResult {
+  ok: boolean;
+  version: string;
+  entrypoint: string;
+  mode: "real_block_library_target_shallow_summary_normalize";
+  readOnly: true;
+  execution: "not_performed";
+  directSource: "not_enabled";
+  query: {
+    entryId: string | null;
+    sourcePath: string | null;
+    manifestKind: BlockLibraryManifestKind;
+    summaryProfile: string;
+  };
+  gate: {
+    decision: BlockLibraryShallowLoadDecision;
+    canShallowLoad: boolean;
+    reasonCodes: string[];
+    nextSafeAction: BlockLibraryNextSafeAction;
+    payloadLoaded: boolean;
+    recursiveLoad: false;
+  };
+  target: (BlockLibraryManifestEntryLookupMatch & { absolutePath: string | null; loadStatus: "not_loaded" | "shallow_loaded" }) | null;
+  payload: {
+    parseStatus: "PARSED_JSON" | "PARSE_FAILED";
+    shapeStatus: "SHALLOW_SUMMARY_NORMALIZED" | "SHALLOW_SUMMARY_UNAVAILABLE";
+    topLevelKeys: string[];
+  } | null;
+  normalizedSummary: {
+    summaryStatus: "NORMALIZED" | "UNAVAILABLE";
+    artifactKind: "neoblock" | "moltblock" | "neostack" | "sleeve" | "gate" | "compiler" | "unknown";
+    artifactId: string | null;
+    displayName: string | null;
+    moltType: string | null;
+    role: string | null;
+    status: string | null;
+    identity: Record<string, unknown> | null;
+    metadata: Record<string, unknown> | null;
+    content: Record<string, unknown> | null;
+    moltSummary: Record<string, unknown> | null;
+    referenceSummary: {
+      blockRefs: number;
+      neoblockRefs: number;
+      neostackRefs: number;
+      moltBlockRefs: number;
+      toolRequests: number;
+      gates: number;
+      triggers: number;
+      unknownRefs: number;
+      resolvedRefs: number;
+      loadedRefs: number;
+    } | null;
+    provenance: Record<string, unknown> | null;
+    contentPreview: string | null;
+    limitations: string[];
   } | null;
   warnings: string[];
   errors: Array<{ code: BlockLibraryHoldCode; message: string }>;
@@ -1161,7 +1224,8 @@ export function getBlockLibraryTargetShallowLoadSingle(
         metadata: typeof obj.metadata === 'object' && obj.metadata ? obj.metadata as Record<string, unknown> : {},
         provenance: typeof obj.provenance === 'object' && obj.provenance ? obj.provenance as Record<string, unknown> : {},
         contentPreview: input.includeContentPreview === false ? null : boundedPreview((obj.neoblock as any)?.content ?? obj.content ?? obj),
-        referenceSummary: countRefs(obj)
+        referenceSummary: countRefs(obj),
+        rawObject: obj
       },
       warnings: [],
       errors: []
@@ -1177,6 +1241,155 @@ export function getBlockLibraryTargetShallowLoadSingle(
       errors: [{ code: 'HOLD_TARGET_PARSE_FAILED', message: String(error) }]
     };
   }
+}
+
+function normalizeMoltType(payload: Record<string, unknown>, fallbackId: string | null): string | null {
+  const direct = typeof payload.moltType === 'string' ? payload.moltType : null;
+  if (direct) return direct;
+  const byId = fallbackId?.split('.').slice(0, 1)[0];
+  if (!fallbackId) return null;
+  const map: Record<string, string> = {
+    'primary': 'Primary',
+    'directive': 'Directive',
+    'instruction': 'Instruction',
+    'subject': 'Subject',
+    'philosophy': 'Philosophy',
+    'blueprint': 'Blueprint',
+    'trigger': 'Trigger'
+  };
+  return map[fallbackId.split('.')[0]] ?? map[byId ?? ''] ?? null;
+}
+
+function normalizeArtifactKind(manifestKind: BlockLibraryManifestKind): 'neoblock' | 'moltblock' | 'neostack' | 'sleeve' | 'gate' | 'compiler' | 'unknown' {
+  if (manifestKind === 'public_curated_catalog') return 'unknown';
+  return manifestKind === 'all' ? 'unknown' : manifestKind;
+}
+
+export function getBlockLibraryTargetShallowSummaryNormalize(
+  version: string,
+  entrypoint = "dist/plugin-entry.js",
+  root = DEFAULT_LIBRARY_ROOT,
+  input: {
+    entryId?: string;
+    sourcePath?: string;
+    manifestKind?: BlockLibraryManifestKind;
+    summaryProfile?: string;
+    includeContentPreview?: boolean;
+    includeReferenceSummary?: boolean;
+    includeRaw?: boolean;
+  } = {}
+): BlockLibraryTargetShallowSummaryNormalizeResult {
+  const summaryProfile = input.summaryProfile ?? 'standard';
+  const base = {
+    version,
+    entrypoint,
+    mode: 'real_block_library_target_shallow_summary_normalize' as const,
+    readOnly: true as const,
+    execution: 'not_performed' as const,
+    directSource: 'not_enabled' as const,
+    query: {
+      entryId: input.entryId ?? null,
+      sourcePath: input.sourcePath ?? null,
+      manifestKind: input.manifestKind ?? 'all',
+      summaryProfile
+    }
+  };
+  if (input.includeRaw) {
+    return {
+      ok: false,
+      ...base,
+      gate: { decision: 'DENY_SHAPE_UNKNOWN', canShallowLoad: false, reasonCodes: ['PAYLOAD_NOT_LOADED'], nextSafeAction: 'NEXT_SAFE_ACTION_REVIEW_POLICY', payloadLoaded: false, recursiveLoad: false },
+      target: null,
+      payload: null,
+      normalizedSummary: null,
+      warnings: [],
+      errors: [{ code: 'HOLD_RAW_TARGET_DUMP_NOT_SUPPORTED', message: 'includeRaw=true is not supported.' }]
+    };
+  }
+  if (!['compact','standard','audit'].includes(summaryProfile)) {
+    return {
+      ok: false,
+      ...base,
+      gate: { decision: 'DENY_SHAPE_UNKNOWN', canShallowLoad: false, reasonCodes: ['PAYLOAD_NOT_LOADED'], nextSafeAction: 'NEXT_SAFE_ACTION_REVIEW_POLICY', payloadLoaded: false, recursiveLoad: false },
+      target: null,
+      payload: null,
+      normalizedSummary: null,
+      warnings: [],
+      errors: [{ code: 'HOLD_SHALLOW_SUMMARY_PROFILE_UNSUPPORTED', message: `Unsupported summaryProfile: ${summaryProfile}` }]
+    };
+  }
+  const single = getBlockLibraryTargetShallowLoadSingle(version, entrypoint, root, {
+    entryId: input.entryId,
+    sourcePath: input.sourcePath,
+    manifestKind: input.manifestKind,
+    loadMode: 'shallow_single',
+    includeContentPreview: input.includeContentPreview !== false,
+    includeRaw: false
+  });
+  if (!single.ok || !single.payload?.rawObject || !single.target) {
+    return {
+      ok: false,
+      ...base,
+      gate: single.gate,
+      target: single.target,
+      payload: single.payload ? { parseStatus: single.payload.parseStatus, shapeStatus: 'SHALLOW_SUMMARY_UNAVAILABLE', topLevelKeys: single.payload.topLevelKeys } : null,
+      normalizedSummary: null,
+      warnings: single.warnings,
+      errors: single.errors.length ? single.errors : [{ code: 'HOLD_SHALLOW_SUMMARY_NORMALIZATION_UNAVAILABLE', message: 'Shallow summary normalization unavailable.' }]
+    };
+  }
+  const obj = single.payload.rawObject;
+  const identity = typeof obj.identity === 'object' && obj.identity ? obj.identity as Record<string, unknown> : {};
+  const metadata = typeof obj.metadata === 'object' && obj.metadata ? obj.metadata as Record<string, unknown> : {};
+  const provenance = typeof obj.provenance === 'object' && obj.provenance ? obj.provenance as Record<string, unknown> : {};
+  const neoblock = typeof obj.neoblock === 'object' && obj.neoblock ? obj.neoblock as Record<string, unknown> : {};
+  const artifactId = single.target.id ?? (typeof identity.id === 'string' ? identity.id : null);
+  const referenceSummary = single.payload.referenceSummary ?? countRefs(obj);
+  const normalizedReferenceSummary = {
+    blockRefs: referenceSummary.block_refs ?? 0,
+    neoblockRefs: referenceSummary.neoblock_refs ?? 0,
+    neostackRefs: referenceSummary.neostack_refs ?? 0,
+    moltBlockRefs: referenceSummary.molt_refs ?? 0,
+    toolRequests: referenceSummary.tool_requests ?? 0,
+    gates: referenceSummary.gates ?? 0,
+    triggers: referenceSummary.triggers ?? 0,
+    unknownRefs: 0,
+    resolvedRefs: 0,
+    loadedRefs: 0
+  };
+  const warnings: string[] = [];
+  const moltType = normalizeMoltType(neoblock, artifactId);
+  if (!moltType) warnings.push('MOLT_TYPE_NOT_FOUND_IN_SHALLOW_SUMMARY');
+  return {
+    ok: true,
+    ...base,
+    gate: { ...single.gate, payloadLoaded: true, recursiveLoad: false },
+    target: single.target,
+    payload: {
+      parseStatus: 'PARSED_JSON',
+      shapeStatus: 'SHALLOW_SUMMARY_NORMALIZED',
+      topLevelKeys: single.payload.topLevelKeys
+    },
+    normalizedSummary: {
+      summaryStatus: 'NORMALIZED',
+      artifactKind: normalizeArtifactKind(single.target.manifestKind),
+      artifactId,
+      displayName: typeof identity.name === 'string' ? identity.name : (typeof metadata.name === 'string' ? metadata.name : null),
+      moltType,
+      role: typeof neoblock.role === 'string' ? neoblock.role : null,
+      status: typeof metadata.status === 'string' ? metadata.status : null,
+      identity,
+      metadata,
+      content: neoblock,
+      moltSummary: neoblock,
+      referenceSummary: input.includeReferenceSummary === false ? { blockRefs: 0, neoblockRefs: 0, neostackRefs: 0, moltBlockRefs: 0, toolRequests: 0, gates: 0, triggers: 0, unknownRefs: 0, resolvedRefs: 0, loadedRefs: 0 } : normalizedReferenceSummary,
+      provenance,
+      contentPreview: input.includeContentPreview === false ? null : single.payload.contentPreview,
+      limitations: ['single_target_only', 'no_recursive_loading', 'no_execution']
+    },
+    warnings,
+    errors: []
+  };
 }
 
 export function getBlockLibraryStatus(version: string, entrypoint = "dist/plugin-entry.js", root = DEFAULT_LIBRARY_ROOT): BlockLibraryStatusResult {
