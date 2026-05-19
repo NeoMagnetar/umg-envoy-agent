@@ -503,6 +503,7 @@ export interface BlockLibraryMoltMapFragmentResult {
       manifestPath: string | null;
       sourcePath: string | null;
       loadedFrom: "single_shallow_target" | null;
+      backfillStatus: "SOURCE_PATH_BACKFILLED_FROM_MANIFEST_ENTRY" | "SOURCE_PATH_PROVIDED_BY_QUERY" | "SOURCE_PATH_NOT_AVAILABLE" | "SOURCE_PATH_BLOCKED_BY_POLICY";
     } | null;
     limitations: string[];
   } | null;
@@ -1824,6 +1825,13 @@ export function getBlockLibraryMoltMapFragment(
       errors: [{ code: 'HOLD_MOLT_MAP_FRAGMENT_PROJECTION_FORMAT_UNSUPPORTED', message: `Unsupported projectionFormat: ${projectionFormat}` }]
     };
   }
+  const entryLookup = getBlockLibraryManifestEntryLookup(version, entrypoint, root, {
+    entryId,
+    sourcePath: input.sourcePath,
+    manifestKind,
+    includeManifestSummary: true,
+    includeRaw: false
+  });
   const extracted = getBlockLibraryMoltblockVisibleExtract(version, entrypoint, root, {
     neoblockId: input.neoblockId,
     entryId: input.entryId,
@@ -1869,7 +1877,12 @@ export function getBlockLibraryMoltMapFragment(
         fieldSource: visible ? 'visible_molt_extraction' : null,
         contentPreview: visible?.contentPreview ?? null,
         referenceSummary: visible?.referenceSummary ?? null,
-        provenance: null,
+        provenance: {
+          manifestPath: entryLookup.matches[0]?.manifestPath ?? 'AI/MANIFESTS/neoblock-library-index.json',
+          sourcePath: null,
+          loadedFrom: 'single_shallow_target',
+          backfillStatus: (first === 'HOLD_TARGET_FORBIDDEN' || first === 'HOLD_TARGET_OUTSIDE_ALLOWLIST') ? 'SOURCE_PATH_BLOCKED_BY_POLICY' : 'SOURCE_PATH_NOT_AVAILABLE'
+        },
         limitations: ['single_fragment_only', 'not_full_molt_map', 'no_recursive_loading', 'no_reference_resolution', 'no_trigger_evaluation', 'no_execution']
       },
       nlProjection: null,
@@ -1879,11 +1892,19 @@ export function getBlockLibraryMoltMapFragment(
   }
   const moltMapField = mapMoltTypeToFragmentField(visible.moltType);
   const fieldValue = deriveFragmentFieldValue(visible);
-  const provenance = extracted.ok && (extracted as any).sourceNeoblock ? {
-    manifestPath: ((extracted as any).target?.manifestPath ?? 'AI/MANIFESTS/neoblock-library-index.json') as string | null,
-    sourcePath: ((extracted as any).target?.sourcePath ?? base.query.sourcePath ?? null) as string | null,
-    loadedFrom: 'single_shallow_target' as const
-  } : { manifestPath: 'AI/MANIFESTS/neoblock-library-index.json', sourcePath: base.query.sourcePath, loadedFrom: 'single_shallow_target' as const };
+  const resolvedMatch = entryLookup.matches[0] ?? null;
+  const resolvedSourcePath = resolvedMatch?.sourcePath ?? null;
+  const queryProvidedSourcePath = base.query.sourcePath;
+  const provenance = {
+    manifestPath: resolvedMatch?.manifestPath ?? 'AI/MANIFESTS/neoblock-library-index.json',
+    sourcePath: queryProvidedSourcePath ?? resolvedSourcePath,
+    loadedFrom: 'single_shallow_target' as const,
+    backfillStatus: queryProvidedSourcePath
+      ? 'SOURCE_PATH_PROVIDED_BY_QUERY' as const
+      : resolvedSourcePath
+        ? 'SOURCE_PATH_BACKFILLED_FROM_MANIFEST_ENTRY' as const
+        : 'SOURCE_PATH_NOT_AVAILABLE' as const
+  };
   const nlProjection = (projectionFormat === 'nl' || projectionFormat === 'both') && moltMapField
     ? `Current Context — MOLT Map Fragment:\n${moltMapField}: ${fieldValue ?? 'n/a'}`
     : null;
