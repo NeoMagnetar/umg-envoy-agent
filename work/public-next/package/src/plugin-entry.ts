@@ -9,7 +9,7 @@ import { parseUMGPath } from "./umg-path-parser.js";
 import { renderUMGPath } from "./umg-path-renderer.js";
 import { validateUMGPath } from "./umg-path-validator.js";
 import { buildPublicPath } from "./public-path-builder.js";
-import { defaultBlockLibraryRoot, getBlockLibraryManifestIndex, getBlockLibraryStatus } from "./block-library-resolver.js";
+import { defaultBlockLibraryRoot, getBlockLibraryManifestEntryLookup, getBlockLibraryManifestIndex, getBlockLibraryStatus } from "./block-library-resolver.js";
 import type { PluginConfig } from "./types.js";
 
 function effectiveConfig(config?: PluginConfig) {
@@ -51,7 +51,8 @@ function statusPayload(config?: PluginConfig) {
       "umg_envoy_build_path",
       "umg_envoy_matrix_status",
       "umg_envoy_block_library_status",
-      "umg_envoy_block_library_manifest_index"
+      "umg_envoy_block_library_manifest_index",
+      "umg_envoy_block_library_manifest_entry_lookup"
     ]
   };
 }
@@ -158,6 +159,17 @@ function registerCliBridge(api: any, config?: PluginConfig) {
       .action(async (opts: { root?: string }) => {
         console.log(JSON.stringify(getBlockLibraryManifestIndex("0.3.0-alpha.6", "dist/plugin-entry.js", opts.root ?? defaultBlockLibraryRoot()), null, 2));
       });
+
+    root.command("block-library-manifest-entry-lookup")
+      .option("--entry-id <id>")
+      .option("--source-path <path>")
+      .option("--manifest-kind <kind>")
+      .option("--no-include-manifest-summary")
+      .option("--include-raw")
+      .option("--root <path>")
+      .action(async (opts: { entryId?: string; sourcePath?: string; manifestKind?: any; includeManifestSummary?: boolean; includeRaw?: boolean; root?: string }) => {
+        console.log(JSON.stringify(getBlockLibraryManifestEntryLookup("0.3.0-alpha.6", "dist/plugin-entry.js", opts.root ?? defaultBlockLibraryRoot(), { entryId: opts.entryId, sourcePath: opts.sourcePath, manifestKind: opts.manifestKind ?? 'all', includeManifestSummary: opts.includeManifestSummary !== false, includeRaw: Boolean(opts.includeRaw) }), null, 2));
+      });
   }, { commands: ["umg-envoy"] });
 }
 
@@ -182,6 +194,7 @@ const entry = {
     api.registerTool({ name: "umg_envoy_matrix_status", description: "Report bundled compiler matrix status.", parameters: Type.Object({}, { additionalProperties: false }), async execute() { return { content: [{ type: "text", text: JSON.stringify(getCompilerMatrixStatus(import.meta.url), null, 2) }] }; } }, { optional: true });
     api.registerTool({ name: "umg_envoy_block_library_status", description: "Report read-only real UMG Block Library resolver status for the official alpha6 runtime.", parameters: Type.Object({ root: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input: { root?: string }) { return { content: [{ type: "text", text: JSON.stringify(getBlockLibraryStatus("0.3.0-alpha.6", "dist/plugin-entry.js", input.root ?? defaultBlockLibraryRoot()), null, 2) }] }; } }, { optional: true });
     api.registerTool({ name: "umg_envoy_block_library_manifest_index", description: "Inspect approved block-library manifest/index files without loading target payloads.", parameters: Type.Object({ root: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input: { root?: string }) { return { content: [{ type: "text", text: JSON.stringify(getBlockLibraryManifestIndex("0.3.0-alpha.6", "dist/plugin-entry.js", input.root ?? defaultBlockLibraryRoot()), null, 2) }] }; } }, { optional: true });
+    api.registerTool({ name: "umg_envoy_block_library_manifest_entry_lookup", description: "Look up a single manifest/index entry without loading the target payload.", parameters: Type.Object({ entryId: Type.Optional(Type.String()), sourcePath: Type.Optional(Type.String()), manifestKind: Type.Optional(Type.String()), includeManifestSummary: Type.Optional(Type.Boolean()), includeRaw: Type.Optional(Type.Boolean()), root: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input: { entryId?: string; sourcePath?: string; manifestKind?: any; includeManifestSummary?: boolean; includeRaw?: boolean; root?: string }) { return { content: [{ type: "text", text: JSON.stringify(getBlockLibraryManifestEntryLookup("0.3.0-alpha.6", "dist/plugin-entry.js", input.root ?? defaultBlockLibraryRoot(), { entryId: input.entryId, sourcePath: input.sourcePath, manifestKind: input.manifestKind ?? 'all', includeManifestSummary: input.includeManifestSummary !== false, includeRaw: Boolean(input.includeRaw) }), null, 2) }] }; } }, { optional: true });
   }
 };
 

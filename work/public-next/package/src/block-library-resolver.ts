@@ -16,7 +16,15 @@ export type BlockLibraryHoldCode =
   | "HOLD_LIBRARY_LANE_REFERENCE_ONLY"
   | "HOLD_LIBRARY_MANIFEST_MISSING"
   | "HOLD_LIBRARY_MANIFEST_PARSE_FAILED"
-  | "HOLD_LIBRARY_MANIFEST_SHAPE_UNKNOWN";
+  | "HOLD_LIBRARY_MANIFEST_SHAPE_UNKNOWN"
+  | "HOLD_MANIFEST_ENTRY_QUERY_REQUIRED"
+  | "HOLD_MANIFEST_ENTRY_NOT_FOUND"
+  | "HOLD_MANIFEST_KIND_UNSUPPORTED"
+  | "HOLD_MANIFEST_INDEX_UNAVAILABLE"
+  | "HOLD_RAW_ENTRY_DUMP_NOT_SUPPORTED"
+  | "HOLD_ENTRY_SOURCE_PATH_FORBIDDEN"
+  | "HOLD_ENTRY_SOURCE_PATH_OUTSIDE_ALLOWLIST"
+  | "HOLD_ENTRY_SHAPE_UNKNOWN";
 
 export interface BlockLibraryLaneStatus {
   lane: string;
@@ -59,6 +67,8 @@ export type BlockLibraryManifestStatus =
 export interface BlockLibraryManifestEntry {
   manifestName: string;
   entryId: string | null;
+  title?: string | null;
+  kind?: string | null;
   targetPath: string | null;
   targetClassification: "ALLOWED_TARGET" | "MISSING_TARGET" | "FORBIDDEN_TARGET" | "OUTSIDE_ALLOWLIST_TARGET" | "NO_TARGET_PATH";
   targetExists: boolean;
@@ -102,6 +112,51 @@ export interface BlockLibraryManifestIndexResult {
     outsideAllowlistTargetEntryCount: number;
   };
   manifests: BlockLibraryManifestRecord[];
+  warnings: string[];
+  errors: Array<{ code: BlockLibraryHoldCode; message: string }>;
+}
+
+export type BlockLibraryManifestKind = "all" | "neoblock" | "moltblock" | "neostack" | "gate" | "sleeve" | "compiler" | "public_curated_catalog";
+
+export interface BlockLibraryManifestEntryLookupMatch {
+  id: string | null;
+  kind: string;
+  title: string | null;
+  manifestKind: BlockLibraryManifestKind;
+  manifestPath: string;
+  sourcePath: string | null;
+  targetExists: boolean;
+  targetPolicy: "ALLOWED_NOT_LOADED" | "MISSING_ON_DISK" | "FORBIDDEN_TARGET" | "OUTSIDE_ALLOWLIST_TARGET" | "REFERENCE_ONLY_TARGET" | "SHAPE_UNKNOWN" | "NO_SOURCE_PATH";
+  resolutionStatus: string;
+  loadStatus: "not_loaded";
+  warnings: string[];
+}
+
+export interface BlockLibraryManifestEntryLookupResult {
+  ok: boolean;
+  version: string;
+  entrypoint: string;
+  surface: string;
+  mode: "real_block_library_manifest_entry_lookup";
+  readOnly: true;
+  execution: "not_performed";
+  directSource: "not_enabled";
+  query: {
+    entryId: string | null;
+    sourcePath: string | null;
+    manifestKind: BlockLibraryManifestKind;
+  };
+  matchCount: number;
+  matches: BlockLibraryManifestEntryLookupMatch[];
+  manifestSummary?: {
+    manifestCount: number;
+    parsedManifestCount: number;
+    normalizedManifestCount: number;
+    missingManifestCount: number;
+    parseFailedManifestCount: number;
+    shapeUnknownManifestCount: number;
+    totalEntryCount: number;
+  };
   warnings: string[];
   errors: Array<{ code: BlockLibraryHoldCode; message: string }>;
 }
@@ -326,6 +381,8 @@ function normalizeManifest(root: string, manifestName: string, relativePath: str
     return {
       manifestName,
       entryId,
+      title: typeof entry.title === "string" ? entry.title : (typeof entry.name === "string" ? entry.name : null),
+      kind: typeof entry.kind === "string" ? entry.kind : null,
       ...resolved
     };
   });
@@ -460,6 +517,197 @@ export function getBlockLibraryManifestIndex(version: string, entrypoint = "dist
       outsideAllowlistTargetEntryCount: allEntries.filter((entry) => entry.targetClassification === "OUTSIDE_ALLOWLIST_TARGET").length
     },
     manifests,
+    warnings: [],
+    errors: []
+  };
+}
+
+function manifestKindForPath(relativePath: string): BlockLibraryManifestKind {
+  switch (relativePath) {
+    case "AI/MANIFESTS/neoblock-library-index.json": return "neoblock";
+    case "AI/MANIFESTS/molt-block-library-index.json": return "moltblock";
+    case "AI/MANIFESTS/neostack-library-index.json": return "neostack";
+    case "AI/MANIFESTS/gate-library-index.json": return "gate";
+    case "AI/MANIFESTS/sleeve-library-index.json": return "sleeve";
+    case "AI/MANIFESTS/compiler-library-index.json": return "compiler";
+    case "sleeves/manifests/catalog.json": return "public_curated_catalog";
+    default: return "all";
+  }
+}
+
+function targetPolicyForEntry(entry: BlockLibraryManifestEntry): BlockLibraryManifestEntryLookupMatch["targetPolicy"] {
+  switch (entry.targetClassification) {
+    case "ALLOWED_TARGET": return "ALLOWED_NOT_LOADED";
+    case "MISSING_TARGET": return "MISSING_ON_DISK";
+    case "FORBIDDEN_TARGET": return "FORBIDDEN_TARGET";
+    case "OUTSIDE_ALLOWLIST_TARGET": return "OUTSIDE_ALLOWLIST_TARGET";
+    case "NO_TARGET_PATH": return "NO_SOURCE_PATH";
+    default: return "SHAPE_UNKNOWN";
+  }
+}
+
+function resolutionStatusForPolicy(policy: BlockLibraryManifestEntryLookupMatch["targetPolicy"]): string {
+  switch (policy) {
+    case "ALLOWED_NOT_LOADED": return "TARGET_INDEX_ENTRY_FOUND_PATH_ALLOWED_NOT_LOADED";
+    case "MISSING_ON_DISK": return "TARGET_INDEX_ENTRY_FOUND_PATH_ALLOWED_MISSING_ON_DISK";
+    case "FORBIDDEN_TARGET": return "TARGET_INDEX_ENTRY_FOUND_PATH_FORBIDDEN_NOT_LOADED";
+    case "OUTSIDE_ALLOWLIST_TARGET": return "TARGET_INDEX_ENTRY_FOUND_PATH_OUTSIDE_ALLOWLIST_NOT_LOADED";
+    case "NO_SOURCE_PATH": return "TARGET_INDEX_ENTRY_FOUND_NO_SOURCE_PATH";
+    default: return "TARGET_INDEX_ENTRY_FOUND_SHAPE_UNKNOWN";
+  }
+}
+
+export function getBlockLibraryManifestEntryLookup(
+  version: string,
+  entrypoint = "dist/plugin-entry.js",
+  root = DEFAULT_LIBRARY_ROOT,
+  input: {
+    entryId?: string;
+    sourcePath?: string;
+    manifestKind?: BlockLibraryManifestKind;
+    includeManifestSummary?: boolean;
+    includeRaw?: boolean;
+  } = {}
+): BlockLibraryManifestEntryLookupResult {
+  const manifestKind = input.manifestKind ?? "all";
+  if (input.includeRaw) {
+    return {
+      ok: false,
+      version,
+      entrypoint,
+      surface: "compiler_backed_runtime",
+      mode: "real_block_library_manifest_entry_lookup",
+      readOnly: true,
+      execution: "not_performed",
+      directSource: "not_enabled",
+      query: { entryId: input.entryId ?? null, sourcePath: input.sourcePath ?? null, manifestKind },
+      matchCount: 0,
+      matches: [],
+      warnings: [],
+      errors: [{ code: "HOLD_RAW_ENTRY_DUMP_NOT_SUPPORTED", message: "includeRaw=true is not supported in this step." }]
+    };
+  }
+  if (!input.entryId && !input.sourcePath) {
+    return {
+      ok: false,
+      version,
+      entrypoint,
+      surface: "compiler_backed_runtime",
+      mode: "real_block_library_manifest_entry_lookup",
+      readOnly: true,
+      execution: "not_performed",
+      directSource: "not_enabled",
+      query: { entryId: null, sourcePath: null, manifestKind },
+      matchCount: 0,
+      matches: [],
+      warnings: [],
+      errors: [{ code: "HOLD_MANIFEST_ENTRY_QUERY_REQUIRED", message: "Provide entryId or sourcePath." }]
+    };
+  }
+  const supportedKinds: BlockLibraryManifestKind[] = ["all", "neoblock", "moltblock", "neostack", "gate", "sleeve", "compiler", "public_curated_catalog"];
+  if (!supportedKinds.includes(manifestKind)) {
+    return {
+      ok: false,
+      version,
+      entrypoint,
+      surface: "compiler_backed_runtime",
+      mode: "real_block_library_manifest_entry_lookup",
+      readOnly: true,
+      execution: "not_performed",
+      directSource: "not_enabled",
+      query: { entryId: input.entryId ?? null, sourcePath: input.sourcePath ?? null, manifestKind },
+      matchCount: 0,
+      matches: [],
+      warnings: [],
+      errors: [{ code: "HOLD_MANIFEST_KIND_UNSUPPORTED", message: `Unsupported manifestKind: ${manifestKind}` }]
+    };
+  }
+  const index = getBlockLibraryManifestIndex(version, entrypoint, root);
+  if (!index.ok) {
+    return {
+      ok: false,
+      version,
+      entrypoint,
+      surface: "compiler_backed_runtime",
+      mode: "real_block_library_manifest_entry_lookup",
+      readOnly: true,
+      execution: "not_performed",
+      directSource: "not_enabled",
+      query: { entryId: input.entryId ?? null, sourcePath: input.sourcePath ?? null, manifestKind },
+      matchCount: 0,
+      matches: [],
+      warnings: [],
+      errors: [{ code: "HOLD_MANIFEST_INDEX_UNAVAILABLE", message: "Manifest index is unavailable." }, ...index.errors]
+    };
+  }
+  const normalizedSourcePath = input.sourcePath ? normalizeRelativePath(input.sourcePath) : null;
+  const matches = index.manifests
+    .filter((manifest) => manifestKind === "all" || manifestKindForPath(manifest.relativePath) === manifestKind)
+    .flatMap((manifest) => manifest.entries
+      .filter((entry) => (input.entryId ? entry.entryId === input.entryId : true) && (normalizedSourcePath ? entry.targetPath === normalizedSourcePath : true))
+      .map((entry) => {
+        const targetPolicy = targetPolicyForEntry(entry);
+        return {
+          id: entry.entryId,
+          kind: manifestKindForPath(manifest.relativePath),
+          title: entry.title ?? null,
+          manifestKind: manifestKindForPath(manifest.relativePath),
+          manifestPath: manifest.relativePath,
+          sourcePath: entry.targetPath,
+          targetExists: entry.targetExists,
+          targetPolicy,
+          resolutionStatus: resolutionStatusForPolicy(targetPolicy),
+          loadStatus: "not_loaded" as const,
+          warnings: [...entry.notes]
+        };
+      }));
+  if (matches.length === 0) {
+    return {
+      ok: false,
+      version,
+      entrypoint,
+      surface: "compiler_backed_runtime",
+      mode: "real_block_library_manifest_entry_lookup",
+      readOnly: true,
+      execution: "not_performed",
+      directSource: "not_enabled",
+      query: { entryId: input.entryId ?? null, sourcePath: normalizedSourcePath, manifestKind },
+      matchCount: 0,
+      matches: [],
+      manifestSummary: input.includeManifestSummary === false ? undefined : {
+        manifestCount: index.summary.manifestCount,
+        parsedManifestCount: index.summary.parsedManifestCount,
+        normalizedManifestCount: index.summary.normalizedManifestCount,
+        missingManifestCount: index.summary.missingManifestCount,
+        parseFailedManifestCount: index.summary.parseFailedManifestCount,
+        shapeUnknownManifestCount: index.summary.shapeUnknownManifestCount,
+        totalEntryCount: index.summary.totalEntryCount
+      },
+      warnings: [],
+      errors: [{ code: "HOLD_MANIFEST_ENTRY_NOT_FOUND", message: "Manifest entry not found." }]
+    };
+  }
+  return {
+    ok: true,
+    version,
+    entrypoint,
+    surface: "compiler_backed_runtime",
+    mode: "real_block_library_manifest_entry_lookup",
+    readOnly: true,
+    execution: "not_performed",
+    directSource: "not_enabled",
+    query: { entryId: input.entryId ?? null, sourcePath: normalizedSourcePath, manifestKind },
+    matchCount: matches.length,
+    matches,
+    manifestSummary: input.includeManifestSummary === false ? undefined : {
+      manifestCount: index.summary.manifestCount,
+      parsedManifestCount: index.summary.parsedManifestCount,
+      normalizedManifestCount: index.summary.normalizedManifestCount,
+      missingManifestCount: index.summary.missingManifestCount,
+      parseFailedManifestCount: index.summary.parseFailedManifestCount,
+      shapeUnknownManifestCount: index.summary.shapeUnknownManifestCount,
+      totalEntryCount: index.summary.totalEntryCount
+    },
     warnings: [],
     errors: []
   };
