@@ -2,8 +2,8 @@
   "id": "umg-envoy-agent",
   "name": "UMG Envoy Agent",
   "version": "0.3.0-alpha.6",
-  "description": "Minimized public alpha.6 UMG Envoy Agent for OpenClaw",
-  "entry": "dist/plugin-entry-public.js",
+  "description": "UMG Envoy Agent alpha.6 for OpenClaw with dry-run working runtime preview and real block-library tooling",
+  "entry": "dist/plugin-entry.js",
   "apiVersion": 1,
   "configSchema": {
     "type": "object",
@@ -11,37 +11,52 @@
     "properties": {
       "defaultSleeveId": {
         "type": "string",
-        "description": "Optional default bundled public sleeve id."
+        "description": "Optional default sleeve id for dry-run runtime preview selection."
       },
       "contentMode": {
         "type": "string",
-        "description": "Public content loading mode for the minimized package."
+        "description": "Content loading mode for the packaged Alpha6 runtime."
       },
       "compilerMode": {
         "type": "string",
-        "description": "Readonly public runtime interpretation mode."
+        "description": "Compiler/runtime interpretation mode for dry-run runtime preview."
       },
       "debug": {
         "type": "boolean",
-        "description": "Enable debug logging for the minimized public package."
+        "description": "Enable debug logging for the packaged Alpha6 runtime."
       }
     }
   },
   "tools": [
     "umg_envoy_status",
-    "umg_envoy_library_status",
-    "umg_envoy_library_search",
-    "umg_envoy_runtime_spec_dry_run",
-    "umg_envoy_runtime_visibility_header",
-    "umg_envoy_runtime_molt_map",
-    "umg_envoy_runtime_dashboard",
-    "umg_envoy_runtime_ir_matrix",
-    "umg_envoy_runtime_inspect",
-    "umg_envoy_local_readonly_plan",
-    "umg_envoy_local_readonly_scan",
-    "umg_envoy_alpha_demo",
-    "umg_envoy_sleeve_list",
-    "umg_envoy_sleeve_inspect",
-    "umg_envoy_sleeve_demo"
+    "umg_envoy_compiler_smoke_test",
+    "umg_envoy_list_sleeves",
+    "umg_envoy_list_block_libraries",
+    "umg_envoy_compile_sleeve",
+    "umg_envoy_validate_runtime_output",
+    "umg_envoy_compare_sleeves",
+    "umg_envoy_parse_path",
+    "umg_envoy_validate_path",
+    "umg_envoy_render_path",
+    "umg_envoy_build_path",
+    "umg_envoy_matrix_status",
+    "umg_envoy_block_library_status",
+    "umg_envoy_block_library_manifest_index",
+    "umg_envoy_block_library_manifest_entry_lookup",
+    "umg_envoy_block_library_target_shallow_load_gate",
+    "umg_envoy_block_library_target_shallow_load_single",
+    "umg_envoy_block_library_target_shallow_summary_normalize",
+    "umg_envoy_block_library_neoblock_inspect",
+    "umg_envoy_block_library_moltblock_visible_extract",
+    "umg_envoy_block_library_molt_map_fragment",
+    "umg_envoy_block_library_molt_map_compose",
+    "umg_envoy_block_library_response_envelope_fragment",
+    "umg_envoy_block_library_active_stack_projection",
+    "umg_envoy_block_library_sleeve_graph_index",
+    "umg_envoy_block_library_sleeve_graph_drilldown",
+    "umg_envoy_sleeve_select",
+    "umg_envoy_sleeve_resolve",
+    "umg_envoy_runtime_compile",
+    "umg_envoy_runtime_preview"
   ]
 }
