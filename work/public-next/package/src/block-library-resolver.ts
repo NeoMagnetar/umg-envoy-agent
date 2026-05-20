@@ -978,6 +978,49 @@ export interface RuntimeApprovalCheckpointV0 {
   trace: string[];
 }
 
+export type RuntimeApprovalCheckpointResumeStatus =
+  | 'CHECKPOINT_RESUME_READY'
+  | 'CHECKPOINT_RESUME_HELD'
+  | 'CHECKPOINT_RESUME_DENIED'
+  | 'CHECKPOINT_RESUME_EDIT_REQUESTED'
+  | 'CHECKPOINT_RESUME_DRY_RUN_ONLY'
+  | 'CHECKPOINT_RESUME_FAILED';
+
+export interface RuntimeApprovalCheckpointResumeV0 {
+  resumeResultId: string;
+  resumeStatus: RuntimeApprovalCheckpointResumeStatus;
+  sourceCheckpointId: string;
+  sourceRuntimeSpecId: string | null;
+  sourceSleeveId: string | null;
+  sourceGatePlanId: string | null;
+  sourceRequestId: string;
+  requestedToolName: string | null;
+  requestedAction: string;
+  decision: 'approve' | 'deny' | 'edit' | 'dry_run_only';
+  previousApprovalStatus: RuntimeApprovalStatus;
+  nextApprovalStatus: RuntimeApprovalStatus;
+  allowedDecision: boolean;
+  decisionAccepted: boolean;
+  editRequested: boolean;
+  dryRunOnly: boolean;
+  executionEligible: boolean;
+  executionStatus: 'not_performed';
+  checkpointPersistence: 'not_persisted';
+  updatedCheckpointProjection: RuntimeApprovalCheckpointV0 | null;
+  audit: {
+    execution: 'not_performed';
+    toolExecution: 'not_performed';
+    approvalCheckpointResumed: boolean;
+    approvalCheckpointPersistence: 'not_persisted';
+    triggerEvaluation: 'not_performed';
+    libraryMutation: 'not_performed';
+    packageMutation: 'not_performed';
+    restart: 'not_performed';
+    publish: 'not_performed';
+  };
+  trace: string[];
+}
+
 const MACHINE_LANES = [
   "AI/MANIFESTS",
   "AI/SLEEVES",
@@ -4529,6 +4572,194 @@ export function createRuntimeApprovalCheckpoints(
     warnings: gatePlanResult?.warnings ?? [],
     errors: gatePlanResult?.errors ?? []
   };
+}
+
+export function resumeRuntimeApprovalCheckpoint(
+  version: string,
+  entrypoint = 'dist/plugin-entry.js',
+  input: {
+    checkpoint?: RuntimeApprovalCheckpointV0;
+    resumeToken?: string;
+    decision: 'approve' | 'deny' | 'edit' | 'dry_run_only';
+    editedArgsPreview?: unknown;
+    decisionReason?: string;
+    mode?: 'resume_only' | 'dry_run' | string;
+    includeTrace?: boolean;
+  }
+) {
+  const checkpoint = input.checkpoint;
+  const base = {
+    version,
+    entrypoint,
+    mode: 'runtime_approval_checkpoint_resume' as const,
+    outputContract: { contractId: 'umg.runtime.approval_checkpoint.resume.v1' as const, contractStatus: 'NORMALIZED' as const },
+    checkpointPersistence: 'not_persisted' as const,
+    executionStatus: 'not_performed' as const
+  };
+
+  if (!checkpoint) {
+    return {
+      ...base,
+      ok: false,
+      resumeStatus: 'CHECKPOINT_RESUME_FAILED' as const,
+      resumeResultId: 'resume_missing_checkpoint',
+      sourceCheckpointId: '',
+      sourceRuntimeSpecId: null,
+      sourceSleeveId: null,
+      sourceGatePlanId: null,
+      sourceRequestId: '',
+      requestedToolName: null,
+      requestedAction: '',
+      decision: input.decision,
+      previousApprovalStatus: 'WAITING_FOR_APPROVAL' as const,
+      nextApprovalStatus: 'WAITING_FOR_APPROVAL' as const,
+      allowedDecision: false,
+      decisionAccepted: false,
+      editRequested: false,
+      dryRunOnly: false,
+      executionEligible: false,
+      updatedCheckpointProjection: null,
+      audit: {
+        execution: 'not_performed' as const,
+        toolExecution: 'not_performed' as const,
+        approvalCheckpointResumed: false,
+        approvalCheckpointPersistence: 'not_persisted' as const,
+        triggerEvaluation: 'not_performed' as const,
+        libraryMutation: 'not_performed' as const,
+        packageMutation: 'not_performed' as const,
+        restart: 'not_performed' as const,
+        publish: 'not_performed' as const
+      },
+      trace: ['checkpoint_missing', 'execution=not_performed'],
+      errors: [{ code: 'CHECKPOINT_REQUIRED', message: 'Checkpoint is required for resume.' }],
+      warnings: []
+    };
+  }
+
+  const trace = [
+    `checkpointStatus=${checkpoint.checkpointStatus}`,
+    `previousApprovalStatus=${checkpoint.approvalStatus}`,
+    `decision=${input.decision}`
+  ];
+
+  const fail = (resumeStatus: RuntimeApprovalCheckpointResumeStatus, message: string) => ({
+    ...base,
+    ok: false,
+    resumeStatus,
+    resumeResultId: `resume_${checkpoint.checkpointId}_${resumeStatus.toLowerCase()}`,
+    sourceCheckpointId: checkpoint.checkpointId,
+    sourceRuntimeSpecId: checkpoint.sourceRuntimeSpecId,
+    sourceSleeveId: checkpoint.sourceSleeveId,
+    sourceGatePlanId: checkpoint.sourceGatePlanId,
+    sourceRequestId: checkpoint.sourceRequestId,
+    requestedToolName: checkpoint.requestedToolName,
+    requestedAction: checkpoint.requestedAction,
+    decision: input.decision,
+    previousApprovalStatus: checkpoint.approvalStatus,
+    nextApprovalStatus: checkpoint.approvalStatus,
+    allowedDecision: checkpoint.allowedDecisions.includes(input.decision),
+    decisionAccepted: false,
+    editRequested: false,
+    dryRunOnly: false,
+    executionEligible: false,
+    updatedCheckpointProjection: null,
+    audit: {
+      execution: 'not_performed' as const,
+      toolExecution: 'not_performed' as const,
+      approvalCheckpointResumed: false,
+      approvalCheckpointPersistence: 'not_persisted' as const,
+      triggerEvaluation: 'not_performed' as const,
+      libraryMutation: 'not_performed' as const,
+      packageMutation: 'not_performed' as const,
+      restart: 'not_performed' as const,
+      publish: 'not_performed' as const
+    },
+    trace: [...trace, message, 'execution=not_performed'],
+    errors: [{ code: 'CHECKPOINT_RESUME_INVALID', message }],
+    warnings: []
+  });
+
+  if (!checkpoint.resumeToken) {
+    return fail('CHECKPOINT_RESUME_FAILED', 'resume_token_missing');
+  }
+  if (input.resumeToken && input.resumeToken !== checkpoint.resumeToken) {
+    return fail('CHECKPOINT_RESUME_HELD', 'resume_token_mismatch');
+  }
+  if (checkpoint.checkpointStatus !== 'CHECKPOINT_CREATED') {
+    return fail('CHECKPOINT_RESUME_HELD', 'checkpoint_not_created');
+  }
+  if (checkpoint.approvalStatus !== 'WAITING_FOR_APPROVAL') {
+    return fail('CHECKPOINT_RESUME_HELD', 'checkpoint_not_waiting_for_approval');
+  }
+  if (!checkpoint.allowedDecisions.includes(input.decision)) {
+    return fail('CHECKPOINT_RESUME_HELD', 'decision_not_allowed');
+  }
+  if (checkpoint.expiresAt && Date.parse(checkpoint.expiresAt) < Date.now()) {
+    return fail('CHECKPOINT_RESUME_HELD', 'checkpoint_expired');
+  }
+
+  const nextApprovalStatus: RuntimeApprovalStatus =
+    input.decision === 'approve' ? 'APPROVED'
+      : input.decision === 'deny' ? 'DENIED'
+      : input.decision === 'edit' ? 'EDIT_REQUESTED'
+      : 'DRY_RUN_ONLY';
+
+  const resumeStatus: RuntimeApprovalCheckpointResumeStatus =
+    input.decision === 'approve' ? 'CHECKPOINT_RESUME_READY'
+      : input.decision === 'deny' ? 'CHECKPOINT_RESUME_DENIED'
+      : input.decision === 'edit' ? 'CHECKPOINT_RESUME_EDIT_REQUESTED'
+      : 'CHECKPOINT_RESUME_DRY_RUN_ONLY';
+
+  const updatedCheckpointProjection: RuntimeApprovalCheckpointV0 = {
+    ...checkpoint,
+    approvalStatus: nextApprovalStatus,
+    executionStatus: 'not_performed',
+    trace: [
+      ...checkpoint.trace,
+      `resumeDecision=${input.decision}`,
+      `nextApprovalStatus=${nextApprovalStatus}`,
+      'execution=not_performed'
+    ]
+  };
+
+  const result = {
+    ...base,
+    ok: true,
+    resumeStatus,
+    resumeResultId: `resume_${checkpoint.checkpointId}_${simpleStableKey([input.decision, input.decisionReason ? String(input.decisionReason) : '', input.editedArgsPreview ? JSON.stringify(input.editedArgsPreview) : ''])}`,
+    sourceCheckpointId: checkpoint.checkpointId,
+    sourceRuntimeSpecId: checkpoint.sourceRuntimeSpecId,
+    sourceSleeveId: checkpoint.sourceSleeveId,
+    sourceGatePlanId: checkpoint.sourceGatePlanId,
+    sourceRequestId: checkpoint.sourceRequestId,
+    requestedToolName: checkpoint.requestedToolName,
+    requestedAction: checkpoint.requestedAction,
+    decision: input.decision,
+    previousApprovalStatus: checkpoint.approvalStatus,
+    nextApprovalStatus,
+    allowedDecision: true,
+    decisionAccepted: true,
+    editRequested: input.decision === 'edit',
+    dryRunOnly: input.decision === 'dry_run_only',
+    executionEligible: input.decision === 'approve',
+    updatedCheckpointProjection,
+    audit: {
+      execution: 'not_performed' as const,
+      toolExecution: 'not_performed' as const,
+      approvalCheckpointResumed: true,
+      approvalCheckpointPersistence: 'not_persisted' as const,
+      triggerEvaluation: 'not_performed' as const,
+      libraryMutation: 'not_performed' as const,
+      packageMutation: 'not_performed' as const,
+      restart: 'not_performed' as const,
+      publish: 'not_performed' as const
+    },
+    trace: input.includeTrace === false ? [] : [...trace, `nextApprovalStatus=${nextApprovalStatus}`, `executionEligible=${input.decision === 'approve'}`, 'execution=not_performed'],
+    warnings: [],
+    errors: []
+  };
+
+  return result;
 }
 
 export function previewRuntimeSleeve(
