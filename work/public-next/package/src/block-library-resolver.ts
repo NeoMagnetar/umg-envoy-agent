@@ -884,6 +884,63 @@ export interface RuntimeToolRequestClassificationV0 {
   trace: string[];
 }
 
+export type RuntimeExecutionGateDecision =
+  | 'allow_read_only'
+  | 'require_approval'
+  | 'block_policy'
+  | 'block_unknown'
+  | 'block_unimplemented'
+  | 'preview_only'
+  | 'metadata_only'
+  | 'dry_run_only';
+
+export type RuntimeExecutionGatePlanStatus = 'GATE_PLAN_READY' | 'GATE_PLAN_PARTIAL' | 'GATE_PLAN_HELD' | 'GATE_PLAN_FAILED';
+
+export interface RuntimeExecutionGatePlannedActionV0 {
+  requestId: string;
+  requestedToolName: string | null;
+  requestedAction: string;
+  classification: RuntimeToolRequestClassificationState;
+  riskLevel: RuntimeToolRequestRiskLevel;
+  approvalRequired: boolean;
+  allowlisted: boolean;
+  plannedMode: RuntimeToolRequestExecutionMode;
+  gateDecision: RuntimeExecutionGateDecision;
+  decisionReason: string;
+  checkpointPreview: {
+    checkpointWouldBeRequired: boolean;
+    allowedDecisions: Array<'approve' | 'deny' | 'edit' | 'dry_run_only'>;
+    checkpointCreated: false;
+  } | null;
+  executionStatus: 'not_performed';
+  trace: string[];
+}
+
+export interface RuntimeExecutionGatePlanV0 {
+  gatePlanId: string;
+  sourceRuntimeSpecId: string | null;
+  sourceSleeveId: string | null;
+  planStatus: RuntimeExecutionGatePlanStatus;
+  requestCount: number;
+  plannedActions: RuntimeExecutionGatePlannedActionV0[];
+  readOnlyCount: number;
+  approvalRequiredCount: number;
+  blockedCount: number;
+  unknownCount: number;
+  executionStatus: 'not_performed';
+  audit: {
+    execution: 'not_performed';
+    toolExecution: 'not_performed';
+    approvalCheckpointCreated: false;
+    triggerEvaluation: 'not_performed';
+    libraryMutation: 'not_performed';
+    packageMutation: 'not_performed';
+    restart: 'not_performed';
+    publish: 'not_performed';
+  };
+  trace: string[];
+}
+
 const MACHINE_LANES = [
   "AI/MANIFESTS",
   "AI/SLEEVES",
@@ -4047,6 +4104,205 @@ export function classifyRuntimeToolRequests(
     ],
     warnings: compiled?.warnings ?? [],
     errors: compiled?.errors ?? []
+  };
+}
+
+function mapClassificationToGateAction(classification: RuntimeToolRequestClassificationV0): RuntimeExecutionGatePlannedActionV0 {
+  let gateDecision: RuntimeExecutionGateDecision = 'block_unimplemented';
+  let plannedMode: RuntimeToolRequestExecutionMode = 'blocked';
+  let checkpointPreview: RuntimeExecutionGatePlannedActionV0['checkpointPreview'] = null;
+
+  switch (classification.classification) {
+    case 'metadata_only':
+      gateDecision = 'metadata_only';
+      plannedMode = 'preview';
+      break;
+    case 'mock_only':
+    case 'preview_only':
+      gateDecision = 'preview_only';
+      plannedMode = 'preview';
+      break;
+    case 'available_read_only':
+      gateDecision = 'allow_read_only';
+      plannedMode = 'classify_only';
+      break;
+    case 'available_requires_approval':
+      gateDecision = 'require_approval';
+      plannedMode = 'approval_required';
+      checkpointPreview = {
+        checkpointWouldBeRequired: true,
+        allowedDecisions: ['approve', 'deny', 'edit', 'dry_run_only'],
+        checkpointCreated: false
+      };
+      break;
+    case 'available_allowlisted_direct':
+      gateDecision = 'dry_run_only';
+      plannedMode = classification.allowlisted ? 'dry_run' : 'blocked';
+      break;
+    case 'unknown':
+      gateDecision = 'block_unknown';
+      plannedMode = 'blocked';
+      break;
+    case 'blocked_policy':
+    case 'blocked_unsafe':
+    case 'blocked_missing_approval':
+      gateDecision = 'block_policy';
+      plannedMode = 'blocked';
+      break;
+    case 'blocked_unimplemented':
+    case 'unavailable':
+    default:
+      gateDecision = 'block_unimplemented';
+      plannedMode = 'blocked';
+      break;
+  }
+
+  return {
+    requestId: classification.requestId,
+    requestedToolName: classification.requestedToolName,
+    requestedAction: classification.requestedAction,
+    classification: classification.classification,
+    riskLevel: classification.riskLevel,
+    approvalRequired: classification.approvalRequired,
+    allowlisted: classification.allowlisted,
+    plannedMode,
+    gateDecision,
+    decisionReason: classification.decisionReason,
+    checkpointPreview,
+    executionStatus: 'not_performed',
+    trace: [...classification.trace, `gateDecision=${gateDecision}`, `plannedMode=${plannedMode}`, 'checkpointCreated=false']
+  };
+}
+
+export function createRuntimeExecutionGatePlan(
+  version: string,
+  entrypoint = 'dist/plugin-entry.js',
+  root = DEFAULT_LIBRARY_ROOT,
+  input: {
+    sleeveId?: string;
+    runtimeSpec?: RuntimeSpecV0;
+    classifications?: RuntimeToolRequestClassificationV0[];
+    compileIfMissing?: boolean;
+    classifyIfMissing?: boolean;
+    mode?: 'plan_only' | 'dry_run' | string;
+    includeTrace?: boolean;
+    includeCheckpointPreview?: boolean;
+  } = {}
+) {
+  let classificationResult = null as ReturnType<typeof classifyRuntimeToolRequests> | null;
+  let runtimeSpec = input.runtimeSpec ?? null;
+  let classifications = input.classifications ?? null;
+
+  if (!classifications && (runtimeSpec || input.sleeveId) && input.classifyIfMissing !== false) {
+    classificationResult = classifyRuntimeToolRequests(version, entrypoint, root, {
+      sleeveId: input.sleeveId,
+      runtimeSpec: runtimeSpec ?? undefined,
+      compileIfMissing: input.compileIfMissing !== false,
+      includeTrace: input.includeTrace !== false,
+      mode: 'classify_only'
+    });
+    if (classificationResult.ok) {
+      classifications = classificationResult.classifications;
+      if (!runtimeSpec && classificationResult.sourceRuntimeSpecId && classificationResult.sleeveId) {
+        runtimeSpec = {
+          runtimeSpecVersion: 'RuntimeSpecV0',
+          runtimeSpecId: classificationResult.sourceRuntimeSpecId,
+          sleeveId: classificationResult.sleeveId,
+          activeBlocks: [],
+          moltMap: {},
+          promptParts: [],
+          strategy: null,
+          constraints: null,
+          context: { subject: null, primary: null },
+          values: null,
+          format: null,
+          toolRequests: []
+        };
+      }
+    }
+  }
+
+  const baseAudit = {
+    execution: 'not_performed' as const,
+    toolExecution: 'not_performed' as const,
+    approvalCheckpointCreated: false,
+    triggerEvaluation: 'not_performed' as const,
+    libraryMutation: 'not_performed' as const,
+    packageMutation: 'not_performed' as const,
+    restart: 'not_performed' as const,
+    publish: 'not_performed' as const
+  };
+
+  const base = {
+    version,
+    entrypoint,
+    mode: 'runtime_execution_gate_plan' as const,
+    outputContract: { contractId: 'umg.runtime.execution_gate.plan.v1' as const, contractStatus: 'NORMALIZED' as const },
+    executionStatus: 'not_performed' as const,
+    checkpointCreated: false as const,
+    audit: baseAudit
+  };
+
+  if (!classifications) {
+    return {
+      ...base,
+      ok: false,
+      planStatus: 'GATE_PLAN_HELD' as const,
+      gatePlanId: `gateplan:${runtimeSpec?.runtimeSpecId ?? input.sleeveId ?? 'unknown'}:held`,
+      sourceRuntimeSpecId: runtimeSpec?.runtimeSpecId ?? null,
+      sourceSleeveId: runtimeSpec?.sleeveId ?? input.sleeveId ?? null,
+      requestCount: 0,
+      plannedActions: [],
+      readOnlyCount: 0,
+      approvalRequiredCount: 0,
+      blockedCount: 0,
+      unknownCount: 0,
+      trace: ['classifications_missing', 'execution=not_performed'],
+      warnings: classificationResult?.warnings ?? [],
+      errors: classificationResult?.errors ?? [{ code: 'CLASSIFICATIONS_REQUIRED', message: 'Runtime classifications are required to create a gate plan.' }]
+    };
+  }
+
+  const plannedActions = classifications.map((classification) => {
+    const planned = mapClassificationToGateAction(classification);
+    if (input.includeCheckpointPreview === false) {
+      return { ...planned, checkpointPreview: null };
+    }
+    return planned;
+  });
+
+  const readOnlyCount = plannedActions.filter((item) => item.gateDecision === 'allow_read_only' || item.gateDecision === 'metadata_only' || item.gateDecision === 'preview_only').length;
+  const approvalRequiredCount = plannedActions.filter((item) => item.gateDecision === 'require_approval').length;
+  const blockedCount = plannedActions.filter((item) => item.plannedMode === 'blocked').length;
+  const unknownCount = plannedActions.filter((item) => item.gateDecision === 'block_unknown' || item.gateDecision === 'block_unimplemented').length;
+  const planStatus: RuntimeExecutionGatePlanStatus = plannedActions.length === 0
+    ? 'GATE_PLAN_READY'
+    : unknownCount > 0
+      ? 'GATE_PLAN_PARTIAL'
+      : 'GATE_PLAN_READY';
+
+  return {
+    ...base,
+    ok: true,
+    planStatus,
+    gatePlanId: `gateplan:${runtimeSpec?.runtimeSpecId ?? classificationResult?.sourceRuntimeSpecId ?? input.sleeveId ?? 'unknown'}`,
+    sourceRuntimeSpecId: runtimeSpec?.runtimeSpecId ?? classificationResult?.sourceRuntimeSpecId ?? null,
+    sourceSleeveId: runtimeSpec?.sleeveId ?? classificationResult?.sleeveId ?? input.sleeveId ?? null,
+    requestCount: plannedActions.length,
+    plannedActions: input.includeTrace === false ? plannedActions.map(({ trace, ...rest }) => ({ ...rest, trace: [] })) : plannedActions,
+    readOnlyCount,
+    approvalRequiredCount,
+    blockedCount,
+    unknownCount,
+    trace: [
+      `mode=${input.mode ?? 'plan_only'}`,
+      `classificationSource=${classificationResult ? 'classifier' : 'provided'}`,
+      `requestCount=${plannedActions.length}`,
+      'execution=not_performed',
+      'checkpointCreated=false'
+    ],
+    warnings: classificationResult?.warnings ?? [],
+    errors: classificationResult?.errors ?? []
   };
 }
 
