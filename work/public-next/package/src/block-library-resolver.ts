@@ -1056,6 +1056,50 @@ export interface RuntimeApprovedAllowlistedExecutionV0 {
   trace: string[];
 }
 
+export type RuntimeExecutionChainE2EStatus = 'CHAIN_E2E_READY' | 'CHAIN_E2E_PARTIAL' | 'CHAIN_E2E_BLOCKED' | 'CHAIN_E2E_FAILED';
+
+export interface RuntimeExecutionChainE2EApprovedReadOnlyV0 {
+  chainRunId: string;
+  chainStatus: RuntimeExecutionChainE2EStatus;
+  sourceSleeveId: string | null;
+  runtimeSpecId: string | null;
+  classifierResultId: string | null;
+  gatePlanId: string | null;
+  checkpointId: string | null;
+  resumeResultId: string | null;
+  executionResultId: string | null;
+  requestedToolName: string | null;
+  requestedAction: string | null;
+  approvalDecision: 'approve' | 'deny' | 'dry_run_only';
+  executionStatus: RuntimeApprovedAllowlistedExecutionStatus | 'not_performed';
+  sideEffectStatus: 'read_only_no_mutation' | 'not_performed';
+  resultSummary: string;
+  resultPayload: unknown;
+  classifierResult: unknown;
+  gatePlanResult: unknown;
+  checkpointCreateResult: unknown;
+  checkpointResumeResult: unknown;
+  executionResult: unknown;
+  audit: {
+    runtimeCompiled: boolean;
+    classificationPerformed: boolean;
+    gatePlanCreated: boolean;
+    approvalCheckpointCreated: boolean;
+    approvalCheckpointResumed: boolean;
+    approvalVerified: boolean;
+    allowlistVerified: boolean;
+    readOnlyVerified: boolean;
+    toolExecution: 'performed' | 'not_performed';
+    triggerEvaluation: 'not_performed';
+    libraryMutation: 'not_performed';
+    packageMutation: 'not_performed';
+    filesystemMutation: 'not_performed';
+    restart: 'not_performed';
+    publish: 'not_performed';
+  };
+  trace: string[];
+}
+
 const MACHINE_LANES = [
   "AI/MANIFESTS",
   "AI/SLEEVES",
@@ -4961,6 +5005,265 @@ export function executeApprovedAllowlistedRuntimeAction(
     ],
     warnings: [],
     errors: []
+  };
+}
+
+export function runRuntimeExecutionChainE2EApprovedReadOnly(
+  version: string,
+  entrypoint = 'dist/plugin-entry.js',
+  root = DEFAULT_LIBRARY_ROOT,
+  input: {
+    sleeveId?: string;
+    requestedToolName?: string;
+    requestedAction?: string;
+    approvalDecision?: 'approve' | 'deny' | 'dry_run_only';
+    mode?: 'e2e_approved_read_only' | 'dry_run' | string;
+    includeTrace?: boolean;
+  } = {}
+) {
+  const sleeveId = input.sleeveId ?? 'neomagnetar-dynamic-persona-v1';
+  const requestedToolName = input.requestedToolName ?? 'umg_envoy_block_library_status';
+  const requestedAction = input.requestedAction ?? 'status_read';
+  const approvalDecision = input.approvalDecision ?? 'approve';
+  const chainRunId = `chain_${simpleStableKey([sleeveId, requestedToolName, requestedAction, approvalDecision])}`;
+
+  const compiled = compileRuntimeSleeve(version, entrypoint, root, {
+    sleeveId,
+    compileMode: 'dry_run',
+    resolveDepth: 'molt_visible',
+    strictness: 'dev'
+  });
+
+  if (!compiled.ok || !compiled.runtimeSpecId || !compiled.sleeveId) {
+    return {
+      ok: false,
+      outputContract: { contractId: 'umg.runtime.execution_chain.e2e_approved_read_only.v1' as const, contractStatus: 'NORMALIZED' as const },
+      chainRunId,
+      chainStatus: 'CHAIN_E2E_FAILED' as const,
+      sourceSleeveId: sleeveId,
+      runtimeSpecId: null,
+      classifierResultId: null,
+      gatePlanId: null,
+      checkpointId: null,
+      resumeResultId: null,
+      executionResultId: null,
+      requestedToolName,
+      requestedAction,
+      approvalDecision,
+      executionStatus: 'not_performed' as const,
+      sideEffectStatus: 'not_performed' as const,
+      resultSummary: 'Runtime compile failed before E2E chain could proceed.',
+      resultPayload: null,
+      classifierResult: null,
+      gatePlanResult: null,
+      checkpointCreateResult: null,
+      checkpointResumeResult: null,
+      executionResult: null,
+      audit: {
+        runtimeCompiled: false,
+        classificationPerformed: false,
+        gatePlanCreated: false,
+        approvalCheckpointCreated: false,
+        approvalCheckpointResumed: false,
+        approvalVerified: false,
+        allowlistVerified: false,
+        readOnlyVerified: false,
+        toolExecution: 'not_performed' as const,
+        triggerEvaluation: 'not_performed' as const,
+        libraryMutation: 'not_performed' as const,
+        packageMutation: 'not_performed' as const,
+        filesystemMutation: 'not_performed' as const,
+        restart: 'not_performed' as const,
+        publish: 'not_performed' as const
+      },
+      trace: ['compile_failed', 'execution=not_performed'],
+      warnings: compiled.warnings,
+      errors: compiled.errors
+    };
+  }
+
+  const runtimeSpec: RuntimeSpecV0 = {
+    runtimeSpecVersion: 'RuntimeSpecV0',
+    runtimeSpecId: compiled.runtimeSpecId,
+    sleeveId: compiled.sleeveId,
+    activeBlocks: compiled.activeBlocks,
+    moltMap: compiled.moltMap,
+    promptParts: compiled.promptParts,
+    strategy: compiled.strategy,
+    constraints: compiled.constraints,
+    context: compiled.context,
+    values: compiled.values,
+    format: compiled.format,
+    toolRequests: [
+      {
+        kind: 'synthetic_e2e_request',
+        sourceBlockId: 'alpha7-e2e-chain',
+        declaredAction: requestedToolName
+      }
+    ]
+  };
+
+  const classifierResult = classifyRuntimeToolRequests(version, entrypoint, root, {
+    runtimeSpec,
+    compileIfMissing: false,
+    requestedToolName,
+    mode: 'classify_only',
+    includeTrace: input.includeTrace !== false
+  });
+
+  const syntheticClassification = {
+    requestId: `${runtimeSpec.runtimeSpecId}:req:e2e`,
+    sourceRuntimeSpecId: runtimeSpec.runtimeSpecId,
+    sourceSleeveId: runtimeSpec.sleeveId,
+    requestedToolName,
+    requestedAction,
+    requestedArgsSummary: 'syntheticForE2E=true',
+    classification: 'available_requires_approval' as const,
+    riskLevel: 'low' as const,
+    approvalRequired: true,
+    allowlisted: APPROVED_ALLOWLISTED_RUNTIME_TOOLS.has(requestedToolName),
+    executionMode: 'approval_required' as const,
+    decisionReason: 'Synthetic approval-required projection for E2E approved read-only proof.',
+    trace: ['syntheticForE2E=true']
+  };
+
+  const gatePlanResult = createRuntimeExecutionGatePlan(version, entrypoint, root, {
+    runtimeSpec,
+    classifications: [syntheticClassification],
+    compileIfMissing: false,
+    classifyIfMissing: false,
+    mode: 'plan_only',
+    includeTrace: input.includeTrace !== false,
+    includeCheckpointPreview: true
+  });
+
+  const checkpointCreateResult = createRuntimeApprovalCheckpoints(version, entrypoint, root, {
+    runtimeSpec,
+    gatePlan: gatePlanResult as any,
+    mode: 'checkpoint_create',
+    includeTrace: input.includeTrace !== false,
+    storageMode: 'returned_only'
+  });
+
+  const checkpoint = checkpointCreateResult.checkpoints?.[0] ?? null;
+  if (!checkpoint) {
+    return {
+      ok: false,
+      outputContract: { contractId: 'umg.runtime.execution_chain.e2e_approved_read_only.v1' as const, contractStatus: 'NORMALIZED' as const },
+      chainRunId,
+      chainStatus: 'CHAIN_E2E_BLOCKED' as const,
+      sourceSleeveId: runtimeSpec.sleeveId,
+      runtimeSpecId: runtimeSpec.runtimeSpecId,
+      classifierResultId: runtimeSpec.runtimeSpecId,
+      gatePlanId: gatePlanResult.gatePlanId ?? null,
+      checkpointId: null,
+      resumeResultId: null,
+      executionResultId: null,
+      requestedToolName,
+      requestedAction,
+      approvalDecision,
+      executionStatus: 'not_performed' as const,
+      sideEffectStatus: 'not_performed' as const,
+      resultSummary: 'Checkpoint creation did not return a checkpoint.',
+      resultPayload: null,
+      classifierResult,
+      gatePlanResult,
+      checkpointCreateResult,
+      checkpointResumeResult: null,
+      executionResult: null,
+      audit: {
+        runtimeCompiled: true,
+        classificationPerformed: true,
+        gatePlanCreated: true,
+        approvalCheckpointCreated: false,
+        approvalCheckpointResumed: false,
+        approvalVerified: false,
+        allowlistVerified: false,
+        readOnlyVerified: false,
+        toolExecution: 'not_performed' as const,
+        triggerEvaluation: 'not_performed' as const,
+        libraryMutation: 'not_performed' as const,
+        packageMutation: 'not_performed' as const,
+        filesystemMutation: 'not_performed' as const,
+        restart: 'not_performed' as const,
+        publish: 'not_performed' as const
+      },
+      trace: ['checkpoint_missing', 'execution=not_performed'],
+      warnings: checkpointCreateResult.warnings ?? [],
+      errors: checkpointCreateResult.errors ?? []
+    };
+  }
+
+  const checkpointResumeResult = resumeRuntimeApprovalCheckpoint(version, entrypoint, {
+    checkpoint,
+    resumeToken: checkpoint.resumeToken,
+    decision: approvalDecision,
+    mode: 'resume_only',
+    includeTrace: input.includeTrace !== false
+  });
+
+  const executionResult = executeApprovedAllowlistedRuntimeAction(version, entrypoint, root, {
+    checkpoint,
+    resumeResult: checkpointResumeResult as any,
+    runtimeSpec,
+    gatePlan: gatePlanResult as any,
+    actionArgs: { syntheticForE2E: true },
+    mode: 'approved_execute',
+    includeTrace: input.includeTrace !== false
+  });
+
+  const success = executionResult.ok && executionResult.executionStatus === 'EXECUTION_READY';
+  const blocked = executionResult.executionStatus === 'EXECUTION_BLOCKED';
+
+  return {
+    ok: success,
+    outputContract: { contractId: 'umg.runtime.execution_chain.e2e_approved_read_only.v1' as const, contractStatus: 'NORMALIZED' as const },
+    chainRunId,
+    chainStatus: success ? 'CHAIN_E2E_READY' as const : blocked ? 'CHAIN_E2E_BLOCKED' as const : 'CHAIN_E2E_FAILED' as const,
+    sourceSleeveId: runtimeSpec.sleeveId,
+    runtimeSpecId: runtimeSpec.runtimeSpecId,
+    classifierResultId: runtimeSpec.runtimeSpecId,
+    gatePlanId: gatePlanResult.gatePlanId ?? null,
+    checkpointId: checkpoint.checkpointId,
+    resumeResultId: checkpointResumeResult.resumeResultId ?? null,
+    executionResultId: executionResult.executionResultId ?? null,
+    requestedToolName,
+    requestedAction,
+    approvalDecision,
+    executionStatus: executionResult.executionStatus,
+    sideEffectStatus: executionResult.sideEffectStatus,
+    resultSummary: executionResult.resultSummary,
+    resultPayload: executionResult.resultPayload,
+    classifierResult,
+    gatePlanResult,
+    checkpointCreateResult,
+    checkpointResumeResult,
+    executionResult,
+    audit: {
+      runtimeCompiled: true,
+      classificationPerformed: true,
+      gatePlanCreated: true,
+      approvalCheckpointCreated: checkpointCreateResult.checkpointCount > 0,
+      approvalCheckpointResumed: checkpointResumeResult.decisionAccepted === true,
+      approvalVerified: executionResult.audit.approvalVerified,
+      allowlistVerified: executionResult.audit.allowlistVerified,
+      readOnlyVerified: executionResult.audit.readOnlyVerified,
+      toolExecution: executionResult.audit.toolExecution,
+      triggerEvaluation: 'not_performed' as const,
+      libraryMutation: 'not_performed' as const,
+      packageMutation: 'not_performed' as const,
+      filesystemMutation: 'not_performed' as const,
+      restart: 'not_performed' as const,
+      publish: 'not_performed' as const
+    },
+    trace: [
+      `syntheticForE2E=true`,
+      `approvalDecision=${approvalDecision}`,
+      `requestedToolName=${requestedToolName}`,
+      `executionStatus=${executionResult.executionStatus}`
+    ],
+    warnings: [],
+    errors: executionResult.errors ?? []
   };
 }
 
