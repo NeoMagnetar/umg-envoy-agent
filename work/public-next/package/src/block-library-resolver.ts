@@ -69,7 +69,8 @@ export type BlockLibraryHoldCode =
   | "HOLD_SLEEVE_GRAPH_INDEX_SLEEVE_NOT_FOUND"
   | "HOLD_SLEEVE_GRAPH_INDEX_CATALOG_NOT_FOUND"
   | "HOLD_SLEEVE_GRAPH_INDEX_CATALOG_PARSE_FAILED"
-  | "HOLD_SLEEVE_GRAPH_INDEX_UNAVAILABLE";
+  | "HOLD_SLEEVE_GRAPH_INDEX_UNAVAILABLE"
+  | "HOLD_ACTIVE_STACK_PROJECTION_RECURSION_GUARD";
 
 export interface BlockLibraryLaneStatus {
   lane: string;
@@ -661,6 +662,12 @@ export interface BlockLibraryResponseEnvelopeFragmentResult {
   errors: Array<{ code: BlockLibraryHoldCode; message: string }>;
 }
 
+type InternalCallContext = {
+  caller?: string;
+  depth?: number;
+  disableEnvelopeSourceContext?: boolean;
+};
+
 export interface BlockLibraryActiveStackProjectionResult {
   ok: boolean;
   version: string;
@@ -705,10 +712,11 @@ export interface BlockLibraryActiveStackProjectionResult {
     graphState: "not_inspected";
     boundary: string;
     automaticResponseTakeover: false;
-    sourceContextStatus?: "SOURCE_CONTEXT_NORMALIZED" | "SOURCE_CONTEXT_NOT_REQUESTED";
+    sourceContextStatus?: "SOURCE_CONTEXT_NORMALIZED" | "SOURCE_CONTEXT_NOT_REQUESTED" | "SOURCE_CONTEXT_NOT_EVALUATED_TO_AVOID_RECURSION";
     limitations: string[];
   } | null;
   sourceEnvelope: BlockLibraryResponseEnvelopeFragmentResult | null;
+  sourceComposition: BlockLibraryMoltMapComposeResult | null;
   nlProjection: string | null;
   audit: {
     normalizationStatus: "ACTIVE_STACK_PROJECTION_NORMALIZED";
@@ -2299,11 +2307,17 @@ export function getBlockLibraryActiveStackProjection(
     projectionFormat?: 'nl' | 'json' | 'both' | string;
     includeAudit?: boolean;
     includeRaw?: boolean;
+    _internal?: InternalCallContext;
   } = {}
 ): BlockLibraryActiveStackProjectionResult {
   const neoblockIds = input.neoblockIds ?? [];
   const projectionFormat = input.projectionFormat ?? 'both';
   const normalizedProjectionFormat: 'nl' | 'json' | 'both' = projectionFormat === 'nl' || projectionFormat === 'json' || projectionFormat === 'both' ? projectionFormat : 'both';
+  const internal: InternalCallContext = {
+    caller: input._internal?.caller,
+    depth: input._internal?.depth ?? 0,
+    disableEnvelopeSourceContext: input._internal?.disableEnvelopeSourceContext ?? false
+  };
   const base = {
     version,
     entrypoint,
@@ -2350,28 +2364,41 @@ export function getBlockLibraryActiveStackProjection(
       libraryMutation: 'not_performed' as const
     }
   };
+  const deniedProjection = {
+    project: base.query.project,
+    currentState: base.query.currentState,
+    runtimeVersion: version,
+    officialEntrypoint: entrypoint,
+    activeTool: base.query.activeTool,
+    sourceTool: base.query.sourceTool,
+    sourceContract: 'umg.molt_map.compose.v1',
+    moltMapSourceContract: 'umg.molt_map.compose.v1',
+    activeSleeve: base.query.activeSleeve,
+    neoStackState: 'not_inspected' as const,
+    graphState: 'not_inspected' as const,
+    boundary: base.query.boundary,
+    automaticResponseTakeover: false as const,
+    limitations: ['projection_only', 'no_active_sleeve_discovery', 'no_neostack_inspection', 'no_graph_traversal', 'no_recursive_loading', 'no_execution']
+  };
+  if ((internal.depth ?? 0) > 3) {
+    return {
+      ok: false,
+      ...base,
+      activeStackProjection: { ...deniedProjection, projectionStatus: 'ACTIVE_STACK_PROJECTION_DENIED', sourceContextStatus: 'SOURCE_CONTEXT_NOT_EVALUATED_TO_AVOID_RECURSION' },
+      sourceEnvelope: null,
+      sourceComposition: null,
+      nlProjection: null,
+      warnings: [],
+      errors: [{ code: 'HOLD_ACTIVE_STACK_PROJECTION_RECURSION_GUARD', message: 'Active Stack projection recursion guard triggered.' }]
+    };
+  }
   if (!['nl', 'json', 'both'].includes(projectionFormat)) {
     return {
       ok: false,
       ...base,
-      activeStackProjection: {
-        projectionStatus: 'ACTIVE_STACK_PROJECTION_DENIED',
-        project: base.query.project,
-        currentState: base.query.currentState,
-        runtimeVersion: version,
-        officialEntrypoint: entrypoint,
-        activeTool: base.query.activeTool,
-        sourceTool: base.query.sourceTool,
-        sourceContract: 'umg.response_envelope.fragment.v1',
-        moltMapSourceContract: 'umg.molt_map.compose.v1',
-        activeSleeve: base.query.activeSleeve,
-        neoStackState: 'not_inspected',
-        graphState: 'not_inspected',
-        boundary: base.query.boundary,
-        automaticResponseTakeover: false,
-        limitations: ['projection_only', 'no_active_sleeve_discovery', 'no_neostack_inspection', 'no_graph_traversal', 'no_recursive_loading', 'no_execution']
-      },
+      activeStackProjection: { ...deniedProjection, projectionStatus: 'ACTIVE_STACK_PROJECTION_DENIED' },
       sourceEnvelope: null,
+      sourceComposition: null,
       nlProjection: null,
       warnings: [],
       errors: [{ code: 'HOLD_ACTIVE_STACK_PROJECTION_FORMAT_UNSUPPORTED', message: `Unsupported projectionFormat: ${projectionFormat}` }]
@@ -2381,73 +2408,47 @@ export function getBlockLibraryActiveStackProjection(
     return {
       ok: false,
       ...base,
-      activeStackProjection: {
-        projectionStatus: 'ACTIVE_STACK_PROJECTION_DENIED',
-        project: base.query.project,
-        currentState: base.query.currentState,
-        runtimeVersion: version,
-        officialEntrypoint: entrypoint,
-        activeTool: base.query.activeTool,
-        sourceTool: base.query.sourceTool,
-        sourceContract: 'umg.response_envelope.fragment.v1',
-        moltMapSourceContract: 'umg.molt_map.compose.v1',
-        activeSleeve: base.query.activeSleeve,
-        neoStackState: 'not_inspected',
-        graphState: 'not_inspected',
-        boundary: base.query.boundary,
-        automaticResponseTakeover: false,
-        limitations: ['projection_only', 'no_active_sleeve_discovery', 'no_neostack_inspection', 'no_graph_traversal', 'no_recursive_loading', 'no_execution']
-      },
+      activeStackProjection: { ...deniedProjection, projectionStatus: 'ACTIVE_STACK_PROJECTION_DENIED' },
       sourceEnvelope: null,
+      sourceComposition: null,
       nlProjection: null,
       warnings: [],
       errors: [{ code: 'HOLD_RAW_TARGET_DUMP_NOT_SUPPORTED', message: 'Raw target dump is not supported.' }]
     };
   }
+
   let sourceEnvelope: BlockLibraryResponseEnvelopeFragmentResult | null = null;
+  let sourceComposition: BlockLibraryMoltMapComposeResult | null = null;
   let projectionStatus: NonNullable<BlockLibraryActiveStackProjectionResult['activeStackProjection']>['projectionStatus'] = 'ACTIVE_STACK_PROJECTION_READY';
-  let sourceContextStatus: 'SOURCE_CONTEXT_NORMALIZED' | 'SOURCE_CONTEXT_NOT_REQUESTED' = 'SOURCE_CONTEXT_NOT_REQUESTED';
+  let sourceContextStatus: 'SOURCE_CONTEXT_NORMALIZED' | 'SOURCE_CONTEXT_NOT_REQUESTED' | 'SOURCE_CONTEXT_NOT_EVALUATED_TO_AVOID_RECURSION' = 'SOURCE_CONTEXT_NOT_REQUESTED';
+
   if (neoblockIds.length) {
-    sourceEnvelope = getBlockLibraryResponseEnvelopeFragment(version, entrypoint, root, {
+    sourceComposition = getBlockLibraryMoltMapCompose(version, entrypoint, root, {
       neoblockIds,
-      project: base.query.project,
-      currentState: base.query.currentState,
-      activeTool: base.query.sourceTool,
+      manifestKind: 'neoblock',
+      summaryProfile: 'standard',
       projectionFormat: 'both',
-      includeMetadata: true,
-      includeAudit: true,
+      conflictPolicy: 'report_only',
+      includeFieldProvenance: true,
+      includeContentPreview: true,
       includeRaw: false
     });
-    if (!sourceEnvelope.ok || !sourceEnvelope.outputContract || sourceEnvelope.outputContract.contractStatus !== 'NORMALIZED' || sourceEnvelope.outputContract.contractId !== 'umg.response_envelope.fragment.v1') {
+    if (!sourceComposition.ok || !sourceComposition.outputContract || sourceComposition.outputContract.contractStatus !== 'NORMALIZED' || sourceComposition.outputContract.contractId !== 'umg.molt_map.compose.v1') {
       return {
         ok: false,
         ...base,
-        activeStackProjection: {
-          projectionStatus: 'ACTIVE_STACK_PROJECTION_SOURCE_NOT_NORMALIZED',
-          project: base.query.project,
-          currentState: base.query.currentState,
-          runtimeVersion: version,
-          officialEntrypoint: entrypoint,
-          activeTool: base.query.activeTool,
-          sourceTool: base.query.sourceTool,
-          sourceContract: 'umg.response_envelope.fragment.v1',
-          moltMapSourceContract: 'umg.molt_map.compose.v1',
-          activeSleeve: base.query.activeSleeve,
-          neoStackState: 'not_inspected',
-          graphState: 'not_inspected',
-          boundary: base.query.boundary,
-          automaticResponseTakeover: false,
-          limitations: ['projection_only', 'no_active_sleeve_discovery', 'no_neostack_inspection', 'no_graph_traversal', 'no_recursive_loading', 'no_execution']
-        },
-        sourceEnvelope,
+        activeStackProjection: { ...deniedProjection, projectionStatus: 'ACTIVE_STACK_PROJECTION_SOURCE_NOT_NORMALIZED', sourceContextStatus: 'SOURCE_CONTEXT_NOT_EVALUATED_TO_AVOID_RECURSION' },
+        sourceEnvelope: null,
+        sourceComposition,
         nlProjection: null,
         warnings: [],
-        errors: [{ code: 'HOLD_ACTIVE_STACK_SOURCE_NOT_NORMALIZED', message: 'Source envelope/composer context is not normalized.' }]
+        errors: [{ code: 'HOLD_ACTIVE_STACK_SOURCE_NOT_NORMALIZED', message: 'Source composer context is not normalized.' }]
       };
     }
     projectionStatus = 'ACTIVE_STACK_PROJECTION_READY_WITH_SOURCE_CONTEXT';
     sourceContextStatus = 'SOURCE_CONTEXT_NORMALIZED';
   }
+
   const lines = [
     'Active Stack:',
     `- Project: ${base.query.project}`,
@@ -2456,7 +2457,7 @@ export function getBlockLibraryActiveStackProjection(
     `- Official Entrypoint: ${entrypoint}`,
     `- Active Tool: ${base.query.activeTool}`,
     `- Source Tool: ${base.query.sourceTool}`,
-    '- Source Contract: umg.response_envelope.fragment.v1',
+    '- Source Contract: umg.molt_map.compose.v1',
     '- MOLT Map Source Contract: umg.molt_map.compose.v1',
     `- Active Sleeve: ${base.query.activeSleeve}`,
     '- NeoStack State: not_inspected',
@@ -2474,7 +2475,7 @@ export function getBlockLibraryActiveStackProjection(
       officialEntrypoint: entrypoint,
       activeTool: base.query.activeTool,
       sourceTool: base.query.sourceTool,
-      sourceContract: 'umg.response_envelope.fragment.v1',
+      sourceContract: 'umg.molt_map.compose.v1',
       moltMapSourceContract: 'umg.molt_map.compose.v1',
       activeSleeve: base.query.activeSleeve,
       neoStackState: 'not_inspected',
@@ -2485,6 +2486,7 @@ export function getBlockLibraryActiveStackProjection(
       limitations: ['projection_only', 'no_active_sleeve_discovery', 'no_neostack_inspection', 'no_graph_traversal', 'no_recursive_loading', 'no_execution']
     },
     sourceEnvelope,
+    sourceComposition,
     nlProjection: normalizedProjectionFormat === 'nl' || normalizedProjectionFormat === 'both' ? lines.join('\n') : null,
     warnings: [],
     errors: []
@@ -2665,7 +2667,8 @@ export function getBlockLibraryResponseEnvelopeFragment(
         boundary: base.query.activeStackBoundary,
         projectionFormat: 'both',
         includeAudit: true,
-        includeRaw: false
+        includeRaw: false,
+        _internal: { caller: 'response_envelope_fragment', depth: 1, disableEnvelopeSourceContext: true }
       })
     : null;
   if (base.query.includeActiveStackProjection && (!sourceActiveStackProjection || !sourceActiveStackProjection.ok || sourceActiveStackProjection.outputContract.contractStatus !== 'NORMALIZED')) {
@@ -2698,7 +2701,7 @@ export function getBlockLibraryResponseEnvelopeFragment(
     `- Official Entrypoint: ${entrypoint}`,
     `- Active Tool: ${base.query.activeTool}`,
     '- Source Tool: umg_envoy_block_library_active_stack_projection',
-    '- Source Contract: umg.response_envelope.fragment.v1',
+    '- Source Contract: umg.active_stack.projection.v1',
     '- MOLT Map Source Contract: umg.molt_map.compose.v1',
     `- Active Sleeve: ${base.query.activeSleeve}`,
     '- NeoStack State: not_inspected',
@@ -2737,7 +2740,7 @@ export function getBlockLibraryResponseEnvelopeFragment(
       fragmentStatus,
       fragmentKind: 'explicit_molt_map_envelope',
       sections: {
-        activeStack: sourceActiveStackProjection?.activeStackProjection ?? { project: base.query.project, currentState: base.query.currentState, activeTool: base.query.activeTool, sourceTool: 'umg_envoy_block_library_active_stack_projection', sourceContract: 'umg.response_envelope.fragment.v1', moltMapSourceContract: 'umg.molt_map.compose.v1', activeSleeve: base.query.activeSleeve, neoStackState: 'not_inspected', graphState: 'not_inspected', boundary: base.query.activeStackBoundary },
+        activeStack: sourceActiveStackProjection?.activeStackProjection ?? { project: base.query.project, currentState: base.query.currentState, activeTool: base.query.activeTool, sourceTool: 'umg_envoy_block_library_active_stack_projection', sourceContract: 'umg.active_stack.projection.v1', moltMapSourceContract: 'umg.molt_map.compose.v1', activeSleeve: base.query.activeSleeve, neoStackState: 'not_inspected', graphState: 'not_inspected', boundary: base.query.activeStackBoundary },
         envoyIntuition: { text: asBoundedParagraph(input.envoyIntuition) },
         currentContextMoltMap: { nlProjection: currentContext, fieldOrder: [...MOLT_MAP_FIELD_ORDER] },
         formalResponseContent: { text: base.query.formalResponseContent },
@@ -3499,3 +3502,4 @@ export function getBlockLibraryStatus(version: string, entrypoint = "dist/plugin
     errors: []
   };
 }
+
