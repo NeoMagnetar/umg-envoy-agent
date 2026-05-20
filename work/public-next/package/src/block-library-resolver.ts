@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -739,6 +740,12 @@ export interface BlockLibraryActiveStackProjectionResult {
   errors: Array<{ code: BlockLibraryHoldCode; message: string }>;
 }
 
+export type BlockLibrarySleeveGraphDrilldownStatus = "SLEEVE_DRILLDOWN_READY" | "SLEEVE_NOT_FOUND" | "SLEEVE_DRILLDOWN_DENIED" | "SLEEVE_DRILLDOWN_HELD";
+export type RuntimeSleeveSelectionStatus = "SLEEVE_SELECTED" | "NO_ACTIVE_SLEEVE" | "SLEEVE_NOT_FOUND" | "SELECTION_CLEARED" | "SELECTION_HELD";
+export type RuntimeSleeveResolutionStatus = "RESOLVED" | "PARTIAL" | "HELD" | "DENIED" | "FAILED";
+export type RuntimeCompileStatus = "COMPILED" | "PARTIAL" | "HELD" | "FAILED";
+export type RuntimePreviewStatus = "RUNTIME_PREVIEW_READY" | "PARTIAL" | "HELD" | "FAILED";
+
 export type BlockLibrarySleeveGraphIndexStatus =
   | "SLEEVE_GRAPH_INDEX_READY"
   | "SLEEVE_GRAPH_INDEX_READY_WITH_WARNINGS"
@@ -826,6 +833,23 @@ export interface BlockLibrarySleeveGraphIndexResult {
 }
 
 const DEFAULT_LIBRARY_ROOT = "C:\\.openclaw\\workspace\\UMG-Block-Library";
+const runtimeSelectionState = new Map<string, { sleeveId: string | null; updatedAt: string }>();
+
+interface RuntimeSpecV0 {
+  runtimeSpecVersion: "RuntimeSpecV0";
+  runtimeSpecId: string;
+  sleeveId: string;
+  activeBlocks: string[];
+  moltMap: Record<string, string>;
+  promptParts: Array<{ field: string; text: string; sourceBlockId: string | null }>;
+  strategy: string | null;
+  constraints: string | null;
+  context: { subject: string | null; primary: string | null };
+  values: string | null;
+  format: string | null;
+  toolRequests: Array<{ kind: string; sourceBlockId: string | null; declaredAction: string }>;
+}
+
 const MACHINE_LANES = [
   "AI/MANIFESTS",
   "AI/SLEEVES",
@@ -3399,6 +3423,438 @@ export function getBlockLibrarySleeveGraphIndex(
     nlProjection: (projectionFormat === 'nl' || projectionFormat === 'both') ? nlLines.join('\n') : '',
     warnings,
     errors: []
+  };
+}
+
+function stableRuntimeSessionId(input?: string | null): string {
+  return input && input.trim().length > 0 ? input.trim() : '__default__';
+}
+
+function stableJsonHash(input: unknown): string {
+  const source = JSON.stringify(input);
+  return createHash('sha256').update(source).digest('hex').slice(0, 16);
+}
+
+function summarizeVisibleMoltFromBlocks(blocks: Array<{ neoblockId: string; visible: ReturnType<typeof getBlockLibraryMoltblockVisibleExtract> }>) {
+  const fragments: Array<{ neoblockId: string; sourceField: string; sourceBlockId: string | null; text: string }> = [];
+  for (const block of blocks) {
+    const visible = block.visible.visibleMoltExtraction;
+    if (!visible) {
+      continue;
+    }
+    const content = typeof visible.contentPreview === 'string' && visible.contentPreview.trim().length > 0
+      ? visible.contentPreview.trim()
+      : (visible.contentSummary && typeof visible.contentSummary['content'] === 'string' ? String(visible.contentSummary['content']).trim() : '');
+    const field = typeof visible.moltType === 'string' && ['Trigger','Directive','Instruction','Subject','Primary','Philosophy','Blueprint'].includes(visible.moltType)
+      ? visible.moltType
+      : null;
+    if (field && content) {
+      fragments.push({ neoblockId: block.neoblockId, sourceField: field, sourceBlockId: block.neoblockId, text: content });
+    }
+  }
+  return fragments;
+}
+
+export function getBlockLibrarySleeveGraphDrilldown(
+  version: string,
+  entrypoint = 'dist/plugin-entry.js',
+  root = DEFAULT_LIBRARY_ROOT,
+  input: {
+    sleeveId?: string;
+    sourceCatalog?: 'auto' | 'sleeves_catalog' | 'ai_manifest' | string;
+    projectionFormat?: 'summary' | 'nl' | 'json' | 'both' | string;
+    includePolicySummary?: boolean;
+    includeReferenceSummary?: boolean;
+    includeRaw?: boolean;
+  } = {}
+) {
+  const requestedProjection = input.projectionFormat ?? 'summary';
+  const base = {
+    version,
+    entrypoint,
+    mode: 'real_block_library_sleeve_graph_drilldown' as const,
+    outputContract: {
+      contractId: 'umg.sleeve_graph.drilldown.v1' as const,
+      contractStatus: 'NORMALIZED' as const
+    },
+    readOnly: true as const,
+    execution: 'not_performed' as const,
+    directSource: 'not_enabled' as const,
+    audit: {
+      sleeveActivation: 'not_performed',
+      activeSleeveMutation: 'not_performed',
+      graphTraversal: 'not_performed',
+      neoStackPayloadLoading: 'not_performed',
+      neoBlockRecursiveLoading: 'not_performed',
+      externalMoltBlockFileLoading: 'not_performed',
+      triggerEvaluation: 'not_performed',
+      libraryMutation: 'not_performed'
+    },
+    warnings: [] as string[],
+    errors: [] as Array<{ code: BlockLibraryHoldCode; message: string }>
+  };
+  if (!input.sleeveId || input.sleeveId.trim().length === 0) {
+    return { ...base, ok: false, drilldownStatus: 'SLEEVE_DRILLDOWN_HELD' as const, sleeveId: null, sourceIndexContract: 'umg.sleeve_graph.index.v1', sleeveEntry: null, declaredNeoStackRefs: [], declaredNeoBlockRefs: [], visibleMoltRefs: [], referenceSummary: null, policySummary: null, loadPlan: [], nlProjection: '', errors: [{ code: 'HOLD_SLEEVE_GRAPH_INDEX_SLEEVE_NOT_FOUND', message: 'sleeveId is required.' }] };
+  }
+  if (input.includeRaw) {
+    return { ...base, ok: false, drilldownStatus: 'SLEEVE_DRILLDOWN_DENIED' as const, sleeveId: input.sleeveId, sourceIndexContract: 'umg.sleeve_graph.index.v1', sleeveEntry: null, declaredNeoStackRefs: [], declaredNeoBlockRefs: [], visibleMoltRefs: [], referenceSummary: null, policySummary: null, loadPlan: [], nlProjection: '', errors: [{ code: 'HOLD_RAW_TARGET_DUMP_NOT_SUPPORTED', message: 'includeRaw=true is not supported.' }] };
+  }
+  if (!['summary', 'nl', 'json', 'both'].includes(requestedProjection)) {
+    return { ...base, ok: false, drilldownStatus: 'SLEEVE_DRILLDOWN_DENIED' as const, sleeveId: input.sleeveId, sourceIndexContract: 'umg.sleeve_graph.index.v1', sleeveEntry: null, declaredNeoStackRefs: [], declaredNeoBlockRefs: [], visibleMoltRefs: [], referenceSummary: null, policySummary: null, loadPlan: [], nlProjection: '', errors: [{ code: 'HOLD_SLEEVE_GRAPH_INDEX_PROJECTION_FORMAT_UNSUPPORTED', message: `Unsupported projectionFormat: ${requestedProjection}` }] };
+  }
+  const index = getBlockLibrarySleeveGraphIndex(version, entrypoint, root, {
+    sleeveId: input.sleeveId,
+    sourceCatalog: input.sourceCatalog ?? 'auto',
+    projectionFormat: 'both',
+    includeReferenceSummary: input.includeReferenceSummary !== false,
+    includePolicySummary: input.includePolicySummary !== false,
+    includeRaw: false
+  });
+  if (!index.ok) {
+    const hold = index.errors[0]?.code === 'HOLD_SLEEVE_GRAPH_INDEX_SLEEVE_NOT_FOUND' ? 'SLEEVE_NOT_FOUND' : 'SLEEVE_DRILLDOWN_HELD';
+    return { ...base, ok: false, drilldownStatus: hold, sleeveId: input.sleeveId, sourceIndexContract: 'umg.sleeve_graph.index.v1', sleeveEntry: null, declaredNeoStackRefs: [], declaredNeoBlockRefs: [], visibleMoltRefs: [], referenceSummary: null, policySummary: null, loadPlan: [], nlProjection: '', warnings: index.warnings, errors: index.errors };
+  }
+  const sleeve = index.sleeveGraphIndex.sleeves[0] ?? null;
+  if (!sleeve) {
+    return { ...base, ok: false, drilldownStatus: 'SLEEVE_NOT_FOUND' as const, sleeveId: input.sleeveId, sourceIndexContract: 'umg.sleeve_graph.index.v1', sleeveEntry: null, declaredNeoStackRefs: [], declaredNeoBlockRefs: [], visibleMoltRefs: [], referenceSummary: null, policySummary: null, loadPlan: [], nlProjection: '', errors: [{ code: 'HOLD_SLEEVE_GRAPH_INDEX_SLEEVE_NOT_FOUND', message: `Sleeve not found: ${input.sleeveId}` }] };
+  }
+  const loadPlan = sleeve.neoBlockRefs.slice(0, 32).map((ref) => ({ kind: 'neoblock_shallow_candidate', ref, nextTool: 'umg_envoy_block_library_neoblock_inspect' }));
+  const nlProjection = [
+    'Sleeve Graph Drilldown:',
+    `- Sleeve Id: ${sleeve.sleeveId}`,
+    `- Policy: ${sleeve.policy}`,
+    `- Graph Status: ${sleeve.graphStatus}`,
+    `- NeoStack Refs: ${sleeve.referenceSummary.neoStackRefCount}`,
+    `- NeoBlock Refs: ${sleeve.referenceSummary.neoBlockRefCount}`,
+    `- Visible MOLT Refs: ${sleeve.referenceSummary.moltBlockRefCount}`,
+    `- Load Plan Steps: ${loadPlan.length}`
+  ].join('\n');
+  return {
+    ...base,
+    ok: true,
+    drilldownStatus: 'SLEEVE_DRILLDOWN_READY' as const,
+    sleeveId: sleeve.sleeveId,
+    sourceIndexContract: 'umg.sleeve_graph.index.v1',
+    sleeveEntry: sleeve,
+    declaredNeoStackRefs: sleeve.neoStackRefs.slice(0, 32),
+    declaredNeoBlockRefs: sleeve.neoBlockRefs.slice(0, 64),
+    visibleMoltRefs: sleeve.moltBlockRefs.slice(0, 64),
+    referenceSummary: sleeve.referenceSummary,
+    policySummary: {
+      policy: sleeve.policy,
+      status: sleeve.policy === 'FORBIDDEN' || sleeve.policy === 'OUTSIDE_ALLOWLIST' ? 'deny' : 'allow'
+    },
+    loadPlan,
+    nlProjection: requestedProjection === 'json' ? '' : nlProjection,
+    warnings: index.warnings,
+    errors: []
+  };
+}
+
+export function selectRuntimeSleeve(
+  version: string,
+  entrypoint = 'dist/plugin-entry.js',
+  root = DEFAULT_LIBRARY_ROOT,
+  input: {
+    sleeveId?: string;
+    selectionMode?: 'explicit' | 'default_config' | 'current' | 'clear' | string;
+    persistSelection?: boolean;
+    runtimeSessionId?: string;
+  } = {}
+) {
+  const mode = input.selectionMode ?? (input.sleeveId ? 'explicit' : 'current');
+  const sessionId = stableRuntimeSessionId(input.runtimeSessionId);
+  const current = runtimeSelectionState.get(sessionId)?.sleeveId ?? null;
+  const base = {
+    ok: true,
+    version,
+    entrypoint,
+    mode: 'runtime_sleeve_select' as const,
+    outputContract: { contractId: 'umg.sleeve.select.v1' as const, contractStatus: 'NORMALIZED' as const },
+    readOnly: false,
+    execution: 'not_performed' as const,
+    directSource: 'not_enabled' as const,
+    libraryMutation: 'not_performed' as const,
+    warnings: [] as string[],
+    errors: [] as Array<{ code: BlockLibraryHoldCode; message: string }>
+  };
+  if (!['explicit', 'default_config', 'current', 'clear'].includes(mode)) {
+    return { ...base, ok: false, selectionStatus: 'SELECTION_HELD' as const, activeSleeveId: current, selectionMode: mode, selectionSource: 'current', stateMutation: 'none' as const, audit: { sessionId }, errors: [{ code: 'HOLD_SLEEVE_GRAPH_INDEX_SOURCE_CATALOG_UNSUPPORTED', message: `Unsupported selectionMode: ${mode}` }] };
+  }
+  if (mode === 'clear') {
+    runtimeSelectionState.set(sessionId, { sleeveId: null, updatedAt: new Date().toISOString() });
+    return { ...base, selectionStatus: 'SELECTION_CLEARED' as const, activeSleeveId: null, selectionMode: 'clear' as const, selectionSource: 'current' as const, stateMutation: 'cleared_session_state' as const, audit: { sessionId } };
+  }
+  if (mode === 'current') {
+    return { ...base, selectionStatus: current ? 'SLEEVE_SELECTED' as const : 'NO_ACTIVE_SLEEVE' as const, activeSleeveId: current, selectionMode: 'current' as const, selectionSource: 'current' as const, stateMutation: 'none' as const, audit: { sessionId } };
+  }
+  const requestedSleeveId = mode === 'default_config' ? 'neomagnetar-dynamic-persona-v1' : input.sleeveId;
+  if (!requestedSleeveId) {
+    return { ...base, ok: false, selectionStatus: 'SELECTION_HELD' as const, activeSleeveId: current, selectionMode: mode as any, selectionSource: mode === 'default_config' ? 'default' : 'explicit', stateMutation: 'none' as const, audit: { sessionId }, errors: [{ code: 'HOLD_SLEEVE_GRAPH_INDEX_SLEEVE_NOT_FOUND', message: 'No sleeveId provided.' }] };
+  }
+  const drilldown = getBlockLibrarySleeveGraphDrilldown(version, entrypoint, root, { sleeveId: requestedSleeveId, projectionFormat: 'summary' });
+  if (!drilldown.ok) {
+    return { ...base, ok: false, selectionStatus: 'SLEEVE_NOT_FOUND' as const, activeSleeveId: null, selectionMode: mode as any, selectionSource: mode === 'default_config' ? 'default' : 'explicit', stateMutation: 'none' as const, audit: { sessionId }, warnings: drilldown.warnings ?? [], errors: drilldown.errors ?? [] };
+  }
+  runtimeSelectionState.set(sessionId, { sleeveId: requestedSleeveId, updatedAt: new Date().toISOString() });
+  return { ...base, selectionStatus: 'SLEEVE_SELECTED' as const, activeSleeveId: requestedSleeveId, selectionMode: mode as any, selectionSource: mode === 'default_config' ? 'default' as const : 'explicit' as const, stateMutation: 'session_state_only' as const, audit: { sessionId, persistSelection: Boolean(input.persistSelection) } };
+}
+
+export function resolveRuntimeSleeveGraph(
+  version: string,
+  entrypoint = 'dist/plugin-entry.js',
+  root = DEFAULT_LIBRARY_ROOT,
+  input: {
+    sleeveId?: string;
+    runtimeSessionId?: string;
+    resolveDepth?: 'reference_only' | 'neostack_refs' | 'neoblock_shallow' | 'molt_visible' | string;
+    maxNeoStacks?: number;
+    maxNeoBlocks?: number;
+    maxVisibleMoltFragments?: number;
+    allowRecursive?: boolean;
+    mode?: string;
+  } = {}
+) {
+  const depth = input.resolveDepth ?? 'molt_visible';
+  const sessionId = stableRuntimeSessionId(input.runtimeSessionId);
+  const selected = input.sleeveId ?? runtimeSelectionState.get(sessionId)?.sleeveId ?? null;
+  const maxNeoStacks = Math.max(1, Math.min(input.maxNeoStacks ?? 8, 8));
+  const maxNeoBlocks = Math.max(1, Math.min(input.maxNeoBlocks ?? 64, 64));
+  const maxVisibleMoltFragments = Math.max(1, Math.min(input.maxVisibleMoltFragments ?? 128, 128));
+  const base = {
+    version,
+    entrypoint,
+    mode: 'runtime_sleeve_resolve' as const,
+    outputContract: { contractId: 'umg.sleeve.resolve.v1' as const, contractStatus: 'NORMALIZED' as const },
+    readOnly: true as const,
+    execution: 'not_performed' as const,
+    directSource: 'not_enabled' as const,
+    warnings: [] as string[],
+    errors: [] as Array<{ code: BlockLibraryHoldCode; message: string }>,
+    blockedRefs: [] as Array<{ ref: string; reason: string }>
+  };
+  if (!['reference_only', 'neostack_refs', 'neoblock_shallow', 'molt_visible'].includes(depth)) {
+    return { ...base, ok: false, resolutionStatus: 'DENIED' as const, sleeveId: selected, selectedSleeveSource: input.sleeveId ? 'explicit' : 'current', resolvedSleeve: null, resolvedNeoStacks: [], resolvedNeoBlocks: [], visibleMoltFragments: [], composeReadyFragments: [], limits: { maxNeoStacks, maxNeoBlocks, maxVisibleMoltFragments, allowRecursive: false }, audit: { graphTraversal: 'not_performed', triggerEvaluation: 'not_performed', libraryMutation: 'not_performed' }, errors: [{ code: 'HOLD_SLEEVE_GRAPH_INDEX_PROJECTION_FORMAT_UNSUPPORTED', message: `Unsupported resolveDepth: ${depth}` }] };
+  }
+  if (input.allowRecursive) {
+    return { ...base, ok: false, resolutionStatus: 'DENIED' as const, sleeveId: selected, selectedSleeveSource: input.sleeveId ? 'explicit' : 'current', resolvedSleeve: null, resolvedNeoStacks: [], resolvedNeoBlocks: [], visibleMoltFragments: [], composeReadyFragments: [], limits: { maxNeoStacks, maxNeoBlocks, maxVisibleMoltFragments, allowRecursive: false }, audit: { graphTraversal: 'not_performed', triggerEvaluation: 'not_performed', libraryMutation: 'not_performed' }, errors: [{ code: 'HOLD_ACTIVE_STACK_PROJECTION_RECURSION_GUARD', message: 'Recursive resolution is not enabled in Alpha6.' }] };
+  }
+  if (!selected) {
+    return { ...base, ok: false, resolutionStatus: 'HELD' as const, sleeveId: null, selectedSleeveSource: 'current', resolvedSleeve: null, resolvedNeoStacks: [], resolvedNeoBlocks: [], visibleMoltFragments: [], composeReadyFragments: [], limits: { maxNeoStacks, maxNeoBlocks, maxVisibleMoltFragments, allowRecursive: false }, audit: { graphTraversal: 'not_performed', triggerEvaluation: 'not_performed', libraryMutation: 'not_performed' }, errors: [{ code: 'HOLD_SLEEVE_GRAPH_INDEX_SLEEVE_NOT_FOUND', message: 'No selected sleeve available.' }] };
+  }
+  const drilldown = getBlockLibrarySleeveGraphDrilldown(version, entrypoint, root, { sleeveId: selected, projectionFormat: 'summary' });
+  if (!drilldown.ok || !drilldown.sleeveEntry) {
+    return { ...base, ok: false, resolutionStatus: 'HELD' as const, sleeveId: selected, selectedSleeveSource: input.sleeveId ? 'explicit' : 'current', resolvedSleeve: null, resolvedNeoStacks: [], resolvedNeoBlocks: [], visibleMoltFragments: [], composeReadyFragments: [], limits: { maxNeoStacks, maxNeoBlocks, maxVisibleMoltFragments, allowRecursive: false }, audit: { graphTraversal: 'not_performed', triggerEvaluation: 'not_performed', libraryMutation: 'not_performed' }, warnings: drilldown.warnings ?? [], errors: drilldown.errors ?? [] };
+  }
+  const neoStacks = drilldown.declaredNeoStackRefs.slice(0, maxNeoStacks).map((ref) => ({ ref, status: 'declared_only' }));
+  const neoBlockRefs = drilldown.declaredNeoBlockRefs.slice(0, maxNeoBlocks);
+  const resolvedNeoBlocks = [] as Array<{ neoblockId: string; status: string; summary?: unknown }>;
+  const visibleBlocks = [] as Array<{ neoblockId: string; visible: ReturnType<typeof getBlockLibraryMoltblockVisibleExtract> }>;
+  for (const neoblockId of neoBlockRefs) {
+    const inspected = getBlockLibraryNeoblockInspect(version, entrypoint, root, { neoblockId, manifestKind: 'neoblock', summaryProfile: 'standard', includeContentPreview: true, includeReferenceSummary: true, includeRaw: false });
+    if (!inspected.ok) {
+      base.blockedRefs.push({ ref: neoblockId, reason: inspected.errors[0]?.code ?? 'inspect_failed' });
+      resolvedNeoBlocks.push({ neoblockId, status: 'blocked' });
+      continue
+    }
+    resolvedNeoBlocks.push({ neoblockId, status: 'shallow_loaded', summary: inspected.neoblockInspection });
+    if (depth === 'molt_visible') {
+      const visible = getBlockLibraryMoltblockVisibleExtract(version, entrypoint, root, { neoblockId, manifestKind: 'neoblock', summaryProfile: 'standard', includeContentPreview: true, includeReferenceSummary: true, includeRaw: false });
+      if (visible.ok) {
+        visibleBlocks.push({ neoblockId, visible });
+      }
+    }
+  }
+  const allVisible = summarizeVisibleMoltFromBlocks(visibleBlocks).slice(0, maxVisibleMoltFragments);
+  const composeReady = allVisible.filter((fragment) => ['Trigger','Directive','Instruction','Subject','Primary','Philosophy','Blueprint'].includes(fragment.sourceField));
+  const partial = base.blockedRefs.length > 0 || drilldown.declaredNeoBlockRefs.length > maxNeoBlocks || drilldown.declaredNeoStackRefs.length > maxNeoStacks || summarizeVisibleMoltFromBlocks(visibleBlocks).length > maxVisibleMoltFragments;
+  if (drilldown.declaredNeoBlockRefs.length > maxNeoBlocks) base.warnings.push('neoBlock refs truncated by limit');
+  if (drilldown.declaredNeoStackRefs.length > maxNeoStacks) base.warnings.push('neoStack refs truncated by limit');
+  if (summarizeVisibleMoltFromBlocks(visibleBlocks).length > maxVisibleMoltFragments) base.warnings.push('visible MOLT fragments truncated by limit');
+  return {
+    ...base,
+    ok: true,
+    resolutionStatus: partial ? 'PARTIAL' as const : 'RESOLVED' as const,
+    sleeveId: selected,
+    selectedSleeveSource: input.sleeveId ? 'explicit' as const : 'current' as const,
+    resolvedSleeve: drilldown.sleeveEntry,
+    resolvedNeoStacks: depth === 'reference_only' ? [] : neoStacks,
+    resolvedNeoBlocks: (depth === 'reference_only' || depth === 'neostack_refs') ? [] : resolvedNeoBlocks,
+    visibleMoltFragments: depth === 'molt_visible' ? allVisible : [],
+    composeReadyFragments: depth === 'molt_visible' ? composeReady : [],
+    limits: { maxNeoStacks, maxNeoBlocks, maxVisibleMoltFragments, allowRecursive: false },
+    audit: { graphTraversal: 'not_performed', triggerEvaluation: 'not_performed', execution: 'not_performed', libraryMutation: 'not_performed', externalMoltBlockFileLoading: 'not_performed' },
+    errors: []
+  };
+}
+
+function buildRuntimeSpecFromResolution(sleeveId: string, resolution: ReturnType<typeof resolveRuntimeSleeveGraph>, strictness: 'dev' | 'prod') {
+  const grouped = new Map<string, Array<{ text: string; sourceBlockId: string | null }>>();
+  for (const fragment of resolution.composeReadyFragments) {
+    const list = grouped.get(fragment.sourceField) ?? [];
+    list.push({ text: fragment.text, sourceBlockId: fragment.sourceBlockId });
+    grouped.set(fragment.sourceField, list);
+  }
+  const fieldOrder = ['Trigger', 'Directive', 'Instruction', 'Subject', 'Primary', 'Philosophy', 'Blueprint'];
+  const activeBlocks: string[] = [];
+  const promptParts: RuntimeSpecV0['promptParts'] = [];
+  const warnings: string[] = [...resolution.warnings];
+  const errors: Array<{ code: string; message: string }> = [];
+  const moltMap: Record<string, string> = {};
+  for (const field of fieldOrder) {
+    const values = grouped.get(field) ?? [];
+    if (values.length > 1) {
+      const msg = `Duplicate ${field} fragments detected.`;
+      if (strictness === 'prod') {
+        errors.push({ code: 'DUPLICATE_MOLT_FIELD', message: msg });
+      } else {
+        warnings.push(msg);
+      }
+    }
+    const chosen = values[0] ?? null;
+    if (chosen) {
+      moltMap[field] = chosen.text;
+      promptParts.push({ field, text: chosen.text, sourceBlockId: chosen.sourceBlockId });
+      if (chosen.sourceBlockId) activeBlocks.push(chosen.sourceBlockId);
+    } else {
+      moltMap[field] = 'n/a';
+    }
+  }
+  const toolRequests = (grouped.get('Trigger') ?? []).map((item) => ({ kind: 'declared_trigger', sourceBlockId: item.sourceBlockId, declaredAction: item.text }));
+  const runtimeSpec: RuntimeSpecV0 = {
+    runtimeSpecVersion: 'RuntimeSpecV0',
+    runtimeSpecId: `rtv0-${stableJsonHash({ sleeveId, activeBlocks, promptParts })}`,
+    sleeveId,
+    activeBlocks: Array.from(new Set(activeBlocks.filter(Boolean))),
+    moltMap,
+    promptParts,
+    strategy: moltMap['Directive'] === 'n/a' ? null : moltMap['Directive'],
+    constraints: moltMap['Instruction'] === 'n/a' ? null : moltMap['Instruction'],
+    context: { subject: moltMap['Subject'] === 'n/a' ? null : moltMap['Subject'], primary: moltMap['Primary'] === 'n/a' ? null : moltMap['Primary'] },
+    values: moltMap['Philosophy'] === 'n/a' ? null : moltMap['Philosophy'],
+    format: moltMap['Blueprint'] === 'n/a' ? null : moltMap['Blueprint'],
+    toolRequests
+  };
+  return { runtimeSpec, warnings, errors };
+}
+
+export function compileRuntimeSleeve(
+  version: string,
+  entrypoint = 'dist/plugin-entry.js',
+  root = DEFAULT_LIBRARY_ROOT,
+  input: {
+    sleeveId?: string;
+    runtimeSessionId?: string;
+    useSelectedSleeve?: boolean;
+    compileMode?: string;
+    resolveDepth?: 'reference_only' | 'neostack_refs' | 'neoblock_shallow' | 'molt_visible' | string;
+    strictness?: 'dev' | 'prod' | string;
+  } = {}
+) {
+  const strictness = input.strictness === 'prod' ? 'prod' : 'dev';
+  const resolution = resolveRuntimeSleeveGraph(version, entrypoint, root, {
+    sleeveId: input.sleeveId,
+    runtimeSessionId: input.runtimeSessionId,
+    resolveDepth: input.resolveDepth ?? 'molt_visible',
+    allowRecursive: false,
+    mode: input.compileMode ?? 'dry_run'
+  });
+  const base = {
+    version,
+    entrypoint,
+    mode: 'runtime_compile' as const,
+    outputContract: { contractId: 'umg.runtime.compile.v1' as const, contractStatus: 'NORMALIZED' as const },
+    readOnly: true as const,
+    execution: 'not_performed' as const,
+    directSource: 'not_enabled' as const
+  };
+  if (!resolution.ok || !resolution.sleeveId) {
+    return { ...base, ok: false, compileStatus: 'HELD' as const, runtimeSpecVersion: 'RuntimeSpecV0', runtimeSpecId: null, sleeveId: resolution.sleeveId ?? null, activeBlocks: [], moltMap: {}, promptParts: [], strategy: null, constraints: null, context: null, values: null, format: null, toolRequests: [], warnings: resolution.warnings ?? [], errors: resolution.errors ?? [], trace: { resolutionStatus: resolution.resolutionStatus ?? 'HELD' } };
+  }
+  const built = buildRuntimeSpecFromResolution(resolution.sleeveId, resolution, strictness);
+  const compileStatus = built.errors.length > 0 ? 'FAILED' : (resolution.resolutionStatus === 'PARTIAL' || Object.values(built.runtimeSpec.moltMap).some((v) => v === 'n/a') ? 'PARTIAL' : 'COMPILED');
+  return {
+    ...base,
+    ok: built.errors.length === 0,
+    compileStatus,
+    runtimeSpecVersion: 'RuntimeSpecV0' as const,
+    runtimeSpecId: built.runtimeSpec.runtimeSpecId,
+    sleeveId: built.runtimeSpec.sleeveId,
+    activeBlocks: built.runtimeSpec.activeBlocks,
+    moltMap: built.runtimeSpec.moltMap,
+    promptParts: built.runtimeSpec.promptParts,
+    strategy: built.runtimeSpec.strategy,
+    constraints: built.runtimeSpec.constraints,
+    context: built.runtimeSpec.context,
+    values: built.runtimeSpec.values,
+    format: built.runtimeSpec.format,
+    toolRequests: built.runtimeSpec.toolRequests,
+    warnings: built.warnings,
+    errors: built.errors,
+    trace: { resolutionStatus: resolution.resolutionStatus, strictness }
+  };
+}
+
+export function previewRuntimeSleeve(
+  version: string,
+  entrypoint = 'dist/plugin-entry.js',
+  root = DEFAULT_LIBRARY_ROOT,
+  input: {
+    sleeveId?: string;
+    runtimeSessionId?: string;
+    previewFormat?: 'summary' | 'full' | 'nl' | string;
+    includeActiveStack?: boolean;
+    includeMoltMap?: boolean;
+    includeEnvelope?: boolean;
+    includeToolRequests?: boolean;
+  } = {}
+) {
+  const previewFormat = input.previewFormat ?? 'summary';
+  const compiled = compileRuntimeSleeve(version, entrypoint, root, {
+    sleeveId: input.sleeveId,
+    runtimeSessionId: input.runtimeSessionId,
+    resolveDepth: 'molt_visible',
+    strictness: 'dev',
+    compileMode: 'dry_run'
+  });
+  const base = {
+    version,
+    entrypoint,
+    mode: 'runtime_preview' as const,
+    outputContract: { contractId: 'umg.runtime.preview.v1' as const, contractStatus: 'NORMALIZED' as const },
+    executionStatus: 'not_performed' as const,
+    directSource: 'not_enabled' as const
+  };
+  if (!compiled.runtimeSpecId || !compiled.sleeveId) {
+    return { ...base, ok: false, previewStatus: 'HELD' as const, runtimeSpec: null, activeStackProjection: null, moltMapProjection: null, responseEnvelopePreview: null, toolRequestPreview: [], warnings: compiled.warnings ?? [], errors: compiled.errors ?? [], nlProjection: 'Runtime Preview unavailable: no selected or resolvable sleeve.' };
+  }
+  const ids = compiled.activeBlocks.length > 0 ? compiled.activeBlocks : (compiled.promptParts.map((part) => part.sourceBlockId).filter(Boolean) as string[]);
+  const activeStackProjection = input.includeActiveStack === false ? null : getBlockLibraryActiveStackProjection(version, entrypoint, root, { currentState: 'RUNTIME_PREVIEW_READY', activeTool: 'umg_envoy_runtime_preview', sourceTool: 'umg_envoy_runtime_compile', neoblockIds: ids, activeSleeve: compiled.sleeveId, boundary: 'preview only; execution not performed', projectionFormat: 'both', includeAudit: true, includeRaw: false });
+  const responseEnvelopePreview = input.includeEnvelope === false ? null : getBlockLibraryResponseEnvelopeFragment(version, entrypoint, root, { neoblockIds: ids, project: 'UMG Envoy Agent / OpenClaw', currentState: 'RUNTIME_PREVIEW_READY', activeTool: 'umg_envoy_runtime_preview', formalResponseContent: compiled.promptParts.map((part) => `${part.field}: ${part.text}`).join('\n\n'), envoyIntuition: compiled.strategy ?? 'n/a', projectionFormat: 'both', includeMetadata: true, includeAudit: true, activeSleeve: compiled.sleeveId, activeStackBoundary: 'preview only; execution not performed', includeActiveStackProjection: true, includeRaw: false });
+  const summaryRuntimeSpec = previewFormat === 'summary' ? { runtimeSpecVersion: compiled.runtimeSpecVersion, runtimeSpecId: compiled.runtimeSpecId, sleeveId: compiled.sleeveId, activeBlocks: compiled.activeBlocks, toolRequests: compiled.toolRequests } : { runtimeSpecVersion: compiled.runtimeSpecVersion, runtimeSpecId: compiled.runtimeSpecId, sleeveId: compiled.sleeveId, activeBlocks: compiled.activeBlocks, moltMap: compiled.moltMap, promptParts: compiled.promptParts, strategy: compiled.strategy, constraints: compiled.constraints, context: compiled.context, values: compiled.values, format: compiled.format, toolRequests: compiled.toolRequests };
+  const nlProjection = [
+    'Runtime Preview:',
+    `- Selected Sleeve: ${compiled.sleeveId}`,
+    `- Compile Status: ${compiled.compileStatus}`,
+    `- Runtime Spec Id: ${compiled.runtimeSpecId}`,
+    `- Active Blocks: ${compiled.activeBlocks.length}`,
+    `- Execution: not_performed`,
+    `- Tool Requests: ${compiled.toolRequests.length}`,
+    `- Active Stack: ${activeStackProjection?.activeStackProjection?.projectionStatus ?? 'n/a'}`,
+    `- Envelope Preview: ${responseEnvelopePreview?.responseEnvelopeFragment?.fragmentStatus ?? 'n/a'}`
+  ].join('\n');
+  return {
+    ...base,
+    ok: compiled.ok,
+    previewStatus: compiled.compileStatus === 'COMPILED' ? 'RUNTIME_PREVIEW_READY' as const : (compiled.compileStatus === 'PARTIAL' ? 'PARTIAL' as const : 'FAILED' as const),
+    runtimeSpec: summaryRuntimeSpec,
+    activeStackProjection,
+    moltMapProjection: input.includeMoltMap === false ? null : compiled.moltMap,
+    responseEnvelopePreview,
+    toolRequestPreview: input.includeToolRequests === false ? [] : compiled.toolRequests,
+    warnings: compiled.warnings,
+    errors: compiled.errors,
+    nlProjection
   };
 }
 

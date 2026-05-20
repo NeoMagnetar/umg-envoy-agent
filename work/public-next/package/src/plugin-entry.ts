@@ -9,7 +9,7 @@ import { parseUMGPath } from "./umg-path-parser.js";
 import { renderUMGPath } from "./umg-path-renderer.js";
 import { validateUMGPath } from "./umg-path-validator.js";
 import { buildPublicPath } from "./public-path-builder.js";
-import { defaultBlockLibraryRoot, getBlockLibraryActiveStackProjection, getBlockLibraryManifestEntryLookup, getBlockLibraryManifestIndex, getBlockLibraryMoltMapCompose, getBlockLibraryMoltMapFragment, getBlockLibraryMoltblockVisibleExtract, getBlockLibraryNeoblockInspect, getBlockLibraryResponseEnvelopeFragment, getBlockLibrarySleeveGraphIndex, getBlockLibraryStatus, getBlockLibraryTargetShallowLoadGate, getBlockLibraryTargetShallowLoadSingle, getBlockLibraryTargetShallowSummaryNormalize } from "./block-library-resolver.js";
+import { compileRuntimeSleeve, defaultBlockLibraryRoot, getBlockLibraryActiveStackProjection, getBlockLibraryManifestEntryLookup, getBlockLibraryManifestIndex, getBlockLibraryMoltMapCompose, getBlockLibraryMoltMapFragment, getBlockLibraryMoltblockVisibleExtract, getBlockLibraryNeoblockInspect, getBlockLibraryResponseEnvelopeFragment, getBlockLibrarySleeveGraphDrilldown, getBlockLibrarySleeveGraphIndex, getBlockLibraryStatus, getBlockLibraryTargetShallowLoadGate, getBlockLibraryTargetShallowLoadSingle, getBlockLibraryTargetShallowSummaryNormalize, previewRuntimeSleeve, resolveRuntimeSleeveGraph, selectRuntimeSleeve } from "./block-library-resolver.js";
 import type { PluginConfig } from "./types.js";
 
 function effectiveConfig(config?: PluginConfig) {
@@ -62,7 +62,12 @@ function statusPayload(config?: PluginConfig) {
       "umg_envoy_block_library_molt_map_compose",
       "umg_envoy_block_library_response_envelope_fragment",
       "umg_envoy_block_library_active_stack_projection",
-      "umg_envoy_block_library_sleeve_graph_index"
+      "umg_envoy_block_library_sleeve_graph_index",
+      "umg_envoy_block_library_sleeve_graph_drilldown",
+      "umg_envoy_sleeve_select",
+      "umg_envoy_sleeve_resolve",
+      "umg_envoy_runtime_compile",
+      "umg_envoy_runtime_preview"
     ]
   };
 }
@@ -320,6 +325,66 @@ function registerCliBridge(api: any, config?: PluginConfig) {
       .action(async (opts: { sleeveId?: string; sourceCatalog?: string; projectionFormat?: string; includeReferenceSummary?: boolean; includePolicySummary?: boolean; includeRaw?: boolean; root?: string }) => {
         console.log(JSON.stringify(getBlockLibrarySleeveGraphIndex("0.3.0-alpha.6", "dist/plugin-entry.js", opts.root ?? defaultBlockLibraryRoot(), { sleeveId: opts.sleeveId, sourceCatalog: opts.sourceCatalog ?? 'auto', projectionFormat: opts.projectionFormat ?? 'both', includeReferenceSummary: opts.includeReferenceSummary !== false, includePolicySummary: opts.includePolicySummary !== false, includeRaw: Boolean(opts.includeRaw) }), null, 2));
       });
+
+    root.command("block-library-sleeve-graph-drilldown")
+      .requiredOption("--sleeve-id <id>")
+      .option("--source-catalog <catalog>")
+      .option("--projection-format <format>")
+      .option("--no-include-policy-summary")
+      .option("--no-include-reference-summary")
+      .option("--include-raw")
+      .option("--root <path>")
+      .action(async (opts: { sleeveId: string; sourceCatalog?: string; projectionFormat?: string; includePolicySummary?: boolean; includeReferenceSummary?: boolean; includeRaw?: boolean; root?: string }) => {
+        console.log(JSON.stringify(getBlockLibrarySleeveGraphDrilldown("0.3.0-alpha.6", "dist/plugin-entry.js", opts.root ?? defaultBlockLibraryRoot(), { sleeveId: opts.sleeveId, sourceCatalog: opts.sourceCatalog ?? 'auto', projectionFormat: opts.projectionFormat ?? 'summary', includePolicySummary: opts.includePolicySummary !== false, includeReferenceSummary: opts.includeReferenceSummary !== false, includeRaw: Boolean(opts.includeRaw) }), null, 2));
+      });
+
+    root.command("sleeve-select")
+      .option("--sleeve-id <id>")
+      .option("--selection-mode <mode>")
+      .option("--persist-selection")
+      .option("--runtime-session-id <id>")
+      .option("--root <path>")
+      .action(async (opts: { sleeveId?: string; selectionMode?: string; persistSelection?: boolean; runtimeSessionId?: string; root?: string }) => {
+        console.log(JSON.stringify(selectRuntimeSleeve("0.3.0-alpha.6", "dist/plugin-entry.js", opts.root ?? defaultBlockLibraryRoot(), { sleeveId: opts.sleeveId, selectionMode: opts.selectionMode as any, persistSelection: Boolean(opts.persistSelection), runtimeSessionId: opts.runtimeSessionId }), null, 2));
+      });
+
+    root.command("sleeve-resolve")
+      .option("--sleeve-id <id>")
+      .option("--runtime-session-id <id>")
+      .option("--resolve-depth <depth>")
+      .option("--max-neostacks <n>")
+      .option("--max-neoblocks <n>")
+      .option("--max-visible-molt-fragments <n>")
+      .option("--allow-recursive")
+      .option("--mode <mode>")
+      .option("--root <path>")
+      .action(async (opts: { sleeveId?: string; runtimeSessionId?: string; resolveDepth?: string; maxNeostacks?: string; maxNeoblocks?: string; maxVisibleMoltFragments?: string; allowRecursive?: boolean; mode?: string; root?: string }) => {
+        console.log(JSON.stringify(resolveRuntimeSleeveGraph("0.3.0-alpha.6", "dist/plugin-entry.js", opts.root ?? defaultBlockLibraryRoot(), { sleeveId: opts.sleeveId, runtimeSessionId: opts.runtimeSessionId, resolveDepth: opts.resolveDepth as any, maxNeoStacks: opts.maxNeostacks ? Number(opts.maxNeostacks) : undefined, maxNeoBlocks: opts.maxNeoblocks ? Number(opts.maxNeoblocks) : undefined, maxVisibleMoltFragments: opts.maxVisibleMoltFragments ? Number(opts.maxVisibleMoltFragments) : undefined, allowRecursive: Boolean(opts.allowRecursive), mode: opts.mode ?? 'dry_run' }), null, 2));
+      });
+
+    root.command("runtime-compile")
+      .option("--sleeve-id <id>")
+      .option("--runtime-session-id <id>")
+      .option("--resolve-depth <depth>")
+      .option("--strictness <strictness>")
+      .option("--compile-mode <mode>")
+      .option("--root <path>")
+      .action(async (opts: { sleeveId?: string; runtimeSessionId?: string; resolveDepth?: string; strictness?: string; compileMode?: string; root?: string }) => {
+        console.log(JSON.stringify(compileRuntimeSleeve("0.3.0-alpha.6", "dist/plugin-entry.js", opts.root ?? defaultBlockLibraryRoot(), { sleeveId: opts.sleeveId, runtimeSessionId: opts.runtimeSessionId, resolveDepth: opts.resolveDepth as any, strictness: opts.strictness as any, compileMode: opts.compileMode ?? 'dry_run' }), null, 2));
+      });
+
+    root.command("runtime-preview")
+      .option("--sleeve-id <id>")
+      .option("--runtime-session-id <id>")
+      .option("--preview-format <format>")
+      .option("--no-include-active-stack")
+      .option("--no-include-molt-map")
+      .option("--no-include-envelope")
+      .option("--no-include-tool-requests")
+      .option("--root <path>")
+      .action(async (opts: { sleeveId?: string; runtimeSessionId?: string; previewFormat?: string; includeActiveStack?: boolean; includeMoltMap?: boolean; includeEnvelope?: boolean; includeToolRequests?: boolean; root?: string }) => {
+        console.log(JSON.stringify(previewRuntimeSleeve("0.3.0-alpha.6", "dist/plugin-entry.js", opts.root ?? defaultBlockLibraryRoot(), { sleeveId: opts.sleeveId, runtimeSessionId: opts.runtimeSessionId, previewFormat: opts.previewFormat as any, includeActiveStack: opts.includeActiveStack !== false, includeMoltMap: opts.includeMoltMap !== false, includeEnvelope: opts.includeEnvelope !== false, includeToolRequests: opts.includeToolRequests !== false }), null, 2));
+      });
   }, { commands: ["umg-envoy"] });
 }
 
@@ -355,6 +420,11 @@ const entry = {
     api.registerTool({ name: "umg_envoy_block_library_response_envelope_fragment", description: "Render a UMG-style response envelope fragment from an explicit normalized MOLT Map composition.", parameters: Type.Object({ neoblockIds: Type.Array(Type.String()), project: Type.Optional(Type.String()), currentState: Type.Optional(Type.String()), activeTool: Type.Optional(Type.String()), formalResponseContent: Type.Optional(Type.String()), envoyIntuition: Type.Optional(Type.String()), projectionFormat: Type.Optional(Type.String()), includeMetadata: Type.Optional(Type.Boolean()), includeAudit: Type.Optional(Type.Boolean()), activeSleeve: Type.Optional(Type.String()), activeStackBoundary: Type.Optional(Type.String()), includeActiveStackProjection: Type.Optional(Type.Boolean()), includeRaw: Type.Optional(Type.Boolean()), root: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input: { neoblockIds: string[]; project?: string; currentState?: string; activeTool?: string; formalResponseContent?: string; envoyIntuition?: string; projectionFormat?: string; includeMetadata?: boolean; includeAudit?: boolean; activeSleeve?: string; activeStackBoundary?: string; includeActiveStackProjection?: boolean; includeRaw?: boolean; root?: string }) { return { content: [{ type: "text", text: JSON.stringify(getBlockLibraryResponseEnvelopeFragment("0.3.0-alpha.6", "dist/plugin-entry.js", input.root ?? defaultBlockLibraryRoot(), { neoblockIds: input.neoblockIds, project: input.project, currentState: input.currentState, activeTool: input.activeTool, formalResponseContent: input.formalResponseContent, envoyIntuition: input.envoyIntuition, projectionFormat: input.projectionFormat ?? 'both', includeMetadata: input.includeMetadata !== false, includeAudit: input.includeAudit !== false, activeSleeve: input.activeSleeve, activeStackBoundary: input.activeStackBoundary, includeActiveStackProjection: input.includeActiveStackProjection !== false, includeRaw: Boolean(input.includeRaw) }), null, 2) }] }; } }, { optional: true });
     api.registerTool({ name: "umg_envoy_block_library_active_stack_projection", description: "Render a normalized Active Stack projection from explicit runtime state and optional normalized composer context.", parameters: Type.Object({ project: Type.Optional(Type.String()), currentState: Type.Optional(Type.String()), activeTool: Type.Optional(Type.String()), sourceTool: Type.Optional(Type.String()), neoblockIds: Type.Optional(Type.Array(Type.String())), activeSleeve: Type.Optional(Type.String()), boundary: Type.Optional(Type.String()), projectionFormat: Type.Optional(Type.String()), includeAudit: Type.Optional(Type.Boolean()), includeRaw: Type.Optional(Type.Boolean()), root: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input: { project?: string; currentState?: string; activeTool?: string; sourceTool?: string; neoblockIds?: string[]; activeSleeve?: string; boundary?: string; projectionFormat?: string; includeAudit?: boolean; includeRaw?: boolean; root?: string }) { return { content: [{ type: "text", text: JSON.stringify(getBlockLibraryActiveStackProjection("0.3.0-alpha.6", "dist/plugin-entry.js", input.root ?? defaultBlockLibraryRoot(), { project: input.project, currentState: input.currentState, activeTool: input.activeTool, sourceTool: input.sourceTool, neoblockIds: input.neoblockIds ?? [], activeSleeve: input.activeSleeve, boundary: input.boundary, projectionFormat: input.projectionFormat ?? 'both', includeAudit: input.includeAudit !== false, includeRaw: Boolean(input.includeRaw) }), null, 2) }] }; } }, { optional: true });
     api.registerTool({ name: "umg_envoy_block_library_sleeve_graph_index", description: "Index approved sleeve catalog references into a normalized read-only sleeve graph summary without activation.", parameters: Type.Object({ sleeveId: Type.Optional(Type.String()), sourceCatalog: Type.Optional(Type.String()), projectionFormat: Type.Optional(Type.String()), includeReferenceSummary: Type.Optional(Type.Boolean()), includePolicySummary: Type.Optional(Type.Boolean()), includeRaw: Type.Optional(Type.Boolean()), root: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input: { sleeveId?: string; sourceCatalog?: string; projectionFormat?: string; includeReferenceSummary?: boolean; includePolicySummary?: boolean; includeRaw?: boolean; root?: string }) { return { content: [{ type: "text", text: JSON.stringify(getBlockLibrarySleeveGraphIndex("0.3.0-alpha.6", "dist/plugin-entry.js", input.root ?? defaultBlockLibraryRoot(), { sleeveId: input.sleeveId, sourceCatalog: input.sourceCatalog ?? 'auto', projectionFormat: input.projectionFormat ?? 'both', includeReferenceSummary: input.includeReferenceSummary !== false, includePolicySummary: input.includePolicySummary !== false, includeRaw: Boolean(input.includeRaw) }), null, 2) }] }; } }, { optional: true });
+    api.registerTool({ name: "umg_envoy_block_library_sleeve_graph_drilldown", description: "Return a focused normalized drilldown for one sleeve from the sleeve graph index.", parameters: Type.Object({ sleeveId: Type.String(), sourceCatalog: Type.Optional(Type.String()), projectionFormat: Type.Optional(Type.String()), includePolicySummary: Type.Optional(Type.Boolean()), includeReferenceSummary: Type.Optional(Type.Boolean()), includeRaw: Type.Optional(Type.Boolean()), root: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input: { sleeveId: string; sourceCatalog?: string; projectionFormat?: string; includePolicySummary?: boolean; includeReferenceSummary?: boolean; includeRaw?: boolean; root?: string }) { return { content: [{ type: "text", text: JSON.stringify(getBlockLibrarySleeveGraphDrilldown("0.3.0-alpha.6", "dist/plugin-entry.js", input.root ?? defaultBlockLibraryRoot(), { sleeveId: input.sleeveId, sourceCatalog: input.sourceCatalog ?? 'auto', projectionFormat: input.projectionFormat ?? 'summary', includePolicySummary: input.includePolicySummary !== false, includeReferenceSummary: input.includeReferenceSummary !== false, includeRaw: Boolean(input.includeRaw) }), null, 2) }] }; } }, { optional: true });
+    api.registerTool({ name: "umg_envoy_sleeve_select", description: "Select or query the active runtime sleeve in scoped session state.", parameters: Type.Object({ sleeveId: Type.Optional(Type.String()), selectionMode: Type.Optional(Type.String()), persistSelection: Type.Optional(Type.Boolean()), runtimeSessionId: Type.Optional(Type.String()), root: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input: { sleeveId?: string; selectionMode?: string; persistSelection?: boolean; runtimeSessionId?: string; root?: string }) { return { content: [{ type: "text", text: JSON.stringify(selectRuntimeSleeve("0.3.0-alpha.6", "dist/plugin-entry.js", input.root ?? defaultBlockLibraryRoot(), { sleeveId: input.sleeveId, selectionMode: input.selectionMode as any, persistSelection: Boolean(input.persistSelection), runtimeSessionId: input.runtimeSessionId }), null, 2) }] }; } }, { optional: true });
+    api.registerTool({ name: "umg_envoy_sleeve_resolve", description: "Resolve a selected or explicit sleeve into a bounded dry-run runtime graph.", parameters: Type.Object({ sleeveId: Type.Optional(Type.String()), runtimeSessionId: Type.Optional(Type.String()), resolveDepth: Type.Optional(Type.String()), maxNeoStacks: Type.Optional(Type.Number()), maxNeoBlocks: Type.Optional(Type.Number()), maxVisibleMoltFragments: Type.Optional(Type.Number()), allowRecursive: Type.Optional(Type.Boolean()), mode: Type.Optional(Type.String()), root: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input: { sleeveId?: string; runtimeSessionId?: string; resolveDepth?: string; maxNeoStacks?: number; maxNeoBlocks?: number; maxVisibleMoltFragments?: number; allowRecursive?: boolean; mode?: string; root?: string }) { return { content: [{ type: "text", text: JSON.stringify(resolveRuntimeSleeveGraph("0.3.0-alpha.6", "dist/plugin-entry.js", input.root ?? defaultBlockLibraryRoot(), { sleeveId: input.sleeveId, runtimeSessionId: input.runtimeSessionId, resolveDepth: input.resolveDepth as any, maxNeoStacks: input.maxNeoStacks, maxNeoBlocks: input.maxNeoBlocks, maxVisibleMoltFragments: input.maxVisibleMoltFragments, allowRecursive: Boolean(input.allowRecursive), mode: input.mode ?? 'dry_run' }), null, 2) }] }; } }, { optional: true });
+    api.registerTool({ name: "umg_envoy_runtime_compile", description: "Compile a resolved sleeve graph into a dry-run RuntimeSpecV0.", parameters: Type.Object({ sleeveId: Type.Optional(Type.String()), runtimeSessionId: Type.Optional(Type.String()), useSelectedSleeve: Type.Optional(Type.Boolean()), compileMode: Type.Optional(Type.String()), resolveDepth: Type.Optional(Type.String()), strictness: Type.Optional(Type.String()), root: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input: { sleeveId?: string; runtimeSessionId?: string; useSelectedSleeve?: boolean; compileMode?: string; resolveDepth?: string; strictness?: string; root?: string }) { return { content: [{ type: "text", text: JSON.stringify(compileRuntimeSleeve("0.3.0-alpha.6", "dist/plugin-entry.js", input.root ?? defaultBlockLibraryRoot(), { sleeveId: input.sleeveId, runtimeSessionId: input.runtimeSessionId, useSelectedSleeve: input.useSelectedSleeve !== false, compileMode: input.compileMode ?? 'dry_run', resolveDepth: input.resolveDepth as any, strictness: input.strictness as any }), null, 2) }] }; } }, { optional: true });
+    api.registerTool({ name: "umg_envoy_runtime_preview", description: "Produce a coherent dry-run runtime preview from a selected or explicit real sleeve.", parameters: Type.Object({ sleeveId: Type.Optional(Type.String()), runtimeSessionId: Type.Optional(Type.String()), previewFormat: Type.Optional(Type.String()), includeActiveStack: Type.Optional(Type.Boolean()), includeMoltMap: Type.Optional(Type.Boolean()), includeEnvelope: Type.Optional(Type.Boolean()), includeToolRequests: Type.Optional(Type.Boolean()), root: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input: { sleeveId?: string; runtimeSessionId?: string; previewFormat?: string; includeActiveStack?: boolean; includeMoltMap?: boolean; includeEnvelope?: boolean; includeToolRequests?: boolean; root?: string }) { return { content: [{ type: "text", text: JSON.stringify(previewRuntimeSleeve("0.3.0-alpha.6", "dist/plugin-entry.js", input.root ?? defaultBlockLibraryRoot(), { sleeveId: input.sleeveId, runtimeSessionId: input.runtimeSessionId, previewFormat: input.previewFormat as any, includeActiveStack: input.includeActiveStack !== false, includeMoltMap: input.includeMoltMap !== false, includeEnvelope: input.includeEnvelope !== false, includeToolRequests: input.includeToolRequests !== false }), null, 2) }] }; } }, { optional: true });
   }
 };
 
