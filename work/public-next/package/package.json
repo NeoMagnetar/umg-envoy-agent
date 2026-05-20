@@ -1,34 +1,15 @@
 {
   "name": "umg-envoy-agent",
-  "version": "0.3.0-alpha.6",
+  "version": "0.3.0-alpha.7",
   "description": "UMG Envoy Agent alpha.6 for OpenClaw with dry-run working runtime preview and real block-library tooling",
   "type": "module",
   "main": "dist/plugin-entry.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist/index.js",
-    "dist/index.d.ts",
-    "dist/plugin-entry.js",
-    "dist/plugin-entry.d.ts",
-    "dist/public-path-builder.js",
-    "dist/public-path-builder.d.ts",
-    "dist/block-library-resolver.js",
-    "dist/block-library-resolver.d.ts",
-    "dist/types.js",
-    "dist/types.d.ts",
-    "dist/umg-path-parser.js",
-    "dist/umg-path-parser.d.ts",
-    "dist/umg-path-renderer.js",
-    "dist/umg-path-renderer.d.ts",
-    "dist/umg-path-types.js",
-    "dist/umg-path-types.d.ts",
-    "dist/umg-path-validator.js",
-    "dist/umg-path-validator.d.ts",
+    "dist/**",
     "README.md",
     "openclaw.plugin.json",
     "package.json",
-    "dist/block-library-resolver.js",
-    "dist/block-library-resolver.d.ts",
     "docs",
     "public-content"
   ],
@@ -82,3 +63,4 @@
     "typescript": "^5.8.3"
   }
 }
+

@@ -220,7 +220,7 @@ function runPublicSmoke(metaUrl = import.meta.url) {
   return {
     ok: errors.length === 0,
     plugin: "umg-envoy-agent",
-    version: "0.3.0-alpha.6",
+    version: "0.3.0-alpha.7",
     compilerAdapter: "not-shipped-publicly",
     contentMode: "bundled-public",
     sampleSleeves: sleeves.length,
@@ -238,7 +238,7 @@ function statusPayload(config?: PluginConfig) {
   return {
     ok: true,
     plugin: "umg-envoy-agent",
-    version: "0.3.0-alpha.6",
+    version: "0.3.0-alpha.7",
     publicEntrypoint: "dist/plugin-entry-public.js",
     contentMode: cfg.contentMode,
     compilerMode: cfg.compilerMode,
@@ -619,3 +619,4 @@ if (process.argv.includes("--smoke")) {
 }
 
 export default entry;
+

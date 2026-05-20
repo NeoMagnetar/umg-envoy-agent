@@ -5,7 +5,7 @@ const tool = defs.find(d => d.name === 'umg_envoy_block_library_manifest_index')
 if (!tool) throw new Error('umg_envoy_block_library_manifest_index missing');
 const result = JSON.parse((await tool.execute({})).content[0].text);
 if (!result.ok) throw new Error('manifest index not ok');
-if (result.version !== '0.3.0-alpha.6') throw new Error('version drift');
+if (result.version !== '0.3.0-alpha.7') throw new Error('version drift');
 if (result.entrypoint !== 'dist/plugin-entry.js') throw new Error('entrypoint drift');
 if (result.readOnly !== true) throw new Error('readOnly drift');
 if (result.execution !== 'not_performed') throw new Error('execution drift');
@@ -28,3 +28,4 @@ if (byPath('sleeves/manifests/catalog.json')?.status !== 'PRESENT_PARSED_NORMALI
 if (result.summary.manifestCount < 4) throw new Error('manifest count too small');
 if (result.summary.totalEntryCount < 1) throw new Error('entry count too small');
 console.log(JSON.stringify({ ok: true, result }, null, 2));
+

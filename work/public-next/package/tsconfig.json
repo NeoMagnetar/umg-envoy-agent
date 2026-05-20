@@ -14,16 +14,14 @@
   },
   "include": [
     "src/index.ts",
-    "src/plugin-entry-public.ts",
+    "src/plugin-entry.ts",
+    "src/block-library-resolver.ts",
     "src/public-path-builder.ts",
     "src/types.ts",
     "src/umg-path-parser.ts",
     "src/umg-path-renderer.ts",
     "src/umg-path-types.ts",
-    "src/umg-path-validator.ts"
-  ],
-  "exclude": [
-    "src/plugin-entry.ts",
-    "src/compiler/**"
+    "src/umg-path-validator.ts",
+    "src/compiler/**/*.ts"
   ]
 }

@@ -1,6 +1,6 @@
-# UMG Envoy Agent 0.3.0-alpha.6
+# UMG Envoy Agent 0.3.0-alpha.7
 
-UMG Envoy Agent 0.3.0-alpha.6 is an OpenClaw plugin with a dry-run working runtime preview path backed by the Alpha6 real block-library tool chain.
+UMG Envoy Agent 0.3.0-alpha.7 is an OpenClaw plugin with a dry-run working runtime preview path backed by the Alpha6 real block-library tool chain.
 
 It is not a broad execution agent package. Alpha.6 is package-sync prep for the current local live runtime truth: real sleeve selection, bounded resolver flow, RuntimeSpecV0 dry-run compile, Active Stack projection, and response-envelope preview.
 
@@ -98,7 +98,7 @@ Alpha.6 still preserves strict safety boundaries:
 
 ## Install
 
-- `openclaw plugins install clawhub:umg-envoy-agent@0.3.0-alpha.6`
+- `openclaw plugins install clawhub:umg-envoy-agent@0.3.0-alpha.7`
 
 ## Build and test
 
@@ -111,3 +111,4 @@ Alpha.6 still preserves strict safety boundaries:
 ## Entrypoint
 
 - `dist/plugin-entry.js`
+
