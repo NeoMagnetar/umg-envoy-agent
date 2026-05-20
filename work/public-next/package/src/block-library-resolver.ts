@@ -1021,6 +1021,41 @@ export interface RuntimeApprovalCheckpointResumeV0 {
   trace: string[];
 }
 
+export type RuntimeApprovedAllowlistedExecutionStatus = 'EXECUTION_READY' | 'EXECUTION_SKIPPED' | 'EXECUTION_BLOCKED' | 'EXECUTION_FAILED';
+
+export interface RuntimeApprovedAllowlistedExecutionV0 {
+  executionResultId: string;
+  executionStatus: RuntimeApprovedAllowlistedExecutionStatus;
+  sourceCheckpointId: string | null;
+  sourceRuntimeSpecId: string | null;
+  sourceSleeveId: string | null;
+  sourceGatePlanId: string | null;
+  sourceRequestId: string | null;
+  requestedToolName: string | null;
+  requestedAction: string | null;
+  approvalStatus: RuntimeApprovalStatus | null;
+  executionEligible: boolean;
+  allowlisted: boolean;
+  readOnly: boolean;
+  executedAction: string | null;
+  resultSummary: string;
+  resultPayload: unknown;
+  sideEffectStatus: 'read_only_no_mutation' | 'not_performed';
+  audit: {
+    approvalVerified: boolean;
+    allowlistVerified: boolean;
+    readOnlyVerified: boolean;
+    toolExecution: 'performed' | 'not_performed';
+    triggerEvaluation: 'not_performed';
+    libraryMutation: 'not_performed';
+    packageMutation: 'not_performed';
+    filesystemMutation: 'not_performed';
+    restart: 'not_performed';
+    publish: 'not_performed';
+  };
+  trace: string[];
+}
+
 const MACHINE_LANES = [
   "AI/MANIFESTS",
   "AI/SLEEVES",
@@ -4760,6 +4795,173 @@ export function resumeRuntimeApprovalCheckpoint(
   };
 
   return result;
+}
+
+const APPROVED_ALLOWLISTED_RUNTIME_TOOLS = new Set([
+  'umg_envoy_block_library_status',
+  'umg_envoy_block_library_sleeve_graph_index',
+  'umg_envoy_runtime_preview',
+  'umg_envoy_runtime_compile',
+  'umg_envoy_block_library_manifest_index'
+]);
+
+export function executeApprovedAllowlistedRuntimeAction(
+  version: string,
+  entrypoint = 'dist/plugin-entry.js',
+  root = DEFAULT_LIBRARY_ROOT,
+  input: {
+    checkpoint?: RuntimeApprovalCheckpointV0;
+    resumeResult?: RuntimeApprovalCheckpointResumeV0;
+    runtimeSpec?: RuntimeSpecV0;
+    gatePlan?: RuntimeExecutionGatePlanV0;
+    actionArgs?: unknown;
+    mode?: 'approved_execute' | 'dry_run' | string;
+    includeTrace?: boolean;
+  }
+): RuntimeApprovedAllowlistedExecutionV0 & { ok: boolean; outputContract: { contractId: 'umg.runtime.execute_approved.allowlisted.v1'; contractStatus: 'NORMALIZED' }; errors?: Array<{ code: string; message: string }>; warnings?: string[] } {
+  const checkpoint = input.checkpoint;
+  const resumeResult = input.resumeResult;
+  const base = {
+    version,
+    entrypoint,
+    outputContract: { contractId: 'umg.runtime.execute_approved.allowlisted.v1' as const, contractStatus: 'NORMALIZED' as const }
+  };
+
+  const fail = (reason: string, resultSummary: string): RuntimeApprovedAllowlistedExecutionV0 & { ok: boolean; outputContract: { contractId: 'umg.runtime.execute_approved.allowlisted.v1'; contractStatus: 'NORMALIZED' }; errors: Array<{ code: string; message: string }>; warnings: string[] } => ({
+    ...base,
+    ok: false,
+    executionResultId: `exec_${simpleStableKey([checkpoint?.checkpointId ?? 'missing', reason])}`,
+    executionStatus: 'EXECUTION_BLOCKED',
+    sourceCheckpointId: checkpoint?.checkpointId ?? null,
+    sourceRuntimeSpecId: checkpoint?.sourceRuntimeSpecId ?? null,
+    sourceSleeveId: checkpoint?.sourceSleeveId ?? null,
+    sourceGatePlanId: checkpoint?.sourceGatePlanId ?? null,
+    sourceRequestId: checkpoint?.sourceRequestId ?? null,
+    requestedToolName: checkpoint?.requestedToolName ?? null,
+    requestedAction: checkpoint?.requestedAction ?? null,
+    approvalStatus: checkpoint?.approvalStatus ?? null,
+    executionEligible: false,
+    allowlisted: false,
+    readOnly: false,
+    executedAction: null,
+    resultSummary,
+    resultPayload: { blockedReason: reason },
+    sideEffectStatus: 'not_performed',
+    audit: {
+      approvalVerified: false,
+      allowlistVerified: false,
+      readOnlyVerified: false,
+      toolExecution: 'not_performed',
+      triggerEvaluation: 'not_performed',
+      libraryMutation: 'not_performed',
+      packageMutation: 'not_performed',
+      filesystemMutation: 'not_performed',
+      restart: 'not_performed',
+      publish: 'not_performed'
+    },
+    trace: [reason, 'execution=not_performed'],
+    errors: [{ code: reason, message: resultSummary }],
+    warnings: []
+  });
+
+  if (!checkpoint) {
+    return fail('BLOCKED_MISSING_CHECKPOINT', 'Checkpoint is required for approved allowlisted execution.');
+  }
+  if (!resumeResult) {
+    return fail('BLOCKED_INVALID_RESUME_STATE', 'Resume result is required for approved allowlisted execution.');
+  }
+  if (resumeResult.sourceCheckpointId !== checkpoint.checkpointId || resumeResult.sourceRequestId !== checkpoint.sourceRequestId) {
+    return fail('BLOCKED_INVALID_RESUME_STATE', 'Resume result does not match checkpoint identity.');
+  }
+  if (resumeResult.nextApprovalStatus !== 'APPROVED' || !resumeResult.executionEligible) {
+    return fail('BLOCKED_NOT_APPROVED', 'Checkpoint is not approved for execution.');
+  }
+  if (input.mode !== 'approved_execute') {
+    return fail('BLOCKED_POLICY', 'approved_execute mode is required for allowlisted execution.');
+  }
+
+  const requestedToolName = checkpoint.requestedToolName;
+  if (!requestedToolName || !APPROVED_ALLOWLISTED_RUNTIME_TOOLS.has(requestedToolName)) {
+    return fail('BLOCKED_NOT_ALLOWLISTED', 'Requested tool is not on the approved allowlisted read-only set.');
+  }
+
+  let resultPayload: unknown = null;
+  let executedAction: string | null = null;
+  if (requestedToolName === 'umg_envoy_block_library_status') {
+    resultPayload = getBlockLibraryStatus(version, entrypoint, root);
+    executedAction = 'block_library_status_read';
+  } else if (requestedToolName === 'umg_envoy_block_library_sleeve_graph_index') {
+    resultPayload = getBlockLibrarySleeveGraphIndex(version, entrypoint, root, {
+      sleeveId: checkpoint.sourceSleeveId ?? input.runtimeSpec?.sleeveId ?? 'neomagnetar-dynamic-persona-v1'
+    });
+    executedAction = 'sleeve_graph_index_read';
+  } else if (requestedToolName === 'umg_envoy_runtime_preview') {
+    resultPayload = previewRuntimeSleeve(version, entrypoint, root, {
+      sleeveId: checkpoint.sourceSleeveId ?? input.runtimeSpec?.sleeveId,
+      previewFormat: 'summary',
+      includeActiveStack: true,
+      includeMoltMap: true,
+      includeEnvelope: true,
+      includeToolRequests: true
+    });
+    executedAction = 'runtime_preview_regeneration';
+  } else if (requestedToolName === 'umg_envoy_runtime_compile') {
+    resultPayload = compileRuntimeSleeve(version, entrypoint, root, {
+      sleeveId: checkpoint.sourceSleeveId ?? input.runtimeSpec?.sleeveId,
+      compileMode: 'dry_run',
+      resolveDepth: 'molt_visible',
+      strictness: 'dev'
+    });
+    executedAction = 'runtime_compile_dry_run';
+  } else if (requestedToolName === 'umg_envoy_block_library_manifest_index') {
+    resultPayload = getBlockLibraryManifestIndex(version, entrypoint, root);
+    executedAction = 'manifest_index_read';
+  } else {
+    return fail('BLOCKED_UNSUPPORTED_ACTION', 'Requested tool is allowlisted in name only but has no safe direct internal executor.');
+  }
+
+  return {
+    ...base,
+    ok: true,
+    executionResultId: `exec_${simpleStableKey([checkpoint.checkpointId, resumeResult.resumeResultId, requestedToolName])}`,
+    executionStatus: 'EXECUTION_READY',
+    sourceCheckpointId: checkpoint.checkpointId,
+    sourceRuntimeSpecId: checkpoint.sourceRuntimeSpecId,
+    sourceSleeveId: checkpoint.sourceSleeveId,
+    sourceGatePlanId: checkpoint.sourceGatePlanId,
+    sourceRequestId: checkpoint.sourceRequestId,
+    requestedToolName,
+    requestedAction: checkpoint.requestedAction,
+    approvalStatus: checkpoint.approvalStatus,
+    executionEligible: true,
+    allowlisted: true,
+    readOnly: true,
+    executedAction,
+    resultSummary: `Executed approved allowlisted read-only action: ${executedAction}`,
+    resultPayload,
+    sideEffectStatus: 'read_only_no_mutation',
+    audit: {
+      approvalVerified: true,
+      allowlistVerified: true,
+      readOnlyVerified: true,
+      toolExecution: 'performed',
+      triggerEvaluation: 'not_performed',
+      libraryMutation: 'not_performed',
+      packageMutation: 'not_performed',
+      filesystemMutation: 'not_performed',
+      restart: 'not_performed',
+      publish: 'not_performed'
+    },
+    trace: [
+      `requestedToolName=${requestedToolName}`,
+      `executedAction=${executedAction}`,
+      'approvalVerified=true',
+      'allowlistVerified=true',
+      'readOnlyVerified=true'
+    ],
+    warnings: [],
+    errors: []
+  };
 }
 
 export function previewRuntimeSleeve(
