@@ -63,7 +63,13 @@ export type BlockLibraryHoldCode =
   | "HOLD_ACTIVE_STACK_SOURCE_NOT_NORMALIZED"
   | "HOLD_ACTIVE_STACK_PROJECTION_UNAVAILABLE"
   | "HOLD_RESPONSE_ENVELOPE_ACTIVE_STACK_PROJECTION_FAILED"
-  | "HOLD_RESPONSE_ENVELOPE_ACTIVE_STACK_PROJECTION_NOT_NORMALIZED";
+  | "HOLD_RESPONSE_ENVELOPE_ACTIVE_STACK_PROJECTION_NOT_NORMALIZED"
+  | "HOLD_SLEEVE_GRAPH_INDEX_PROJECTION_FORMAT_UNSUPPORTED"
+  | "HOLD_SLEEVE_GRAPH_INDEX_SOURCE_CATALOG_UNSUPPORTED"
+  | "HOLD_SLEEVE_GRAPH_INDEX_SLEEVE_NOT_FOUND"
+  | "HOLD_SLEEVE_GRAPH_INDEX_CATALOG_NOT_FOUND"
+  | "HOLD_SLEEVE_GRAPH_INDEX_CATALOG_PARSE_FAILED"
+  | "HOLD_SLEEVE_GRAPH_INDEX_UNAVAILABLE";
 
 export interface BlockLibraryLaneStatus {
   lane: string;
@@ -721,6 +727,92 @@ export interface BlockLibraryActiveStackProjectionResult {
     directSource: "not_enabled";
     libraryMutation: "not_performed";
   };
+  warnings: string[];
+  errors: Array<{ code: BlockLibraryHoldCode; message: string }>;
+}
+
+export type BlockLibrarySleeveGraphIndexStatus =
+  | "SLEEVE_GRAPH_INDEX_READY"
+  | "SLEEVE_GRAPH_INDEX_READY_WITH_WARNINGS"
+  | "SLEEVE_GRAPH_INDEX_EMPTY"
+  | "SLEEVE_GRAPH_INDEX_DENIED"
+  | "SLEEVE_GRAPH_INDEX_UNAVAILABLE";
+
+export interface BlockLibrarySleeveGraphIndexResult {
+  ok: boolean;
+  version: string;
+  entrypoint: string;
+  mode: "real_block_library_sleeve_graph_index";
+  outputContract: {
+    contractId: "umg.sleeve_graph.index.v1";
+    contractStatus: "NORMALIZED";
+    sourceMode: "read_only_reference_index";
+    activation: false;
+    recursiveLoad: false;
+    fullLibraryScan: false;
+    payloadLoading: "catalog_or_manifest_only";
+  };
+  readOnly: true;
+  execution: "not_performed";
+  directSource: "not_enabled";
+  query: {
+    sleeveId: string | null;
+    sourceCatalog: "auto" | "sleeves_catalog" | "ai_manifest";
+    projectionFormat: "nl" | "json" | "both";
+    includeReferenceSummary: boolean;
+    includePolicySummary: boolean;
+    includeRaw: boolean;
+  };
+  sleeveGraphIndex: {
+    indexStatus: BlockLibrarySleeveGraphIndexStatus;
+    indexKind: "read_only_sleeve_reference_index";
+    sourceCatalog: "auto" | "sleeves_catalog" | "ai_manifest";
+    sleeveCount: number;
+    focusedSleeveId: string | null;
+    sleeves: Array<{
+      sleeveId: string;
+      title: string | null;
+      sourcePath: string | null;
+      catalogPath: string | null;
+      policy: "MACHINE_LOADABLE_CANDIDATE" | "PUBLIC_CURATED" | "REFERENCE_ONLY" | "FORBIDDEN" | "OUTSIDE_ALLOWLIST" | "UNKNOWN";
+      activationState: "not_active";
+      graphStatus: "INDEXED_REFERENCE_ONLY";
+      neoStackRefs: string[];
+      neoBlockRefs: string[];
+      moltBlockRefs: string[];
+      referenceSummary: {
+        neoStackRefCount: number;
+        neoBlockRefCount: number;
+        moltBlockRefCount: number;
+        resolvedRefs: number;
+        loadedRefs: number;
+        unresolvedRefs: number;
+        forbiddenRefs: number;
+        outsideAllowlistRefs: number;
+      };
+      limitations: string[];
+    }>;
+    referenceSummary: {
+      declaredSleeves: number;
+      declaredNeoStacks: number;
+      declaredNeoBlocks: number;
+      declaredMoltBlocks: number;
+      resolvedRefs: number;
+      loadedRefs: number;
+      unresolvedRefs: number;
+      forbiddenRefs: number;
+      outsideAllowlistRefs: number;
+    };
+    policySummary: {
+      machineLoadableLanes: string[];
+      publicCuratedLanes: string[];
+      referenceOnlyLanes: string[];
+      forbiddenLanes: string[];
+    };
+    limitations: string[];
+  };
+  nlProjection: string;
+  audit: Record<string, unknown>;
   warnings: string[];
   errors: Array<{ code: BlockLibraryHoldCode; message: string }>;
 }
@@ -3017,6 +3109,292 @@ export function getBlockLibraryMoltblockVisibleExtract(
       limitations: ['visible_molt_only', 'single_neoblock_source', 'no_external_moltblock_loading', 'no_recursive_loading', 'no_trigger_evaluation', 'no_execution']
     },
     warnings: inspected.warnings,
+    errors: []
+  };
+}
+
+function normalizeSleevePolicy(sourcePath: string | null, sourceCatalog: "auto" | "sleeves_catalog" | "ai_manifest"): "MACHINE_LOADABLE_CANDIDATE" | "PUBLIC_CURATED" | "REFERENCE_ONLY" | "FORBIDDEN" | "OUTSIDE_ALLOWLIST" | "UNKNOWN" {
+  if (!sourcePath) return "UNKNOWN";
+  const normalized = normalizeRelativePath(sourcePath);
+  if (isForbiddenTarget(normalized)) return "FORBIDDEN";
+  if (normalized.startsWith('AI/SLEEVES/')) return "MACHINE_LOADABLE_CANDIDATE";
+  if (normalized.startsWith('sleeves/')) return sourceCatalog === 'ai_manifest' ? "REFERENCE_ONLY" : "PUBLIC_CURATED";
+  if (isAllowedTarget(normalized)) return "MACHINE_LOADABLE_CANDIDATE";
+  return "OUTSIDE_ALLOWLIST";
+}
+
+function normalizeSleeveCatalogEntries(root: string, sourceCatalog: "auto" | "sleeves_catalog" | "ai_manifest") {
+  const catalogPath = sourceCatalog === 'ai_manifest'
+    ? path.join(root, 'AI', 'MANIFESTS', 'sleeve-catalog.json')
+    : path.join(root, 'sleeves', 'manifests', 'catalog.json');
+  if (!safeExists(catalogPath)) {
+    return { ok: false as const, code: 'HOLD_SLEEVE_GRAPH_INDEX_CATALOG_NOT_FOUND' as const, message: `Catalog missing: ${catalogPath}`, entries: [] as any[], catalogPath: normalizeRelativePath(path.relative(root, catalogPath)) };
+  }
+  try {
+    const parsed = readJsonFile(catalogPath);
+    if (!parsed || typeof parsed !== 'object' || !Array.isArray((parsed as any).sleeves)) {
+      return { ok: false as const, code: 'HOLD_SLEEVE_GRAPH_INDEX_CATALOG_PARSE_FAILED' as const, message: `Catalog shape unsupported: ${catalogPath}`, entries: [] as any[], catalogPath: normalizeRelativePath(path.relative(root, catalogPath)) };
+    }
+    const catalogRel = normalizeRelativePath(path.relative(root, catalogPath));
+    const entries = ((parsed as any).sleeves as Array<Record<string, unknown>>).map((entry) => {
+      const sleeveId = typeof entry.id === 'string' ? entry.id : null;
+      const title = typeof entry.name === 'string' ? entry.name : (typeof entry.title === 'string' ? entry.title : null);
+      const rawSource = typeof entry.source_path === 'string' ? entry.source_path : (typeof entry.path === 'string' ? entry.path : null);
+      const sourcePath = rawSource ? normalizeRelativePath(path.join(path.dirname(catalogRel), rawSource)) : null;
+      return { sleeveId, title, sourcePath, catalogPath: catalogRel, raw: entry };
+    }).filter((entry) => Boolean(entry.sleeveId));
+    return { ok: true as const, entries, catalogPath: catalogRel };
+  } catch (error) {
+    return { ok: false as const, code: 'HOLD_SLEEVE_GRAPH_INDEX_CATALOG_PARSE_FAILED' as const, message: String(error), entries: [] as any[], catalogPath: normalizeRelativePath(path.relative(root, catalogPath)) };
+  }
+}
+
+function collectSleeveRefs(root: string, sourcePath: string | null) {
+  const empty = { neoStackRefs: [] as string[], neoBlockRefs: [] as string[], moltBlockRefs: [] as string[], unresolvedRefs: 0, forbiddenRefs: 0, outsideAllowlistRefs: 0, warnings: [] as string[] };
+  if (!sourcePath) return empty;
+  const normalized = normalizeRelativePath(sourcePath);
+  if (isForbiddenTarget(normalized)) return { ...empty, forbiddenRefs: 1, warnings: ['forbidden_source_path'] };
+  if (!isAllowedTarget(normalized)) return { ...empty, outsideAllowlistRefs: 1, warnings: ['outside_allowlist_source_path'] };
+  const full = path.join(root, ...normalized.split('/'));
+  if (!safeExists(full)) return { ...empty, unresolvedRefs: 1, warnings: ['source_path_missing_on_disk'] };
+  try {
+    const parsed = readJsonFile(full);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return { ...empty, unresolvedRefs: 1, warnings: ['source_payload_shape_unknown'] };
+    const obj = parsed as Record<string, unknown>;
+    const blockRefs = Array.isArray(obj.block_refs) ? obj.block_refs : [];
+    const neoBlockRefs = blockRefs.map((item) => typeof item === 'string' ? item : (item && typeof item === 'object' && typeof (item as any).block_id === 'string' ? (item as any).block_id : null)).filter((v): v is string => Boolean(v));
+    const neoStackRefs = Array.isArray(obj.neostack_refs) ? obj.neostack_refs.map((item) => typeof item === 'string' ? item : (item && typeof item === 'object' && typeof (item as any).stack_id === 'string' ? (item as any).stack_id : null)).filter((v): v is string => Boolean(v)) : [];
+    const moltBlockRefs = Array.isArray(obj.molt_refs) ? obj.molt_refs.map((item) => typeof item === 'string' ? item : (item && typeof item === 'object' && typeof (item as any).molt_id === 'string' ? (item as any).molt_id : null)).filter((v): v is string => Boolean(v)) : [];
+    return { neoStackRefs, neoBlockRefs, moltBlockRefs, unresolvedRefs: 0, forbiddenRefs: 0, outsideAllowlistRefs: 0, warnings: [] as string[] };
+  } catch {
+    return { ...empty, unresolvedRefs: 1, warnings: ['source_payload_parse_failed'] };
+  }
+}
+
+export function getBlockLibrarySleeveGraphIndex(
+  version: string,
+  entrypoint = 'dist/plugin-entry.js',
+  root = DEFAULT_LIBRARY_ROOT,
+  input: {
+    sleeveId?: string;
+    sourceCatalog?: 'auto' | 'sleeves_catalog' | 'ai_manifest' | string;
+    projectionFormat?: 'nl' | 'json' | 'both' | string;
+    includeReferenceSummary?: boolean;
+    includePolicySummary?: boolean;
+    includeRaw?: boolean;
+  } = {}
+): BlockLibrarySleeveGraphIndexResult {
+  const requestedSourceCatalog = input.sourceCatalog ?? 'auto';
+  const projectionFormat = input.projectionFormat ?? 'both';
+  const includeReferenceSummary = input.includeReferenceSummary !== false;
+  const includePolicySummary = input.includePolicySummary !== false;
+  const base = {
+    version,
+    entrypoint,
+    mode: 'real_block_library_sleeve_graph_index' as const,
+    outputContract: {
+      contractId: 'umg.sleeve_graph.index.v1' as const,
+      contractStatus: 'NORMALIZED' as const,
+      sourceMode: 'read_only_reference_index' as const,
+      activation: false as const,
+      recursiveLoad: false as const,
+      fullLibraryScan: false as const,
+      payloadLoading: 'catalog_or_manifest_only' as const
+    },
+    readOnly: true as const,
+    execution: 'not_performed' as const,
+    directSource: 'not_enabled' as const,
+    query: {
+      sleeveId: input.sleeveId ?? null,
+      sourceCatalog: (requestedSourceCatalog === 'auto' || requestedSourceCatalog === 'sleeves_catalog' || requestedSourceCatalog === 'ai_manifest' ? requestedSourceCatalog : 'auto') as 'auto' | 'sleeves_catalog' | 'ai_manifest',
+      projectionFormat: (projectionFormat === 'nl' || projectionFormat === 'json' || projectionFormat === 'both' ? projectionFormat : 'both') as 'nl' | 'json' | 'both',
+      includeReferenceSummary,
+      includePolicySummary,
+      includeRaw: Boolean(input.includeRaw)
+    },
+    sleeveGraphIndex: {
+      indexStatus: 'SLEEVE_GRAPH_INDEX_DENIED' as BlockLibrarySleeveGraphIndexStatus,
+      indexKind: 'read_only_sleeve_reference_index' as const,
+      sourceCatalog: (requestedSourceCatalog === 'auto' || requestedSourceCatalog === 'sleeves_catalog' || requestedSourceCatalog === 'ai_manifest' ? requestedSourceCatalog : 'auto') as 'auto' | 'sleeves_catalog' | 'ai_manifest',
+      sleeveCount: 0,
+      focusedSleeveId: input.sleeveId ?? null,
+      sleeves: [],
+      referenceSummary: {
+        declaredSleeves: 0,
+        declaredNeoStacks: 0,
+        declaredNeoBlocks: 0,
+        declaredMoltBlocks: 0,
+        resolvedRefs: 0,
+        loadedRefs: 0,
+        unresolvedRefs: 0,
+        forbiddenRefs: 0,
+        outsideAllowlistRefs: 0
+      },
+      policySummary: {
+        machineLoadableLanes: ['AI/SLEEVES'],
+        publicCuratedLanes: ['sleeves', 'sleeves/manifests'],
+        referenceOnlyLanes: ['AI/MANIFESTS/sleeve-catalog.json'],
+        forbiddenLanes: ['archive', 'Resleever', 'HUMAN']
+      },
+      limitations: [
+        'index_only',
+        'no_sleeve_activation',
+        'no_graph_traversal',
+        'no_neostack_payload_loading',
+        'no_neoblock_recursive_loading',
+        'no_external_molt_block_loading',
+        'no_execution'
+      ]
+    },
+    nlProjection: '',
+    audit: {
+      sleeveActivation: 'not_performed',
+      activeSleeveMutation: 'not_performed',
+      neoStackPayloadLoading: 'not_performed',
+      neoBlockRecursiveLoading: 'not_performed',
+      externalMoltBlockFileLoading: 'not_performed',
+      graphTraversal: 'not_performed',
+      recursiveFullLibraryLoad: 'not_performed',
+      fullLibraryScan: 'not_performed',
+      triggerEvaluation: 'not_performed',
+      libraryMutation: 'not_performed',
+      publish: 'not_performed',
+      package: 'not_performed'
+    } as Record<string, unknown>,
+    warnings: [] as string[],
+    errors: [] as Array<{ code: BlockLibraryHoldCode; message: string }>
+  };
+
+  if (input.includeRaw) {
+    return { ...base, ok: false, errors: [{ code: 'HOLD_RAW_TARGET_DUMP_NOT_SUPPORTED', message: 'includeRaw=true is not supported.' }] };
+  }
+  if (!['auto', 'sleeves_catalog', 'ai_manifest'].includes(requestedSourceCatalog)) {
+    return { ...base, ok: false, errors: [{ code: 'HOLD_SLEEVE_GRAPH_INDEX_SOURCE_CATALOG_UNSUPPORTED', message: `Unsupported sourceCatalog: ${requestedSourceCatalog}` }] };
+  }
+  if (!['nl', 'json', 'both'].includes(projectionFormat)) {
+    return { ...base, ok: false, errors: [{ code: 'HOLD_SLEEVE_GRAPH_INDEX_PROJECTION_FORMAT_UNSUPPORTED', message: `Unsupported projectionFormat: ${projectionFormat}` }] };
+  }
+
+  const resolvedCatalog: 'sleeves_catalog' | 'ai_manifest' = requestedSourceCatalog === 'ai_manifest' ? 'ai_manifest' : 'sleeves_catalog';
+  const catalog = normalizeSleeveCatalogEntries(path.resolve(root), resolvedCatalog);
+  if (!catalog.ok) {
+    return { ...base, ok: false, sleeveGraphIndex: { ...base.sleeveGraphIndex, sourceCatalog: resolvedCatalog, indexStatus: 'SLEEVE_GRAPH_INDEX_UNAVAILABLE' }, errors: [{ code: catalog.code, message: catalog.message }] };
+  }
+
+  let visibleEntries = catalog.entries.filter((entry) => normalizeSleevePolicy(entry.sourcePath, resolvedCatalog) !== 'FORBIDDEN');
+  if (input.sleeveId) {
+    visibleEntries = visibleEntries.filter((entry) => entry.sleeveId === input.sleeveId);
+    if (!visibleEntries.length) {
+      return { ...base, ok: false, sleeveGraphIndex: { ...base.sleeveGraphIndex, sourceCatalog: resolvedCatalog, indexStatus: 'SLEEVE_GRAPH_INDEX_DENIED' }, errors: [{ code: 'HOLD_SLEEVE_GRAPH_INDEX_SLEEVE_NOT_FOUND', message: `Sleeve not found: ${input.sleeveId}` }] };
+    }
+  }
+
+  const sleeves = visibleEntries.map((entry) => {
+    const refs = collectSleeveRefs(path.resolve(root), entry.sourcePath);
+    const policy = normalizeSleevePolicy(entry.sourcePath, resolvedCatalog);
+    return {
+      sleeveId: entry.sleeveId as string,
+      title: entry.title,
+      sourcePath: entry.sourcePath,
+      catalogPath: entry.catalogPath,
+      policy,
+      activationState: 'not_active' as const,
+      graphStatus: 'INDEXED_REFERENCE_ONLY' as const,
+      neoStackRefs: refs.neoStackRefs,
+      neoBlockRefs: refs.neoBlockRefs,
+      moltBlockRefs: refs.moltBlockRefs,
+      referenceSummary: {
+        neoStackRefCount: refs.neoStackRefs.length,
+        neoBlockRefCount: refs.neoBlockRefs.length,
+        moltBlockRefCount: refs.moltBlockRefs.length,
+        resolvedRefs: 0,
+        loadedRefs: 0,
+        unresolvedRefs: refs.unresolvedRefs,
+        forbiddenRefs: refs.forbiddenRefs,
+        outsideAllowlistRefs: refs.outsideAllowlistRefs
+      },
+      limitations: ['not_activated', 'payload_not_recursively_loaded', 'references_counted_only']
+    };
+  });
+
+  const declaredNeoStacks = sleeves.reduce((sum, sleeve) => sum + sleeve.referenceSummary.neoStackRefCount, 0);
+  const declaredNeoBlocks = sleeves.reduce((sum, sleeve) => sum + sleeve.referenceSummary.neoBlockRefCount, 0);
+  const declaredMoltBlocks = sleeves.reduce((sum, sleeve) => sum + sleeve.referenceSummary.moltBlockRefCount, 0);
+  const unresolvedRefs = sleeves.reduce((sum, sleeve) => sum + sleeve.referenceSummary.unresolvedRefs, 0);
+  const forbiddenRefs = sleeves.reduce((sum, sleeve) => sum + sleeve.referenceSummary.forbiddenRefs, 0);
+  const outsideAllowlistRefs = sleeves.reduce((sum, sleeve) => sum + sleeve.referenceSummary.outsideAllowlistRefs, 0);
+  const warnings: string[] = [];
+  if (unresolvedRefs > 0 || forbiddenRefs > 0 || outsideAllowlistRefs > 0) warnings.push('indexed sleeves contain unresolved or blocked references');
+  const indexStatus: BlockLibrarySleeveGraphIndexStatus = sleeves.length === 0
+    ? 'SLEEVE_GRAPH_INDEX_EMPTY'
+    : (warnings.length ? 'SLEEVE_GRAPH_INDEX_READY_WITH_WARNINGS' : 'SLEEVE_GRAPH_INDEX_READY');
+
+  const nlLines = [
+    'Sleeve Graph Index:',
+    `- Index Status: ${indexStatus}`,
+    `- Source Catalog: ${resolvedCatalog}`,
+    `- Sleeve Count: ${sleeves.length}`,
+    `- Focused Sleeve: ${input.sleeveId ?? 'n/a'}`,
+    '- Activation: false',
+    '- Recursive Load: false',
+    '- Full Library Scan: false',
+    `- NeoStack References: ${declaredNeoStacks}`,
+    `- NeoBlock References: ${declaredNeoBlocks}`,
+    `- MOLT Block References: ${declaredMoltBlocks}`,
+    '- Resolved Refs: 0',
+    '- Loaded Refs: 0',
+    `- Unresolved Refs: ${unresolvedRefs}`,
+    `- Forbidden Refs: ${forbiddenRefs}`,
+    `- Outside-Allowlist Refs: ${outsideAllowlistRefs}`,
+    '- Boundary: index_only; no_sleeve_activation; no_graph_traversal; no_neostack_payload_loading; no_neoblock_recursive_loading; no_external_molt_block_loading; no_execution',
+    '',
+    'Sleeves:'
+  ];
+  const visibleForNl = sleeves.slice(0, 20);
+  for (const sleeve of visibleForNl) {
+    nlLines.push(`- ${sleeve.sleeveId} | policy=${sleeve.policy} | graphStatus=${sleeve.graphStatus} | neostacks=${sleeve.referenceSummary.neoStackRefCount} | neoblocks=${sleeve.referenceSummary.neoBlockRefCount} | moltblocks=${sleeve.referenceSummary.moltBlockRefCount}`);
+  }
+  if (sleeves.length > 20) nlLines.push('- ... truncated; additional sleeves omitted from NL projection');
+
+  return {
+    ...base,
+    ok: true,
+    sleeveGraphIndex: {
+      indexStatus,
+      indexKind: 'read_only_sleeve_reference_index',
+      sourceCatalog: resolvedCatalog,
+      sleeveCount: sleeves.length,
+      focusedSleeveId: input.sleeveId ?? null,
+      sleeves,
+      referenceSummary: {
+        declaredSleeves: sleeves.length,
+        declaredNeoStacks: declaredNeoStacks,
+        declaredNeoBlocks: declaredNeoBlocks,
+        declaredMoltBlocks: declaredMoltBlocks,
+        resolvedRefs: 0,
+        loadedRefs: 0,
+        unresolvedRefs,
+        forbiddenRefs,
+        outsideAllowlistRefs
+      },
+      policySummary: includePolicySummary ? {
+        machineLoadableLanes: ['AI/SLEEVES'],
+        publicCuratedLanes: ['sleeves', 'sleeves/manifests'],
+        referenceOnlyLanes: ['AI/MANIFESTS/sleeve-catalog.json'],
+        forbiddenLanes: ['archive', 'Resleever', 'HUMAN']
+      } : { machineLoadableLanes: [], publicCuratedLanes: [], referenceOnlyLanes: [], forbiddenLanes: [] },
+      limitations: [
+        'index_only',
+        'no_sleeve_activation',
+        'no_graph_traversal',
+        'no_neostack_payload_loading',
+        'no_neoblock_recursive_loading',
+        'no_external_molt_block_loading',
+        'no_execution'
+      ]
+    },
+    nlProjection: (projectionFormat === 'nl' || projectionFormat === 'both') ? nlLines.join('\n') : '',
+    warnings,
     errors: []
   };
 }
