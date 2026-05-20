@@ -941,6 +941,43 @@ export interface RuntimeExecutionGatePlanV0 {
   trace: string[];
 }
 
+export type RuntimeApprovalCheckpointStatus = 'CHECKPOINT_CREATED' | 'CHECKPOINT_HELD' | 'CHECKPOINT_FAILED';
+export type RuntimeApprovalStatus = 'WAITING_FOR_APPROVAL' | 'APPROVED' | 'DENIED' | 'EDIT_REQUESTED' | 'EXPIRED' | 'DRY_RUN_ONLY';
+export type RuntimeCheckpointCreateStatus = 'CHECKPOINT_CREATE_READY' | 'CHECKPOINT_CREATE_PARTIAL' | 'CHECKPOINT_CREATE_HELD' | 'CHECKPOINT_CREATE_FAILED';
+
+export interface RuntimeApprovalCheckpointV0 {
+  checkpointId: string;
+  checkpointStatus: RuntimeApprovalCheckpointStatus;
+  sourceRuntimeSpecId: string | null;
+  sourceSleeveId: string | null;
+  sourceGatePlanId: string | null;
+  sourceRequestId: string;
+  requestedToolName: string | null;
+  requestedAction: string;
+  argsPreview: string;
+  riskLevel: RuntimeToolRequestRiskLevel;
+  approvalRequired: true;
+  approvalStatus: RuntimeApprovalStatus;
+  allowedDecisions: Array<'approve' | 'deny' | 'edit' | 'dry_run_only'>;
+  idempotencyKey: string;
+  resumeToken: string;
+  createdAt: string;
+  expiresAt: string | null;
+  executionStatus: 'not_performed';
+  audit: {
+    execution: 'not_performed';
+    toolExecution: 'not_performed';
+    approvalCheckpointCreated: true;
+    approvalCheckpointPersistence: 'not_persisted';
+    triggerEvaluation: 'not_performed';
+    libraryMutation: 'not_performed';
+    packageMutation: 'not_performed';
+    restart: 'not_performed';
+    publish: 'not_performed';
+  };
+  trace: string[];
+}
+
 const MACHINE_LANES = [
   "AI/MANIFESTS",
   "AI/SLEEVES",
@@ -4303,6 +4340,194 @@ export function createRuntimeExecutionGatePlan(
     ],
     warnings: classificationResult?.warnings ?? [],
     errors: classificationResult?.errors ?? []
+  };
+}
+
+function simpleStableKey(parts: Array<string | null | undefined>): string {
+  const text = parts.map((part) => part ?? '').join('|');
+  let hash = 0;
+  for (let i = 0; i < text.length; i += 1) {
+    hash = ((hash << 5) - hash + text.charCodeAt(i)) | 0;
+  }
+  return Math.abs(hash).toString(36);
+}
+
+export function createRuntimeApprovalCheckpoints(
+  version: string,
+  entrypoint = 'dist/plugin-entry.js',
+  root = DEFAULT_LIBRARY_ROOT,
+  input: {
+    sleeveId?: string;
+    runtimeSpec?: RuntimeSpecV0;
+    classifications?: RuntimeToolRequestClassificationV0[];
+    gatePlan?: RuntimeExecutionGatePlanV0;
+    createForRequestIds?: string[];
+    mode?: 'checkpoint_create' | 'dry_run' | string;
+    includeTrace?: boolean;
+    storageMode?: 'returned_only' | string;
+  } = {}
+) {
+  let gatePlan = input.gatePlan ?? null;
+  let gatePlanResult = null as ReturnType<typeof createRuntimeExecutionGatePlan> | null;
+  if (!gatePlan) {
+    gatePlanResult = createRuntimeExecutionGatePlan(version, entrypoint, root, {
+      sleeveId: input.sleeveId,
+      runtimeSpec: input.runtimeSpec,
+      classifications: input.classifications,
+      compileIfMissing: true,
+      classifyIfMissing: true,
+      mode: 'plan_only',
+      includeTrace: input.includeTrace !== false,
+      includeCheckpointPreview: true
+    });
+    if (gatePlanResult.ok) {
+      gatePlan = gatePlanResult as RuntimeExecutionGatePlanV0 & { [key: string]: unknown };
+    }
+  }
+
+  const base = {
+    version,
+    entrypoint,
+    mode: 'runtime_approval_checkpoint_create' as const,
+    outputContract: { contractId: 'umg.runtime.approval_checkpoint.create.v1' as const, contractStatus: 'NORMALIZED' as const },
+    executionStatus: 'not_performed' as const,
+    checkpointPersistence: 'not_persisted' as const
+  };
+
+  if (!gatePlan) {
+    return {
+      ...base,
+      ok: false,
+      checkpointCreateStatus: 'CHECKPOINT_CREATE_HELD' as const,
+      sourceRuntimeSpecId: input.runtimeSpec?.runtimeSpecId ?? null,
+      sourceSleeveId: input.runtimeSpec?.sleeveId ?? input.sleeveId ?? null,
+      sourceGatePlanId: null,
+      checkpointCount: 0,
+      checkpoints: [],
+      skippedActionCount: 0,
+      skippedActions: [],
+      audit: {
+        execution: 'not_performed' as const,
+        toolExecution: 'not_performed' as const,
+        approvalCheckpointCreated: false,
+        approvalCheckpointPersistence: 'not_persisted' as const,
+        triggerEvaluation: 'not_performed' as const,
+        libraryMutation: 'not_performed' as const,
+        packageMutation: 'not_performed' as const,
+        restart: 'not_performed' as const,
+        publish: 'not_performed' as const
+      },
+      trace: ['gatePlan_missing', 'execution=not_performed'],
+      warnings: gatePlanResult?.warnings ?? [],
+      errors: gatePlanResult?.errors ?? [{ code: 'GATE_PLAN_REQUIRED', message: 'Gate plan is required to create approval checkpoints.' }]
+    };
+  }
+
+  const requestFilter = input.createForRequestIds ? new Set(input.createForRequestIds) : null;
+  const selectedActions = gatePlan.plannedActions.filter((action) => !requestFilter || requestFilter.has(action.requestId));
+  const checkpoints: RuntimeApprovalCheckpointV0[] = [];
+  const skippedActions: Array<{ requestId: string; requestedToolName: string | null; requestedAction: string; skipReason: string }> = [];
+  const seen = new Set<string>();
+  const createdAt = new Date().toISOString();
+
+  for (const action of selectedActions) {
+    if (action.gateDecision !== 'require_approval') {
+      skippedActions.push({
+        requestId: action.requestId,
+        requestedToolName: action.requestedToolName,
+        requestedAction: action.requestedAction,
+        skipReason: action.gateDecision === 'allow_read_only' || action.gateDecision === 'metadata_only' || action.gateDecision === 'preview_only' || action.gateDecision === 'dry_run_only'
+          ? 'no_checkpoint_required'
+          : 'not_applicable'
+      });
+      continue;
+    }
+
+    const idempotencyKey = simpleStableKey([
+      gatePlan.sourceRuntimeSpecId,
+      gatePlan.sourceSleeveId,
+      gatePlan.gatePlanId,
+      action.requestId,
+      action.requestedToolName,
+      action.requestedAction,
+      action.decisionReason
+    ]);
+    if (seen.has(idempotencyKey)) {
+      continue;
+    }
+    seen.add(idempotencyKey);
+
+    checkpoints.push({
+      checkpointId: `ckpt_${idempotencyKey}`,
+      checkpointStatus: 'CHECKPOINT_CREATED',
+      sourceRuntimeSpecId: gatePlan.sourceRuntimeSpecId,
+      sourceSleeveId: gatePlan.sourceSleeveId,
+      sourceGatePlanId: gatePlan.gatePlanId,
+      sourceRequestId: action.requestId,
+      requestedToolName: action.requestedToolName,
+      requestedAction: action.requestedAction,
+      argsPreview: action.decisionReason,
+      riskLevel: action.riskLevel,
+      approvalRequired: true,
+      approvalStatus: 'WAITING_FOR_APPROVAL',
+      allowedDecisions: ['approve', 'deny', 'edit', 'dry_run_only'],
+      idempotencyKey,
+      resumeToken: `resume_${idempotencyKey}`,
+      createdAt,
+      expiresAt: null,
+      executionStatus: 'not_performed',
+      audit: {
+        execution: 'not_performed',
+        toolExecution: 'not_performed',
+        approvalCheckpointCreated: true,
+        approvalCheckpointPersistence: 'not_persisted',
+        triggerEvaluation: 'not_performed',
+        libraryMutation: 'not_performed',
+        packageMutation: 'not_performed',
+        restart: 'not_performed',
+        publish: 'not_performed'
+      },
+      trace: [...action.trace, `idempotencyKey=${idempotencyKey}`, 'approvalStatus=WAITING_FOR_APPROVAL', 'checkpointPersistence=not_persisted']
+    });
+  }
+
+  const checkpointCreateStatus: RuntimeCheckpointCreateStatus = checkpoints.length === 0
+    ? 'CHECKPOINT_CREATE_READY'
+    : skippedActions.length > 0
+      ? 'CHECKPOINT_CREATE_PARTIAL'
+      : 'CHECKPOINT_CREATE_READY';
+
+  return {
+    ...base,
+    ok: true,
+    checkpointCreateStatus,
+    sourceRuntimeSpecId: gatePlan.sourceRuntimeSpecId,
+    sourceSleeveId: gatePlan.sourceSleeveId,
+    sourceGatePlanId: gatePlan.gatePlanId,
+    checkpointCount: checkpoints.length,
+    checkpoints: input.includeTrace === false ? checkpoints.map(({ trace, ...rest }) => ({ ...rest, trace: [] })) : checkpoints,
+    skippedActionCount: skippedActions.length,
+    skippedActions,
+    audit: {
+      execution: 'not_performed' as const,
+      toolExecution: 'not_performed' as const,
+      approvalCheckpointCreated: checkpoints.length > 0,
+      approvalCheckpointPersistence: 'not_persisted' as const,
+      triggerEvaluation: 'not_performed' as const,
+      libraryMutation: 'not_performed' as const,
+      packageMutation: 'not_performed' as const,
+      restart: 'not_performed' as const,
+      publish: 'not_performed' as const
+    },
+    trace: [
+      `mode=${input.mode ?? 'checkpoint_create'}`,
+      `storageMode=${input.storageMode ?? 'returned_only'}`,
+      `checkpointCount=${checkpoints.length}`,
+      `skippedActionCount=${skippedActions.length}`,
+      'execution=not_performed'
+    ],
+    warnings: gatePlanResult?.warnings ?? [],
+    errors: gatePlanResult?.errors ?? []
   };
 }
 
