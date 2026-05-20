@@ -1100,6 +1100,41 @@ export interface RuntimeExecutionChainE2EApprovedReadOnlyV0 {
   trace: string[];
 }
 
+export type RuntimeActiveSleeveInspectorStatus = 'INSPECTOR_READY' | 'INSPECTOR_PARTIAL' | 'INSPECTOR_HELD' | 'INSPECTOR_FAILED';
+
+export interface RuntimeActiveSleeveIrMatrixEnvelopeInspectV0 {
+  inspectorRunId: string;
+  inspectorStatus: RuntimeActiveSleeveInspectorStatus;
+  sourceSleeveId: string | null;
+  activeSleeve: unknown;
+  activeNeoStacks: unknown[];
+  activeNeoBlocks: unknown[];
+  activeMoltBlocks: Record<string, unknown[]>;
+  runtimeSpec: unknown;
+  activeStackProjection: unknown;
+  moltMapProjection: unknown;
+  irMatrixProjection: unknown;
+  responseEnvelopePreview: unknown;
+  toolRequestClassification: unknown;
+  executionGatePlan: unknown;
+  approvalCheckpointState: unknown;
+  approvedExecutionState: unknown;
+  executionStatus: 'not_performed';
+  warnings: unknown[];
+  errors: unknown[];
+  audit: {
+    execution: 'not_performed';
+    toolExecution: 'not_performed';
+    triggerEvaluation: 'not_performed';
+    libraryMutation: 'not_performed';
+    packageMutation: 'not_performed';
+    filesystemMutation: 'not_performed';
+    restart: 'not_performed';
+    publish: 'not_performed';
+  };
+  trace: string[];
+}
+
 const MACHINE_LANES = [
   "AI/MANIFESTS",
   "AI/SLEEVES",
@@ -5264,6 +5299,208 @@ export function runRuntimeExecutionChainE2EApprovedReadOnly(
     ],
     warnings: [],
     errors: executionResult.errors ?? []
+  };
+}
+
+export function inspectRuntimeActiveSleeveIrMatrixEnvelope(
+  version: string,
+  entrypoint = 'dist/plugin-entry.js',
+  root = DEFAULT_LIBRARY_ROOT,
+  input: {
+    sleeveId?: string;
+    includeNeoStacks?: boolean;
+    includeNeoBlocks?: boolean;
+    includeMoltBlocks?: boolean;
+    includeRuntimeSpec?: boolean;
+    includeIrMatrix?: boolean;
+    includeEnvelope?: boolean;
+    includeExecutionGateState?: boolean;
+    mode?: 'inspect_only' | string;
+  } = {}
+) {
+  const sleeveId = input.sleeveId ?? 'neomagnetar-dynamic-persona-v1';
+  const inspectorRunId = `inspect_${simpleStableKey([sleeveId, 'ir_matrix_envelope'])}`;
+
+  const selected = selectRuntimeSleeve(version, entrypoint, root, { sleeveId, selectionMode: 'preferred' });
+  const resolved = resolveRuntimeSleeveGraph(version, entrypoint, root, { sleeveId, resolveDepth: 'molt_visible', strictness: 'dev' });
+  const graph = getBlockLibrarySleeveGraphDrilldown(version, entrypoint, root, { sleeveId });
+  const activeStackProjection = getBlockLibraryActiveStackProjection(version, entrypoint, root, {
+    neoblockIds: resolved.ok ? resolved.activeBlocks : [],
+    currentState: resolved.ok ? resolved.currentState : null
+  });
+  const responseEnvelopePreview = getBlockLibraryResponseEnvelopeFragment(version, entrypoint, root, {
+    neoblockIds: resolved.ok ? resolved.activeBlocks : [],
+    currentState: resolved.ok ? resolved.currentState : null
+  });
+  const runtimeSpec = compileRuntimeSleeve(version, entrypoint, root, {
+    sleeveId,
+    compileMode: 'dry_run',
+    resolveDepth: 'molt_visible',
+    strictness: 'dev'
+  });
+  const classifier = classifyRuntimeToolRequests(version, entrypoint, root, {
+    sleeveId,
+    compileIfMissing: true,
+    mode: 'classify_only',
+    includeTrace: true
+  });
+  const gatePlan = createRuntimeExecutionGatePlan(version, entrypoint, root, {
+    sleeveId,
+    compileIfMissing: true,
+    classifyIfMissing: true,
+    mode: 'plan_only',
+    includeTrace: true,
+    includeCheckpointPreview: true
+  });
+  const checkpointCreate = createRuntimeApprovalCheckpoints(version, entrypoint, root, {
+    sleeveId,
+    mode: 'checkpoint_create',
+    includeTrace: true,
+    storageMode: 'returned_only'
+  });
+  const checkpoint = checkpointCreate.checkpoints?.[0] ?? null;
+  const checkpointResume = checkpoint
+    ? resumeRuntimeApprovalCheckpoint(version, entrypoint, {
+        checkpoint,
+        resumeToken: checkpoint.resumeToken,
+        decision: 'approve',
+        mode: 'resume_only',
+        includeTrace: true
+      })
+    : null;
+  const approvedExecution = checkpoint && checkpointResume
+    ? executeApprovedAllowlistedRuntimeAction(version, entrypoint, root, {
+        checkpoint,
+        resumeResult: checkpointResume as any,
+        mode: 'approved_execute',
+        includeTrace: true
+      })
+    : null;
+
+  const activeNeoStacks = Array.isArray((graph as any)?.stacks) ? (graph as any).stacks : [];
+  const activeNeoBlocks = Array.isArray((graph as any)?.blocks) ? (graph as any).blocks : [];
+  const activeMoltBlocks = {
+    Trigger: Array.isArray((graph as any)?.molt?.Trigger) ? (graph as any).molt.Trigger : [],
+    Directive: Array.isArray((graph as any)?.molt?.Directive) ? (graph as any).molt.Directive : [],
+    Instruction: Array.isArray((graph as any)?.molt?.Instruction) ? (graph as any).molt.Instruction : [],
+    Subject: Array.isArray((graph as any)?.molt?.Subject) ? (graph as any).molt.Subject : [],
+    Primary: Array.isArray((graph as any)?.molt?.Primary) ? (graph as any).molt.Primary : [],
+    Philosophy: Array.isArray((graph as any)?.molt?.Philosophy) ? (graph as any).molt.Philosophy : [],
+    Blueprint: Array.isArray((graph as any)?.molt?.Blueprint) ? (graph as any).molt.Blueprint : [],
+    Off: Array.isArray((graph as any)?.molt?.Off) ? (graph as any).molt.Off : [],
+    excluded: Array.isArray((graph as any)?.molt?.excluded) ? (graph as any).molt.excluded : []
+  };
+
+  const irMatrixProjection = {
+    matrixId: `irmatrix_${simpleStableKey([sleeveId, runtimeSpec.runtimeSpecId ?? 'none'])}`,
+    nodes: [
+      { id: `sleeve:${sleeveId}`, type: 'sleeve', label: sleeveId },
+      ...(activeNeoStacks.map((stack: any, index: number) => ({ id: `stack:${stack.neoStackId ?? index}`, type: 'neoStack', label: stack.neoStackId ?? `stack-${index}` }))),
+      ...(activeNeoBlocks.map((block: any, index: number) => ({ id: `block:${block.neoBlockId ?? index}`, type: 'neoBlock', label: block.neoBlockId ?? `block-${index}` }))),
+      ...(runtimeSpec.ok ? [{ id: `runtimeSpec:${runtimeSpec.runtimeSpecId}`, type: 'runtimeSpec', label: runtimeSpec.runtimeSpecId }] : []),
+      ...(Array.isArray((classifier as any).classifications) ? (classifier as any).classifications.map((c: any) => ({ id: `toolRequest:${c.requestId}`, type: 'toolRequest', label: c.requestedToolName ?? c.requestId })) : []),
+      ...(gatePlan.ok ? [{ id: `gatePlan:${gatePlan.gatePlanId}`, type: 'gatePlan', label: gatePlan.gatePlanId }] : []),
+      ...(checkpoint ? [{ id: `checkpoint:${checkpoint.checkpointId}`, type: 'checkpoint', label: checkpoint.checkpointId }] : []),
+      ...(approvedExecution?.ok ? [{ id: `execution:${approvedExecution.executionResultId}`, type: 'executionResult', label: approvedExecution.executionResultId }] : []),
+      { id: `envelope:${sleeveId}`, type: 'envelope', label: 'response-envelope-preview' }
+    ],
+    edges: [
+      ...(activeNeoStacks.map((stack: any, index: number) => ({ from: `sleeve:${sleeveId}`, to: `stack:${stack.neoStackId ?? index}`, type: 'contains' }))),
+      ...(activeNeoBlocks.map((block: any, index: number) => ({ from: `sleeve:${sleeveId}`, to: `block:${block.neoBlockId ?? index}`, type: 'resolves_to' }))),
+      ...(runtimeSpec.ok ? [{ from: `sleeve:${sleeveId}`, to: `runtimeSpec:${runtimeSpec.runtimeSpecId}`, type: 'compiles_to' }] : []),
+      ...(Array.isArray((classifier as any).classifications) ? (classifier as any).classifications.map((c: any) => ({ from: `runtimeSpec:${(classifier as any).sourceRuntimeSpecId ?? runtimeSpec.runtimeSpecId}`, to: `toolRequest:${c.requestId}`, type: 'classifies' })) : []),
+      ...(gatePlan.ok && Array.isArray((gatePlan as any).plannedActions) ? (gatePlan as any).plannedActions.map((p: any) => ({ from: `toolRequest:${p.requestId}`, to: `gatePlan:${gatePlan.gatePlanId}`, type: 'gates' })) : []),
+      ...(checkpoint ? [{ from: `gatePlan:${checkpoint.sourceGatePlanId}`, to: `checkpoint:${checkpoint.checkpointId}`, type: 'checkpoints' }] : []),
+      ...(approvedExecution?.ok ? [{ from: `checkpoint:${checkpoint?.checkpointId}`, to: `execution:${approvedExecution.executionResultId}`, type: 'executes' }] : []),
+      { from: `runtimeSpec:${runtimeSpec.runtimeSpecId ?? 'none'}`, to: `envelope:${sleeveId}`, type: 'previews' }
+    ],
+    activeRoute: [
+      `sleeve:${sleeveId}`,
+      ...(runtimeSpec.ok ? [`runtimeSpec:${runtimeSpec.runtimeSpecId}`] : []),
+      ...(gatePlan.ok ? [`gatePlan:${gatePlan.gatePlanId}`] : []),
+      ...(checkpoint ? [`checkpoint:${checkpoint.checkpointId}`] : []),
+      ...(approvedExecution?.ok ? [`execution:${approvedExecution.executionResultId}`] : [])
+    ],
+    blockedRoute: approvedExecution && !approvedExecution.ok ? [`execution_blocked:${approvedExecution.executionResultId}`] : [],
+    offRoute: [],
+    hierarchyEdges: ['contains', 'resolves_to'],
+    siblingEdges: [],
+    toolRequestEdges: ['classifies', 'gates'],
+    checkpointEdges: ['checkpoints', 'resumes'],
+    executionEdges: ['executes', 'previews'],
+    symbolsLegend: {
+      sleeve: 'runtime sleeve root',
+      neoStack: 'stack layer',
+      neoBlock: 'resolved block',
+      runtimeSpec: 'compiled RuntimeSpecV0',
+      toolRequest: 'declared/synthetic request',
+      gatePlan: 'gate planning node',
+      checkpoint: 'approval checkpoint node',
+      executionResult: 'approved allowlisted execution result',
+      envelope: 'response envelope preview'
+    }
+  };
+
+  return {
+    ok: true,
+    outputContract: { contractId: 'umg.runtime.active_sleeve_ir_matrix_envelope.inspect.v1' as const, contractStatus: 'NORMALIZED' as const },
+    inspectorRunId,
+    inspectorStatus: runtimeSpec.ok ? 'INSPECTOR_READY' as const : 'INSPECTOR_PARTIAL' as const,
+    sourceSleeveId: sleeveId,
+    activeSleeve: {
+      sleeveId,
+      sleeveName: (selected as any)?.selectedSleeve?.sleeveId ?? sleeveId,
+      sleeveSource: 'runtime_selection',
+      sleeveStatus: selected.ok ? 'selected' : 'held',
+      sourceCatalog: (selected as any)?.selectionMode ?? 'preferred',
+      resolvedFrom: 'selectRuntimeSleeve',
+      selectedExplicitly: !!input.sleeveId,
+      runtimeEligible: runtimeSpec.ok,
+      warningList: [...(selected.warnings ?? []), ...(resolved.warnings ?? [])]
+    },
+    activeNeoStacks: input.includeNeoStacks === false ? [] : activeNeoStacks,
+    activeNeoBlocks: input.includeNeoBlocks === false ? [] : activeNeoBlocks,
+    activeMoltBlocks: input.includeMoltBlocks === false ? {} : activeMoltBlocks,
+    runtimeSpec: input.includeRuntimeSpec === false ? null : runtimeSpec,
+    activeStackProjection,
+    moltMapProjection: runtimeSpec.ok ? runtimeSpec.moltMap : {},
+    irMatrixProjection: input.includeIrMatrix === false ? null : irMatrixProjection,
+    responseEnvelopePreview: input.includeEnvelope === false ? null : {
+      activeStack: activeStackProjection,
+      currentContextMoltMap: runtimeSpec.ok ? runtimeSpec.moltMap : {},
+      formalResponseContentPreview: responseEnvelopePreview,
+      metadataTagsHelp: {
+        runtimeSpecId: runtimeSpec.runtimeSpecId ?? null,
+        executionState: 'not_performed'
+      },
+      executionState: 'not_performed'
+    },
+    toolRequestClassification: classifier,
+    executionGatePlan: input.includeExecutionGateState === false ? null : gatePlan,
+    approvalCheckpointState: input.includeExecutionGateState === false ? null : checkpointCreate,
+    approvedExecutionState: input.includeExecutionGateState === false ? null : approvedExecution,
+    executionStatus: 'not_performed' as const,
+    warnings: [...(selected.warnings ?? []), ...(resolved.warnings ?? []), ...(runtimeSpec.warnings ?? [])],
+    errors: runtimeSpec.errors ?? [],
+    audit: {
+      execution: 'not_performed' as const,
+      toolExecution: 'not_performed' as const,
+      triggerEvaluation: 'not_performed' as const,
+      libraryMutation: 'not_performed' as const,
+      packageMutation: 'not_performed' as const,
+      filesystemMutation: 'not_performed' as const,
+      restart: 'not_performed' as const,
+      publish: 'not_performed' as const
+    },
+    trace: [
+      `sleeveId=${sleeveId}`,
+      `runtimeSpecId=${runtimeSpec.runtimeSpecId ?? 'none'}`,
+      `classifier=${classifier.ok ? 'available' : 'held'}`,
+      `gatePlan=${gatePlan.ok ? 'available' : 'held'}`,
+      `checkpointState=${checkpointCreate.ok ? 'available' : 'held'}`,
+      `approvedExecutionState=${approvedExecution ? 'available' : 'unavailable'}`,
+      'execution=not_performed'
+    ]
   };
 }
 
