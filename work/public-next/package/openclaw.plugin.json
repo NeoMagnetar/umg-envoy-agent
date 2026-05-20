@@ -1,8 +1,8 @@
 {
   "id": "umg-envoy-agent",
   "name": "UMG Envoy Agent",
-  "version": "0.3.0-alpha.7",
-  "description": "UMG Envoy Agent alpha.6 for OpenClaw with dry-run working runtime preview and real block-library tooling",
+  "version": "0.3.0-alpha.8",
+  "description": "UMG Envoy Agent alpha.7 for OpenClaw with dry-run working runtime preview and real block-library tooling",
   "entry": "dist/plugin-entry.js",
   "apiVersion": 1,
   "configSchema": {
@@ -60,4 +60,6 @@
     "umg_envoy_runtime_preview"
   ]
 }
+
+
 

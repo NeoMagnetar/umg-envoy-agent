@@ -10,7 +10,7 @@ const tool = defs.find(d => d.name === 'umg_envoy_block_library_sleeve_graph_ind
 const run = async (input) => JSON.parse((await tool.execute(input)).content[0].text);
 
 const pkg = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
-if (pkg.version !== '0.3.0-alpha.7') throw new Error('version drift');
+if (pkg.version !== '0.3.0-alpha.8') throw new Error('version drift');
 if (pkg.main !== 'dist/plugin-entry.js') throw new Error('official entrypoint drift');
 const pluginSrc = fs.readFileSync(new URL('../src/plugin-entry.ts', import.meta.url), 'utf8');
 if (!pluginSrc.includes('getBlockLibrarySleeveGraphIndex')) throw new Error('source entry missing sleeve graph index import');
@@ -75,4 +75,5 @@ const raw = await run({ includeRaw: true });
 if (!raw.errors.some(e => e.code === 'HOLD_RAW_TARGET_DUMP_NOT_SUPPORTED')) throw new Error('raw hold drift');
 
 console.log(JSON.stringify({ ok: true, base, autoCatalog, focus }, null, 2));
+
 

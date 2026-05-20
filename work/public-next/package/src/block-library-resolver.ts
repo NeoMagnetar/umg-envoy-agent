@@ -835,7 +835,7 @@ export interface BlockLibrarySleeveGraphIndexResult {
 const DEFAULT_LIBRARY_ROOT = "C:\\.openclaw\\workspace\\UMG-Block-Library";
 const runtimeSelectionState = new Map<string, { sleeveId: string | null; updatedAt: string }>();
 
-interface RuntimeSpecV0 {
+export interface RuntimeSpecV0 {
   runtimeSpecVersion: "RuntimeSpecV0";
   runtimeSpecId: string;
   sleeveId: string;
@@ -848,6 +848,40 @@ interface RuntimeSpecV0 {
   values: string | null;
   format: string | null;
   toolRequests: Array<{ kind: string; sourceBlockId: string | null; declaredAction: string }>;
+}
+
+export type RuntimeToolRequestClassificationState =
+  | "unavailable"
+  | "unknown"
+  | "metadata_only"
+  | "mock_only"
+  | "preview_only"
+  | "available_read_only"
+  | "available_requires_approval"
+  | "available_allowlisted_direct"
+  | "blocked_policy"
+  | "blocked_missing_approval"
+  | "blocked_unsafe"
+  | "blocked_unimplemented";
+
+export type RuntimeToolRequestRiskLevel = "none" | "low" | "medium" | "high" | "critical";
+
+export type RuntimeToolRequestExecutionMode = "dry_run" | "preview" | "classify_only" | "approval_required" | "approved_execute" | "blocked";
+
+export interface RuntimeToolRequestClassificationV0 {
+  requestId: string;
+  sourceRuntimeSpecId: string;
+  sourceSleeveId: string;
+  requestedToolName: string | null;
+  requestedAction: string;
+  requestedArgsSummary: string;
+  classification: RuntimeToolRequestClassificationState;
+  riskLevel: RuntimeToolRequestRiskLevel;
+  approvalRequired: boolean;
+  allowlisted: boolean;
+  executionMode: RuntimeToolRequestExecutionMode;
+  decisionReason: string;
+  trace: string[];
 }
 
 const MACHINE_LANES = [
@@ -3792,6 +3826,227 @@ export function compileRuntimeSleeve(
     warnings: built.warnings,
     errors: built.errors,
     trace: { resolutionStatus: resolution.resolutionStatus, strictness }
+  };
+}
+
+const READ_ONLY_RUNTIME_TOOL_ALLOWLIST = new Set([
+  'umg_envoy_block_library_status',
+  'umg_envoy_block_library_manifest_index',
+  'umg_envoy_block_library_manifest_entry_lookup',
+  'umg_envoy_block_library_sleeve_graph_index',
+  'umg_envoy_runtime_preview',
+  'umg_envoy_runtime_compile',
+  'umg_envoy_sleeve_resolve'
+]);
+
+function normalizeDeclaredRuntimeToolRequest(declaredAction: string) {
+  const raw = String(declaredAction ?? '').trim();
+  const normalized = raw.toLowerCase();
+  const toolMatch = raw.match(/(umg_envoy_[a-z0-9_]+)/i);
+  const requestedToolName = toolMatch?.[1]?.toLowerCase() ?? null;
+  const blockedHints = [
+    'publish',
+    'restart',
+    'install',
+    'delete',
+    'remove',
+    'write',
+    'shell',
+    'exec',
+    'git ',
+    'git_',
+    'filesystem',
+    'network',
+    'http',
+    'curl',
+    'trigger'
+  ];
+  const matchesBlockedHint = blockedHints.some((hint) => normalized.includes(hint));
+  return { raw, requestedToolName, matchesBlockedHint };
+}
+
+function classifySingleRuntimeToolRequest(runtimeSpec: RuntimeSpecV0, request: RuntimeSpecV0['toolRequests'][number], index: number): RuntimeToolRequestClassificationV0 {
+  const normalized = normalizeDeclaredRuntimeToolRequest(request.declaredAction);
+  const trace = [
+    `request.kind=${request.kind}`,
+    `declaredAction=${normalized.raw || 'empty'}`
+  ];
+  if (!normalized.raw) {
+    return {
+      requestId: `${runtimeSpec.runtimeSpecId}:req:${index + 1}`,
+      sourceRuntimeSpecId: runtimeSpec.runtimeSpecId,
+      sourceSleeveId: runtimeSpec.sleeveId,
+      requestedToolName: null,
+      requestedAction: '',
+      requestedArgsSummary: 'none',
+      classification: 'unknown',
+      riskLevel: 'low',
+      approvalRequired: false,
+      allowlisted: false,
+      executionMode: 'blocked',
+      decisionReason: 'Declared action was empty.',
+      trace: [...trace, 'classification=unknown', 'mode=blocked']
+    };
+  }
+  if (normalized.requestedToolName && READ_ONLY_RUNTIME_TOOL_ALLOWLIST.has(normalized.requestedToolName)) {
+    return {
+      requestId: `${runtimeSpec.runtimeSpecId}:req:${index + 1}`,
+      sourceRuntimeSpecId: runtimeSpec.runtimeSpecId,
+      sourceSleeveId: runtimeSpec.sleeveId,
+      requestedToolName: normalized.requestedToolName,
+      requestedAction: normalized.raw,
+      requestedArgsSummary: 'declared trigger text only',
+      classification: 'available_read_only',
+      riskLevel: 'low',
+      approvalRequired: false,
+      allowlisted: true,
+      executionMode: 'classify_only',
+      decisionReason: 'Known read-only runtime surface; classification only in Alpha7.',
+      trace: [...trace, `tool=${normalized.requestedToolName}`, 'allowlist=read_only', 'classification=available_read_only', 'mode=classify_only']
+    };
+  }
+  if (normalized.matchesBlockedHint) {
+    return {
+      requestId: `${runtimeSpec.runtimeSpecId}:req:${index + 1}`,
+      sourceRuntimeSpecId: runtimeSpec.runtimeSpecId,
+      sourceSleeveId: runtimeSpec.sleeveId,
+      requestedToolName: normalized.requestedToolName,
+      requestedAction: normalized.raw,
+      requestedArgsSummary: 'declared trigger text only',
+      classification: 'blocked_policy',
+      riskLevel: 'high',
+      approvalRequired: false,
+      allowlisted: false,
+      executionMode: 'blocked',
+      decisionReason: 'Declared action falls into a blocked policy class for Alpha7 classifier mode.',
+      trace: [...trace, `tool=${normalized.requestedToolName ?? 'unknown'}`, 'policy=blocked_side_effectful', 'classification=blocked_policy', 'mode=blocked']
+    };
+  }
+  return {
+    requestId: `${runtimeSpec.runtimeSpecId}:req:${index + 1}`,
+    sourceRuntimeSpecId: runtimeSpec.runtimeSpecId,
+    sourceSleeveId: runtimeSpec.sleeveId,
+    requestedToolName: normalized.requestedToolName,
+    requestedAction: normalized.raw,
+    requestedArgsSummary: 'declared trigger text only',
+    classification: 'blocked_unimplemented',
+    riskLevel: 'medium',
+    approvalRequired: false,
+    allowlisted: false,
+    executionMode: 'blocked',
+    decisionReason: 'No Alpha7 classifier policy mapping exists yet for this request.',
+    trace: [...trace, `tool=${normalized.requestedToolName ?? 'unknown'}`, 'classification=blocked_unimplemented', 'mode=blocked']
+  };
+}
+
+export function classifyRuntimeToolRequests(
+  version: string,
+  entrypoint = 'dist/plugin-entry.js',
+  root = DEFAULT_LIBRARY_ROOT,
+  input: {
+    sleeveId?: string;
+    runtimeSpec?: RuntimeSpecV0;
+    compileIfMissing?: boolean;
+    requestedToolName?: string;
+    mode?: 'classify_only' | 'dry_run' | string;
+    includeTrace?: boolean;
+  } = {}
+) {
+  let compiled = null as ReturnType<typeof compileRuntimeSleeve> | null;
+  let runtimeSpec = input.runtimeSpec ?? null;
+  if (!runtimeSpec && input.sleeveId && input.compileIfMissing !== false) {
+    compiled = compileRuntimeSleeve(version, entrypoint, root, {
+      sleeveId: input.sleeveId,
+      compileMode: 'dry_run',
+      resolveDepth: 'molt_visible',
+      strictness: 'dev'
+    });
+    if (compiled.ok && compiled.runtimeSpecId && compiled.sleeveId) {
+      runtimeSpec = {
+        runtimeSpecVersion: 'RuntimeSpecV0',
+        runtimeSpecId: compiled.runtimeSpecId,
+        sleeveId: compiled.sleeveId,
+        activeBlocks: compiled.activeBlocks,
+        moltMap: compiled.moltMap,
+        promptParts: compiled.promptParts,
+        strategy: compiled.strategy,
+        constraints: compiled.constraints,
+        context: compiled.context ?? { subject: null, primary: null },
+        values: compiled.values,
+        format: compiled.format,
+        toolRequests: compiled.toolRequests
+      };
+    }
+  }
+  const baseAudit = {
+    execution: 'not_performed' as const,
+    triggerEvaluation: 'not_performed' as const,
+    approvalCheckpointCreated: false,
+    toolExecution: 'not_performed' as const,
+    libraryMutation: 'not_performed' as const,
+    packageMutation: 'not_performed' as const,
+    restart: 'not_performed' as const,
+    publish: 'not_performed' as const
+  };
+  const base = {
+    version,
+    entrypoint,
+    mode: 'runtime_tool_request_classify' as const,
+    outputContract: { contractId: 'umg.runtime.tool_request.classify.v1' as const, contractStatus: 'NORMALIZED' as const },
+    executionStatus: 'not_performed' as const,
+    audit: baseAudit
+  };
+  if (!runtimeSpec) {
+    return {
+      ...base,
+      ok: false,
+      classificationStatus: 'CLASSIFICATION_HELD' as const,
+      sourceRuntimeSpecId: null,
+      sleeveId: input.sleeveId ?? null,
+      requestCount: 0,
+      classifications: [],
+      blockedCount: 0,
+      approvalRequiredCount: 0,
+      readOnlyCount: 0,
+      unknownCount: 0,
+      trace: ['runtimeSpec_missing', 'no_execution_performed'],
+      warnings: compiled?.warnings ?? [],
+      errors: compiled?.errors ?? [{ code: 'RUNTIME_SPEC_REQUIRED', message: 'RuntimeSpecV0 or sleeveId compile path is required for classification.' }]
+    };
+  }
+  const filterTool = input.requestedToolName?.toLowerCase() ?? null;
+  const classifications = runtimeSpec.toolRequests
+    .map((request, index) => classifySingleRuntimeToolRequest(runtimeSpec as RuntimeSpecV0, request, index))
+    .filter((item) => !filterTool || item.requestedToolName === filterTool);
+  const blockedCount = classifications.filter((item) => item.executionMode === 'blocked').length;
+  const approvalRequiredCount = classifications.filter((item) => item.approvalRequired).length;
+  const readOnlyCount = classifications.filter((item) => item.classification === 'available_read_only' || item.classification === 'metadata_only').length;
+  const unknownCount = classifications.filter((item) => item.classification === 'unknown' || item.classification === 'blocked_unimplemented').length;
+  const classificationStatus = classifications.length === 0
+    ? 'CLASSIFICATION_READY'
+    : classifications.some((item) => item.classification === 'unknown')
+      ? 'CLASSIFICATION_PARTIAL'
+      : 'CLASSIFICATION_READY';
+  return {
+    ...base,
+    ok: true,
+    classificationStatus,
+    sourceRuntimeSpecId: runtimeSpec.runtimeSpecId,
+    sleeveId: runtimeSpec.sleeveId,
+    requestCount: classifications.length,
+    classifications: input.includeTrace === false ? classifications.map(({ trace, ...rest }) => ({ ...rest, trace: [] })) : classifications,
+    blockedCount,
+    approvalRequiredCount,
+    readOnlyCount,
+    unknownCount,
+    trace: [
+      `mode=${input.mode ?? 'classify_only'}`,
+      `compiledDuringClassification=${compiled ? 'yes' : 'no'}`,
+      `requestCount=${classifications.length}`,
+      'execution=not_performed'
+    ],
+    warnings: compiled?.warnings ?? [],
+    errors: compiled?.errors ?? []
   };
 }
 

@@ -14,7 +14,7 @@ const runActive = async (input) => JSON.parse((await activeTool.execute(input)).
 const runSleeve = async (input) => JSON.parse((await sleeveTool.execute(input)).content[0].text);
 
 const pkg = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
-if (pkg.version !== '0.3.0-alpha.7') throw new Error('version drift');
+if (pkg.version !== '0.3.0-alpha.8') throw new Error('version drift');
 if (pkg.main !== 'dist/plugin-entry.js') throw new Error('entrypoint drift');
 const src = fs.readFileSync(new URL('../src/plugin-entry.ts', import.meta.url), 'utf8');
 if (!src.includes('getBlockLibraryResponseEnvelopeFragment')) throw new Error('response envelope source missing');

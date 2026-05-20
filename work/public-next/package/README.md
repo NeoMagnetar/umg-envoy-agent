@@ -1,12 +1,12 @@
-# UMG Envoy Agent 0.3.0-alpha.7
+# UMG Envoy Agent 0.3.0-alpha.8
 
-UMG Envoy Agent 0.3.0-alpha.7 is an OpenClaw plugin with a dry-run working runtime preview path backed by the Alpha6 real block-library tool chain.
+UMG Envoy Agent 0.3.0-alpha.8 is an OpenClaw plugin with a dry-run working runtime preview path backed by the Alpha6 real block-library tool chain.
 
-It is not a broad execution agent package. Alpha.6 is package-sync prep for the current local live runtime truth: real sleeve selection, bounded resolver flow, RuntimeSpecV0 dry-run compile, Active Stack projection, and response-envelope preview.
+It is not a broad execution agent package. alpha.7 is package-sync prep for the current local live runtime truth: real sleeve selection, bounded resolver flow, RuntimeSpecV0 dry-run compile, Active Stack projection, and response-envelope preview.
 
-## Alpha.6 capability note
+## alpha.7 capability note
 
-Alpha.6 now includes the working runtime preview path:
+alpha.7 now includes the working runtime preview path:
 - sleeve graph drilldown
 - sleeve selection
 - bounded sleeve resolve
@@ -17,7 +17,7 @@ Alpha.6 now includes the working runtime preview path:
 - Active Stack projection
 - response-envelope preview
 
-Alpha.6 still preserves strict safety boundaries:
+alpha.7 still preserves strict safety boundaries:
 - dry-run / preview only
 - no uncontrolled execution
 - no trigger evaluation
@@ -69,7 +69,7 @@ Alpha.6 still preserves strict safety boundaries:
 - `umg_envoy_build_path`
 - `umg_envoy_matrix_status`
 
-## What Alpha.6 does
+## What alpha.7 does
 
 - inspects the real block-library through bounded approved lanes
 - resolves a real sleeve into a bounded dry-run graph
@@ -80,7 +80,7 @@ Alpha.6 still preserves strict safety boundaries:
 - renders Active Stack and response-envelope previews
 - surfaces declared tool requests without executing them
 
-## What Alpha.6 does not do
+## What alpha.7 does not do
 
 - broad execution
 - trigger evaluation
@@ -98,7 +98,7 @@ Alpha.6 still preserves strict safety boundaries:
 
 ## Install
 
-- `openclaw plugins install clawhub:umg-envoy-agent@0.3.0-alpha.7`
+- `openclaw plugins install clawhub:umg-envoy-agent@0.3.0-alpha.8`
 
 ## Build and test
 
@@ -111,4 +111,6 @@ Alpha.6 still preserves strict safety boundaries:
 ## Entrypoint
 
 - `dist/plugin-entry.js`
+
+
 
