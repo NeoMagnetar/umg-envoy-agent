@@ -1,0 +1,478 @@
+{
+  "sleeveId": "neomagnetar-dynamic-persona-v1",
+  "sleeveName": "NeoMagnetar Dynamic Persona Native Fixture",
+  "nativeGraph": {
+    "schemaVersion": "umg.native_sleeve_graph.v1",
+    "sleeveId": "neomagnetar-dynamic-persona-v1",
+    "sleeveName": "NeoMagnetar Dynamic Persona Native Fixture",
+    "nativeGraphId": "native-graph.neomagnetar-dynamic-persona-v1",
+    "provenance": {
+      "category": "sleeve_native",
+      "declaredBy": "sleeve",
+      "sourceId": "neomagnetar-dynamic-persona-v1",
+      "sourcePath": "AI/SLEEVES/neomagnetar-dynamic-persona-v1/native-graph.json",
+      "evidence": [
+        "nativeGraph.schemaVersion=umg.native_sleeve_graph.v1"
+      ]
+    },
+    "neoStacks": [
+      {
+        "stackId": "dynamic-persona-core-stack",
+        "label": "Dynamic Persona Core Stack",
+        "purpose": "Defines runtime identity, active context, values, and output posture.",
+        "containedNeoBlockIds": [
+          "nb.dynamic_persona.trigger",
+          "nb.dynamic_persona.directive",
+          "nb.dynamic_persona.identity",
+          "nb.dynamic_persona.subject"
+        ],
+        "order": 10,
+        "activation": {
+          "defaultActive": true,
+          "reason": "Primary sleeve runtime stack."
+        },
+        "provenance": {
+          "category": "sleeve_native",
+          "declaredBy": "sleeve",
+          "sourceId": "dynamic-persona-core-stack",
+          "sourcePath": "AI/SLEEVES/neomagnetar-dynamic-persona-v1/native-graph.json#/nativeGraph/neoStacks/0"
+        }
+      },
+      {
+        "stackId": "dynamic-persona-output-stack",
+        "label": "Dynamic Persona Output Stack",
+        "purpose": "Defines response format, envelope projection, and metadata surface.",
+        "containedNeoBlockIds": [
+          "nb.dynamic_persona.instruction",
+          "nb.dynamic_persona.philosophy",
+          "nb.dynamic_persona.blueprint"
+        ],
+        "order": 20,
+        "activation": {
+          "defaultActive": true,
+          "reason": "Output and envelope shaping stack."
+        },
+        "provenance": {
+          "category": "sleeve_native",
+          "declaredBy": "sleeve",
+          "sourceId": "dynamic-persona-output-stack",
+          "sourcePath": "AI/SLEEVES/neomagnetar-dynamic-persona-v1/native-graph.json#/nativeGraph/neoStacks/1"
+        }
+      }
+    ],
+    "neoBlocks": [
+      {
+        "neoBlockId": "nb.dynamic_persona.trigger",
+        "label": "Session Trigger",
+        "role": "Trigger gate for explicit runtime activation.",
+        "parentStackIds": [
+          "dynamic-persona-core-stack"
+        ],
+        "contributesTo": [
+          "MOLT",
+          "RuntimeSpec",
+          "IRMatrix"
+        ],
+        "provenance": {
+          "category": "sleeve_native",
+          "declaredBy": "sleeve",
+          "sourceId": "nb.dynamic_persona.trigger"
+        }
+      },
+      {
+        "neoBlockId": "nb.dynamic_persona.directive",
+        "label": "Runtime Directive",
+        "role": "Directive constraints for bounded read-only UMG runtime behavior.",
+        "parentStackIds": [
+          "dynamic-persona-core-stack"
+        ],
+        "contributesTo": [
+          "MOLT",
+          "RuntimeSpec",
+          "ToolRequest"
+        ],
+        "provenance": {
+          "category": "sleeve_native",
+          "declaredBy": "sleeve",
+          "sourceId": "nb.dynamic_persona.directive"
+        }
+      },
+      {
+        "neoBlockId": "nb.dynamic_persona.identity",
+        "label": "Primary Identity",
+        "role": "Primary identity shell for active sleeve session.",
+        "parentStackIds": [
+          "dynamic-persona-core-stack"
+        ],
+        "contributesTo": [
+          "MOLT",
+          "RuntimeSpec",
+          "Envelope"
+        ],
+        "provenance": {
+          "category": "sleeve_native",
+          "declaredBy": "sleeve",
+          "sourceId": "nb.dynamic_persona.identity"
+        }
+      },
+      {
+        "neoBlockId": "nb.dynamic_persona.subject",
+        "label": "Subject Context",
+        "role": "Subject/context for current runtime inspection.",
+        "parentStackIds": [
+          "dynamic-persona-core-stack"
+        ],
+        "contributesTo": [
+          "MOLT",
+          "RuntimeSpec",
+          "IRMatrix"
+        ],
+        "provenance": {
+          "category": "sleeve_native",
+          "declaredBy": "sleeve",
+          "sourceId": "nb.dynamic_persona.subject"
+        }
+      },
+      {
+        "neoBlockId": "nb.dynamic_persona.instruction",
+        "label": "Instruction Surface",
+        "role": "Instruction rules for agent-facing output.",
+        "parentStackIds": [
+          "dynamic-persona-output-stack"
+        ],
+        "contributesTo": [
+          "MOLT",
+          "RuntimeSpec",
+          "Envelope"
+        ],
+        "provenance": {
+          "category": "sleeve_native",
+          "declaredBy": "sleeve",
+          "sourceId": "nb.dynamic_persona.instruction"
+        }
+      },
+      {
+        "neoBlockId": "nb.dynamic_persona.philosophy",
+        "label": "Philosophy Surface",
+        "role": "Value constraints for Love + Logic style operation.",
+        "parentStackIds": [
+          "dynamic-persona-output-stack"
+        ],
+        "contributesTo": [
+          "MOLT",
+          "RuntimeSpec",
+          "Envelope"
+        ],
+        "provenance": {
+          "category": "sleeve_native",
+          "declaredBy": "sleeve",
+          "sourceId": "nb.dynamic_persona.philosophy"
+        }
+      },
+      {
+        "neoBlockId": "nb.dynamic_persona.blueprint",
+        "label": "Blueprint Surface",
+        "role": "Output envelope and formatting blueprint.",
+        "parentStackIds": [
+          "dynamic-persona-output-stack"
+        ],
+        "contributesTo": [
+          "MOLT",
+          "RuntimeSpec",
+          "IRMatrix",
+          "Envelope"
+        ],
+        "provenance": {
+          "category": "sleeve_native",
+          "declaredBy": "sleeve",
+          "sourceId": "nb.dynamic_persona.blueprint"
+        }
+      }
+    ],
+    "moltFragments": [
+      {
+        "fragmentId": "molt.dynamic_persona.trigger",
+        "sourceNeoBlockId": "nb.dynamic_persona.trigger",
+        "moltType": "Trigger",
+        "role": "Explicit active sleeve runtime trigger.",
+        "content": "Activate only when explicitly selected or invoked by active sleeve session state.",
+        "provenance": {
+          "category": "sleeve_native_derived",
+          "declaredBy": "neoblock",
+          "sourceId": "nb.dynamic_persona.trigger",
+          "derivedFrom": [
+            "dynamic-persona-core-stack"
+          ]
+        }
+      },
+      {
+        "fragmentId": "molt.dynamic_persona.directive",
+        "sourceNeoBlockId": "nb.dynamic_persona.directive",
+        "moltType": "Directive",
+        "role": "Runtime governance directive.",
+        "content": "Operate approved-only, allowlisted-only, read-only-only; direct_source disabled; no automatic response takeover.",
+        "provenance": {
+          "category": "sleeve_native_derived",
+          "declaredBy": "neoblock",
+          "sourceId": "nb.dynamic_persona.directive",
+          "derivedFrom": [
+            "dynamic-persona-core-stack"
+          ]
+        }
+      },
+      {
+        "fragmentId": "molt.dynamic_persona.primary",
+        "sourceNeoBlockId": "nb.dynamic_persona.identity",
+        "moltType": "Primary",
+        "role": "Primary sleeve identity.",
+        "content": "UMG Envoy runtime operating under the NeoMagnetar Dynamic Persona sleeve.",
+        "provenance": {
+          "category": "sleeve_native_derived",
+          "declaredBy": "neoblock",
+          "sourceId": "nb.dynamic_persona.identity"
+        }
+      },
+      {
+        "fragmentId": "molt.dynamic_persona.subject",
+        "sourceNeoBlockId": "nb.dynamic_persona.subject",
+        "moltType": "Subject",
+        "role": "Runtime subject.",
+        "content": "Active sleeve-native graph inspection and bounded read-only orchestration.",
+        "provenance": {
+          "category": "sleeve_native_derived",
+          "declaredBy": "neoblock",
+          "sourceId": "nb.dynamic_persona.subject"
+        }
+      },
+      {
+        "fragmentId": "molt.dynamic_persona.instruction",
+        "sourceNeoBlockId": "nb.dynamic_persona.instruction",
+        "moltType": "Instruction",
+        "role": "Output instruction.",
+        "content": "Return explicit provenance, graph completeness, route purity, and envelope state without executing non-approved actions.",
+        "provenance": {
+          "category": "sleeve_native_derived",
+          "declaredBy": "neoblock",
+          "sourceId": "nb.dynamic_persona.instruction"
+        }
+      },
+      {
+        "fragmentId": "molt.dynamic_persona.philosophy",
+        "sourceNeoBlockId": "nb.dynamic_persona.philosophy",
+        "moltType": "Philosophy",
+        "role": "Runtime philosophy.",
+        "content": "Native truth must be declared, not inferred from residue.",
+        "provenance": {
+          "category": "sleeve_native_derived",
+          "declaredBy": "neoblock",
+          "sourceId": "nb.dynamic_persona.philosophy"
+        }
+      },
+      {
+        "fragmentId": "molt.dynamic_persona.blueprint",
+        "sourceNeoBlockId": "nb.dynamic_persona.blueprint",
+        "moltType": "Blueprint",
+        "role": "Envelope blueprint.",
+        "content": "Render Active Stack, Current Context MOLT Map, Formal Response Content, and Metadata with native provenance markers.",
+        "provenance": {
+          "category": "sleeve_native_derived",
+          "declaredBy": "neoblock",
+          "sourceId": "nb.dynamic_persona.blueprint"
+        }
+      }
+    ],
+    "toolRequests": [
+      {
+        "requestId": "tool.dynamic_persona.status_read",
+        "requestedToolName": "umg_envoy_block_library_status",
+        "requestedAction": "status_read",
+        "purpose": "Read plugin/block-library status as the first approved allowlisted read-only action.",
+        "policyClass": "read_only",
+        "executableUnderBoundedRules": true,
+        "provenance": {
+          "category": "sleeve_native",
+          "declaredBy": "sleeve",
+          "sourceId": "tool.dynamic_persona.status_read",
+          "sourcePath": "AI/SLEEVES/neomagnetar-dynamic-persona-v1/native-graph.json#/nativeGraph/toolRequests/0"
+        }
+      }
+    ],
+    "runtimeRoutes": [
+      {
+        "routeId": "runtime.dynamic_persona.clean_native.v1",
+        "routeType": "RuntimeSpecV0",
+        "sourceNeoBlockIds": [
+          "nb.dynamic_persona.trigger",
+          "nb.dynamic_persona.directive",
+          "nb.dynamic_persona.identity",
+          "nb.dynamic_persona.subject",
+          "nb.dynamic_persona.instruction",
+          "nb.dynamic_persona.philosophy",
+          "nb.dynamic_persona.blueprint"
+        ],
+        "sourceMoltFragmentIds": [
+          "molt.dynamic_persona.trigger",
+          "molt.dynamic_persona.directive",
+          "molt.dynamic_persona.primary",
+          "molt.dynamic_persona.subject",
+          "molt.dynamic_persona.instruction",
+          "molt.dynamic_persona.philosophy",
+          "molt.dynamic_persona.blueprint"
+        ],
+        "sourceToolRequestIds": [
+          "tool.dynamic_persona.status_read"
+        ],
+        "sourceMode": "sleeve_native",
+        "provenance": {
+          "category": "sleeve_native_derived",
+          "declaredBy": "runtime",
+          "sourceId": "runtime.dynamic_persona.clean_native.v1",
+          "derivedFrom": [
+            "dynamic-persona-core-stack",
+            "dynamic-persona-output-stack"
+          ]
+        }
+      }
+    ],
+    "irRoutes": [
+      {
+        "routeId": "ir.dynamic_persona.clean_native.v1",
+        "nodes": [
+          {
+            "nodeId": "node.sleeve.dynamic_persona",
+            "nodeType": "sleeve",
+            "sourceId": "neomagnetar-dynamic-persona-v1",
+            "provenance": {
+              "category": "sleeve_native",
+              "declaredBy": "sleeve",
+              "sourceId": "neomagnetar-dynamic-persona-v1"
+            }
+          },
+          {
+            "nodeId": "node.stack.core",
+            "nodeType": "neoStack",
+            "sourceId": "dynamic-persona-core-stack",
+            "provenance": {
+              "category": "sleeve_native",
+              "declaredBy": "sleeve",
+              "sourceId": "dynamic-persona-core-stack"
+            }
+          },
+          {
+            "nodeId": "node.stack.output",
+            "nodeType": "neoStack",
+            "sourceId": "dynamic-persona-output-stack",
+            "provenance": {
+              "category": "sleeve_native",
+              "declaredBy": "sleeve",
+              "sourceId": "dynamic-persona-output-stack"
+            }
+          },
+          {
+            "nodeId": "node.runtime",
+            "nodeType": "runtimeSpec",
+            "sourceId": "runtime.dynamic_persona.clean_native.v1",
+            "provenance": {
+              "category": "sleeve_native_derived",
+              "declaredBy": "runtime",
+              "sourceId": "runtime.dynamic_persona.clean_native.v1"
+            }
+          },
+          {
+            "nodeId": "node.envelope",
+            "nodeType": "envelope",
+            "sourceId": "envelope.dynamic_persona.clean_native.v1",
+            "provenance": {
+              "category": "sleeve_native_derived",
+              "declaredBy": "runtime",
+              "sourceId": "envelope.dynamic_persona.clean_native.v1"
+            }
+          }
+        ],
+        "edges": [
+          {
+            "edgeId": "edge.sleeve.contains.core",
+            "edgeType": "contains",
+            "from": "node.sleeve.dynamic_persona",
+            "to": "node.stack.core",
+            "provenance": {
+              "category": "sleeve_native",
+              "declaredBy": "sleeve",
+              "sourceId": "dynamic-persona-core-stack"
+            }
+          },
+          {
+            "edgeId": "edge.sleeve.contains.output",
+            "edgeType": "contains",
+            "from": "node.sleeve.dynamic_persona",
+            "to": "node.stack.output",
+            "provenance": {
+              "category": "sleeve_native",
+              "declaredBy": "sleeve",
+              "sourceId": "dynamic-persona-output-stack"
+            }
+          },
+          {
+            "edgeId": "edge.stacks.compile.runtime",
+            "edgeType": "compiles_to",
+            "from": "node.stack.core",
+            "to": "node.runtime",
+            "provenance": {
+              "category": "sleeve_native_derived",
+              "declaredBy": "runtime",
+              "sourceId": "runtime.dynamic_persona.clean_native.v1"
+            }
+          },
+          {
+            "edgeId": "edge.runtime.previews.envelope",
+            "edgeType": "previews",
+            "from": "node.runtime",
+            "to": "node.envelope",
+            "provenance": {
+              "category": "sleeve_native_derived",
+              "declaredBy": "runtime",
+              "sourceId": "envelope.dynamic_persona.clean_native.v1"
+            }
+          }
+        ],
+        "routePurity": "clean_native",
+        "provenance": {
+          "category": "sleeve_native_derived",
+          "declaredBy": "runtime",
+          "sourceId": "ir.dynamic_persona.clean_native.v1"
+        }
+      }
+    ],
+    "envelopeSources": [
+      {
+        "envelopeId": "envelope.dynamic_persona.clean_native.v1",
+        "sourceRuntimeRouteId": "runtime.dynamic_persona.clean_native.v1",
+        "sourceIrRouteId": "ir.dynamic_persona.clean_native.v1",
+        "sections": {
+          "activeStack": "Dynamic Persona Core Stack + Dynamic Persona Output Stack",
+          "currentContextMoltMap": "Trigger, Directive, Primary, Subject, Instruction, Philosophy, Blueprint",
+          "formalResponsePreview": "Respond with explicit sleeve-native graph provenance and bounded read-only orchestration state.",
+          "metadata": "sourceMode=sleeve_native; routePurity=clean_native"
+        },
+        "envelopeSource": "sleeve_native_derived",
+        "provenance": {
+          "category": "sleeve_native_derived",
+          "declaredBy": "runtime",
+          "sourceId": "envelope.dynamic_persona.clean_native.v1",
+          "derivedFrom": [
+            "runtime.dynamic_persona.clean_native.v1",
+            "ir.dynamic_persona.clean_native.v1"
+          ]
+        }
+      }
+    ],
+    "safety": {
+      "approvedOnly": true,
+      "allowlistedOnly": true,
+      "readOnlyOnly": true,
+      "directSourceEnabled": false,
+      "automaticResponseTakeover": false,
+      "umgBlockLibraryMutation": "not_performed"
+    }
+  }
+}

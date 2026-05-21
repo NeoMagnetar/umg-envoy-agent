@@ -1,0 +1,162 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "umg.native_sleeve_graph.v1",
+  "title": "UMG Native Sleeve Graph",
+  "type": "object",
+  "required": [
+    "sleeveId",
+    "sleeveName",
+    "nativeGraph"
+  ],
+  "properties": {
+    "sleeveId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sleeveName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "nativeGraph": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "sleeveId",
+        "nativeGraphId",
+        "provenance",
+        "neoStacks",
+        "neoBlocks",
+        "moltFragments",
+        "toolRequests",
+        "runtimeRoutes",
+        "irRoutes",
+        "envelopeSources",
+        "safety"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "umg.native_sleeve_graph.v1"
+        },
+        "sleeveId": {
+          "type": "string"
+        },
+        "sleeveName": {
+          "type": "string"
+        },
+        "nativeGraphId": {
+          "type": "string"
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        },
+        "neoStacks": {
+          "type": "array",
+          "minItems": 1
+        },
+        "neoBlocks": {
+          "type": "array",
+          "minItems": 1
+        },
+        "moltFragments": {
+          "type": "array",
+          "minItems": 1
+        },
+        "toolRequests": {
+          "type": "array"
+        },
+        "runtimeRoutes": {
+          "type": "array",
+          "minItems": 1
+        },
+        "irRoutes": {
+          "type": "array",
+          "minItems": 1
+        },
+        "envelopeSources": {
+          "type": "array",
+          "minItems": 1
+        },
+        "safety": {
+          "type": "object",
+          "required": [
+            "approvedOnly",
+            "allowlistedOnly",
+            "readOnlyOnly",
+            "directSourceEnabled",
+            "automaticResponseTakeover",
+            "umgBlockLibraryMutation"
+          ],
+          "properties": {
+            "approvedOnly": {
+              "const": true
+            },
+            "allowlistedOnly": {
+              "const": true
+            },
+            "readOnlyOnly": {
+              "const": true
+            },
+            "directSourceEnabled": {
+              "const": false
+            },
+            "automaticResponseTakeover": {
+              "const": false
+            },
+            "umgBlockLibraryMutation": {
+              "const": "not_performed"
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "provenance": {
+      "type": "object",
+      "required": [
+        "category",
+        "declaredBy",
+        "sourceId"
+      ],
+      "properties": {
+        "category": {
+          "enum": [
+            "sleeve_native",
+            "sleeve_native_derived",
+            "sample_fallback",
+            "legacy_preview_residue",
+            "mixed_contaminated",
+            "unknown"
+          ]
+        },
+        "declaredBy": {
+          "enum": [
+            "sleeve",
+            "neoblock",
+            "runtime",
+            "fallback",
+            "unknown"
+          ]
+        },
+        "sourceId": {
+          "type": "string"
+        },
+        "sourcePath": {
+          "type": "string"
+        },
+        "derivedFrom": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
