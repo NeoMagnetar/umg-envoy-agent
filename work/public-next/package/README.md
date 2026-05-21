@@ -113,6 +113,21 @@ alpha.8 preserves strict safety boundaries:
 - compilerMode: compiler-backed dry-run preview
 - debug: false
 
+## Docs
+
+- Quickstart: `docs/ALPHA8-QUICKSTART.md`
+- Demo runtime flow: `docs/ALPHA8-DEMO-RUNTIME-FLOW.md`
+
+## Alpha8 fast path
+
+Recommended next development direction:
+1. release hygiene and demo docs
+2. bounded read-only orchestration surface
+3. active sleeve session state design
+4. richer sleeve graph support
+
+This is roadmap guidance, not a claim that Alpha8 implementation is already complete.
+
 ## Install
 
 - `openclaw plugins install clawhub:umg-envoy-agent@0.3.0-alpha.8`
