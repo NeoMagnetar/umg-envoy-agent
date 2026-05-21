@@ -1,4 +1,4 @@
-﻿import entry from './dist/plugin-entry.js';
+﻿import entry from '../dist/plugin-entry.js';
 const defs = [];
 await entry.register({ registerTool(def){ defs.push(def); }, registerCli(){} }, {});
 const tool = defs.find(d => d.name === 'umg_envoy_runtime_active_sleeve_ir_matrix_envelope_inspect');
@@ -36,3 +36,4 @@ if (result.audit?.restart !== 'not_performed') throw new Error('restart drift');
 if (result.audit?.publish !== 'not_performed') throw new Error('publish drift');
 if (result.audit?.libraryMutation !== 'not_performed') throw new Error('library mutation drift');
 console.log(JSON.stringify({ ok: true, smoke: 'alpha7-inspector-output-refinement', overallCompleteness: result.overallCompleteness, neoStackStatus: result.activeNeoStacks.status, neoBlockStatus: result.activeNeoBlocks.status, envelopeStatus: result.responseEnvelopePreview.envelopeStatus }, null, 2));
+

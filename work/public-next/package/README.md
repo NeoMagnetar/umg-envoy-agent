@@ -1,44 +1,40 @@
 # UMG Envoy Agent 0.3.0-alpha.8
 
-UMG Envoy Agent 0.3.0-alpha.8 is an OpenClaw plugin with a dry-run working runtime preview path backed by the Alpha6 real block-library tool chain.
+UMG Envoy Agent 0.3.0-alpha.8 is an OpenClaw plugin with a real block-library-backed runtime path, Alpha7 classified/gated approved read-only execution flow, and a refined active sleeve / IR matrix / envelope inspector.
 
-It is not a broad execution agent package. alpha.7 is package-sync prep for the current local live runtime truth: real sleeve selection, bounded resolver flow, RuntimeSpecV0 dry-run compile, Active Stack projection, and response-envelope preview.
+It is not a broad execution agent package.
 
-## alpha.7 capability note
+- `0.3.0-alpha.7` may be referenced historically as the public package baseline.
+- `0.3.0-alpha.8` is the current Alpha7 local/runtime truth for package prep.
 
-alpha.7 now includes the working runtime preview path:
-- sleeve graph drilldown
-- sleeve selection
-- bounded sleeve resolve
-- bounded approved NeoBlock shallow load
-- visible MOLT extraction
-- MOLT Map composition
-- RuntimeSpecV0 dry-run compile
-- Active Stack projection
-- response-envelope preview
+## alpha.8 capability note
 
-alpha.7 still preserves strict safety boundaries:
-- dry-run / preview only
-- no uncontrolled execution
-- no trigger evaluation
+alpha.8 includes the Alpha6 real block-library runtime path plus Alpha7 controlled runtime flow additions:
+- runtime tool request classifier
+- execution gate plan
+- approval checkpoint create
+- approval checkpoint resume
+- approved allowlisted read-only execution
+- end-to-end dry-run-to-approved-read-only execution chain
+- active sleeve / IR Matrix / envelope inspector
+
+alpha.8 preserves strict safety boundaries:
+- approved only
+- allowlisted only
+- read-only only
+- no broad autonomous execution
+- no trigger evaluation as execution authority
 - no external MOLT block file loading
 - no full library scan
 - no unbounded recursive traversal
 - no UMG-Block-Library mutation
+- no restart / publish / package execution
 - no automatic response takeover
 - direct_source remains disabled
 
 ## Live-capable tool surface
 
-### Working runtime path tools
-
-- `umg_envoy_block_library_sleeve_graph_drilldown`
-- `umg_envoy_sleeve_select`
-- `umg_envoy_sleeve_resolve`
-- `umg_envoy_runtime_compile`
-- `umg_envoy_runtime_preview`
-
-### Real block-library tool chain
+### Alpha6 / block-library runtime path tools
 
 - `umg_envoy_block_library_status`
 - `umg_envoy_block_library_manifest_index`
@@ -53,8 +49,23 @@ alpha.7 still preserves strict safety boundaries:
 - `umg_envoy_block_library_response_envelope_fragment`
 - `umg_envoy_block_library_active_stack_projection`
 - `umg_envoy_block_library_sleeve_graph_index`
+- `umg_envoy_block_library_sleeve_graph_drilldown`
+- `umg_envoy_sleeve_select`
+- `umg_envoy_sleeve_resolve`
+- `umg_envoy_runtime_compile`
+- `umg_envoy_runtime_preview`
 
-### Existing Alpha6 utility tools
+### Alpha7 runtime control / visibility tools
+
+- `umg_envoy_runtime_tool_request_classify`
+- `umg_envoy_runtime_execution_gate_plan`
+- `umg_envoy_runtime_approval_checkpoint_create`
+- `umg_envoy_runtime_approval_checkpoint_resume`
+- `umg_envoy_runtime_execute_approved_allowlisted`
+- `umg_envoy_runtime_execution_chain_e2e_approved_read_only`
+- `umg_envoy_runtime_active_sleeve_ir_matrix_envelope_inspect`
+
+### Existing utility tools
 
 - `umg_envoy_status`
 - `umg_envoy_compiler_smoke_test`
@@ -69,7 +80,7 @@ alpha.7 still preserves strict safety boundaries:
 - `umg_envoy_build_path`
 - `umg_envoy_matrix_status`
 
-## What alpha.7 does
+## What alpha.8 does
 
 - inspects the real block-library through bounded approved lanes
 - resolves a real sleeve into a bounded dry-run graph
@@ -77,17 +88,23 @@ alpha.7 still preserves strict safety boundaries:
 - extracts visible MOLT fragments
 - composes a full or partial MOLT Map
 - compiles a dry-run RuntimeSpecV0
+- classifies declared tool requests without executing them
+- creates execution gate plans and approval checkpoint projections
+- can execute approved allowlisted read-only actions only
 - renders Active Stack and response-envelope previews
-- surfaces declared tool requests without executing them
+- inspects active sleeve, NeoStacks, NeoBlocks, MOLT blocks, RuntimeSpec, IR Matrix, envelope preview, and execution gate state
 
-## What alpha.7 does not do
+## What alpha.8 does not do
 
 - broad execution
-- trigger evaluation
+- unapproved execution
+- non-allowlisted execution
+- write/mutate runtime actions through the Alpha7 chain
+- trigger evaluation as independent execution authority
 - external MOLT block loading
 - full-graph recursion
-- public package auto-promotion to Alpha7
 - mutation of the UMG-Block-Library
+- package / publish / restart execution
 
 ## Default posture
 
@@ -111,6 +128,3 @@ alpha.7 still preserves strict safety boundaries:
 ## Entrypoint
 
 - `dist/plugin-entry.js`
-
-
-

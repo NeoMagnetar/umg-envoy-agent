@@ -2,7 +2,7 @@
   "id": "umg-envoy-agent",
   "name": "UMG Envoy Agent",
   "version": "0.3.0-alpha.8",
-  "description": "UMG Envoy Agent alpha.7 for OpenClaw with dry-run working runtime preview and real block-library tooling",
+  "description": "UMG Envoy Agent alpha.8 for OpenClaw with Alpha7 classified/gated approved read-only runtime flow, refined inspector visibility, and real block-library tooling",
   "entry": "dist/plugin-entry.js",
   "apiVersion": 1,
   "configSchema": {
@@ -57,7 +57,14 @@
     "umg_envoy_sleeve_select",
     "umg_envoy_sleeve_resolve",
     "umg_envoy_runtime_compile",
-    "umg_envoy_runtime_preview"
+    "umg_envoy_runtime_preview",
+    "umg_envoy_runtime_tool_request_classify",
+    "umg_envoy_runtime_execution_gate_plan",
+    "umg_envoy_runtime_approval_checkpoint_create",
+    "umg_envoy_runtime_approval_checkpoint_resume",
+    "umg_envoy_runtime_execute_approved_allowlisted",
+    "umg_envoy_runtime_execution_chain_e2e_approved_read_only",
+    "umg_envoy_runtime_active_sleeve_ir_matrix_envelope_inspect"
   ]
 }
 
