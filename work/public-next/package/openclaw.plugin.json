@@ -64,8 +64,28 @@
     "umg_envoy_runtime_approval_checkpoint_resume",
     "umg_envoy_runtime_execute_approved_allowlisted",
     "umg_envoy_runtime_execution_chain_e2e_approved_read_only",
-    "umg_envoy_runtime_active_sleeve_ir_matrix_envelope_inspect"
-  ]
+    "umg_envoy_runtime_active_sleeve_ir_matrix_envelope_inspect",
+    "umg_envoy_runtime_bounded_read_only_orchestrate"
+  ],
+  "toolMetadata": {
+    "umg_envoy_runtime_bounded_read_only_orchestrate": {
+      "description": "A bounded read-only orchestration surface that composes active sleeve inspection, runtime preview, tool request classification, execution gate planning, approval checkpoint projection/resume, and approved allowlisted read-only execution into one normalized orchestration report.",
+      "safety": [
+        "approved only",
+        "allowlisted only",
+        "read-only only",
+        "no broad autonomous execution",
+        "no trigger evaluation as execution authority",
+        "no external MOLT block file loading",
+        "no full library scan",
+        "no unbounded recursive traversal",
+        "no UMG-Block-Library mutation",
+        "no restart / publish / package execution",
+        "no automatic response takeover",
+        "direct_source disabled"
+      ]
+    }
+  }
 }
 
 
