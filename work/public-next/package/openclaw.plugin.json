@@ -1,8 +1,8 @@
 {
   "id": "umg-envoy-agent",
   "name": "UMG Envoy Agent",
-  "version": "0.3.0-alpha.9",
-  "description": "UMG Envoy Agent alpha.9 for OpenClaw with Alpha8 bounded read-only orchestration, Alpha7 classified/gated approved read-only runtime flow, refined inspector visibility, and real block-library tooling",
+  "version": "0.3.0-alpha.10",
+  "description": "Run Universal Modular Generation as a modular cognitive architectural runtime inside OpenClaw, with sleeve-aware orchestration, active sleeve session state, runtime inspection, IR Matrix visibility, and approved read-only tool gating.",
   "entry": "dist/plugin-entry.js",
   "apiVersion": 1,
   "configSchema": {
@@ -69,7 +69,8 @@
     "umg_envoy_sleeve_session_select",
     "umg_envoy_sleeve_session_current",
     "umg_envoy_sleeve_session_clear",
-    "umg_envoy_sleeve_session_inspect"
+    "umg_envoy_sleeve_session_inspect",
+    "umg_envoy_runtime_sleeve_graph_richness_inspect"
   ],
   "toolMetadata": {
     "umg_envoy_runtime_bounded_read_only_orchestrate": {

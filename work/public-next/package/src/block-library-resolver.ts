@@ -6040,6 +6040,200 @@ export function inspectRuntimeSleeveSession(
   });
 }
 
+export function inspectRuntimeSleeveGraphRichness(
+  version: string,
+  entrypoint = 'dist/plugin-entry.js',
+  root = DEFAULT_LIBRARY_ROOT,
+  input: {
+    sleeveId?: string;
+    useActiveSessionSleeve?: boolean;
+    includeNeoStacks?: boolean;
+    includeNeoBlocks?: boolean;
+    includeMoltFragments?: boolean;
+    includeToolRequests?: boolean;
+    includeRuntimeSpec?: boolean;
+    includeIrMatrix?: boolean;
+    includeEnvelope?: boolean;
+    includeDiagnostics?: boolean;
+    includeTrace?: boolean;
+  } = {}
+) {
+  const useActiveSessionSleeve = input.useActiveSessionSleeve !== false;
+  const sessionState = getRuntimeSleeveSessionState();
+  const sleeveId = input.sleeveId ?? (useActiveSessionSleeve ? sessionState.activeSleeveId ?? undefined : undefined);
+  const graphRunId = `graph_${simpleStableKey([sleeveId ?? 'no_active_sleeve', 'richness'])}`;
+  if (!sleeveId) {
+    return {
+      ok: true,
+      outputContract: { contractId: 'umg.runtime.sleeve_graph.richness.v1' as const, contractStatus: 'NORMALIZED' as const },
+      graphStatus: 'GRAPH_BLOCKED' as const,
+      sourceSleeveId: null,
+      activeSessionUsed: useActiveSessionSleeve,
+      sleeveSummary: null,
+      neoStackSummary: null,
+      neoBlockSummary: null,
+      moltFragmentSummary: null,
+      toolRequestSummary: null,
+      runtimeSpecSummary: null,
+      irMatrixSummary: null,
+      envelopeSummary: null,
+      graphCompleteness: 'blocked' as const,
+      diagnostics: { blockedReason: 'no_active_sleeve', graphRunId },
+      warnings: [],
+      errors: [{ code: 'NO_ACTIVE_SLEEVE', message: 'No active sleeve session exists and no sleeveId was provided.' }],
+      audit: {
+        execution: 'not_performed' as const,
+        toolExecution: 'not_performed' as const,
+        libraryMutation: 'not_performed' as const,
+        packageMutation: 'not_performed' as const,
+        filesystemMutation: 'not_performed' as const,
+        restart: 'not_performed' as const,
+        publish: 'not_performed' as const,
+        automaticResponseTakeover: false,
+        directSource: 'disabled' as const
+      },
+      trace: input.includeTrace === false ? [] : ['graphStatus=GRAPH_BLOCKED', 'blockedReason=no_active_sleeve', 'execution=not_performed']
+    };
+  }
+  const inspection = inspectRuntimeActiveSleeveIrMatrixEnvelope(version, entrypoint, root, {
+    sleeveId,
+    includeNeoStacks: input.includeNeoStacks !== false,
+    includeNeoBlocks: input.includeNeoBlocks !== false,
+    includeMoltBlocks: input.includeMoltFragments !== false,
+    includeRuntimeSpec: input.includeRuntimeSpec !== false,
+    includeIrMatrix: input.includeIrMatrix !== false,
+    includeEnvelope: input.includeEnvelope !== false,
+    includeExecutionGateState: true,
+    mode: 'inspect_only'
+  });
+  const drilldown = getBlockLibrarySleeveGraphDrilldown(version, entrypoint, root, { sleeveId, projectionFormat: 'summary' });
+  const runtimePreview = previewRuntimeSleeve(version, entrypoint, root, {
+    sleeveId,
+    previewFormat: 'summary',
+    includeActiveStack: true,
+    includeMoltMap: true,
+    includeEnvelope: true,
+    includeToolRequests: true
+  });
+  const classifier = classifyRuntimeToolRequests(version, entrypoint, root, {
+    sleeveId,
+    compileIfMissing: true,
+    mode: 'classify_only',
+    includeTrace: true
+  });
+  const neoStackItems = inspection.activeNeoStacks?.items ?? [];
+  const neoBlockItems = inspection.activeNeoBlocks?.items ?? [];
+  const moltGroups = inspection.activeMoltBlocks?.groups ?? {};
+  const moltVisibleCount = Object.values(moltGroups).reduce((sum, group) => sum + (Array.isArray(group) ? group.length : 0), 0);
+  const toolRequests = Array.isArray((classifier as any).classifications) ? (classifier as any).classifications : [];
+  const runtimeSpecValue = inspection.runtimeSpec as Record<string, unknown> | null | undefined;
+  const runtimePreviewSpecValue = runtimePreview.runtimeSpec as Record<string, unknown> | null | undefined;
+  const runtimeSpecSummary = input.includeRuntimeSpec === false ? null : {
+    runtimeSpecId: inspection.runtimeSpec?.runtimeSpecId ?? runtimePreview.runtimeSpec?.runtimeSpecId ?? null,
+    sourceMode: typeof runtimeSpecValue?.sourceMode === 'string' ? runtimeSpecValue.sourceMode : null,
+    activeBlockCount: inspection.runtimeSpec?.activeBlocks?.length ?? runtimePreview.runtimeSpec?.activeBlocks?.length ?? 0,
+    usesSleeveNativeBlocks: typeof runtimeSpecValue?.usesSleeveNativeBlocks === 'boolean' ? runtimeSpecValue.usesSleeveNativeBlocks : null,
+    usesSampleBlocks: typeof runtimeSpecValue?.usesSampleBlocks === 'boolean' ? runtimeSpecValue.usesSampleBlocks : null,
+    previewStatus: typeof runtimePreviewSpecValue?.previewStatus === 'string' ? runtimePreviewSpecValue.previewStatus : runtimePreview.previewStatus ?? null
+  };
+  const irMatrixSummary = input.includeIrMatrix === false ? null : {
+    matrixId: inspection.irMatrixProjection?.matrixId ?? null,
+    nodeCount: inspection.irMatrixProjection?.nodes?.length ?? 0,
+    edgeCount: inspection.irMatrixProjection?.edges?.length ?? 0,
+    activeRoute: inspection.irMatrixProjection?.activeRoute ?? [],
+    blockedRoute: inspection.irMatrixProjection?.blockedRoute ?? []
+  };
+  const envelopeSummary = input.includeEnvelope === false ? null : {
+    envelopeStatus: inspection.responseEnvelopePreview?.envelopeStatus ?? null,
+    envelopeSource: inspection.responseEnvelopePreview?.envelopeSource ?? null,
+    heldReason: inspection.responseEnvelopePreview?.heldReason ?? null
+  };
+  const neoStackReason = inspection.activeNeoStacks?.reason ?? (neoStackItems.length === 0 ? 'sleeve_declares_no_neostacks' : null);
+  const graphCompleteness = inspection.overallCompleteness === 'rich_sleeve_native'
+    ? 'rich_sleeve_native'
+    : ((neoBlockItems.length > 0 && (neoStackItems.length === 0 || neoStackReason === 'sleeve_declares_no_neostacks'))
+      ? 'neoblock_only'
+      : (neoBlockItems.length > 0 ? 'partial' : 'empty'));
+  return {
+    ok: true,
+    outputContract: { contractId: 'umg.runtime.sleeve_graph.richness.v1' as const, contractStatus: 'NORMALIZED' as const },
+    graphStatus: inspection.ok ? (graphCompleteness === 'partial' || graphCompleteness === 'neoblock_only' ? 'GRAPH_PARTIAL' as const : 'GRAPH_READY' as const) : 'GRAPH_ERROR' as const,
+    sourceSleeveId: sleeveId,
+    activeSessionUsed: !input.sleeveId,
+    sleeveSummary: {
+      sleeveId,
+      sessionState: sessionState.activeSleeveId === sleeveId ? sessionState.sessionStatus : 'explicit_request',
+      graphStatus: drilldown.ok ? drilldown.drilldownStatus ?? null : null,
+      declaredNeoStacks: drilldown.ok ? drilldown.declaredNeoStackRefs?.length ?? 0 : 0,
+      declaredNeoBlocks: drilldown.ok ? drilldown.declaredNeoBlockRefs?.length ?? 0 : 0
+    },
+    neoStackSummary: input.includeNeoStacks === false ? null : {
+      count: inspection.activeNeoStacks?.count ?? 0,
+      status: inspection.activeNeoStacks?.status ?? 'missing',
+      reason: neoStackReason,
+      items: neoStackItems,
+      source: 'sleeve_native_graph'
+    },
+    neoBlockSummary: input.includeNeoBlocks === false ? null : {
+      count: inspection.activeNeoBlocks?.count ?? 0,
+      status: inspection.activeNeoBlocks?.status ?? 'missing',
+      reason: inspection.activeNeoBlocks?.reason ?? null,
+      items: neoBlockItems,
+      source: 'sleeve_native_graph'
+    },
+    moltFragmentSummary: input.includeMoltFragments === false ? null : {
+      visibleCount: moltVisibleCount,
+      source: inspection.activeMoltBlocks?.source ?? null,
+      groups: moltGroups
+    },
+    toolRequestSummary: input.includeToolRequests === false ? null : {
+      requestCount: toolRequests.length,
+      requests: toolRequests.map((req: any) => ({
+        requestId: req.requestId,
+        requestedToolName: req.requestedToolName,
+        requestedAction: req.requestedAction,
+        classification: req.classification,
+        decisionReason: req.decisionReason,
+        routeReason: req.requestSummary ?? null
+      }))
+    },
+    runtimeSpecSummary,
+    irMatrixSummary,
+    envelopeSummary,
+    graphCompleteness,
+    diagnostics: input.includeDiagnostics === false ? null : {
+      graphRunId,
+      overallCompleteness: inspection.overallCompleteness,
+      neoStackReason,
+      activeMoltSource: inspection.activeMoltBlocks?.source ?? null,
+      activeSessionAvailable: !!sessionState.activeSleeveId,
+      activeSessionSleeveId: sessionState.activeSleeveId ?? null,
+      directSourceEnabled: false,
+      automaticResponseTakeover: false
+    },
+    warnings: inspection.warnings ?? [],
+    errors: inspection.errors ?? [],
+    audit: {
+      execution: 'not_performed' as const,
+      toolExecution: 'not_performed' as const,
+      libraryMutation: 'not_performed' as const,
+      packageMutation: 'not_performed' as const,
+      filesystemMutation: 'not_performed' as const,
+      restart: 'not_performed' as const,
+      publish: 'not_performed' as const,
+      automaticResponseTakeover: false,
+      directSource: 'disabled' as const
+    },
+    trace: input.includeTrace === false ? [] : [
+      `graphRunId=${graphRunId}`,
+      `sourceSleeveId=${sleeveId}`,
+      `graphCompleteness=${graphCompleteness}`,
+      `neoStackReason=${neoStackReason ?? 'none'}`,
+      'execution=not_performed'
+    ]
+  };
+}
+
 export function runBoundedReadOnlyOrchestration(
   version: string,
   entrypoint = 'dist/plugin-entry.js',

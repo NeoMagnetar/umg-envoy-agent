@@ -3582,6 +3582,208 @@ export declare function inspectRuntimeSleeveSession(version: string, entrypoint?
     includeExecutionGateState?: boolean;
     includeTrace?: boolean;
 }): RuntimeSleeveSessionStateV0;
+export declare function inspectRuntimeSleeveGraphRichness(version: string, entrypoint?: string, root?: string, input?: {
+    sleeveId?: string;
+    useActiveSessionSleeve?: boolean;
+    includeNeoStacks?: boolean;
+    includeNeoBlocks?: boolean;
+    includeMoltFragments?: boolean;
+    includeToolRequests?: boolean;
+    includeRuntimeSpec?: boolean;
+    includeIrMatrix?: boolean;
+    includeEnvelope?: boolean;
+    includeDiagnostics?: boolean;
+    includeTrace?: boolean;
+}): {
+    ok: boolean;
+    outputContract: {
+        contractId: "umg.runtime.sleeve_graph.richness.v1";
+        contractStatus: "NORMALIZED";
+    };
+    graphStatus: "GRAPH_BLOCKED";
+    sourceSleeveId: null;
+    activeSessionUsed: boolean;
+    sleeveSummary: null;
+    neoStackSummary: null;
+    neoBlockSummary: null;
+    moltFragmentSummary: null;
+    toolRequestSummary: null;
+    runtimeSpecSummary: null;
+    irMatrixSummary: null;
+    envelopeSummary: null;
+    graphCompleteness: "blocked";
+    diagnostics: {
+        blockedReason: string;
+        graphRunId: string;
+        overallCompleteness?: undefined;
+        neoStackReason?: undefined;
+        activeMoltSource?: undefined;
+        activeSessionAvailable?: undefined;
+        activeSessionSleeveId?: undefined;
+        directSourceEnabled?: undefined;
+        automaticResponseTakeover?: undefined;
+    };
+    warnings: never[];
+    errors: {
+        code: string;
+        message: string;
+    }[];
+    audit: {
+        execution: "not_performed";
+        toolExecution: "not_performed";
+        libraryMutation: "not_performed";
+        packageMutation: "not_performed";
+        filesystemMutation: "not_performed";
+        restart: "not_performed";
+        publish: "not_performed";
+        automaticResponseTakeover: boolean;
+        directSource: "disabled";
+    };
+    trace: string[];
+} | {
+    ok: boolean;
+    outputContract: {
+        contractId: "umg.runtime.sleeve_graph.richness.v1";
+        contractStatus: "NORMALIZED";
+    };
+    graphStatus: "GRAPH_PARTIAL" | "GRAPH_READY" | "GRAPH_ERROR";
+    sourceSleeveId: string;
+    activeSessionUsed: boolean;
+    sleeveSummary: {
+        sleeveId: string;
+        sessionState: string;
+        graphStatus: string | null;
+        declaredNeoStacks: number;
+        declaredNeoBlocks: number;
+    };
+    neoStackSummary: {
+        count: number;
+        status: string;
+        reason: string | null;
+        items: {
+            neoStackId: any;
+            displayName: any;
+            declaredRef: any;
+            sourcePath: string | null;
+            manifestEntry: string | null;
+            activeStatus: string;
+            reasonActive: string;
+            reasonUnavailable: null;
+            declaredNeoBlockRefs: string[];
+            resolvedNeoBlockCount: number;
+            blockedNeoBlockCount: number;
+            warnings: never[];
+        }[] | {
+            neoStackId: null;
+            displayName: null;
+            declaredRef: null;
+            sourcePath: string | null;
+            manifestEntry: string | null;
+            activeStatus: string;
+            reasonActive: null;
+            reasonUnavailable: string;
+            declaredNeoBlockRefs: string[];
+            resolvedNeoBlockCount: number;
+            blockedNeoBlockCount: number;
+            warnings: string[];
+        }[];
+        source: string;
+    } | null;
+    neoBlockSummary: {
+        count: number;
+        status: string;
+        reason: string | null;
+        items: {
+            neoBlockId: any;
+            parentNeoStackId: null;
+            declaredRef: any;
+            resolvedPath: string | null;
+            manifestSource: string | null;
+            loadStatus: any;
+            visibleMoltFragmentCount: number;
+            extractedMoltTypes: any[];
+            contentSummary: any;
+            warnings: any;
+        }[];
+        source: string;
+    } | null;
+    moltFragmentSummary: {
+        visibleCount: number;
+        source: string;
+        groups: Record<string, any[]>;
+    } | null;
+    toolRequestSummary: {
+        requestCount: any;
+        requests: any;
+    } | null;
+    runtimeSpecSummary: {
+        runtimeSpecId: string | null;
+        sourceMode: string | null;
+        activeBlockCount: number;
+        usesSleeveNativeBlocks: boolean | null;
+        usesSampleBlocks: boolean | null;
+        previewStatus: string;
+    } | null;
+    irMatrixSummary: {
+        matrixId: string | null;
+        nodeCount: number;
+        edgeCount: number;
+        activeRoute: string[];
+        blockedRoute: string[];
+    } | null;
+    envelopeSummary: {
+        envelopeStatus: any;
+        envelopeSource: any;
+        heldReason: any;
+    } | null;
+    graphCompleteness: string;
+    diagnostics: {
+        graphRunId: string;
+        overallCompleteness: string;
+        neoStackReason: string | null;
+        activeMoltSource: string;
+        activeSessionAvailable: boolean;
+        activeSessionSleeveId: string | null;
+        directSourceEnabled: boolean;
+        automaticResponseTakeover: boolean;
+        blockedReason?: undefined;
+    } | null;
+    warnings: string[];
+    errors: never[] | {
+        code: BlockLibraryHoldCode;
+        message: string;
+    }[] | {
+        code: string;
+        message: string;
+    }[] | {
+        code: string;
+        message: string;
+    }[] | {
+        code: string;
+        message: string;
+    }[] | {
+        code: string;
+        message: string;
+    }[] | {
+        code: string;
+        message: string;
+    }[] | {
+        code: string;
+        message: string;
+    }[];
+    audit: {
+        execution: "not_performed";
+        toolExecution: "not_performed";
+        libraryMutation: "not_performed";
+        packageMutation: "not_performed";
+        filesystemMutation: "not_performed";
+        restart: "not_performed";
+        publish: "not_performed";
+        automaticResponseTakeover: boolean;
+        directSource: "disabled";
+    };
+    trace: string[];
+};
 export declare function runBoundedReadOnlyOrchestration(version: string, entrypoint?: string, root?: string, input?: {
     sleeveId?: string;
     useActiveSessionSleeve?: boolean;
