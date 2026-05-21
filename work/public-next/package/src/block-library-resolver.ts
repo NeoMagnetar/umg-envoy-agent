@@ -5557,6 +5557,10 @@ export function inspectRuntimeActiveSleeveIrMatrixEnvelope(
   if (resolved.ok) {
     for (const fragment of resolved.visibleMoltFragments) {
       const block = resolved.resolvedNeoBlocks.find((item) => item.neoblockId === fragment.neoblockId);
+      const blockSummary = block?.summary;
+      const blockSummaryStatus = typeof blockSummary === 'object' && blockSummary !== null && 'status' in blockSummary
+        ? (blockSummary as { status?: unknown }).status
+        : undefined;
       const item = {
         sourceNeoBlockId: fragment.neoblockId,
         sourceNeoStackId: null,
@@ -5567,7 +5571,7 @@ export function inspectRuntimeActiveSleeveIrMatrixEnvelope(
         mergeKey: fragment.sourceField,
         stackKey: null,
         trace: [`sourceBlockId=${fragment.sourceBlockId ?? 'none'}`, `sourceField=${fragment.sourceField}`],
-        sourceMode: block?.summary?.status === 'alpha6_sample_target' ? 'runtimeSpec_sample_blocks' : 'sleeve_native'
+        sourceMode: blockSummaryStatus === 'alpha6_sample_target' ? 'runtimeSpec_sample_blocks' : 'sleeve_native'
       };
       if (Array.isArray(activeMoltBlocks[fragment.sourceField])) {
         activeMoltBlocks[fragment.sourceField].push(item);
