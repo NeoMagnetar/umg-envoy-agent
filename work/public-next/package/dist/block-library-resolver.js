@@ -1,0 +1,4404 @@
+import { createHash } from "node:crypto";
+import fs from "node:fs";
+import path from "node:path";
+const DEFAULT_LIBRARY_ROOT = "C:\\.openclaw\\workspace\\UMG-Block-Library";
+const runtimeSelectionState = new Map();
+const MACHINE_LANES = [
+    "AI/MANIFESTS",
+    "AI/SLEEVES",
+    "AI/MOLT-BLOCKS",
+    "AI/NEOBLOCKS",
+    "AI/NEOSTACKS",
+    "AI/GATES",
+    "AI/COMPILER"
+];
+const PUBLIC_CURATED_LANES = [
+    "sleeves",
+    "sleeves/manifests"
+];
+const REFERENCE_ONLY_LANES = [
+    "HUMAN",
+    "docs",
+    "README.md",
+    "START-HERE.md"
+];
+const FORBIDDEN_LANES = [
+    "archive",
+    "backups",
+    "artifacts",
+    "release-staging",
+    "publish-stage",
+    "Resleever",
+    "vendor",
+    "node_modules"
+];
+const REQUIRED_MANIFESTS = [
+    "AI/MANIFESTS/neoblock-library-index.json",
+    "AI/MANIFESTS/molt-block-library-index.json",
+    "AI/MANIFESTS/neostack-library-index.json",
+    "sleeves/manifests/catalog.json"
+];
+const OPTIONAL_MANIFESTS = [
+    "AI/MANIFESTS/gate-library-index.json",
+    "AI/MANIFESTS/sleeve-library-index.json",
+    "AI/MANIFESTS/compiler-library-index.json"
+];
+const ALLOWED_TARGET_PREFIXES = [
+    "AI/NEOBLOCKS/",
+    "AI/MOLT-BLOCKS/",
+    "AI/NEOSTACKS/",
+    "AI/GATES/",
+    "AI/SLEEVES/",
+    "sleeves/",
+    "blocks/library/neoblocks/",
+    "blocks/library/molt-extracted/",
+    "blocks/library/neostacks/",
+    "blocks/library/gates/"
+];
+function safeExists(target) {
+    return fs.existsSync(target);
+}
+function classifyLane(root, lane) {
+    const target = path.join(root, ...lane.split(/[\\/]+/));
+    const exists = safeExists(target);
+    if (MACHINE_LANES.includes(lane)) {
+        const notes = [];
+        if (lane === "AI/MANIFESTS") {
+            const manifestPath = path.join(target, "sleeve-catalog.json");
+            if (!safeExists(manifestPath)) {
+                notes.push("manifest check: sleeve-catalog.json missing");
+            }
+        }
+        return {
+            lane,
+            classification: "MACHINE_LOADABLE_CANDIDATE",
+            exists,
+            loadPolicy: "readonly_allowed",
+            notes
+        };
+    }
+    if (PUBLIC_CURATED_LANES.includes(lane)) {
+        return {
+            lane,
+            classification: "PUBLIC_CURATED_CANDIDATE",
+            exists,
+            loadPolicy: "readonly_allowed",
+            notes: []
+        };
+    }
+    if (REFERENCE_ONLY_LANES.includes(lane)) {
+        return {
+            lane,
+            classification: "REFERENCE_ONLY",
+            exists,
+            loadPolicy: "not_machine_loaded",
+            notes: []
+        };
+    }
+    return {
+        lane,
+        classification: "FORBIDDEN",
+        exists,
+        loadPolicy: "do_not_load",
+        notes: []
+    };
+}
+export function defaultBlockLibraryRoot() {
+    return DEFAULT_LIBRARY_ROOT;
+}
+function stripBom(text) {
+    return text.charCodeAt(0) === 0xFEFF ? text.slice(1) : text;
+}
+function readJsonFile(filePath) {
+    return JSON.parse(stripBom(fs.readFileSync(filePath, "utf8")));
+}
+function normalizeRelativePath(rawPath) {
+    return rawPath.replace(/\\/g, "/").replace(/^\.\//, "").replace(/^\.\.\//, "");
+}
+function isForbiddenTarget(relativePath) {
+    const lowered = normalizeRelativePath(relativePath).toLowerCase();
+    return FORBIDDEN_LANES.some((lane) => lowered === lane.toLowerCase() || lowered.startsWith(`${lane.toLowerCase()}/`));
+}
+function isAllowedTarget(relativePath) {
+    const normalized = normalizeRelativePath(relativePath);
+    return ALLOWED_TARGET_PREFIXES.some((prefix) => normalized.startsWith(prefix));
+}
+function resolveTargetClassification(root, targetPath) {
+    if (!targetPath) {
+        return {
+            targetPath: null,
+            targetClassification: "NO_TARGET_PATH",
+            targetExists: false,
+            notes: ["entry has no target path"]
+        };
+    }
+    const normalized = normalizeRelativePath(targetPath);
+    if (isForbiddenTarget(normalized)) {
+        return {
+            targetPath: normalized,
+            targetClassification: "FORBIDDEN_TARGET",
+            targetExists: false,
+            notes: []
+        };
+    }
+    if (!isAllowedTarget(normalized)) {
+        return {
+            targetPath: normalized,
+            targetClassification: "OUTSIDE_ALLOWLIST_TARGET",
+            targetExists: false,
+            notes: []
+        };
+    }
+    const full = path.join(root, ...normalized.split("/"));
+    return {
+        targetPath: normalized,
+        targetClassification: safeExists(full) ? "ALLOWED_TARGET" : "MISSING_TARGET",
+        targetExists: safeExists(full),
+        notes: []
+    };
+}
+function rawManifestEntries(manifestName, data) {
+    if (Array.isArray(data)) {
+        return data.filter((entry) => typeof entry === "object" && entry !== null);
+    }
+    if (!data || typeof data !== "object") {
+        return null;
+    }
+    const obj = data;
+    if (manifestName === "sleeves/manifests/catalog.json") {
+        const sleeves = obj.sleeves;
+        return Array.isArray(sleeves) ? sleeves.filter((entry) => typeof entry === "object" && entry !== null) : null;
+    }
+    if (Array.isArray(obj.value)) {
+        const flattened = [];
+        for (const item of obj.value) {
+            if (Array.isArray(item)) {
+                flattened.push(...item.filter((entry) => typeof entry === "object" && entry !== null));
+            }
+            else if (item && typeof item === "object") {
+                flattened.push(item);
+            }
+        }
+        return flattened;
+    }
+    return null;
+}
+function normalizeManifest(root, manifestName, relativePath, required, data) {
+    const entries = rawManifestEntries(manifestName, data);
+    if (!entries) {
+        return {
+            manifestName,
+            relativePath,
+            required,
+            status: "PRESENT_PARSED_SHAPE_UNKNOWN",
+            exists: true,
+            entryCount: 0,
+            normalizedEntryCount: 0,
+            entries: [],
+            notes: ["manifest shape not recognized"]
+        };
+    }
+    const normalizedEntries = entries.map((entry, index) => {
+        const entryId = typeof entry.id === "string" ? entry.id : (typeof entry.name === "string" ? entry.name : `entry_${index}`);
+        const candidatePath = typeof entry.path === "string"
+            ? entry.path
+            : (typeof entry.source_path === "string" ? entry.source_path : null);
+        const resolved = resolveTargetClassification(root, candidatePath);
+        return {
+            manifestName,
+            entryId,
+            title: typeof entry.title === "string" ? entry.title : (typeof entry.name === "string" ? entry.name : null),
+            kind: typeof entry.kind === "string" ? entry.kind : null,
+            ...resolved
+        };
+    });
+    return {
+        manifestName,
+        relativePath,
+        required,
+        status: "PRESENT_PARSED_NORMALIZED",
+        exists: true,
+        entryCount: entries.length,
+        normalizedEntryCount: normalizedEntries.length,
+        entries: normalizedEntries,
+        notes: []
+    };
+}
+export function getBlockLibraryManifestIndex(version, entrypoint = "dist/plugin-entry.js", root = DEFAULT_LIBRARY_ROOT) {
+    const normalizedRoot = path.resolve(root);
+    if (!normalizedRoot || normalizedRoot.trim().length === 0) {
+        return {
+            ok: false,
+            version,
+            entrypoint,
+            surface: "compiler_backed_runtime",
+            mode: "real_block_library_manifest_index",
+            readOnly: true,
+            execution: "not_performed",
+            directSource: "not_enabled",
+            libraryRoot: root,
+            rootExists: false,
+            summary: {
+                manifestCount: 0,
+                parsedManifestCount: 0,
+                normalizedManifestCount: 0,
+                missingManifestCount: 0,
+                parseFailedManifestCount: 0,
+                shapeUnknownManifestCount: 0,
+                totalEntryCount: 0,
+                allowedTargetEntryCount: 0,
+                missingTargetEntryCount: 0,
+                forbiddenTargetEntryCount: 0,
+                outsideAllowlistTargetEntryCount: 0
+            },
+            manifests: [],
+            warnings: [],
+            errors: [{ code: "HOLD_LIBRARY_ROOT_REQUIRED", message: "Library root is required." }]
+        };
+    }
+    if (!safeExists(normalizedRoot)) {
+        return {
+            ok: false,
+            version,
+            entrypoint,
+            surface: "compiler_backed_runtime",
+            mode: "real_block_library_manifest_index",
+            readOnly: true,
+            execution: "not_performed",
+            directSource: "not_enabled",
+            libraryRoot: normalizedRoot,
+            rootExists: false,
+            summary: {
+                manifestCount: 0,
+                parsedManifestCount: 0,
+                normalizedManifestCount: 0,
+                missingManifestCount: 0,
+                parseFailedManifestCount: 0,
+                shapeUnknownManifestCount: 0,
+                totalEntryCount: 0,
+                allowedTargetEntryCount: 0,
+                missingTargetEntryCount: 0,
+                forbiddenTargetEntryCount: 0,
+                outsideAllowlistTargetEntryCount: 0
+            },
+            manifests: [],
+            warnings: [],
+            errors: [{ code: "HOLD_LIBRARY_ROOT_MISSING", message: `Library root missing: ${normalizedRoot}` }]
+        };
+    }
+    const manifests = [];
+    for (const relativePath of REQUIRED_MANIFESTS) {
+        const full = path.join(normalizedRoot, ...relativePath.split("/"));
+        if (!safeExists(full)) {
+            manifests.push({ manifestName: relativePath.split("/").slice(-1)[0], relativePath, required: true, status: "MISSING_REQUIRED", exists: false, entryCount: 0, normalizedEntryCount: 0, entries: [], notes: [] });
+            continue;
+        }
+        try {
+            const parsed = readJsonFile(full);
+            manifests.push(normalizeManifest(normalizedRoot, relativePath, relativePath, true, parsed));
+        }
+        catch (error) {
+            manifests.push({ manifestName: relativePath.split("/").slice(-1)[0], relativePath, required: true, status: "PRESENT_PARSE_FAILED", exists: true, entryCount: 0, normalizedEntryCount: 0, entries: [], notes: [String(error)] });
+        }
+    }
+    for (const relativePath of OPTIONAL_MANIFESTS) {
+        const full = path.join(normalizedRoot, ...relativePath.split("/"));
+        if (!safeExists(full)) {
+            manifests.push({ manifestName: relativePath.split("/").slice(-1)[0], relativePath, required: false, status: "MISSING_OPTIONAL", exists: false, entryCount: 0, normalizedEntryCount: 0, entries: [], notes: [] });
+            continue;
+        }
+        try {
+            const parsed = readJsonFile(full);
+            manifests.push(normalizeManifest(normalizedRoot, relativePath, relativePath, false, parsed));
+        }
+        catch (error) {
+            manifests.push({ manifestName: relativePath.split("/").slice(-1)[0], relativePath, required: false, status: "PRESENT_PARSE_FAILED", exists: true, entryCount: 0, normalizedEntryCount: 0, entries: [], notes: [String(error)] });
+        }
+    }
+    const allEntries = manifests.flatMap((manifest) => manifest.entries);
+    return {
+        ok: true,
+        version,
+        entrypoint,
+        surface: "compiler_backed_runtime",
+        mode: "real_block_library_manifest_index",
+        readOnly: true,
+        execution: "not_performed",
+        directSource: "not_enabled",
+        libraryRoot: normalizedRoot,
+        rootExists: true,
+        summary: {
+            manifestCount: manifests.length,
+            parsedManifestCount: manifests.filter((manifest) => manifest.status !== "MISSING_REQUIRED" && manifest.status !== "MISSING_OPTIONAL").length,
+            normalizedManifestCount: manifests.filter((manifest) => manifest.status === "PRESENT_PARSED_NORMALIZED").length,
+            missingManifestCount: manifests.filter((manifest) => manifest.status === "MISSING_REQUIRED" || manifest.status === "MISSING_OPTIONAL").length,
+            parseFailedManifestCount: manifests.filter((manifest) => manifest.status === "PRESENT_PARSE_FAILED").length,
+            shapeUnknownManifestCount: manifests.filter((manifest) => manifest.status === "PRESENT_PARSED_SHAPE_UNKNOWN").length,
+            totalEntryCount: manifests.reduce((sum, manifest) => sum + manifest.entryCount, 0),
+            allowedTargetEntryCount: allEntries.filter((entry) => entry.targetClassification === "ALLOWED_TARGET").length,
+            missingTargetEntryCount: allEntries.filter((entry) => entry.targetClassification === "MISSING_TARGET").length,
+            forbiddenTargetEntryCount: allEntries.filter((entry) => entry.targetClassification === "FORBIDDEN_TARGET").length,
+            outsideAllowlistTargetEntryCount: allEntries.filter((entry) => entry.targetClassification === "OUTSIDE_ALLOWLIST_TARGET").length
+        },
+        manifests,
+        warnings: [],
+        errors: []
+    };
+}
+function manifestKindForPath(relativePath) {
+    switch (relativePath) {
+        case "AI/MANIFESTS/neoblock-library-index.json": return "neoblock";
+        case "AI/MANIFESTS/molt-block-library-index.json": return "moltblock";
+        case "AI/MANIFESTS/neostack-library-index.json": return "neostack";
+        case "AI/MANIFESTS/gate-library-index.json": return "gate";
+        case "AI/MANIFESTS/sleeve-library-index.json": return "sleeve";
+        case "AI/MANIFESTS/compiler-library-index.json": return "compiler";
+        case "sleeves/manifests/catalog.json": return "public_curated_catalog";
+        default: return "all";
+    }
+}
+function targetPolicyForEntry(entry) {
+    switch (entry.targetClassification) {
+        case "ALLOWED_TARGET": return "ALLOWED_NOT_LOADED";
+        case "MISSING_TARGET": return "MISSING_ON_DISK";
+        case "FORBIDDEN_TARGET": return "FORBIDDEN_TARGET";
+        case "OUTSIDE_ALLOWLIST_TARGET": return "OUTSIDE_ALLOWLIST_TARGET";
+        case "NO_TARGET_PATH": return "NO_SOURCE_PATH";
+        default: return "SHAPE_UNKNOWN";
+    }
+}
+function resolutionStatusForPolicy(policy) {
+    switch (policy) {
+        case "ALLOWED_NOT_LOADED": return "TARGET_INDEX_ENTRY_FOUND_PATH_ALLOWED_NOT_LOADED";
+        case "MISSING_ON_DISK": return "TARGET_INDEX_ENTRY_FOUND_PATH_ALLOWED_MISSING_ON_DISK";
+        case "FORBIDDEN_TARGET": return "TARGET_INDEX_ENTRY_FOUND_PATH_FORBIDDEN_NOT_LOADED";
+        case "OUTSIDE_ALLOWLIST_TARGET": return "TARGET_INDEX_ENTRY_FOUND_PATH_OUTSIDE_ALLOWLIST_NOT_LOADED";
+        case "NO_SOURCE_PATH": return "TARGET_INDEX_ENTRY_FOUND_NO_SOURCE_PATH";
+        default: return "TARGET_INDEX_ENTRY_FOUND_SHAPE_UNKNOWN";
+    }
+}
+export function getBlockLibraryManifestEntryLookup(version, entrypoint = "dist/plugin-entry.js", root = DEFAULT_LIBRARY_ROOT, input = {}) {
+    const manifestKind = input.manifestKind ?? "all";
+    if (input.includeRaw) {
+        return {
+            ok: false,
+            version,
+            entrypoint,
+            surface: "compiler_backed_runtime",
+            mode: "real_block_library_manifest_entry_lookup",
+            readOnly: true,
+            execution: "not_performed",
+            directSource: "not_enabled",
+            query: { entryId: input.entryId ?? null, sourcePath: input.sourcePath ?? null, manifestKind },
+            matchCount: 0,
+            matches: [],
+            warnings: [],
+            errors: [{ code: "HOLD_RAW_ENTRY_DUMP_NOT_SUPPORTED", message: "includeRaw=true is not supported in this step." }]
+        };
+    }
+    if (!input.entryId && !input.sourcePath) {
+        return {
+            ok: false,
+            version,
+            entrypoint,
+            surface: "compiler_backed_runtime",
+            mode: "real_block_library_manifest_entry_lookup",
+            readOnly: true,
+            execution: "not_performed",
+            directSource: "not_enabled",
+            query: { entryId: null, sourcePath: null, manifestKind },
+            matchCount: 0,
+            matches: [],
+            warnings: [],
+            errors: [{ code: "HOLD_MANIFEST_ENTRY_QUERY_REQUIRED", message: "Provide entryId or sourcePath." }]
+        };
+    }
+    const supportedKinds = ["all", "neoblock", "moltblock", "neostack", "gate", "sleeve", "compiler", "public_curated_catalog"];
+    if (!supportedKinds.includes(manifestKind)) {
+        return {
+            ok: false,
+            version,
+            entrypoint,
+            surface: "compiler_backed_runtime",
+            mode: "real_block_library_manifest_entry_lookup",
+            readOnly: true,
+            execution: "not_performed",
+            directSource: "not_enabled",
+            query: { entryId: input.entryId ?? null, sourcePath: input.sourcePath ?? null, manifestKind },
+            matchCount: 0,
+            matches: [],
+            warnings: [],
+            errors: [{ code: "HOLD_MANIFEST_KIND_UNSUPPORTED", message: `Unsupported manifestKind: ${manifestKind}` }]
+        };
+    }
+    const index = getBlockLibraryManifestIndex(version, entrypoint, root);
+    if (!index.ok) {
+        return {
+            ok: false,
+            version,
+            entrypoint,
+            surface: "compiler_backed_runtime",
+            mode: "real_block_library_manifest_entry_lookup",
+            readOnly: true,
+            execution: "not_performed",
+            directSource: "not_enabled",
+            query: { entryId: input.entryId ?? null, sourcePath: input.sourcePath ?? null, manifestKind },
+            matchCount: 0,
+            matches: [],
+            warnings: [],
+            errors: [{ code: "HOLD_MANIFEST_INDEX_UNAVAILABLE", message: "Manifest index is unavailable." }, ...index.errors]
+        };
+    }
+    const normalizedSourcePath = input.sourcePath ? normalizeRelativePath(input.sourcePath) : null;
+    const matches = index.manifests
+        .filter((manifest) => manifestKind === "all" || manifestKindForPath(manifest.relativePath) === manifestKind)
+        .flatMap((manifest) => manifest.entries
+        .filter((entry) => (input.entryId ? entry.entryId === input.entryId : true) && (normalizedSourcePath ? entry.targetPath === normalizedSourcePath : true))
+        .map((entry) => {
+        const targetPolicy = targetPolicyForEntry(entry);
+        return {
+            id: entry.entryId,
+            kind: manifestKindForPath(manifest.relativePath),
+            title: entry.title ?? null,
+            manifestKind: manifestKindForPath(manifest.relativePath),
+            manifestPath: manifest.relativePath,
+            sourcePath: entry.targetPath,
+            targetExists: entry.targetExists,
+            targetPolicy,
+            resolutionStatus: resolutionStatusForPolicy(targetPolicy),
+            loadStatus: "not_loaded",
+            warnings: [...entry.notes]
+        };
+    }));
+    if (matches.length === 0) {
+        return {
+            ok: false,
+            version,
+            entrypoint,
+            surface: "compiler_backed_runtime",
+            mode: "real_block_library_manifest_entry_lookup",
+            readOnly: true,
+            execution: "not_performed",
+            directSource: "not_enabled",
+            query: { entryId: input.entryId ?? null, sourcePath: normalizedSourcePath, manifestKind },
+            matchCount: 0,
+            matches: [],
+            manifestSummary: input.includeManifestSummary === false ? undefined : {
+                manifestCount: index.summary.manifestCount,
+                parsedManifestCount: index.summary.parsedManifestCount,
+                normalizedManifestCount: index.summary.normalizedManifestCount,
+                missingManifestCount: index.summary.missingManifestCount,
+                parseFailedManifestCount: index.summary.parseFailedManifestCount,
+                shapeUnknownManifestCount: index.summary.shapeUnknownManifestCount,
+                totalEntryCount: index.summary.totalEntryCount
+            },
+            warnings: [],
+            errors: [{ code: "HOLD_MANIFEST_ENTRY_NOT_FOUND", message: "Manifest entry not found." }]
+        };
+    }
+    return {
+        ok: true,
+        version,
+        entrypoint,
+        surface: "compiler_backed_runtime",
+        mode: "real_block_library_manifest_entry_lookup",
+        readOnly: true,
+        execution: "not_performed",
+        directSource: "not_enabled",
+        query: { entryId: input.entryId ?? null, sourcePath: normalizedSourcePath, manifestKind },
+        matchCount: matches.length,
+        matches,
+        manifestSummary: input.includeManifestSummary === false ? undefined : {
+            manifestCount: index.summary.manifestCount,
+            parsedManifestCount: index.summary.parsedManifestCount,
+            normalizedManifestCount: index.summary.normalizedManifestCount,
+            missingManifestCount: index.summary.missingManifestCount,
+            parseFailedManifestCount: index.summary.parseFailedManifestCount,
+            shapeUnknownManifestCount: index.summary.shapeUnknownManifestCount,
+            totalEntryCount: index.summary.totalEntryCount
+        },
+        warnings: [],
+        errors: []
+    };
+}
+export function getBlockLibraryTargetShallowLoadGate(version, entrypoint = "dist/plugin-entry.js", root = DEFAULT_LIBRARY_ROOT, input = {}) {
+    const manifestKind = input.manifestKind ?? "all";
+    const intendedLoadMode = input.intendedLoadMode ?? "shallow";
+    const base = {
+        version,
+        entrypoint,
+        mode: "real_block_library_target_shallow_load_gate",
+        readOnly: true,
+        execution: "not_performed",
+        directSource: "not_enabled",
+        query: {
+            entryId: input.entryId ?? null,
+            sourcePath: input.sourcePath ?? null,
+            manifestKind,
+            intendedLoadMode
+        }
+    };
+    if (!input.entryId && !input.sourcePath) {
+        return {
+            ok: false,
+            ...base,
+            gate: {
+                decision: "DENY_QUERY_REQUIRED",
+                canShallowLoad: false,
+                reasonCodes: ["QUERY_REQUIRED"],
+                nextSafeAction: "NEXT_SAFE_ACTION_REVIEW_POLICY",
+                payloadLoaded: false,
+                recursiveLoad: false
+            },
+            target: null,
+            entry: null,
+            warnings: [],
+            errors: [{ code: "HOLD_SHALLOW_LOAD_GATE_QUERY_REQUIRED", message: "Provide entryId or sourcePath." }]
+        };
+    }
+    if (intendedLoadMode !== "shallow") {
+        return {
+            ok: false,
+            ...base,
+            gate: {
+                decision: "DENY_UNSUPPORTED_LOAD_MODE",
+                canShallowLoad: false,
+                reasonCodes: ["RECURSIVE_LOAD_NOT_ALLOWED"],
+                nextSafeAction: "NEXT_SAFE_ACTION_REVIEW_POLICY",
+                payloadLoaded: false,
+                recursiveLoad: false
+            },
+            target: null,
+            entry: null,
+            warnings: [],
+            errors: [{ code: "HOLD_SHALLOW_LOAD_MODE_UNSUPPORTED", message: `Unsupported intendedLoadMode: ${intendedLoadMode}` }]
+        };
+    }
+    const lookup = getBlockLibraryManifestEntryLookup(version, entrypoint, root, {
+        entryId: input.entryId,
+        sourcePath: input.sourcePath,
+        manifestKind,
+        includeManifestSummary: input.includeEntrySummary !== false,
+        includeRaw: false
+    });
+    if (!lookup.ok) {
+        const code = lookup.errors[0]?.code;
+        if (code === "HOLD_MANIFEST_ENTRY_NOT_FOUND") {
+            return {
+                ok: false,
+                ...base,
+                gate: {
+                    decision: "DENY_ENTRY_NOT_FOUND",
+                    canShallowLoad: false,
+                    reasonCodes: ["TARGET_INDEX_ENTRY_NOT_FOUND"],
+                    nextSafeAction: "NEXT_SAFE_ACTION_FIX_INDEX_OR_TARGET",
+                    payloadLoaded: false,
+                    recursiveLoad: false
+                },
+                target: null,
+                entry: null,
+                warnings: [],
+                errors: lookup.errors
+            };
+        }
+        if (code === "HOLD_MANIFEST_KIND_UNSUPPORTED") {
+            return {
+                ok: false,
+                ...base,
+                gate: {
+                    decision: "DENY_UNSUPPORTED_MANIFEST_KIND",
+                    canShallowLoad: false,
+                    reasonCodes: ["MANIFEST_KIND_UNSUPPORTED"],
+                    nextSafeAction: "NEXT_SAFE_ACTION_REVIEW_POLICY",
+                    payloadLoaded: false,
+                    recursiveLoad: false
+                },
+                target: null,
+                entry: null,
+                warnings: [],
+                errors: lookup.errors
+            };
+        }
+        return {
+            ok: false,
+            ...base,
+            gate: {
+                decision: "DENY_SHAPE_UNKNOWN",
+                canShallowLoad: false,
+                reasonCodes: ["DIRECT_SOURCE_NOT_ENABLED"],
+                nextSafeAction: "NEXT_SAFE_ACTION_REVIEW_POLICY",
+                payloadLoaded: false,
+                recursiveLoad: false
+            },
+            target: null,
+            entry: null,
+            warnings: [],
+            errors: [{ code: "HOLD_SHALLOW_LOAD_GATE_UNAVAILABLE", message: "Shallow load gate unavailable." }, ...lookup.errors]
+        };
+    }
+    const match = lookup.matches[0] ?? null;
+    if (!match) {
+        return {
+            ok: false,
+            ...base,
+            gate: {
+                decision: "DENY_SHAPE_UNKNOWN",
+                canShallowLoad: false,
+                reasonCodes: ["DIRECT_SOURCE_NOT_ENABLED"],
+                nextSafeAction: "NEXT_SAFE_ACTION_REVIEW_POLICY",
+                payloadLoaded: false,
+                recursiveLoad: false
+            },
+            target: null,
+            entry: null,
+            warnings: [],
+            errors: [{ code: "HOLD_SHALLOW_LOAD_GATE_UNAVAILABLE", message: "Lookup returned no match." }]
+        };
+    }
+    let decision;
+    let nextSafeAction;
+    let reasonCodes;
+    switch (match.targetPolicy) {
+        case "ALLOWED_NOT_LOADED":
+            decision = "ALLOW_SHALLOW_LOAD";
+            nextSafeAction = "NEXT_SAFE_ACTION_SHALLOW_LOAD_ALLOWED";
+            reasonCodes = ["TARGET_INDEX_ENTRY_FOUND", "TARGET_PATH_ALLOWED", "TARGET_EXISTS", "PAYLOAD_NOT_LOADED"];
+            break;
+        case "MISSING_ON_DISK":
+            decision = "DENY_TARGET_MISSING";
+            nextSafeAction = "NEXT_SAFE_ACTION_FIX_INDEX_OR_TARGET";
+            reasonCodes = ["TARGET_INDEX_ENTRY_FOUND", "TARGET_PATH_ALLOWED", "TARGET_MISSING_ON_DISK", "PAYLOAD_NOT_LOADED"];
+            break;
+        case "FORBIDDEN_TARGET":
+            decision = "DENY_FORBIDDEN_TARGET";
+            nextSafeAction = "NEXT_SAFE_ACTION_DO_NOT_LOAD";
+            reasonCodes = ["FORBIDDEN_TARGET", "POLICY_EXCLUDED", "PAYLOAD_NOT_LOADED"];
+            break;
+        case "OUTSIDE_ALLOWLIST_TARGET":
+            decision = "DENY_OUTSIDE_ALLOWLIST";
+            nextSafeAction = "NEXT_SAFE_ACTION_REVIEW_POLICY";
+            reasonCodes = ["OUTSIDE_ALLOWLIST_TARGET", "POLICY_BLOCKED", "PAYLOAD_NOT_LOADED"];
+            break;
+        case "REFERENCE_ONLY_TARGET":
+            decision = "DENY_REFERENCE_ONLY_TARGET";
+            nextSafeAction = "NEXT_SAFE_ACTION_USE_REFERENCE_ONLY_VIEW";
+            reasonCodes = ["REFERENCE_ONLY_TARGET", "POLICY_BLOCKED", "PAYLOAD_NOT_LOADED"];
+            break;
+        default:
+            decision = "DENY_SHAPE_UNKNOWN";
+            nextSafeAction = "NEXT_SAFE_ACTION_REVIEW_POLICY";
+            reasonCodes = ["DIRECT_SOURCE_NOT_ENABLED", "PAYLOAD_NOT_LOADED"];
+            break;
+    }
+    return {
+        ok: decision === "ALLOW_SHALLOW_LOAD",
+        ...base,
+        gate: {
+            decision,
+            canShallowLoad: decision === "ALLOW_SHALLOW_LOAD",
+            reasonCodes,
+            nextSafeAction,
+            payloadLoaded: false,
+            recursiveLoad: false
+        },
+        target: match,
+        entry: match,
+        warnings: [],
+        errors: []
+    };
+}
+function boundedPreview(value, maxChars = 500) {
+    if (typeof value === 'string') {
+        return value.length > maxChars ? `${value.slice(0, maxChars)}…` : value;
+    }
+    if (value == null) {
+        return null;
+    }
+    const text = JSON.stringify(value);
+    return text.length > maxChars ? `${text.slice(0, maxChars)}…` : text;
+}
+function countRefs(payload) {
+    const countArray = (key) => Array.isArray(payload[key]) ? payload[key].length : 0;
+    const refs = typeof payload.neoblock === 'object' && payload.neoblock !== null ? payload.neoblock : {};
+    return {
+        block_refs: countArray('block_refs'),
+        tool_requests: countArray('tool_requests'),
+        gates: countArray('gates'),
+        triggers: countArray('triggers'),
+        neostack_refs: Array.isArray(refs.refs) ? refs.refs.length : 0,
+        neoblock_refs: countArray('neoblock_refs'),
+        molt_refs: countArray('molt_refs')
+    };
+}
+export function getBlockLibraryTargetShallowLoadSingle(version, entrypoint = "dist/plugin-entry.js", root = DEFAULT_LIBRARY_ROOT, input = {}) {
+    const manifestKind = input.manifestKind ?? 'all';
+    const loadMode = input.loadMode ?? 'shallow_single';
+    const base = {
+        version,
+        entrypoint,
+        mode: 'real_block_library_target_shallow_load_single',
+        readOnly: true,
+        execution: 'not_performed',
+        directSource: 'not_enabled',
+        query: {
+            entryId: input.entryId ?? null,
+            sourcePath: input.sourcePath ?? null,
+            manifestKind,
+            loadMode
+        }
+    };
+    if (input.includeRaw) {
+        return {
+            ok: false,
+            ...base,
+            gate: { decision: 'DENY_SHAPE_UNKNOWN', canShallowLoad: false, reasonCodes: ['PAYLOAD_NOT_LOADED'], nextSafeAction: 'NEXT_SAFE_ACTION_REVIEW_POLICY', payloadLoaded: false, recursiveLoad: false },
+            target: null,
+            payload: null,
+            warnings: [],
+            errors: [{ code: 'HOLD_RAW_TARGET_DUMP_NOT_SUPPORTED', message: 'includeRaw=true is not supported.' }]
+        };
+    }
+    if (!input.entryId && !input.sourcePath) {
+        return {
+            ok: false,
+            ...base,
+            gate: { decision: 'DENY_QUERY_REQUIRED', canShallowLoad: false, reasonCodes: ['QUERY_REQUIRED'], nextSafeAction: 'NEXT_SAFE_ACTION_REVIEW_POLICY', payloadLoaded: false, recursiveLoad: false },
+            target: null,
+            payload: null,
+            warnings: [],
+            errors: [{ code: 'HOLD_SHALLOW_SINGLE_LOAD_QUERY_REQUIRED', message: 'Provide entryId or sourcePath.' }]
+        };
+    }
+    if (loadMode !== 'shallow_single') {
+        return {
+            ok: false,
+            ...base,
+            gate: { decision: 'DENY_UNSUPPORTED_LOAD_MODE', canShallowLoad: false, reasonCodes: ['RECURSIVE_LOAD_NOT_ALLOWED'], nextSafeAction: 'NEXT_SAFE_ACTION_REVIEW_POLICY', payloadLoaded: false, recursiveLoad: false },
+            target: null,
+            payload: null,
+            warnings: [],
+            errors: [{ code: 'HOLD_SHALLOW_SINGLE_LOAD_MODE_UNSUPPORTED', message: `Unsupported loadMode: ${loadMode}` }]
+        };
+    }
+    const gate = getBlockLibraryTargetShallowLoadGate(version, entrypoint, root, {
+        entryId: input.entryId,
+        sourcePath: input.sourcePath,
+        manifestKind,
+        intendedLoadMode: 'shallow'
+    });
+    if (!gate.gate.canShallowLoad || !gate.target?.sourcePath) {
+        const first = gate.errors[0]?.code;
+        let code = 'HOLD_SHALLOW_SINGLE_LOAD_UNAVAILABLE';
+        if (first === 'HOLD_MANIFEST_ENTRY_NOT_FOUND')
+            code = 'HOLD_MANIFEST_ENTRY_NOT_FOUND';
+        else if (first === 'HOLD_MANIFEST_KIND_UNSUPPORTED')
+            code = 'HOLD_MANIFEST_KIND_UNSUPPORTED';
+        else if (first === 'HOLD_SHALLOW_LOAD_GATE_QUERY_REQUIRED')
+            code = 'HOLD_SHALLOW_SINGLE_LOAD_QUERY_REQUIRED';
+        else if (gate.gate.decision === 'DENY_FORBIDDEN_TARGET')
+            code = 'HOLD_TARGET_FORBIDDEN';
+        else if (gate.gate.decision === 'DENY_OUTSIDE_ALLOWLIST')
+            code = 'HOLD_TARGET_OUTSIDE_ALLOWLIST';
+        else if (gate.gate.decision === 'DENY_TARGET_MISSING')
+            code = 'HOLD_TARGET_MISSING_ON_DISK';
+        return {
+            ok: false,
+            ...base,
+            gate: { ...gate.gate, payloadLoaded: false, recursiveLoad: false },
+            target: gate.target ? { ...gate.target, absolutePath: null, loadStatus: 'not_loaded' } : null,
+            payload: null,
+            warnings: gate.warnings,
+            errors: gate.errors.length ? gate.errors : [{ code, message: 'Shallow single load denied.' }]
+        };
+    }
+    const absolutePath = path.join(path.resolve(root), ...gate.target.sourcePath.split('/'));
+    if (!safeExists(absolutePath)) {
+        return {
+            ok: false,
+            ...base,
+            gate: { decision: 'DENY_TARGET_MISSING', canShallowLoad: false, reasonCodes: ['TARGET_INDEX_ENTRY_FOUND', 'TARGET_PATH_ALLOWED', 'TARGET_MISSING_ON_DISK', 'PAYLOAD_NOT_LOADED'], nextSafeAction: 'NEXT_SAFE_ACTION_FIX_INDEX_OR_TARGET', payloadLoaded: false, recursiveLoad: false },
+            target: { ...gate.target, absolutePath, loadStatus: 'not_loaded' },
+            payload: null,
+            warnings: [],
+            errors: [{ code: 'HOLD_TARGET_MISSING_ON_DISK', message: `Target missing on disk: ${absolutePath}` }]
+        };
+    }
+    try {
+        const parsed = readJsonFile(absolutePath);
+        if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+            return {
+                ok: false,
+                ...base,
+                gate: { ...gate.gate, payloadLoaded: false, recursiveLoad: false },
+                target: { ...gate.target, absolutePath, loadStatus: 'not_loaded' },
+                payload: null,
+                warnings: [],
+                errors: [{ code: 'HOLD_TARGET_SHAPE_UNKNOWN', message: 'Target payload shape is not a JSON object.' }]
+            };
+        }
+        const obj = parsed;
+        return {
+            ok: true,
+            ...base,
+            gate: { ...gate.gate, payloadLoaded: true, recursiveLoad: false },
+            target: { ...gate.target, absolutePath, loadStatus: 'shallow_loaded' },
+            payload: {
+                parseStatus: 'PARSED_JSON',
+                shapeStatus: 'SHALLOW_SUMMARY_READY',
+                topLevelKeys: Object.keys(obj),
+                identity: typeof obj.identity === 'object' && obj.identity ? obj.identity : {},
+                metadata: typeof obj.metadata === 'object' && obj.metadata ? obj.metadata : {},
+                provenance: typeof obj.provenance === 'object' && obj.provenance ? obj.provenance : {},
+                contentPreview: input.includeContentPreview === false ? null : boundedPreview(obj.neoblock?.content ?? obj.content ?? obj),
+                referenceSummary: countRefs(obj),
+                rawObject: obj
+            },
+            warnings: [],
+            errors: []
+        };
+    }
+    catch (error) {
+        return {
+            ok: false,
+            ...base,
+            gate: { ...gate.gate, payloadLoaded: false, recursiveLoad: false },
+            target: { ...gate.target, absolutePath, loadStatus: 'not_loaded' },
+            payload: null,
+            warnings: [],
+            errors: [{ code: 'HOLD_TARGET_PARSE_FAILED', message: String(error) }]
+        };
+    }
+}
+function normalizeMoltType(payload, fallbackId) {
+    const direct = typeof payload.moltType === 'string' ? payload.moltType : null;
+    if (direct)
+        return direct;
+    const byId = fallbackId?.split('.').slice(0, 1)[0];
+    if (!fallbackId)
+        return null;
+    const map = {
+        'primary': 'Primary',
+        'directive': 'Directive',
+        'instruction': 'Instruction',
+        'subject': 'Subject',
+        'philosophy': 'Philosophy',
+        'blueprint': 'Blueprint',
+        'trigger': 'Trigger'
+    };
+    return map[fallbackId.split('.')[0]] ?? map[byId ?? ''] ?? null;
+}
+function normalizeArtifactKind(manifestKind) {
+    if (manifestKind === 'public_curated_catalog')
+        return 'unknown';
+    return manifestKind === 'all' ? 'unknown' : manifestKind;
+}
+export function getBlockLibraryTargetShallowSummaryNormalize(version, entrypoint = "dist/plugin-entry.js", root = DEFAULT_LIBRARY_ROOT, input = {}) {
+    const summaryProfile = input.summaryProfile ?? 'standard';
+    const base = {
+        version,
+        entrypoint,
+        mode: 'real_block_library_target_shallow_summary_normalize',
+        readOnly: true,
+        execution: 'not_performed',
+        directSource: 'not_enabled',
+        query: {
+            entryId: input.entryId ?? null,
+            sourcePath: input.sourcePath ?? null,
+            manifestKind: input.manifestKind ?? 'all',
+            summaryProfile
+        }
+    };
+    if (input.includeRaw) {
+        return {
+            ok: false,
+            ...base,
+            gate: { decision: 'DENY_SHAPE_UNKNOWN', canShallowLoad: false, reasonCodes: ['PAYLOAD_NOT_LOADED'], nextSafeAction: 'NEXT_SAFE_ACTION_REVIEW_POLICY', payloadLoaded: false, recursiveLoad: false },
+            target: null,
+            payload: null,
+            normalizedSummary: null,
+            warnings: [],
+            errors: [{ code: 'HOLD_RAW_TARGET_DUMP_NOT_SUPPORTED', message: 'includeRaw=true is not supported.' }]
+        };
+    }
+    if (!['compact', 'standard', 'audit'].includes(summaryProfile)) {
+        return {
+            ok: false,
+            ...base,
+            gate: { decision: 'DENY_SHAPE_UNKNOWN', canShallowLoad: false, reasonCodes: ['PAYLOAD_NOT_LOADED'], nextSafeAction: 'NEXT_SAFE_ACTION_REVIEW_POLICY', payloadLoaded: false, recursiveLoad: false },
+            target: null,
+            payload: null,
+            normalizedSummary: null,
+            warnings: [],
+            errors: [{ code: 'HOLD_SHALLOW_SUMMARY_PROFILE_UNSUPPORTED', message: `Unsupported summaryProfile: ${summaryProfile}` }]
+        };
+    }
+    const single = getBlockLibraryTargetShallowLoadSingle(version, entrypoint, root, {
+        entryId: input.entryId,
+        sourcePath: input.sourcePath,
+        manifestKind: input.manifestKind,
+        loadMode: 'shallow_single',
+        includeContentPreview: input.includeContentPreview !== false,
+        includeRaw: false
+    });
+    if (!single.ok || !single.payload?.rawObject || !single.target) {
+        return {
+            ok: false,
+            ...base,
+            gate: single.gate,
+            target: single.target,
+            payload: single.payload ? { parseStatus: single.payload.parseStatus, shapeStatus: 'SHALLOW_SUMMARY_UNAVAILABLE', topLevelKeys: single.payload.topLevelKeys } : null,
+            normalizedSummary: null,
+            warnings: single.warnings,
+            errors: single.errors.length ? single.errors : [{ code: 'HOLD_SHALLOW_SUMMARY_NORMALIZATION_UNAVAILABLE', message: 'Shallow summary normalization unavailable.' }]
+        };
+    }
+    const obj = single.payload.rawObject;
+    const identity = typeof obj.identity === 'object' && obj.identity ? obj.identity : {};
+    const metadata = typeof obj.metadata === 'object' && obj.metadata ? obj.metadata : {};
+    const provenance = typeof obj.provenance === 'object' && obj.provenance ? obj.provenance : {};
+    const neoblock = typeof obj.neoblock === 'object' && obj.neoblock ? obj.neoblock : {};
+    const artifactId = single.target.id ?? (typeof identity.id === 'string' ? identity.id : null);
+    const referenceSummary = single.payload.referenceSummary ?? countRefs(obj);
+    const normalizedReferenceSummary = {
+        blockRefs: referenceSummary.block_refs ?? 0,
+        neoblockRefs: referenceSummary.neoblock_refs ?? 0,
+        neostackRefs: referenceSummary.neostack_refs ?? 0,
+        moltBlockRefs: referenceSummary.molt_refs ?? 0,
+        toolRequests: referenceSummary.tool_requests ?? 0,
+        gates: referenceSummary.gates ?? 0,
+        triggers: referenceSummary.triggers ?? 0,
+        unknownRefs: 0,
+        resolvedRefs: 0,
+        loadedRefs: 0
+    };
+    const warnings = [];
+    const moltType = normalizeMoltType(neoblock, artifactId);
+    if (!moltType)
+        warnings.push('MOLT_TYPE_NOT_FOUND_IN_SHALLOW_SUMMARY');
+    return {
+        ok: true,
+        ...base,
+        gate: { ...single.gate, payloadLoaded: true, recursiveLoad: false },
+        target: single.target,
+        payload: {
+            parseStatus: 'PARSED_JSON',
+            shapeStatus: 'SHALLOW_SUMMARY_NORMALIZED',
+            topLevelKeys: single.payload.topLevelKeys
+        },
+        normalizedSummary: {
+            summaryStatus: 'NORMALIZED',
+            artifactKind: normalizeArtifactKind(single.target.manifestKind),
+            artifactId,
+            displayName: typeof identity.name === 'string' ? identity.name : (typeof metadata.name === 'string' ? metadata.name : null),
+            moltType,
+            role: typeof neoblock.role === 'string' ? neoblock.role : null,
+            status: typeof metadata.status === 'string' ? metadata.status : null,
+            identity,
+            metadata,
+            content: neoblock,
+            moltSummary: neoblock,
+            referenceSummary: input.includeReferenceSummary === false ? { blockRefs: 0, neoblockRefs: 0, neostackRefs: 0, moltBlockRefs: 0, toolRequests: 0, gates: 0, triggers: 0, unknownRefs: 0, resolvedRefs: 0, loadedRefs: 0 } : normalizedReferenceSummary,
+            provenance,
+            contentPreview: input.includeContentPreview === false ? null : single.payload.contentPreview,
+            limitations: ['single_target_only', 'no_recursive_loading', 'no_execution']
+        },
+        warnings,
+        errors: []
+    };
+}
+export function getBlockLibraryNeoblockInspect(version, entrypoint = "dist/plugin-entry.js", root = DEFAULT_LIBRARY_ROOT, input = {}) {
+    const entryId = input.neoblockId ?? input.entryId;
+    const manifestKind = input.manifestKind ?? 'neoblock';
+    const base = {
+        version,
+        entrypoint,
+        mode: 'real_block_library_neoblock_inspect',
+        readOnly: true,
+        execution: 'not_performed',
+        directSource: 'not_enabled',
+        query: {
+            neoblockId: input.neoblockId ?? null,
+            entryId: entryId ?? null,
+            sourcePath: input.sourcePath ?? null,
+            manifestKind,
+            summaryProfile: input.summaryProfile ?? 'standard'
+        }
+    };
+    if (!entryId && !input.sourcePath) {
+        return {
+            ok: false,
+            ...base,
+            gate: { decision: 'DENY_QUERY_REQUIRED', canShallowLoad: false, reasonCodes: ['QUERY_REQUIRED'], nextSafeAction: 'NEXT_SAFE_ACTION_REVIEW_POLICY', payloadLoaded: false, recursiveLoad: false },
+            target: null,
+            neoblockInspection: null,
+            warnings: [],
+            errors: [{ code: 'HOLD_NEOBLOCK_INSPECT_QUERY_REQUIRED', message: 'Provide neoblockId, entryId, or sourcePath.' }]
+        };
+    }
+    const normalized = getBlockLibraryTargetShallowSummaryNormalize(version, entrypoint, root, {
+        entryId,
+        sourcePath: input.sourcePath,
+        manifestKind,
+        summaryProfile: input.summaryProfile ?? 'standard',
+        includeContentPreview: input.includeContentPreview !== false,
+        includeReferenceSummary: input.includeReferenceSummary !== false,
+        includeRaw: Boolean(input.includeRaw)
+    });
+    if (!normalized.ok || !normalized.normalizedSummary || !normalized.target) {
+        const first = normalized.errors[0]?.code;
+        let inspectStatus = 'NEOBLOCK_DENIED_BY_GATE';
+        if (first === 'HOLD_MANIFEST_ENTRY_NOT_FOUND')
+            inspectStatus = 'NEOBLOCK_NOT_FOUND';
+        else if (first === 'HOLD_TARGET_FORBIDDEN')
+            inspectStatus = 'NEOBLOCK_TARGET_FORBIDDEN';
+        else if (first === 'HOLD_TARGET_OUTSIDE_ALLOWLIST')
+            inspectStatus = 'NEOBLOCK_TARGET_OUTSIDE_ALLOWLIST';
+        else if (first === 'HOLD_TARGET_PARSE_FAILED')
+            inspectStatus = 'NEOBLOCK_PARSE_FAILED';
+        else if (first === 'HOLD_TARGET_SHAPE_UNKNOWN')
+            inspectStatus = 'NEOBLOCK_SHAPE_UNKNOWN';
+        return {
+            ok: false,
+            ...base,
+            gate: normalized.gate,
+            target: normalized.target,
+            neoblockInspection: {
+                inspectStatus,
+                neoblockId: entryId ?? null,
+                artifactKind: normalized.normalizedSummary?.artifactKind ?? null,
+                moltType: normalized.normalizedSummary?.moltType ?? null,
+                role: normalized.normalizedSummary?.role ?? null,
+                title: normalized.normalizedSummary?.displayName ?? null,
+                status: normalized.normalizedSummary?.status ?? null,
+                identity: normalized.normalizedSummary?.identity ?? null,
+                metadata: normalized.normalizedSummary?.metadata ?? null,
+                contentSummary: normalized.normalizedSummary?.content ?? null,
+                moltSummary: normalized.normalizedSummary?.moltSummary ?? null,
+                referenceSummary: normalized.normalizedSummary?.referenceSummary ?? null,
+                provenance: normalized.normalizedSummary?.provenance ?? null,
+                contentPreview: normalized.normalizedSummary?.contentPreview ?? null,
+                limitations: ['single_neoblock_only', 'no_recursive_loading', 'no_reference_resolution', 'no_execution']
+            },
+            warnings: normalized.warnings,
+            errors: normalized.errors
+        };
+    }
+    if (normalized.normalizedSummary.artifactKind !== 'neoblock') {
+        return {
+            ok: false,
+            ...base,
+            gate: normalized.gate,
+            target: normalized.target,
+            neoblockInspection: {
+                inspectStatus: 'NEOBLOCK_TARGET_NOT_NEOBLOCK',
+                neoblockId: normalized.normalizedSummary.artifactId,
+                artifactKind: normalized.normalizedSummary.artifactKind,
+                moltType: normalized.normalizedSummary.moltType,
+                role: normalized.normalizedSummary.role,
+                title: normalized.normalizedSummary.displayName,
+                status: normalized.normalizedSummary.status,
+                identity: normalized.normalizedSummary.identity,
+                metadata: normalized.normalizedSummary.metadata,
+                contentSummary: normalized.normalizedSummary.content,
+                moltSummary: normalized.normalizedSummary.moltSummary,
+                referenceSummary: normalized.normalizedSummary.referenceSummary,
+                provenance: normalized.normalizedSummary.provenance,
+                contentPreview: normalized.normalizedSummary.contentPreview,
+                limitations: ['single_neoblock_only', 'no_recursive_loading', 'no_reference_resolution', 'no_execution']
+            },
+            warnings: normalized.warnings,
+            errors: [{ code: 'HOLD_TARGET_NOT_NEOBLOCK', message: 'Target artifactKind is not neoblock.' }]
+        };
+    }
+    return {
+        ok: true,
+        ...base,
+        gate: normalized.gate,
+        target: normalized.target,
+        neoblockInspection: {
+            inspectStatus: 'NEOBLOCK_INSPECTED',
+            neoblockId: normalized.normalizedSummary.artifactId,
+            artifactKind: normalized.normalizedSummary.artifactKind,
+            moltType: normalized.normalizedSummary.moltType,
+            role: normalized.normalizedSummary.role,
+            title: normalized.normalizedSummary.displayName,
+            status: normalized.normalizedSummary.status,
+            identity: normalized.normalizedSummary.identity,
+            metadata: normalized.normalizedSummary.metadata,
+            contentSummary: normalized.normalizedSummary.content,
+            moltSummary: normalized.normalizedSummary.moltSummary,
+            referenceSummary: normalized.normalizedSummary.referenceSummary,
+            provenance: normalized.normalizedSummary.provenance,
+            contentPreview: normalized.normalizedSummary.contentPreview,
+            limitations: ['single_neoblock_only', 'no_recursive_loading', 'no_reference_resolution', 'no_execution']
+        },
+        warnings: normalized.warnings,
+        errors: []
+    };
+}
+function pickVisibleFields(source, keys) {
+    const out = {};
+    for (const key of keys) {
+        if (key in source)
+            out[key] = source[key];
+    }
+    return out;
+}
+function asBoundedText(value) {
+    if (typeof value !== 'string')
+        return null;
+    const trimmed = value.trim();
+    if (!trimmed)
+        return null;
+    return trimmed.length > 500 ? `${trimmed.slice(0, 500)}…` : trimmed;
+}
+function deriveFragmentFieldValue(extracted) {
+    const summary = extracted.contentSummary ?? {};
+    return asBoundedText(summary['content'])
+        ?? asBoundedText(summary['summary'])
+        ?? asBoundedText(summary['text'])
+        ?? asBoundedText(extracted.contentPreview)
+        ?? asBoundedText(extracted.title)
+        ?? asBoundedText((extracted.moltFields ?? {})['displayName'])
+        ?? (extracted.moltType && extracted.sourceNeoblockId ? `${extracted.moltType} (${extracted.sourceNeoblockId})` : null);
+}
+const MOLT_MAP_FIELD_ORDER = ['Trigger', 'Directive', 'Instruction', 'Subject', 'Primary', 'Philosophy', 'Blueprint'];
+function mapMoltTypeToFragmentField(moltType) {
+    switch (moltType) {
+        case 'Trigger':
+        case 'Directive':
+        case 'Instruction':
+        case 'Subject':
+        case 'Primary':
+        case 'Philosophy':
+        case 'Blueprint':
+            return moltType;
+        default:
+            return null;
+    }
+}
+export function getBlockLibraryMoltMapCompose(version, entrypoint = 'dist/plugin-entry.js', root = DEFAULT_LIBRARY_ROOT, input = {}) {
+    const neoblockIds = input.neoblockIds ?? [];
+    const manifestKind = input.manifestKind ?? 'neoblock';
+    const summaryProfile = input.summaryProfile ?? 'standard';
+    const projectionFormat = input.projectionFormat ?? 'both';
+    const conflictPolicy = input.conflictPolicy ?? 'report_only';
+    const normalizedProjectionFormat = projectionFormat === 'nl' || projectionFormat === 'json' || projectionFormat === 'both' ? projectionFormat : 'both';
+    const normalizedConflictPolicy = conflictPolicy === 'first_wins' || conflictPolicy === 'report_only' ? conflictPolicy : 'report_only';
+    const baseMoltMap = Object.fromEntries(MOLT_MAP_FIELD_ORDER.map((field) => [field, { value: 'n/a', fieldStatus: 'FIELD_MISSING', sourceNeoblockId: null, moltType: null, fragmentStatus: null, provenance: null, contentPreview: null, limitations: ['field_missing', 'not_in_explicit_input'] }]));
+    const base = {
+        version,
+        entrypoint,
+        mode: 'real_block_library_molt_map_compose',
+        outputContract: {
+            contractId: 'umg.molt_map.compose.v1',
+            contractStatus: 'NORMALIZED',
+            fieldOrder: [...MOLT_MAP_FIELD_ORDER],
+            missingFieldValue: 'n/a',
+            sourceMode: 'explicit_neoblock_ids',
+            recursiveLoad: false,
+            fullLibraryScan: false
+        },
+        readOnly: true,
+        execution: 'not_performed',
+        directSource: 'not_enabled',
+        query: {
+            neoblockIds,
+            manifestKind,
+            summaryProfile,
+            projectionFormat: normalizedProjectionFormat,
+            conflictPolicy: normalizedConflictPolicy
+        },
+        composition: {
+            compositionStatus: 'MOLT_MAP_COMPOSE_DENIED',
+            compositionKind: 'explicit_fragment_list',
+            fieldOrder: [...MOLT_MAP_FIELD_ORDER],
+            requestedCount: neoblockIds.length,
+            fragmentCount: 0,
+            composedFieldCount: 0,
+            missingFieldCount: MOLT_MAP_FIELD_ORDER.length,
+            duplicateFieldCount: 0,
+            deniedFragmentCount: 0,
+            recursiveLoad: false,
+            fullLibraryScan: false,
+            activeSleeveInspection: false,
+            neostackInspection: false,
+            triggerEvaluation: 'not_performed',
+            execution: 'not_performed'
+        },
+        moltMap: baseMoltMap,
+        fragmentResults: [],
+        conflicts: [],
+        nlProjection: null,
+        audit: {
+            normalizationStatus: 'COMPOSER_OUTPUT_NORMALIZED',
+            contractId: 'umg.molt_map.compose.v1',
+            inputMode: 'explicit_neoblock_ids',
+            fullLibraryScan: 'not_performed',
+            recursiveLoad: 'not_performed',
+            referencedTargetLoading: 'not_performed',
+            externalMoltBlockFileLoading: 'not_performed',
+            activeSleeveInspection: 'not_performed',
+            neostackInspection: 'not_performed',
+            triggerEvaluation: 'not_performed',
+            execution: 'not_performed',
+            directSource: 'not_enabled',
+            libraryMutation: 'not_performed'
+        },
+        warnings: [],
+        errors: []
+    };
+    if (!neoblockIds.length) {
+        return { ...base, ok: false, errors: [{ code: 'HOLD_MOLT_MAP_COMPOSE_QUERY_REQUIRED', message: 'Provide at least one neoblockId.' }] };
+    }
+    if (neoblockIds.length > 20) {
+        return { ...base, ok: false, errors: [{ code: 'HOLD_MOLT_MAP_COMPOSE_INPUT_LIMIT_EXCEEDED', message: 'At most 20 neoblockIds are allowed.' }] };
+    }
+    if (!['nl', 'json', 'both'].includes(projectionFormat)) {
+        return { ...base, ok: false, errors: [{ code: 'HOLD_MOLT_MAP_COMPOSE_PROJECTION_FORMAT_UNSUPPORTED', message: `Unsupported projectionFormat: ${projectionFormat}` }] };
+    }
+    if (!['first_wins', 'report_only'].includes(conflictPolicy)) {
+        return { ...base, ok: false, errors: [{ code: 'HOLD_MOLT_MAP_COMPOSE_CONFLICT_POLICY_UNSUPPORTED', message: `Unsupported conflictPolicy: ${conflictPolicy}` }] };
+    }
+    if (input.includeRaw) {
+        return { ...base, ok: false, errors: [{ code: 'HOLD_RAW_TARGET_DUMP_NOT_SUPPORTED', message: 'Raw target dump is not supported.' }] };
+    }
+    const fragmentResults = [];
+    const conflicts = [];
+    const deniedFields = new Set();
+    const moltMap = { ...baseMoltMap };
+    let composedFieldCount = 0;
+    let duplicateFieldCount = 0;
+    let deniedFragmentCount = 0;
+    for (const neoblockId of neoblockIds) {
+        const fragment = getBlockLibraryMoltMapFragment(version, entrypoint, root, {
+            neoblockId,
+            manifestKind,
+            summaryProfile,
+            projectionFormat: 'json',
+            includeContentPreview: input.includeContentPreview !== false,
+            includeReferenceSummary: true,
+            includeRaw: false
+        });
+        const field = fragment.moltMapFragment?.moltMapField ?? null;
+        const hold = fragment.errors[0]?.code ?? null;
+        const errorCodes = fragment.errors.map((error) => error.code);
+        fragmentResults.push({
+            requestedId: neoblockId,
+            ok: fragment.ok,
+            field,
+            moltType: fragment.moltMapFragment?.moltType ?? null,
+            fragmentStatus: fragment.ok ? 'MOLT_MAP_FRAGMENT_READY' : 'MOLT_MAP_FRAGMENT_DENIED',
+            hold,
+            errorCodes,
+            sourcePath: fragment.moltMapFragment?.provenance?.sourcePath ?? null,
+            manifestPath: fragment.moltMapFragment?.provenance?.manifestPath ?? null,
+            payloadLoaded: fragment.sourceNeoblock?.payloadLoaded ?? false,
+            recursiveLoad: false,
+            execution: 'not_performed'
+        });
+        if (!fragment.ok || !field || !fragment.moltMapFragment) {
+            deniedFragmentCount += 1;
+            continue;
+        }
+        if (moltMap[field].sourceNeoblockId) {
+            duplicateFieldCount += 1;
+            conflicts.push({ field, chosenNeoblockId: moltMap[field].sourceNeoblockId, ignoredNeoblockIds: [neoblockId] });
+            moltMap[field] = {
+                ...moltMap[field],
+                fieldStatus: 'FIELD_CONFLICT_REPORTED',
+                limitations: [...moltMap[field].limitations.filter((v) => v !== 'field_missing' && v !== 'not_in_explicit_input'), 'duplicate_field_reported']
+            };
+            if (normalizedConflictPolicy === 'first_wins') {
+                continue;
+            }
+            continue;
+        }
+        moltMap[field] = {
+            value: fragment.moltMapFragment.fieldValue ?? 'n/a',
+            fieldStatus: 'FIELD_COMPOSED',
+            sourceNeoblockId: fragment.moltMapFragment.sourceNeoblockId,
+            moltType: fragment.moltMapFragment.moltType,
+            fragmentStatus: fragment.moltMapFragment.fragmentStatus,
+            provenance: input.includeFieldProvenance === false ? null : fragment.moltMapFragment.provenance,
+            contentPreview: input.includeContentPreview === false ? null : fragment.moltMapFragment.contentPreview,
+            limitations: fragment.moltMapFragment.limitations
+        };
+        composedFieldCount += 1;
+    }
+    const missingFieldCount = MOLT_MAP_FIELD_ORDER.filter((field) => moltMap[field].fieldStatus === 'FIELD_MISSING').length;
+    let compositionStatus = 'MOLT_MAP_COMPOSED';
+    if (duplicateFieldCount > 0)
+        compositionStatus = 'MOLT_MAP_COMPOSED_WITH_CONFLICTS';
+    else if (deniedFragmentCount > 0)
+        compositionStatus = 'MOLT_MAP_COMPOSED_WITH_DENIED_FRAGMENTS';
+    else if (missingFieldCount > 0)
+        compositionStatus = 'MOLT_MAP_COMPOSED_WITH_MISSING_FIELDS';
+    const nlProjection = normalizedProjectionFormat === 'nl' || normalizedProjectionFormat === 'both'
+        ? `Current Context — MOLT Map:\n${MOLT_MAP_FIELD_ORDER.map((field) => `${field}: ${moltMap[field].value ?? 'n/a'}`).join('\n')}`
+        : null;
+    return {
+        ok: true,
+        ...base,
+        composition: {
+            ...base.composition,
+            compositionStatus,
+            fragmentCount: fragmentResults.length,
+            composedFieldCount,
+            missingFieldCount,
+            duplicateFieldCount,
+            deniedFragmentCount
+        },
+        moltMap,
+        fragmentResults,
+        conflicts,
+        nlProjection,
+        errors: []
+    };
+}
+function asBoundedParagraph(value, max = 300) {
+    const trimmed = (value ?? '').trim();
+    if (!trimmed)
+        return '(Self-evaluation: The composed MOLT Map is normalized and ready for envelope rendering. This fragment does not modify runtime response behavior.)';
+    return trimmed.length > max ? `${trimmed.slice(0, max)}…` : trimmed;
+}
+function asBoundedDisplayText(value, max = 1500) {
+    const trimmed = (value ?? '').trim();
+    if (!trimmed)
+        return 'n/a';
+    return trimmed.length > max ? `${trimmed.slice(0, max)}…` : trimmed;
+}
+function currentUtcDateParts() {
+    const now = new Date();
+    return {
+        date: now.toISOString().slice(0, 10),
+        time: now.toISOString().slice(11, 19)
+    };
+}
+export function getBlockLibraryActiveStackProjection(version, entrypoint = 'dist/plugin-entry.js', root = DEFAULT_LIBRARY_ROOT, input = {}) {
+    const neoblockIds = input.neoblockIds ?? [];
+    const projectionFormat = input.projectionFormat ?? 'both';
+    const normalizedProjectionFormat = projectionFormat === 'nl' || projectionFormat === 'json' || projectionFormat === 'both' ? projectionFormat : 'both';
+    const internal = {
+        caller: input._internal?.caller,
+        depth: input._internal?.depth ?? 0,
+        disableEnvelopeSourceContext: input._internal?.disableEnvelopeSourceContext ?? false
+    };
+    const base = {
+        version,
+        entrypoint,
+        mode: 'real_block_library_active_stack_projection',
+        outputContract: {
+            contractId: 'umg.active_stack.projection.v1',
+            contractStatus: 'NORMALIZED',
+            sourceMode: 'explicit_runtime_state',
+            automaticResponseTakeover: false,
+            activeSleeveDiscovery: false,
+            neostackInspection: false,
+            recursiveLoad: false,
+            fullLibraryScan: false
+        },
+        readOnly: true,
+        execution: 'not_performed',
+        directSource: 'not_enabled',
+        query: {
+            project: input.project ?? 'UMG Envoy Agent / OpenClaw',
+            currentState: input.currentState ?? 'ACTIVE_STACK_PROJECTION_DRAFT',
+            activeTool: input.activeTool ?? 'umg_envoy_block_library_active_stack_projection',
+            sourceTool: input.sourceTool ?? 'umg_envoy_block_library_response_envelope_fragment',
+            neoblockIds,
+            activeSleeve: input.activeSleeve ?? 'n/a',
+            boundary: input.boundary ?? 'explicit projection only; no sleeve graph discovery',
+            projectionFormat: normalizedProjectionFormat,
+            includeAudit: input.includeAudit !== false
+        },
+        audit: {
+            normalizationStatus: 'ACTIVE_STACK_PROJECTION_NORMALIZED',
+            contractId: 'umg.active_stack.projection.v1',
+            inputMode: 'explicit_runtime_state',
+            automaticResponseTakeover: 'false',
+            activeSleeveDiscovery: 'not_performed',
+            neostackInspection: 'not_performed',
+            graphTraversal: 'not_performed',
+            recursiveLoad: 'not_performed',
+            fullLibraryScan: 'not_performed',
+            referencedTargetLoading: 'not_performed',
+            externalMoltBlockFileLoading: 'not_performed',
+            triggerEvaluation: 'not_performed',
+            execution: 'not_performed',
+            directSource: 'not_enabled',
+            libraryMutation: 'not_performed'
+        }
+    };
+    const deniedProjection = {
+        project: base.query.project,
+        currentState: base.query.currentState,
+        runtimeVersion: version,
+        officialEntrypoint: entrypoint,
+        activeTool: base.query.activeTool,
+        sourceTool: base.query.sourceTool,
+        sourceContract: 'umg.molt_map.compose.v1',
+        moltMapSourceContract: 'umg.molt_map.compose.v1',
+        activeSleeve: base.query.activeSleeve,
+        neoStackState: 'not_inspected',
+        graphState: 'not_inspected',
+        boundary: base.query.boundary,
+        automaticResponseTakeover: false,
+        limitations: ['projection_only', 'no_active_sleeve_discovery', 'no_neostack_inspection', 'no_graph_traversal', 'no_recursive_loading', 'no_execution']
+    };
+    if ((internal.depth ?? 0) > 3) {
+        return {
+            ok: false,
+            ...base,
+            activeStackProjection: { ...deniedProjection, projectionStatus: 'ACTIVE_STACK_PROJECTION_DENIED', sourceContextStatus: 'SOURCE_CONTEXT_NOT_EVALUATED_TO_AVOID_RECURSION' },
+            sourceEnvelope: null,
+            sourceComposition: null,
+            nlProjection: null,
+            warnings: [],
+            errors: [{ code: 'HOLD_ACTIVE_STACK_PROJECTION_RECURSION_GUARD', message: 'Active Stack projection recursion guard triggered.' }]
+        };
+    }
+    if (!['nl', 'json', 'both'].includes(projectionFormat)) {
+        return {
+            ok: false,
+            ...base,
+            activeStackProjection: { ...deniedProjection, projectionStatus: 'ACTIVE_STACK_PROJECTION_DENIED' },
+            sourceEnvelope: null,
+            sourceComposition: null,
+            nlProjection: null,
+            warnings: [],
+            errors: [{ code: 'HOLD_ACTIVE_STACK_PROJECTION_FORMAT_UNSUPPORTED', message: `Unsupported projectionFormat: ${projectionFormat}` }]
+        };
+    }
+    if (input.includeRaw) {
+        return {
+            ok: false,
+            ...base,
+            activeStackProjection: { ...deniedProjection, projectionStatus: 'ACTIVE_STACK_PROJECTION_DENIED' },
+            sourceEnvelope: null,
+            sourceComposition: null,
+            nlProjection: null,
+            warnings: [],
+            errors: [{ code: 'HOLD_RAW_TARGET_DUMP_NOT_SUPPORTED', message: 'Raw target dump is not supported.' }]
+        };
+    }
+    let sourceEnvelope = null;
+    let sourceComposition = null;
+    let projectionStatus = 'ACTIVE_STACK_PROJECTION_READY';
+    let sourceContextStatus = 'SOURCE_CONTEXT_NOT_REQUESTED';
+    if (neoblockIds.length) {
+        sourceComposition = getBlockLibraryMoltMapCompose(version, entrypoint, root, {
+            neoblockIds,
+            manifestKind: 'neoblock',
+            summaryProfile: 'standard',
+            projectionFormat: 'both',
+            conflictPolicy: 'report_only',
+            includeFieldProvenance: true,
+            includeContentPreview: true,
+            includeRaw: false
+        });
+        if (!sourceComposition.ok || !sourceComposition.outputContract || sourceComposition.outputContract.contractStatus !== 'NORMALIZED' || sourceComposition.outputContract.contractId !== 'umg.molt_map.compose.v1') {
+            return {
+                ok: false,
+                ...base,
+                activeStackProjection: { ...deniedProjection, projectionStatus: 'ACTIVE_STACK_PROJECTION_SOURCE_NOT_NORMALIZED', sourceContextStatus: 'SOURCE_CONTEXT_NOT_EVALUATED_TO_AVOID_RECURSION' },
+                sourceEnvelope: null,
+                sourceComposition,
+                nlProjection: null,
+                warnings: [],
+                errors: [{ code: 'HOLD_ACTIVE_STACK_SOURCE_NOT_NORMALIZED', message: 'Source composer context is not normalized.' }]
+            };
+        }
+        projectionStatus = 'ACTIVE_STACK_PROJECTION_READY_WITH_SOURCE_CONTEXT';
+        sourceContextStatus = 'SOURCE_CONTEXT_NORMALIZED';
+    }
+    const lines = [
+        'Active Stack:',
+        `- Project: ${base.query.project}`,
+        `- Current State: ${base.query.currentState}`,
+        `- Runtime Version: ${version}`,
+        `- Official Entrypoint: ${entrypoint}`,
+        `- Active Tool: ${base.query.activeTool}`,
+        `- Source Tool: ${base.query.sourceTool}`,
+        '- Source Contract: umg.molt_map.compose.v1',
+        '- MOLT Map Source Contract: umg.molt_map.compose.v1',
+        `- Active Sleeve: ${base.query.activeSleeve}`,
+        '- NeoStack State: not_inspected',
+        '- Graph State: not_inspected',
+        `- Boundary: ${base.query.boundary}`
+    ];
+    return {
+        ok: true,
+        ...base,
+        activeStackProjection: {
+            projectionStatus,
+            project: base.query.project,
+            currentState: base.query.currentState,
+            runtimeVersion: version,
+            officialEntrypoint: entrypoint,
+            activeTool: base.query.activeTool,
+            sourceTool: base.query.sourceTool,
+            sourceContract: 'umg.molt_map.compose.v1',
+            moltMapSourceContract: 'umg.molt_map.compose.v1',
+            activeSleeve: base.query.activeSleeve,
+            neoStackState: 'not_inspected',
+            graphState: 'not_inspected',
+            boundary: base.query.boundary,
+            automaticResponseTakeover: false,
+            sourceContextStatus,
+            limitations: ['projection_only', 'no_active_sleeve_discovery', 'no_neostack_inspection', 'no_graph_traversal', 'no_recursive_loading', 'no_execution']
+        },
+        sourceEnvelope,
+        sourceComposition,
+        nlProjection: normalizedProjectionFormat === 'nl' || normalizedProjectionFormat === 'both' ? lines.join('\n') : null,
+        warnings: [],
+        errors: []
+    };
+}
+export function getBlockLibraryResponseEnvelopeFragment(version, entrypoint = 'dist/plugin-entry.js', root = DEFAULT_LIBRARY_ROOT, input = {}) {
+    const neoblockIds = input.neoblockIds ?? [];
+    const projectionFormat = input.projectionFormat ?? 'both';
+    const normalizedProjectionFormat = projectionFormat === 'nl' || projectionFormat === 'json' || projectionFormat === 'both' ? projectionFormat : 'both';
+    const utc = currentUtcDateParts();
+    const base = {
+        version,
+        entrypoint,
+        mode: 'real_block_library_response_envelope_fragment',
+        outputContract: {
+            contractId: 'umg.response_envelope.fragment.v1',
+            contractStatus: 'NORMALIZED',
+            sourceContractId: 'umg.molt_map.compose.v1',
+            sourceMode: 'explicit_neoblock_ids',
+            activeStackSourceContract: 'umg.active_stack.projection.v1',
+            activeStackSourceStatus: (input.includeActiveStackProjection === false ? 'BYPASSED_BY_QUERY' : 'NORMALIZED'),
+            automaticResponseTakeover: false,
+            recursiveLoad: false,
+            fullLibraryScan: false
+        },
+        readOnly: true,
+        execution: 'not_performed',
+        directSource: 'not_enabled',
+        query: {
+            neoblockIds,
+            project: input.project ?? 'UMG Envoy Agent / OpenClaw',
+            currentState: input.currentState ?? 'RESPONSE_ENVELOPE_FRAGMENT_DRAFT',
+            activeTool: input.activeTool ?? 'umg_envoy_block_library_response_envelope_fragment',
+            formalResponseContent: asBoundedDisplayText(input.formalResponseContent),
+            projectionFormat: normalizedProjectionFormat,
+            includeMetadata: input.includeMetadata !== false,
+            includeAudit: input.includeAudit !== false,
+            activeSleeve: input.activeSleeve ?? 'n/a',
+            activeStackBoundary: input.activeStackBoundary ?? 'explicit envelope fragment only; no automatic response takeover',
+            includeActiveStackProjection: input.includeActiveStackProjection !== false
+        }
+    };
+    if (!neoblockIds.length) {
+        return {
+            ok: false,
+            ...base,
+            sourceComposition: null,
+            sourceActiveStackProjection: null,
+            responseEnvelopeFragment: {
+                fragmentStatus: 'RESPONSE_ENVELOPE_FRAGMENT_DENIED',
+                fragmentKind: 'explicit_molt_map_envelope',
+                sections: { activeStack: {}, envoyIntuition: {}, currentContextMoltMap: {}, formalResponseContent: {}, metadata: {}, audit: {} },
+                sectionOrder: ['Active Stack', 'Envoy Intuition', 'Current Context — MOLT Map', 'Formal Response Content', 'Metadata'],
+                automaticResponseTakeover: false,
+                limitations: ['explicit_fragment_only', 'not_global_response_format', 'no_active_sleeve_discovery', 'no_neostack_inspection', 'no_recursive_loading', 'no_execution']
+            },
+            nlProjection: null,
+            audit: {},
+            warnings: [],
+            errors: [{ code: 'HOLD_RESPONSE_ENVELOPE_FRAGMENT_QUERY_REQUIRED', message: 'Provide at least one neoblockId.' }]
+        };
+    }
+    if (!['nl', 'json', 'both'].includes(projectionFormat)) {
+        return {
+            ok: false,
+            ...base,
+            sourceComposition: null,
+            sourceActiveStackProjection: null,
+            responseEnvelopeFragment: {
+                fragmentStatus: 'RESPONSE_ENVELOPE_FRAGMENT_DENIED',
+                fragmentKind: 'explicit_molt_map_envelope',
+                sections: { activeStack: {}, envoyIntuition: {}, currentContextMoltMap: {}, formalResponseContent: {}, metadata: {}, audit: {} },
+                sectionOrder: ['Active Stack', 'Envoy Intuition', 'Current Context — MOLT Map', 'Formal Response Content', 'Metadata'],
+                automaticResponseTakeover: false,
+                limitations: ['explicit_fragment_only', 'not_global_response_format', 'no_active_sleeve_discovery', 'no_neostack_inspection', 'no_recursive_loading', 'no_execution']
+            },
+            nlProjection: null,
+            audit: {},
+            warnings: [],
+            errors: [{ code: 'HOLD_RESPONSE_ENVELOPE_FRAGMENT_PROJECTION_FORMAT_UNSUPPORTED', message: `Unsupported projectionFormat: ${projectionFormat}` }]
+        };
+    }
+    if (input.includeRaw) {
+        return {
+            ok: false,
+            ...base,
+            sourceComposition: null,
+            sourceActiveStackProjection: null,
+            responseEnvelopeFragment: {
+                fragmentStatus: 'RESPONSE_ENVELOPE_FRAGMENT_DENIED',
+                fragmentKind: 'explicit_molt_map_envelope',
+                sections: { activeStack: {}, envoyIntuition: {}, currentContextMoltMap: {}, formalResponseContent: {}, metadata: {}, audit: {} },
+                sectionOrder: ['Active Stack', 'Envoy Intuition', 'Current Context — MOLT Map', 'Formal Response Content', 'Metadata'],
+                automaticResponseTakeover: false,
+                limitations: ['explicit_fragment_only', 'not_global_response_format', 'no_active_sleeve_discovery', 'no_neostack_inspection', 'no_recursive_loading', 'no_execution']
+            },
+            nlProjection: null,
+            audit: {},
+            warnings: [],
+            errors: [{ code: 'HOLD_RAW_TARGET_DUMP_NOT_SUPPORTED', message: 'Raw target dump is not supported.' }]
+        };
+    }
+    const sourceComposition = getBlockLibraryMoltMapCompose(version, entrypoint, root, {
+        neoblockIds,
+        projectionFormat: 'both',
+        includeFieldProvenance: true,
+        includeContentPreview: true,
+        includeRaw: false
+    });
+    if (!sourceComposition.outputContract || sourceComposition.outputContract.contractStatus !== 'NORMALIZED' || sourceComposition.outputContract.contractId !== 'umg.molt_map.compose.v1') {
+        return {
+            ok: false,
+            ...base,
+            sourceComposition,
+            sourceActiveStackProjection: null,
+            responseEnvelopeFragment: {
+                fragmentStatus: 'RESPONSE_ENVELOPE_FRAGMENT_COMPOSER_FAILED',
+                fragmentKind: 'explicit_molt_map_envelope',
+                sections: { activeStack: {}, envoyIntuition: {}, currentContextMoltMap: {}, formalResponseContent: {}, metadata: {}, audit: {} },
+                sectionOrder: ['Active Stack', 'Envoy Intuition', 'Current Context — MOLT Map', 'Formal Response Content', 'Metadata'],
+                automaticResponseTakeover: false,
+                limitations: ['explicit_fragment_only', 'not_global_response_format', 'no_active_sleeve_discovery', 'no_neostack_inspection', 'no_recursive_loading', 'no_execution']
+            },
+            nlProjection: null,
+            audit: sourceComposition.audit,
+            warnings: [],
+            errors: [{ code: 'HOLD_RESPONSE_ENVELOPE_FRAGMENT_COMPOSER_NOT_NORMALIZED', message: 'Composer output contract is not normalized.' }]
+        };
+    }
+    if (!sourceComposition.ok) {
+        return {
+            ok: false,
+            ...base,
+            sourceComposition,
+            sourceActiveStackProjection: null,
+            responseEnvelopeFragment: {
+                fragmentStatus: 'RESPONSE_ENVELOPE_FRAGMENT_COMPOSER_FAILED',
+                fragmentKind: 'explicit_molt_map_envelope',
+                sections: { activeStack: {}, envoyIntuition: {}, currentContextMoltMap: {}, formalResponseContent: {}, metadata: {}, audit: {} },
+                sectionOrder: ['Active Stack', 'Envoy Intuition', 'Current Context — MOLT Map', 'Formal Response Content', 'Metadata'],
+                automaticResponseTakeover: false,
+                limitations: ['explicit_fragment_only', 'not_global_response_format', 'no_active_sleeve_discovery', 'no_neostack_inspection', 'no_recursive_loading', 'no_execution']
+            },
+            nlProjection: null,
+            audit: sourceComposition.audit,
+            warnings: [],
+            errors: [{ code: 'HOLD_RESPONSE_ENVELOPE_FRAGMENT_COMPOSER_FAILED', message: 'Composer failed.' }, ...sourceComposition.errors]
+        };
+    }
+    const sourceActiveStackProjection = base.query.includeActiveStackProjection
+        ? getBlockLibraryActiveStackProjection(version, entrypoint, root, {
+            project: base.query.project,
+            currentState: base.query.currentState,
+            activeTool: base.query.activeTool,
+            sourceTool: 'umg_envoy_block_library_active_stack_projection',
+            neoblockIds,
+            activeSleeve: base.query.activeSleeve,
+            boundary: base.query.activeStackBoundary,
+            projectionFormat: 'both',
+            includeAudit: true,
+            includeRaw: false,
+            _internal: { caller: 'response_envelope_fragment', depth: 1, disableEnvelopeSourceContext: true }
+        })
+        : null;
+    if (base.query.includeActiveStackProjection && (!sourceActiveStackProjection || !sourceActiveStackProjection.ok || sourceActiveStackProjection.outputContract.contractStatus !== 'NORMALIZED')) {
+        return {
+            ok: false,
+            ...base,
+            sourceComposition,
+            sourceActiveStackProjection,
+            responseEnvelopeFragment: {
+                fragmentStatus: 'RESPONSE_ENVELOPE_FRAGMENT_COMPOSER_FAILED',
+                fragmentKind: 'explicit_molt_map_envelope',
+                sections: { activeStack: {}, envoyIntuition: {}, currentContextMoltMap: {}, formalResponseContent: {}, metadata: {}, audit: {} },
+                sectionOrder: ['Active Stack', 'Envoy Intuition', 'Current Context — MOLT Map', 'Formal Response Content', 'Metadata'],
+                automaticResponseTakeover: false,
+                limitations: ['explicit_fragment_only', 'not_global_response_format', 'no_active_sleeve_discovery', 'no_neostack_inspection', 'no_recursive_loading', 'no_execution']
+            },
+            nlProjection: null,
+            audit: sourceComposition.audit,
+            warnings: [],
+            errors: [{ code: 'HOLD_RESPONSE_ENVELOPE_ACTIVE_STACK_PROJECTION_NOT_NORMALIZED', message: 'Active Stack projection is not normalized.' }]
+        };
+    }
+    const deniedWarnings = sourceComposition.fragmentResults.filter((result) => !result.ok && result.hold).map((result) => `${result.requestedId}: ${result.hold}`);
+    const fragmentStatus = sourceComposition.composition.deniedFragmentCount > 0 ? 'RESPONSE_ENVELOPE_FRAGMENT_READY_WITH_SOURCE_WARNINGS' : 'RESPONSE_ENVELOPE_FRAGMENT_READY';
+    const activeStackSection = sourceActiveStackProjection?.nlProjection ?? [
+        'Active Stack:',
+        `- Project: ${base.query.project}`,
+        `- Current State: ${base.query.currentState}`,
+        `- Runtime Version: ${version}`,
+        `- Official Entrypoint: ${entrypoint}`,
+        `- Active Tool: ${base.query.activeTool}`,
+        '- Source Tool: umg_envoy_block_library_active_stack_projection',
+        '- Source Contract: umg.active_stack.projection.v1',
+        '- MOLT Map Source Contract: umg.molt_map.compose.v1',
+        `- Active Sleeve: ${base.query.activeSleeve}`,
+        '- NeoStack State: not_inspected',
+        '- Graph State: not_inspected',
+        `- Boundary: ${base.query.activeStackBoundary}`
+    ].join('\n');
+    const envoyIntuitionLine = `Envoy Intuition:\n${asBoundedParagraph(input.envoyIntuition)}`;
+    const currentContext = sourceComposition.nlProjection ?? 'Current Context — MOLT Map:\nTrigger: n/a\nDirective: n/a\nInstruction: n/a\nSubject: n/a\nPrimary: n/a\nPhilosophy: n/a\nBlueprint: n/a';
+    const formalResponse = `Formal Response Content:\n${base.query.formalResponseContent}`;
+    const metadataLines = [
+        'Metadata:',
+        '- ActiveSleeve: UMG.Envoy.Agent.Alpha6.ResponseEnvelopeFragment',
+        '- Mode: Response envelope fragment',
+        '- Scope: Render explicit normalized MOLT Map into envelope fragment',
+        '- Domain: OPENCLAW / UMG',
+        '- Project: UMG Envoy Agent',
+        `- State: ${base.query.currentState}`,
+        '- Output: NL envelope fragment plus JSON contract',
+        '- Meta: No automatic response takeover',
+        '- Surface: OpenClaw tool output',
+        '- Session: n/a',
+        '- ChatCount: n/a',
+        `- Date: ${utc.date}`,
+        `- Time: ${utc.time}`,
+        '- SpecVersion: UMG_OUTPUT_STYLE.v1.1'
+    ];
+    const nlProjection = normalizedProjectionFormat === 'nl' || normalizedProjectionFormat === 'both'
+        ? [activeStackSection, envoyIntuitionLine, currentContext, formalResponse, base.query.includeMetadata ? metadataLines.join('\n') : null].filter(Boolean).join('\n\n')
+        : null;
+    return {
+        ok: true,
+        ...base,
+        sourceComposition,
+        sourceActiveStackProjection,
+        responseEnvelopeFragment: {
+            fragmentStatus,
+            fragmentKind: 'explicit_molt_map_envelope',
+            sections: {
+                activeStack: sourceActiveStackProjection?.activeStackProjection ?? { project: base.query.project, currentState: base.query.currentState, activeTool: base.query.activeTool, sourceTool: 'umg_envoy_block_library_active_stack_projection', sourceContract: 'umg.active_stack.projection.v1', moltMapSourceContract: 'umg.molt_map.compose.v1', activeSleeve: base.query.activeSleeve, neoStackState: 'not_inspected', graphState: 'not_inspected', boundary: base.query.activeStackBoundary },
+                envoyIntuition: { text: asBoundedParagraph(input.envoyIntuition) },
+                currentContextMoltMap: { nlProjection: currentContext, fieldOrder: [...MOLT_MAP_FIELD_ORDER] },
+                formalResponseContent: { text: base.query.formalResponseContent },
+                metadata: base.query.includeMetadata ? { activeSleeve: 'UMG.Envoy.Agent.Alpha6.ResponseEnvelopeFragment', mode: 'Response envelope fragment', scope: 'Render explicit normalized MOLT Map into envelope fragment', domain: 'OPENCLAW / UMG', project: 'UMG Envoy Agent', state: base.query.currentState, output: 'NL envelope fragment plus JSON contract', meta: 'No automatic response takeover', surface: 'OpenClaw tool output', session: 'n/a', chatCount: 'n/a', date: utc.date, time: utc.time, specVersion: 'UMG_OUTPUT_STYLE.v1.1' } : {},
+                audit: base.query.includeAudit ? sourceComposition.audit : {}
+            },
+            sectionOrder: ['Active Stack', 'Envoy Intuition', 'Current Context — MOLT Map', 'Formal Response Content', 'Metadata'],
+            automaticResponseTakeover: false,
+            limitations: ['explicit_fragment_only', 'not_global_response_format', 'no_active_sleeve_discovery', 'no_neostack_inspection', 'no_recursive_loading', 'no_execution']
+        },
+        nlProjection,
+        audit: sourceComposition.audit,
+        warnings: deniedWarnings.length ? [`Denied source fragments: ${deniedWarnings.join('; ')}`] : [],
+        errors: []
+    };
+}
+export function getBlockLibraryMoltMapFragment(version, entrypoint = 'dist/plugin-entry.js', root = DEFAULT_LIBRARY_ROOT, input = {}) {
+    const entryId = input.neoblockId ?? input.entryId;
+    const manifestKind = input.manifestKind ?? 'neoblock';
+    const summaryProfile = input.summaryProfile ?? 'standard';
+    const projectionFormat = (input.projectionFormat ?? 'both');
+    const normalizedProjectionFormat = (projectionFormat === 'nl' || projectionFormat === 'json' || projectionFormat === 'both') ? projectionFormat : 'both';
+    const base = {
+        version,
+        entrypoint,
+        mode: 'real_block_library_molt_map_fragment',
+        readOnly: true,
+        execution: 'not_performed',
+        directSource: 'not_enabled',
+        query: {
+            neoblockId: input.neoblockId ?? null,
+            entryId: entryId ?? null,
+            sourcePath: input.sourcePath ?? null,
+            manifestKind,
+            summaryProfile,
+            projectionFormat: normalizedProjectionFormat
+        }
+    };
+    if (!entryId && !input.sourcePath) {
+        return {
+            ok: false,
+            ...base,
+            sourceNeoblock: null,
+            visibleMoltExtraction: null,
+            moltMapFragment: null,
+            nlProjection: null,
+            warnings: [],
+            errors: [{ code: 'HOLD_MOLT_MAP_FRAGMENT_QUERY_REQUIRED', message: 'Provide neoblockId, entryId, or sourcePath.' }]
+        };
+    }
+    if (!['nl', 'json', 'both'].includes(projectionFormat)) {
+        return {
+            ok: false,
+            ...base,
+            sourceNeoblock: null,
+            visibleMoltExtraction: null,
+            moltMapFragment: null,
+            nlProjection: null,
+            warnings: [],
+            errors: [{ code: 'HOLD_MOLT_MAP_FRAGMENT_PROJECTION_FORMAT_UNSUPPORTED', message: `Unsupported projectionFormat: ${projectionFormat}` }]
+        };
+    }
+    const entryLookup = getBlockLibraryManifestEntryLookup(version, entrypoint, root, {
+        entryId,
+        sourcePath: input.sourcePath,
+        manifestKind,
+        includeManifestSummary: true,
+        includeRaw: false
+    });
+    const extracted = getBlockLibraryMoltblockVisibleExtract(version, entrypoint, root, {
+        neoblockId: input.neoblockId,
+        entryId: input.entryId,
+        sourcePath: input.sourcePath,
+        manifestKind,
+        summaryProfile,
+        includeContentPreview: input.includeContentPreview !== false,
+        includeReferenceSummary: input.includeReferenceSummary !== false,
+        includeRaw: Boolean(input.includeRaw)
+    });
+    const visible = extracted.visibleMoltExtraction;
+    const sourceNeoblock = extracted.sourceNeoblock;
+    const visibleSummary = visible ? {
+        extractStatus: visible.extractStatus,
+        sourceNeoblockId: visible.sourceNeoblockId,
+        moltBlockId: visible.moltBlockId,
+        moltType: visible.moltType,
+        moltTypeSource: visible.moltTypeSource,
+        triggerEvaluation: 'not_performed'
+    } : null;
+    if (!extracted.ok || !visible || !sourceNeoblock) {
+        let fragmentStatus = 'MOLT_MAP_FRAGMENT_DENIED_BY_GATE';
+        const first = extracted.errors[0]?.code;
+        if (first === 'HOLD_TARGET_FORBIDDEN')
+            fragmentStatus = 'MOLT_MAP_FRAGMENT_SOURCE_FORBIDDEN';
+        else if (first === 'HOLD_TARGET_OUTSIDE_ALLOWLIST')
+            fragmentStatus = 'MOLT_MAP_FRAGMENT_SOURCE_OUTSIDE_ALLOWLIST';
+        else if (first === 'HOLD_VISIBLE_MOLT_NOT_FOUND')
+            fragmentStatus = 'MOLT_MAP_FRAGMENT_VISIBLE_MOLT_NOT_FOUND';
+        else if (first === 'HOLD_TARGET_NOT_NEOBLOCK')
+            fragmentStatus = 'MOLT_MAP_FRAGMENT_SOURCE_NOT_NEOBLOCK';
+        else if (first === 'HOLD_TARGET_PARSE_FAILED')
+            fragmentStatus = 'MOLT_MAP_FRAGMENT_PARSE_FAILED';
+        else if (first === 'HOLD_TARGET_SHAPE_UNKNOWN')
+            fragmentStatus = 'MOLT_MAP_FRAGMENT_SHAPE_UNKNOWN';
+        return {
+            ok: false,
+            ...base,
+            sourceNeoblock,
+            visibleMoltExtraction: visibleSummary,
+            moltMapFragment: {
+                fragmentStatus,
+                fragmentKind: 'single_visible_molt',
+                sourceNeoblockId: visible?.sourceNeoblockId ?? entryId ?? null,
+                moltBlockId: visible?.moltBlockId ?? entryId ?? null,
+                moltType: visible?.moltType ?? null,
+                moltMapField: mapMoltTypeToFragmentField(visible?.moltType ?? null),
+                fieldValue: null,
+                fieldSource: visible ? 'visible_molt_extraction' : null,
+                contentPreview: visible?.contentPreview ?? null,
+                referenceSummary: visible?.referenceSummary ?? null,
+                provenance: {
+                    manifestPath: entryLookup.matches[0]?.manifestPath ?? 'AI/MANIFESTS/neoblock-library-index.json',
+                    sourcePath: null,
+                    loadedFrom: 'single_shallow_target',
+                    backfillStatus: (first === 'HOLD_TARGET_FORBIDDEN' || first === 'HOLD_TARGET_OUTSIDE_ALLOWLIST') ? 'SOURCE_PATH_BLOCKED_BY_POLICY' : 'SOURCE_PATH_NOT_AVAILABLE'
+                },
+                limitations: ['single_fragment_only', 'not_full_molt_map', 'no_recursive_loading', 'no_reference_resolution', 'no_trigger_evaluation', 'no_execution']
+            },
+            nlProjection: null,
+            warnings: extracted.warnings,
+            errors: extracted.errors
+        };
+    }
+    const moltMapField = mapMoltTypeToFragmentField(visible.moltType);
+    const fieldValue = deriveFragmentFieldValue(visible);
+    const resolvedMatch = entryLookup.matches[0] ?? null;
+    const resolvedSourcePath = resolvedMatch?.sourcePath ?? null;
+    const queryProvidedSourcePath = base.query.sourcePath;
+    const provenance = {
+        manifestPath: resolvedMatch?.manifestPath ?? 'AI/MANIFESTS/neoblock-library-index.json',
+        sourcePath: queryProvidedSourcePath ?? resolvedSourcePath,
+        loadedFrom: 'single_shallow_target',
+        backfillStatus: queryProvidedSourcePath
+            ? 'SOURCE_PATH_PROVIDED_BY_QUERY'
+            : resolvedSourcePath
+                ? 'SOURCE_PATH_BACKFILLED_FROM_MANIFEST_ENTRY'
+                : 'SOURCE_PATH_NOT_AVAILABLE'
+    };
+    const nlProjection = (projectionFormat === 'nl' || projectionFormat === 'both') && moltMapField
+        ? `Current Context — MOLT Map Fragment:\n${moltMapField}: ${fieldValue ?? 'n/a'}`
+        : null;
+    return {
+        ok: true,
+        ...base,
+        sourceNeoblock,
+        visibleMoltExtraction: visibleSummary,
+        moltMapFragment: {
+            fragmentStatus: 'MOLT_MAP_FRAGMENT_READY',
+            fragmentKind: 'single_visible_molt',
+            sourceNeoblockId: visible.sourceNeoblockId,
+            moltBlockId: visible.moltBlockId,
+            moltType: visible.moltType,
+            moltMapField,
+            fieldValue,
+            fieldSource: 'visible_molt_extraction',
+            contentPreview: visible.contentPreview,
+            referenceSummary: visible.referenceSummary,
+            provenance,
+            limitations: ['single_fragment_only', 'not_full_molt_map', 'no_recursive_loading', 'no_reference_resolution', 'no_trigger_evaluation', 'no_execution']
+        },
+        nlProjection,
+        warnings: extracted.warnings,
+        errors: []
+    };
+}
+export function getBlockLibraryMoltblockVisibleExtract(version, entrypoint = "dist/plugin-entry.js", root = DEFAULT_LIBRARY_ROOT, input = {}) {
+    const entryId = input.neoblockId ?? input.entryId;
+    const manifestKind = input.manifestKind ?? 'neoblock';
+    const summaryProfile = input.summaryProfile ?? 'standard';
+    const base = {
+        version,
+        entrypoint,
+        mode: 'real_block_library_moltblock_visible_extract',
+        readOnly: true,
+        execution: 'not_performed',
+        directSource: 'not_enabled',
+        query: {
+            neoblockId: input.neoblockId ?? null,
+            entryId: entryId ?? null,
+            sourcePath: input.sourcePath ?? null,
+            manifestKind,
+            summaryProfile
+        }
+    };
+    if (!entryId && !input.sourcePath) {
+        return {
+            ok: false,
+            ...base,
+            sourceNeoblock: null,
+            visibleMoltExtraction: null,
+            warnings: [],
+            errors: [{ code: 'HOLD_VISIBLE_MOLT_EXTRACT_QUERY_REQUIRED', message: 'Provide neoblockId, entryId, or sourcePath.' }]
+        };
+    }
+    const inspected = getBlockLibraryNeoblockInspect(version, entrypoint, root, {
+        neoblockId: input.neoblockId,
+        entryId: input.entryId,
+        sourcePath: input.sourcePath,
+        manifestKind,
+        summaryProfile,
+        includeContentPreview: input.includeContentPreview !== false,
+        includeReferenceSummary: input.includeReferenceSummary !== false,
+        includeRaw: Boolean(input.includeRaw)
+    });
+    const sourceNeoblock = {
+        inspectStatus: inspected.neoblockInspection?.inspectStatus ?? 'NEOBLOCK_DENIED_BY_GATE',
+        neoblockId: inspected.neoblockInspection?.neoblockId ?? entryId ?? null,
+        artifactKind: inspected.neoblockInspection?.artifactKind ?? null,
+        moltType: inspected.neoblockInspection?.moltType ?? null,
+        payloadLoaded: inspected.gate.payloadLoaded,
+        recursiveLoad: false
+    };
+    if (!inspected.ok || !inspected.neoblockInspection) {
+        const first = inspected.errors[0]?.code;
+        let extractStatus = 'VISIBLE_MOLT_DENIED_BY_GATE';
+        if (first === 'HOLD_TARGET_FORBIDDEN')
+            extractStatus = 'VISIBLE_MOLT_SOURCE_FORBIDDEN';
+        else if (first === 'HOLD_TARGET_OUTSIDE_ALLOWLIST')
+            extractStatus = 'VISIBLE_MOLT_SOURCE_OUTSIDE_ALLOWLIST';
+        else if (first === 'HOLD_TARGET_PARSE_FAILED')
+            extractStatus = 'VISIBLE_MOLT_PARSE_FAILED';
+        else if (first === 'HOLD_TARGET_SHAPE_UNKNOWN')
+            extractStatus = 'VISIBLE_MOLT_SHAPE_UNKNOWN';
+        return {
+            ok: false,
+            ...base,
+            sourceNeoblock,
+            visibleMoltExtraction: {
+                extractStatus,
+                moltBlockId: inspected.neoblockInspection?.neoblockId ?? entryId ?? null,
+                sourceNeoblockId: inspected.neoblockInspection?.neoblockId ?? entryId ?? null,
+                moltType: inspected.neoblockInspection?.moltType ?? null,
+                moltTypeSource: inspected.neoblockInspection?.moltType ? 'neoblock_inspection' : null,
+                role: inspected.neoblockInspection?.role ?? null,
+                title: inspected.neoblockInspection?.title ?? null,
+                status: inspected.neoblockInspection?.status ?? null,
+                contentSummary: inspected.neoblockInspection?.contentSummary ?? null,
+                moltFields: {},
+                instructionLikeFields: {},
+                triggerLikeFields: {},
+                blueprintLikeFields: {},
+                philosophyLikeFields: {},
+                subjectLikeFields: {},
+                primaryLikeFields: {},
+                referenceSummary: inspected.neoblockInspection?.referenceSummary ?? null,
+                contentPreview: inspected.neoblockInspection?.contentPreview ?? null,
+                limitations: ['visible_molt_only', 'single_neoblock_source', 'no_external_moltblock_loading', 'no_recursive_loading', 'no_trigger_evaluation', 'no_execution']
+            },
+            warnings: inspected.warnings,
+            errors: inspected.errors
+        };
+    }
+    if (inspected.neoblockInspection.artifactKind !== 'neoblock') {
+        return {
+            ok: false,
+            ...base,
+            sourceNeoblock,
+            visibleMoltExtraction: {
+                extractStatus: 'VISIBLE_MOLT_SOURCE_NOT_NEOBLOCK',
+                moltBlockId: inspected.neoblockInspection.neoblockId,
+                sourceNeoblockId: inspected.neoblockInspection.neoblockId,
+                moltType: inspected.neoblockInspection.moltType,
+                moltTypeSource: inspected.neoblockInspection.moltType ? 'neoblock_inspection' : null,
+                role: inspected.neoblockInspection.role,
+                title: inspected.neoblockInspection.title,
+                status: inspected.neoblockInspection.status,
+                contentSummary: inspected.neoblockInspection.contentSummary,
+                moltFields: {},
+                instructionLikeFields: {},
+                triggerLikeFields: {},
+                blueprintLikeFields: {},
+                philosophyLikeFields: {},
+                subjectLikeFields: {},
+                primaryLikeFields: {},
+                referenceSummary: inspected.neoblockInspection.referenceSummary,
+                contentPreview: inspected.neoblockInspection.contentPreview,
+                limitations: ['visible_molt_only', 'single_neoblock_source', 'no_external_moltblock_loading', 'no_recursive_loading', 'no_trigger_evaluation', 'no_execution']
+            },
+            warnings: inspected.warnings,
+            errors: [{ code: 'HOLD_TARGET_NOT_NEOBLOCK', message: 'Target artifactKind is not neoblock.' }]
+        };
+    }
+    const contentSummary = inspected.neoblockInspection.contentSummary ?? null;
+    const visibleMolt = contentSummary && typeof contentSummary === 'object' ? contentSummary : null;
+    if (!visibleMolt || !inspected.neoblockInspection.moltType) {
+        return {
+            ok: false,
+            ...base,
+            sourceNeoblock,
+            visibleMoltExtraction: {
+                extractStatus: 'VISIBLE_MOLT_NOT_FOUND',
+                moltBlockId: inspected.neoblockInspection.neoblockId,
+                sourceNeoblockId: inspected.neoblockInspection.neoblockId,
+                moltType: inspected.neoblockInspection.moltType,
+                moltTypeSource: inspected.neoblockInspection.moltType ? 'neoblock_inspection' : null,
+                role: inspected.neoblockInspection.role,
+                title: inspected.neoblockInspection.title,
+                status: inspected.neoblockInspection.status,
+                contentSummary,
+                moltFields: {},
+                instructionLikeFields: {},
+                triggerLikeFields: {},
+                blueprintLikeFields: {},
+                philosophyLikeFields: {},
+                subjectLikeFields: {},
+                primaryLikeFields: {},
+                referenceSummary: inspected.neoblockInspection.referenceSummary,
+                contentPreview: inspected.neoblockInspection.contentPreview,
+                limitations: ['visible_molt_only', 'single_neoblock_source', 'no_external_moltblock_loading', 'no_recursive_loading', 'no_trigger_evaluation', 'no_execution']
+            },
+            warnings: inspected.warnings,
+            errors: [{ code: 'HOLD_VISIBLE_MOLT_NOT_FOUND', message: 'Visible MOLT data not found in shallow-loaded NeoBlock.' }]
+        };
+    }
+    return {
+        ok: true,
+        ...base,
+        sourceNeoblock,
+        visibleMoltExtraction: {
+            extractStatus: 'VISIBLE_MOLT_EXTRACTED',
+            moltBlockId: inspected.neoblockInspection.neoblockId,
+            sourceNeoblockId: inspected.neoblockInspection.neoblockId,
+            moltType: inspected.neoblockInspection.moltType,
+            moltTypeSource: 'neoblock_inspection',
+            role: inspected.neoblockInspection.role,
+            title: inspected.neoblockInspection.title,
+            status: inspected.neoblockInspection.status,
+            contentSummary,
+            moltFields: visibleMolt,
+            instructionLikeFields: pickVisibleFields(visibleMolt, ['instruction', 'instructions', 'steps', 'actions', 'directive']),
+            triggerLikeFields: pickVisibleFields(visibleMolt, ['trigger', 'triggers', 'conditions', 'condition']),
+            blueprintLikeFields: pickVisibleFields(visibleMolt, ['blueprint', 'plan', 'schema', 'structure']),
+            philosophyLikeFields: pickVisibleFields(visibleMolt, ['philosophy', 'principles', 'beliefs', 'values']),
+            subjectLikeFields: pickVisibleFields(visibleMolt, ['subject', 'subjects', 'topic', 'topics']),
+            primaryLikeFields: pickVisibleFields(visibleMolt, ['primary', 'goal', 'objective', 'content', 'value']),
+            referenceSummary: input.includeReferenceSummary === false ? { blockRefs: 0, neoblockRefs: 0, neostackRefs: 0, moltBlockRefs: 0, toolRequests: 0, gates: 0, triggers: 0, unknownRefs: 0, resolvedRefs: 0, loadedRefs: 0 } : inspected.neoblockInspection.referenceSummary,
+            contentPreview: input.includeContentPreview === false ? null : inspected.neoblockInspection.contentPreview,
+            limitations: ['visible_molt_only', 'single_neoblock_source', 'no_external_moltblock_loading', 'no_recursive_loading', 'no_trigger_evaluation', 'no_execution']
+        },
+        warnings: inspected.warnings,
+        errors: []
+    };
+}
+function normalizeSleevePolicy(sourcePath, sourceCatalog) {
+    if (!sourcePath)
+        return "UNKNOWN";
+    const normalized = normalizeRelativePath(sourcePath);
+    if (isForbiddenTarget(normalized))
+        return "FORBIDDEN";
+    if (normalized.startsWith('AI/SLEEVES/'))
+        return "MACHINE_LOADABLE_CANDIDATE";
+    if (normalized.startsWith('sleeves/'))
+        return sourceCatalog === 'ai_manifest' ? "REFERENCE_ONLY" : "PUBLIC_CURATED";
+    if (isAllowedTarget(normalized))
+        return "MACHINE_LOADABLE_CANDIDATE";
+    return "OUTSIDE_ALLOWLIST";
+}
+function normalizeSleeveCatalogEntries(root, sourceCatalog) {
+    const catalogPath = sourceCatalog === 'ai_manifest'
+        ? path.join(root, 'AI', 'MANIFESTS', 'sleeve-catalog.json')
+        : path.join(root, 'sleeves', 'manifests', 'catalog.json');
+    if (!safeExists(catalogPath)) {
+        return { ok: false, code: 'HOLD_SLEEVE_GRAPH_INDEX_CATALOG_NOT_FOUND', message: `Catalog missing: ${catalogPath}`, entries: [], catalogPath: normalizeRelativePath(path.relative(root, catalogPath)) };
+    }
+    try {
+        const parsed = readJsonFile(catalogPath);
+        if (!parsed || typeof parsed !== 'object' || !Array.isArray(parsed.sleeves)) {
+            return { ok: false, code: 'HOLD_SLEEVE_GRAPH_INDEX_CATALOG_PARSE_FAILED', message: `Catalog shape unsupported: ${catalogPath}`, entries: [], catalogPath: normalizeRelativePath(path.relative(root, catalogPath)) };
+        }
+        const catalogRel = normalizeRelativePath(path.relative(root, catalogPath));
+        const entries = parsed.sleeves.map((entry) => {
+            const sleeveId = typeof entry.id === 'string' ? entry.id : null;
+            const title = typeof entry.name === 'string' ? entry.name : (typeof entry.title === 'string' ? entry.title : null);
+            const rawSource = typeof entry.source_path === 'string' ? entry.source_path : (typeof entry.path === 'string' ? entry.path : null);
+            const sourcePath = rawSource ? normalizeRelativePath(path.join(path.dirname(catalogRel), rawSource)) : null;
+            return { sleeveId, title, sourcePath, catalogPath: catalogRel, raw: entry };
+        }).filter((entry) => Boolean(entry.sleeveId));
+        return { ok: true, entries, catalogPath: catalogRel };
+    }
+    catch (error) {
+        return { ok: false, code: 'HOLD_SLEEVE_GRAPH_INDEX_CATALOG_PARSE_FAILED', message: String(error), entries: [], catalogPath: normalizeRelativePath(path.relative(root, catalogPath)) };
+    }
+}
+function collectSleeveRefs(root, sourcePath) {
+    const empty = { neoStackRefs: [], neoBlockRefs: [], moltBlockRefs: [], unresolvedRefs: 0, forbiddenRefs: 0, outsideAllowlistRefs: 0, warnings: [] };
+    if (!sourcePath)
+        return empty;
+    const normalized = normalizeRelativePath(sourcePath);
+    if (isForbiddenTarget(normalized))
+        return { ...empty, forbiddenRefs: 1, warnings: ['forbidden_source_path'] };
+    if (!isAllowedTarget(normalized))
+        return { ...empty, outsideAllowlistRefs: 1, warnings: ['outside_allowlist_source_path'] };
+    const full = path.join(root, ...normalized.split('/'));
+    if (!safeExists(full))
+        return { ...empty, unresolvedRefs: 1, warnings: ['source_path_missing_on_disk'] };
+    try {
+        const parsed = readJsonFile(full);
+        if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed))
+            return { ...empty, unresolvedRefs: 1, warnings: ['source_payload_shape_unknown'] };
+        const obj = parsed;
+        const blockRefs = Array.isArray(obj.block_refs) ? obj.block_refs : [];
+        const neoBlockRefs = blockRefs.map((item) => typeof item === 'string' ? item : (item && typeof item === 'object' && typeof item.block_id === 'string' ? item.block_id : null)).filter((v) => Boolean(v));
+        const neoStackRefs = Array.isArray(obj.neostack_refs) ? obj.neostack_refs.map((item) => typeof item === 'string' ? item : (item && typeof item === 'object' && typeof item.stack_id === 'string' ? item.stack_id : null)).filter((v) => Boolean(v)) : [];
+        const moltBlockRefs = Array.isArray(obj.molt_refs) ? obj.molt_refs.map((item) => typeof item === 'string' ? item : (item && typeof item === 'object' && typeof item.molt_id === 'string' ? item.molt_id : null)).filter((v) => Boolean(v)) : [];
+        return { neoStackRefs, neoBlockRefs, moltBlockRefs, unresolvedRefs: 0, forbiddenRefs: 0, outsideAllowlistRefs: 0, warnings: [] };
+    }
+    catch {
+        return { ...empty, unresolvedRefs: 1, warnings: ['source_payload_parse_failed'] };
+    }
+}
+export function getBlockLibrarySleeveGraphIndex(version, entrypoint = 'dist/plugin-entry.js', root = DEFAULT_LIBRARY_ROOT, input = {}) {
+    const requestedSourceCatalog = input.sourceCatalog ?? 'auto';
+    const projectionFormat = input.projectionFormat ?? 'both';
+    const includeReferenceSummary = input.includeReferenceSummary !== false;
+    const includePolicySummary = input.includePolicySummary !== false;
+    const base = {
+        version,
+        entrypoint,
+        mode: 'real_block_library_sleeve_graph_index',
+        outputContract: {
+            contractId: 'umg.sleeve_graph.index.v1',
+            contractStatus: 'NORMALIZED',
+            sourceMode: 'read_only_reference_index',
+            activation: false,
+            recursiveLoad: false,
+            fullLibraryScan: false,
+            payloadLoading: 'catalog_or_manifest_only'
+        },
+        readOnly: true,
+        execution: 'not_performed',
+        directSource: 'not_enabled',
+        query: {
+            sleeveId: input.sleeveId ?? null,
+            sourceCatalog: (requestedSourceCatalog === 'auto' || requestedSourceCatalog === 'sleeves_catalog' || requestedSourceCatalog === 'ai_manifest' ? requestedSourceCatalog : 'auto'),
+            projectionFormat: (projectionFormat === 'nl' || projectionFormat === 'json' || projectionFormat === 'both' ? projectionFormat : 'both'),
+            includeReferenceSummary,
+            includePolicySummary,
+            includeRaw: Boolean(input.includeRaw)
+        },
+        sleeveGraphIndex: {
+            indexStatus: 'SLEEVE_GRAPH_INDEX_DENIED',
+            indexKind: 'read_only_sleeve_reference_index',
+            sourceCatalog: (requestedSourceCatalog === 'auto' || requestedSourceCatalog === 'sleeves_catalog' || requestedSourceCatalog === 'ai_manifest' ? requestedSourceCatalog : 'auto'),
+            sleeveCount: 0,
+            focusedSleeveId: input.sleeveId ?? null,
+            sleeves: [],
+            referenceSummary: {
+                declaredSleeves: 0,
+                declaredNeoStacks: 0,
+                declaredNeoBlocks: 0,
+                declaredMoltBlocks: 0,
+                resolvedRefs: 0,
+                loadedRefs: 0,
+                unresolvedRefs: 0,
+                forbiddenRefs: 0,
+                outsideAllowlistRefs: 0
+            },
+            policySummary: {
+                machineLoadableLanes: ['AI/SLEEVES'],
+                publicCuratedLanes: ['sleeves', 'sleeves/manifests'],
+                referenceOnlyLanes: ['AI/MANIFESTS/sleeve-catalog.json'],
+                forbiddenLanes: ['archive', 'Resleever', 'HUMAN']
+            },
+            limitations: [
+                'index_only',
+                'no_sleeve_activation',
+                'no_graph_traversal',
+                'no_neostack_payload_loading',
+                'no_neoblock_recursive_loading',
+                'no_external_molt_block_loading',
+                'no_execution'
+            ]
+        },
+        nlProjection: '',
+        audit: {
+            sleeveActivation: 'not_performed',
+            activeSleeveMutation: 'not_performed',
+            neoStackPayloadLoading: 'not_performed',
+            neoBlockRecursiveLoading: 'not_performed',
+            externalMoltBlockFileLoading: 'not_performed',
+            graphTraversal: 'not_performed',
+            recursiveFullLibraryLoad: 'not_performed',
+            fullLibraryScan: 'not_performed',
+            triggerEvaluation: 'not_performed',
+            libraryMutation: 'not_performed',
+            publish: 'not_performed',
+            package: 'not_performed'
+        },
+        warnings: [],
+        errors: []
+    };
+    if (input.includeRaw) {
+        return { ...base, ok: false, errors: [{ code: 'HOLD_RAW_TARGET_DUMP_NOT_SUPPORTED', message: 'includeRaw=true is not supported.' }] };
+    }
+    if (!['auto', 'sleeves_catalog', 'ai_manifest'].includes(requestedSourceCatalog)) {
+        return { ...base, ok: false, errors: [{ code: 'HOLD_SLEEVE_GRAPH_INDEX_SOURCE_CATALOG_UNSUPPORTED', message: `Unsupported sourceCatalog: ${requestedSourceCatalog}` }] };
+    }
+    if (!['nl', 'json', 'both'].includes(projectionFormat)) {
+        return { ...base, ok: false, errors: [{ code: 'HOLD_SLEEVE_GRAPH_INDEX_PROJECTION_FORMAT_UNSUPPORTED', message: `Unsupported projectionFormat: ${projectionFormat}` }] };
+    }
+    const resolvedCatalog = requestedSourceCatalog === 'ai_manifest' ? 'ai_manifest' : 'sleeves_catalog';
+    const catalog = normalizeSleeveCatalogEntries(path.resolve(root), resolvedCatalog);
+    if (!catalog.ok) {
+        return { ...base, ok: false, sleeveGraphIndex: { ...base.sleeveGraphIndex, sourceCatalog: resolvedCatalog, indexStatus: 'SLEEVE_GRAPH_INDEX_UNAVAILABLE' }, errors: [{ code: catalog.code, message: catalog.message }] };
+    }
+    let visibleEntries = catalog.entries.filter((entry) => normalizeSleevePolicy(entry.sourcePath, resolvedCatalog) !== 'FORBIDDEN');
+    if (input.sleeveId) {
+        visibleEntries = visibleEntries.filter((entry) => entry.sleeveId === input.sleeveId);
+        if (!visibleEntries.length) {
+            return { ...base, ok: false, sleeveGraphIndex: { ...base.sleeveGraphIndex, sourceCatalog: resolvedCatalog, indexStatus: 'SLEEVE_GRAPH_INDEX_DENIED' }, errors: [{ code: 'HOLD_SLEEVE_GRAPH_INDEX_SLEEVE_NOT_FOUND', message: `Sleeve not found: ${input.sleeveId}` }] };
+        }
+    }
+    const sleeves = visibleEntries.map((entry) => {
+        const refs = collectSleeveRefs(path.resolve(root), entry.sourcePath);
+        const policy = normalizeSleevePolicy(entry.sourcePath, resolvedCatalog);
+        return {
+            sleeveId: entry.sleeveId,
+            title: entry.title,
+            sourcePath: entry.sourcePath,
+            catalogPath: entry.catalogPath,
+            policy,
+            activationState: 'not_active',
+            graphStatus: 'INDEXED_REFERENCE_ONLY',
+            neoStackRefs: refs.neoStackRefs,
+            neoBlockRefs: refs.neoBlockRefs,
+            moltBlockRefs: refs.moltBlockRefs,
+            referenceSummary: {
+                neoStackRefCount: refs.neoStackRefs.length,
+                neoBlockRefCount: refs.neoBlockRefs.length,
+                moltBlockRefCount: refs.moltBlockRefs.length,
+                resolvedRefs: 0,
+                loadedRefs: 0,
+                unresolvedRefs: refs.unresolvedRefs,
+                forbiddenRefs: refs.forbiddenRefs,
+                outsideAllowlistRefs: refs.outsideAllowlistRefs
+            },
+            limitations: ['not_activated', 'payload_not_recursively_loaded', 'references_counted_only']
+        };
+    });
+    const declaredNeoStacks = sleeves.reduce((sum, sleeve) => sum + sleeve.referenceSummary.neoStackRefCount, 0);
+    const declaredNeoBlocks = sleeves.reduce((sum, sleeve) => sum + sleeve.referenceSummary.neoBlockRefCount, 0);
+    const declaredMoltBlocks = sleeves.reduce((sum, sleeve) => sum + sleeve.referenceSummary.moltBlockRefCount, 0);
+    const unresolvedRefs = sleeves.reduce((sum, sleeve) => sum + sleeve.referenceSummary.unresolvedRefs, 0);
+    const forbiddenRefs = sleeves.reduce((sum, sleeve) => sum + sleeve.referenceSummary.forbiddenRefs, 0);
+    const outsideAllowlistRefs = sleeves.reduce((sum, sleeve) => sum + sleeve.referenceSummary.outsideAllowlistRefs, 0);
+    const warnings = [];
+    if (unresolvedRefs > 0 || forbiddenRefs > 0 || outsideAllowlistRefs > 0)
+        warnings.push('indexed sleeves contain unresolved or blocked references');
+    const indexStatus = sleeves.length === 0
+        ? 'SLEEVE_GRAPH_INDEX_EMPTY'
+        : (warnings.length ? 'SLEEVE_GRAPH_INDEX_READY_WITH_WARNINGS' : 'SLEEVE_GRAPH_INDEX_READY');
+    const nlLines = [
+        'Sleeve Graph Index:',
+        `- Index Status: ${indexStatus}`,
+        `- Source Catalog: ${resolvedCatalog}`,
+        `- Sleeve Count: ${sleeves.length}`,
+        `- Focused Sleeve: ${input.sleeveId ?? 'n/a'}`,
+        '- Activation: false',
+        '- Recursive Load: false',
+        '- Full Library Scan: false',
+        `- NeoStack References: ${declaredNeoStacks}`,
+        `- NeoBlock References: ${declaredNeoBlocks}`,
+        `- MOLT Block References: ${declaredMoltBlocks}`,
+        '- Resolved Refs: 0',
+        '- Loaded Refs: 0',
+        `- Unresolved Refs: ${unresolvedRefs}`,
+        `- Forbidden Refs: ${forbiddenRefs}`,
+        `- Outside-Allowlist Refs: ${outsideAllowlistRefs}`,
+        '- Boundary: index_only; no_sleeve_activation; no_graph_traversal; no_neostack_payload_loading; no_neoblock_recursive_loading; no_external_molt_block_loading; no_execution',
+        '',
+        'Sleeves:'
+    ];
+    const visibleForNl = sleeves.slice(0, 20);
+    for (const sleeve of visibleForNl) {
+        nlLines.push(`- ${sleeve.sleeveId} | policy=${sleeve.policy} | graphStatus=${sleeve.graphStatus} | neostacks=${sleeve.referenceSummary.neoStackRefCount} | neoblocks=${sleeve.referenceSummary.neoBlockRefCount} | moltblocks=${sleeve.referenceSummary.moltBlockRefCount}`);
+    }
+    if (sleeves.length > 20)
+        nlLines.push('- ... truncated; additional sleeves omitted from NL projection');
+    return {
+        ...base,
+        ok: true,
+        sleeveGraphIndex: {
+            indexStatus,
+            indexKind: 'read_only_sleeve_reference_index',
+            sourceCatalog: resolvedCatalog,
+            sleeveCount: sleeves.length,
+            focusedSleeveId: input.sleeveId ?? null,
+            sleeves,
+            referenceSummary: {
+                declaredSleeves: sleeves.length,
+                declaredNeoStacks: declaredNeoStacks,
+                declaredNeoBlocks: declaredNeoBlocks,
+                declaredMoltBlocks: declaredMoltBlocks,
+                resolvedRefs: 0,
+                loadedRefs: 0,
+                unresolvedRefs,
+                forbiddenRefs,
+                outsideAllowlistRefs
+            },
+            policySummary: includePolicySummary ? {
+                machineLoadableLanes: ['AI/SLEEVES'],
+                publicCuratedLanes: ['sleeves', 'sleeves/manifests'],
+                referenceOnlyLanes: ['AI/MANIFESTS/sleeve-catalog.json'],
+                forbiddenLanes: ['archive', 'Resleever', 'HUMAN']
+            } : { machineLoadableLanes: [], publicCuratedLanes: [], referenceOnlyLanes: [], forbiddenLanes: [] },
+            limitations: [
+                'index_only',
+                'no_sleeve_activation',
+                'no_graph_traversal',
+                'no_neostack_payload_loading',
+                'no_neoblock_recursive_loading',
+                'no_external_molt_block_loading',
+                'no_execution'
+            ]
+        },
+        nlProjection: (projectionFormat === 'nl' || projectionFormat === 'both') ? nlLines.join('\n') : '',
+        warnings,
+        errors: []
+    };
+}
+function stableRuntimeSessionId(input) {
+    return input && input.trim().length > 0 ? input.trim() : '__default__';
+}
+function stableJsonHash(input) {
+    const source = JSON.stringify(input);
+    return createHash('sha256').update(source).digest('hex').slice(0, 16);
+}
+function summarizeVisibleMoltFromBlocks(blocks) {
+    const fragments = [];
+    for (const block of blocks) {
+        const visible = block.visible.visibleMoltExtraction;
+        if (!visible) {
+            continue;
+        }
+        const content = typeof visible.contentPreview === 'string' && visible.contentPreview.trim().length > 0
+            ? visible.contentPreview.trim()
+            : (visible.contentSummary && typeof visible.contentSummary['content'] === 'string' ? String(visible.contentSummary['content']).trim() : '');
+        const field = typeof visible.moltType === 'string' && ['Trigger', 'Directive', 'Instruction', 'Subject', 'Primary', 'Philosophy', 'Blueprint'].includes(visible.moltType)
+            ? visible.moltType
+            : null;
+        if (field && content) {
+            fragments.push({ neoblockId: block.neoblockId, sourceField: field, sourceBlockId: block.neoblockId, text: content });
+        }
+    }
+    return fragments;
+}
+export function getBlockLibrarySleeveGraphDrilldown(version, entrypoint = 'dist/plugin-entry.js', root = DEFAULT_LIBRARY_ROOT, input = {}) {
+    const requestedProjection = input.projectionFormat ?? 'summary';
+    const base = {
+        version,
+        entrypoint,
+        mode: 'real_block_library_sleeve_graph_drilldown',
+        outputContract: {
+            contractId: 'umg.sleeve_graph.drilldown.v1',
+            contractStatus: 'NORMALIZED'
+        },
+        readOnly: true,
+        execution: 'not_performed',
+        directSource: 'not_enabled',
+        audit: {
+            sleeveActivation: 'not_performed',
+            activeSleeveMutation: 'not_performed',
+            graphTraversal: 'not_performed',
+            neoStackPayloadLoading: 'not_performed',
+            neoBlockRecursiveLoading: 'not_performed',
+            externalMoltBlockFileLoading: 'not_performed',
+            triggerEvaluation: 'not_performed',
+            libraryMutation: 'not_performed'
+        },
+        warnings: [],
+        errors: []
+    };
+    if (!input.sleeveId || input.sleeveId.trim().length === 0) {
+        return { ...base, ok: false, drilldownStatus: 'SLEEVE_DRILLDOWN_HELD', sleeveId: null, sourceIndexContract: 'umg.sleeve_graph.index.v1', sleeveEntry: null, declaredNeoStackRefs: [], declaredNeoBlockRefs: [], visibleMoltRefs: [], referenceSummary: null, policySummary: null, loadPlan: [], nlProjection: '', errors: [{ code: 'HOLD_SLEEVE_GRAPH_INDEX_SLEEVE_NOT_FOUND', message: 'sleeveId is required.' }] };
+    }
+    if (input.includeRaw) {
+        return { ...base, ok: false, drilldownStatus: 'SLEEVE_DRILLDOWN_DENIED', sleeveId: input.sleeveId, sourceIndexContract: 'umg.sleeve_graph.index.v1', sleeveEntry: null, declaredNeoStackRefs: [], declaredNeoBlockRefs: [], visibleMoltRefs: [], referenceSummary: null, policySummary: null, loadPlan: [], nlProjection: '', errors: [{ code: 'HOLD_RAW_TARGET_DUMP_NOT_SUPPORTED', message: 'includeRaw=true is not supported.' }] };
+    }
+    if (!['summary', 'nl', 'json', 'both'].includes(requestedProjection)) {
+        return { ...base, ok: false, drilldownStatus: 'SLEEVE_DRILLDOWN_DENIED', sleeveId: input.sleeveId, sourceIndexContract: 'umg.sleeve_graph.index.v1', sleeveEntry: null, declaredNeoStackRefs: [], declaredNeoBlockRefs: [], visibleMoltRefs: [], referenceSummary: null, policySummary: null, loadPlan: [], nlProjection: '', errors: [{ code: 'HOLD_SLEEVE_GRAPH_INDEX_PROJECTION_FORMAT_UNSUPPORTED', message: `Unsupported projectionFormat: ${requestedProjection}` }] };
+    }
+    const index = getBlockLibrarySleeveGraphIndex(version, entrypoint, root, {
+        sleeveId: input.sleeveId,
+        sourceCatalog: input.sourceCatalog ?? 'auto',
+        projectionFormat: 'both',
+        includeReferenceSummary: input.includeReferenceSummary !== false,
+        includePolicySummary: input.includePolicySummary !== false,
+        includeRaw: false
+    });
+    if (!index.ok) {
+        const hold = index.errors[0]?.code === 'HOLD_SLEEVE_GRAPH_INDEX_SLEEVE_NOT_FOUND' ? 'SLEEVE_NOT_FOUND' : 'SLEEVE_DRILLDOWN_HELD';
+        return { ...base, ok: false, drilldownStatus: hold, sleeveId: input.sleeveId, sourceIndexContract: 'umg.sleeve_graph.index.v1', sleeveEntry: null, declaredNeoStackRefs: [], declaredNeoBlockRefs: [], visibleMoltRefs: [], referenceSummary: null, policySummary: null, loadPlan: [], nlProjection: '', warnings: index.warnings, errors: index.errors };
+    }
+    const sleeve = index.sleeveGraphIndex.sleeves[0] ?? null;
+    if (!sleeve) {
+        return { ...base, ok: false, drilldownStatus: 'SLEEVE_NOT_FOUND', sleeveId: input.sleeveId, sourceIndexContract: 'umg.sleeve_graph.index.v1', sleeveEntry: null, declaredNeoStackRefs: [], declaredNeoBlockRefs: [], visibleMoltRefs: [], referenceSummary: null, policySummary: null, loadPlan: [], nlProjection: '', errors: [{ code: 'HOLD_SLEEVE_GRAPH_INDEX_SLEEVE_NOT_FOUND', message: `Sleeve not found: ${input.sleeveId}` }] };
+    }
+    const loadPlan = sleeve.neoBlockRefs.slice(0, 32).map((ref) => ({ kind: 'neoblock_shallow_candidate', ref, nextTool: 'umg_envoy_block_library_neoblock_inspect' }));
+    const nlProjection = [
+        'Sleeve Graph Drilldown:',
+        `- Sleeve Id: ${sleeve.sleeveId}`,
+        `- Policy: ${sleeve.policy}`,
+        `- Graph Status: ${sleeve.graphStatus}`,
+        `- NeoStack Refs: ${sleeve.referenceSummary.neoStackRefCount}`,
+        `- NeoBlock Refs: ${sleeve.referenceSummary.neoBlockRefCount}`,
+        `- Visible MOLT Refs: ${sleeve.referenceSummary.moltBlockRefCount}`,
+        `- Load Plan Steps: ${loadPlan.length}`
+    ].join('\n');
+    return {
+        ...base,
+        ok: true,
+        drilldownStatus: 'SLEEVE_DRILLDOWN_READY',
+        sleeveId: sleeve.sleeveId,
+        sourceIndexContract: 'umg.sleeve_graph.index.v1',
+        sleeveEntry: sleeve,
+        declaredNeoStackRefs: sleeve.neoStackRefs.slice(0, 32),
+        declaredNeoBlockRefs: sleeve.neoBlockRefs.slice(0, 64),
+        visibleMoltRefs: sleeve.moltBlockRefs.slice(0, 64),
+        referenceSummary: sleeve.referenceSummary,
+        policySummary: {
+            policy: sleeve.policy,
+            status: sleeve.policy === 'FORBIDDEN' || sleeve.policy === 'OUTSIDE_ALLOWLIST' ? 'deny' : 'allow'
+        },
+        loadPlan,
+        nlProjection: requestedProjection === 'json' ? '' : nlProjection,
+        warnings: index.warnings,
+        errors: []
+    };
+}
+export function selectRuntimeSleeve(version, entrypoint = 'dist/plugin-entry.js', root = DEFAULT_LIBRARY_ROOT, input = {}) {
+    const mode = input.selectionMode ?? (input.sleeveId ? 'explicit' : 'current');
+    const sessionId = stableRuntimeSessionId(input.runtimeSessionId);
+    const current = runtimeSelectionState.get(sessionId)?.sleeveId ?? null;
+    const base = {
+        ok: true,
+        version,
+        entrypoint,
+        mode: 'runtime_sleeve_select',
+        outputContract: { contractId: 'umg.sleeve.select.v1', contractStatus: 'NORMALIZED' },
+        readOnly: false,
+        execution: 'not_performed',
+        directSource: 'not_enabled',
+        libraryMutation: 'not_performed',
+        warnings: [],
+        errors: []
+    };
+    if (!['explicit', 'default_config', 'current', 'clear'].includes(mode)) {
+        return { ...base, ok: false, selectionStatus: 'SELECTION_HELD', activeSleeveId: current, selectionMode: mode, selectionSource: 'current', stateMutation: 'none', audit: { sessionId }, errors: [{ code: 'HOLD_SLEEVE_GRAPH_INDEX_SOURCE_CATALOG_UNSUPPORTED', message: `Unsupported selectionMode: ${mode}` }] };
+    }
+    if (mode === 'clear') {
+        runtimeSelectionState.set(sessionId, { sleeveId: null, updatedAt: new Date().toISOString() });
+        return { ...base, selectionStatus: 'SELECTION_CLEARED', activeSleeveId: null, selectionMode: 'clear', selectionSource: 'current', stateMutation: 'cleared_session_state', audit: { sessionId } };
+    }
+    if (mode === 'current') {
+        return { ...base, selectionStatus: current ? 'SLEEVE_SELECTED' : 'NO_ACTIVE_SLEEVE', activeSleeveId: current, selectionMode: 'current', selectionSource: 'current', stateMutation: 'none', audit: { sessionId } };
+    }
+    const requestedSleeveId = mode === 'default_config' ? 'neomagnetar-dynamic-persona-v1' : input.sleeveId;
+    if (!requestedSleeveId) {
+        return { ...base, ok: false, selectionStatus: 'SELECTION_HELD', activeSleeveId: current, selectionMode: mode, selectionSource: mode === 'default_config' ? 'default' : 'explicit', stateMutation: 'none', audit: { sessionId }, errors: [{ code: 'HOLD_SLEEVE_GRAPH_INDEX_SLEEVE_NOT_FOUND', message: 'No sleeveId provided.' }] };
+    }
+    const drilldown = getBlockLibrarySleeveGraphDrilldown(version, entrypoint, root, { sleeveId: requestedSleeveId, projectionFormat: 'summary' });
+    if (!drilldown.ok) {
+        return { ...base, ok: false, selectionStatus: 'SLEEVE_NOT_FOUND', activeSleeveId: null, selectionMode: mode, selectionSource: mode === 'default_config' ? 'default' : 'explicit', stateMutation: 'none', audit: { sessionId }, warnings: drilldown.warnings ?? [], errors: drilldown.errors ?? [] };
+    }
+    runtimeSelectionState.set(sessionId, { sleeveId: requestedSleeveId, updatedAt: new Date().toISOString() });
+    return { ...base, selectionStatus: 'SLEEVE_SELECTED', activeSleeveId: requestedSleeveId, selectionMode: mode, selectionSource: mode === 'default_config' ? 'default' : 'explicit', stateMutation: 'session_state_only', audit: { sessionId, persistSelection: Boolean(input.persistSelection) } };
+}
+export function resolveRuntimeSleeveGraph(version, entrypoint = 'dist/plugin-entry.js', root = DEFAULT_LIBRARY_ROOT, input = {}) {
+    const depth = input.resolveDepth ?? 'molt_visible';
+    const sessionId = stableRuntimeSessionId(input.runtimeSessionId);
+    const selected = input.sleeveId ?? runtimeSelectionState.get(sessionId)?.sleeveId ?? null;
+    const maxNeoStacks = Math.max(1, Math.min(input.maxNeoStacks ?? 8, 8));
+    const maxNeoBlocks = Math.max(1, Math.min(input.maxNeoBlocks ?? 64, 64));
+    const maxVisibleMoltFragments = Math.max(1, Math.min(input.maxVisibleMoltFragments ?? 128, 128));
+    const base = {
+        version,
+        entrypoint,
+        mode: 'runtime_sleeve_resolve',
+        outputContract: { contractId: 'umg.sleeve.resolve.v1', contractStatus: 'NORMALIZED' },
+        readOnly: true,
+        execution: 'not_performed',
+        directSource: 'not_enabled',
+        warnings: [],
+        errors: [],
+        blockedRefs: []
+    };
+    if (!['reference_only', 'neostack_refs', 'neoblock_shallow', 'molt_visible'].includes(depth)) {
+        return { ...base, ok: false, resolutionStatus: 'DENIED', sleeveId: selected, selectedSleeveSource: input.sleeveId ? 'explicit' : 'current', resolvedSleeve: null, resolvedNeoStacks: [], resolvedNeoBlocks: [], visibleMoltFragments: [], composeReadyFragments: [], limits: { maxNeoStacks, maxNeoBlocks, maxVisibleMoltFragments, allowRecursive: false }, audit: { graphTraversal: 'not_performed', triggerEvaluation: 'not_performed', libraryMutation: 'not_performed' }, errors: [{ code: 'HOLD_SLEEVE_GRAPH_INDEX_PROJECTION_FORMAT_UNSUPPORTED', message: `Unsupported resolveDepth: ${depth}` }] };
+    }
+    if (input.allowRecursive) {
+        return { ...base, ok: false, resolutionStatus: 'DENIED', sleeveId: selected, selectedSleeveSource: input.sleeveId ? 'explicit' : 'current', resolvedSleeve: null, resolvedNeoStacks: [], resolvedNeoBlocks: [], visibleMoltFragments: [], composeReadyFragments: [], limits: { maxNeoStacks, maxNeoBlocks, maxVisibleMoltFragments, allowRecursive: false }, audit: { graphTraversal: 'not_performed', triggerEvaluation: 'not_performed', libraryMutation: 'not_performed' }, errors: [{ code: 'HOLD_ACTIVE_STACK_PROJECTION_RECURSION_GUARD', message: 'Recursive resolution is not enabled in Alpha6.' }] };
+    }
+    if (!selected) {
+        return { ...base, ok: false, resolutionStatus: 'HELD', sleeveId: null, selectedSleeveSource: 'current', resolvedSleeve: null, resolvedNeoStacks: [], resolvedNeoBlocks: [], visibleMoltFragments: [], composeReadyFragments: [], limits: { maxNeoStacks, maxNeoBlocks, maxVisibleMoltFragments, allowRecursive: false }, audit: { graphTraversal: 'not_performed', triggerEvaluation: 'not_performed', libraryMutation: 'not_performed' }, errors: [{ code: 'HOLD_SLEEVE_GRAPH_INDEX_SLEEVE_NOT_FOUND', message: 'No selected sleeve available.' }] };
+    }
+    const drilldown = getBlockLibrarySleeveGraphDrilldown(version, entrypoint, root, { sleeveId: selected, projectionFormat: 'summary' });
+    if (!drilldown.ok || !drilldown.sleeveEntry) {
+        return { ...base, ok: false, resolutionStatus: 'HELD', sleeveId: selected, selectedSleeveSource: input.sleeveId ? 'explicit' : 'current', resolvedSleeve: null, resolvedNeoStacks: [], resolvedNeoBlocks: [], visibleMoltFragments: [], composeReadyFragments: [], limits: { maxNeoStacks, maxNeoBlocks, maxVisibleMoltFragments, allowRecursive: false }, audit: { graphTraversal: 'not_performed', triggerEvaluation: 'not_performed', libraryMutation: 'not_performed' }, warnings: drilldown.warnings ?? [], errors: drilldown.errors ?? [] };
+    }
+    const neoStacks = drilldown.declaredNeoStackRefs.slice(0, maxNeoStacks).map((ref) => ({ ref, status: 'declared_only' }));
+    const neoBlockRefs = drilldown.declaredNeoBlockRefs.slice(0, maxNeoBlocks);
+    const resolvedNeoBlocks = [];
+    const visibleBlocks = [];
+    for (const neoblockId of neoBlockRefs) {
+        const inspected = getBlockLibraryNeoblockInspect(version, entrypoint, root, { neoblockId, manifestKind: 'neoblock', summaryProfile: 'standard', includeContentPreview: true, includeReferenceSummary: true, includeRaw: false });
+        if (!inspected.ok) {
+            base.blockedRefs.push({ ref: neoblockId, reason: inspected.errors[0]?.code ?? 'inspect_failed' });
+            resolvedNeoBlocks.push({ neoblockId, status: 'blocked' });
+            continue;
+        }
+        resolvedNeoBlocks.push({ neoblockId, status: 'shallow_loaded', summary: inspected.neoblockInspection });
+        if (depth === 'molt_visible') {
+            const visible = getBlockLibraryMoltblockVisibleExtract(version, entrypoint, root, { neoblockId, manifestKind: 'neoblock', summaryProfile: 'standard', includeContentPreview: true, includeReferenceSummary: true, includeRaw: false });
+            if (visible.ok) {
+                visibleBlocks.push({ neoblockId, visible });
+            }
+        }
+    }
+    const allVisible = summarizeVisibleMoltFromBlocks(visibleBlocks).slice(0, maxVisibleMoltFragments);
+    const composeReady = allVisible.filter((fragment) => ['Trigger', 'Directive', 'Instruction', 'Subject', 'Primary', 'Philosophy', 'Blueprint'].includes(fragment.sourceField));
+    const partial = base.blockedRefs.length > 0 || drilldown.declaredNeoBlockRefs.length > maxNeoBlocks || drilldown.declaredNeoStackRefs.length > maxNeoStacks || summarizeVisibleMoltFromBlocks(visibleBlocks).length > maxVisibleMoltFragments;
+    if (drilldown.declaredNeoBlockRefs.length > maxNeoBlocks)
+        base.warnings.push('neoBlock refs truncated by limit');
+    if (drilldown.declaredNeoStackRefs.length > maxNeoStacks)
+        base.warnings.push('neoStack refs truncated by limit');
+    if (summarizeVisibleMoltFromBlocks(visibleBlocks).length > maxVisibleMoltFragments)
+        base.warnings.push('visible MOLT fragments truncated by limit');
+    return {
+        ...base,
+        ok: true,
+        resolutionStatus: partial ? 'PARTIAL' : 'RESOLVED',
+        sleeveId: selected,
+        selectedSleeveSource: input.sleeveId ? 'explicit' : 'current',
+        resolvedSleeve: drilldown.sleeveEntry,
+        resolvedNeoStacks: depth === 'reference_only' ? [] : neoStacks,
+        resolvedNeoBlocks: (depth === 'reference_only' || depth === 'neostack_refs') ? [] : resolvedNeoBlocks,
+        visibleMoltFragments: depth === 'molt_visible' ? allVisible : [],
+        composeReadyFragments: depth === 'molt_visible' ? composeReady : [],
+        limits: { maxNeoStacks, maxNeoBlocks, maxVisibleMoltFragments, allowRecursive: false },
+        audit: { graphTraversal: 'not_performed', triggerEvaluation: 'not_performed', execution: 'not_performed', libraryMutation: 'not_performed', externalMoltBlockFileLoading: 'not_performed' },
+        errors: []
+    };
+}
+function buildRuntimeSpecFromResolution(sleeveId, resolution, strictness) {
+    const grouped = new Map();
+    for (const fragment of resolution.composeReadyFragments) {
+        const list = grouped.get(fragment.sourceField) ?? [];
+        list.push({ text: fragment.text, sourceBlockId: fragment.sourceBlockId });
+        grouped.set(fragment.sourceField, list);
+    }
+    const fieldOrder = ['Trigger', 'Directive', 'Instruction', 'Subject', 'Primary', 'Philosophy', 'Blueprint'];
+    const activeBlocks = [];
+    const promptParts = [];
+    const warnings = [...resolution.warnings];
+    const errors = [];
+    const moltMap = {};
+    for (const field of fieldOrder) {
+        const values = grouped.get(field) ?? [];
+        if (values.length > 1) {
+            const msg = `Duplicate ${field} fragments detected.`;
+            if (strictness === 'prod') {
+                errors.push({ code: 'DUPLICATE_MOLT_FIELD', message: msg });
+            }
+            else {
+                warnings.push(msg);
+            }
+        }
+        const chosen = values[0] ?? null;
+        if (chosen) {
+            moltMap[field] = chosen.text;
+            promptParts.push({ field, text: chosen.text, sourceBlockId: chosen.sourceBlockId });
+            if (chosen.sourceBlockId)
+                activeBlocks.push(chosen.sourceBlockId);
+        }
+        else {
+            moltMap[field] = 'n/a';
+        }
+    }
+    const toolRequests = (grouped.get('Trigger') ?? []).map((item) => ({ kind: 'declared_trigger', sourceBlockId: item.sourceBlockId, declaredAction: item.text }));
+    const runtimeSpec = {
+        runtimeSpecVersion: 'RuntimeSpecV0',
+        runtimeSpecId: `rtv0-${stableJsonHash({ sleeveId, activeBlocks, promptParts })}`,
+        sleeveId,
+        activeBlocks: Array.from(new Set(activeBlocks.filter(Boolean))),
+        moltMap,
+        promptParts,
+        strategy: moltMap['Directive'] === 'n/a' ? null : moltMap['Directive'],
+        constraints: moltMap['Instruction'] === 'n/a' ? null : moltMap['Instruction'],
+        context: { subject: moltMap['Subject'] === 'n/a' ? null : moltMap['Subject'], primary: moltMap['Primary'] === 'n/a' ? null : moltMap['Primary'] },
+        values: moltMap['Philosophy'] === 'n/a' ? null : moltMap['Philosophy'],
+        format: moltMap['Blueprint'] === 'n/a' ? null : moltMap['Blueprint'],
+        toolRequests
+    };
+    return { runtimeSpec, warnings, errors };
+}
+export function compileRuntimeSleeve(version, entrypoint = 'dist/plugin-entry.js', root = DEFAULT_LIBRARY_ROOT, input = {}) {
+    const strictness = input.strictness === 'prod' ? 'prod' : 'dev';
+    const resolution = resolveRuntimeSleeveGraph(version, entrypoint, root, {
+        sleeveId: input.sleeveId,
+        runtimeSessionId: input.runtimeSessionId,
+        resolveDepth: input.resolveDepth ?? 'molt_visible',
+        allowRecursive: false,
+        mode: input.compileMode ?? 'dry_run'
+    });
+    const base = {
+        version,
+        entrypoint,
+        mode: 'runtime_compile',
+        outputContract: { contractId: 'umg.runtime.compile.v1', contractStatus: 'NORMALIZED' },
+        readOnly: true,
+        execution: 'not_performed',
+        directSource: 'not_enabled'
+    };
+    if (!resolution.ok || !resolution.sleeveId) {
+        return { ...base, ok: false, compileStatus: 'HELD', runtimeSpecVersion: 'RuntimeSpecV0', runtimeSpecId: null, sleeveId: resolution.sleeveId ?? null, activeBlocks: [], moltMap: {}, promptParts: [], strategy: null, constraints: null, context: null, values: null, format: null, toolRequests: [], warnings: resolution.warnings ?? [], errors: resolution.errors ?? [], trace: { resolutionStatus: resolution.resolutionStatus ?? 'HELD' } };
+    }
+    const built = buildRuntimeSpecFromResolution(resolution.sleeveId, resolution, strictness);
+    const compileStatus = built.errors.length > 0 ? 'FAILED' : (resolution.resolutionStatus === 'PARTIAL' || Object.values(built.runtimeSpec.moltMap).some((v) => v === 'n/a') ? 'PARTIAL' : 'COMPILED');
+    return {
+        ...base,
+        ok: built.errors.length === 0,
+        compileStatus,
+        runtimeSpecVersion: 'RuntimeSpecV0',
+        runtimeSpecId: built.runtimeSpec.runtimeSpecId,
+        sleeveId: built.runtimeSpec.sleeveId,
+        activeBlocks: built.runtimeSpec.activeBlocks,
+        moltMap: built.runtimeSpec.moltMap,
+        promptParts: built.runtimeSpec.promptParts,
+        strategy: built.runtimeSpec.strategy,
+        constraints: built.runtimeSpec.constraints,
+        context: built.runtimeSpec.context,
+        values: built.runtimeSpec.values,
+        format: built.runtimeSpec.format,
+        toolRequests: built.runtimeSpec.toolRequests,
+        warnings: built.warnings,
+        errors: built.errors,
+        trace: { resolutionStatus: resolution.resolutionStatus, strictness }
+    };
+}
+const READ_ONLY_RUNTIME_TOOL_ALLOWLIST = new Set([
+    'umg_envoy_block_library_status',
+    'umg_envoy_block_library_manifest_index',
+    'umg_envoy_block_library_manifest_entry_lookup',
+    'umg_envoy_block_library_sleeve_graph_index',
+    'umg_envoy_runtime_preview',
+    'umg_envoy_runtime_compile',
+    'umg_envoy_sleeve_resolve'
+]);
+function normalizeDeclaredRuntimeToolRequest(declaredAction) {
+    const raw = String(declaredAction ?? '').trim();
+    const normalized = raw.toLowerCase();
+    const toolMatch = raw.match(/(umg_envoy_[a-z0-9_]+)/i);
+    const requestedToolName = toolMatch?.[1]?.toLowerCase() ?? null;
+    const blockedHints = [
+        'publish',
+        'restart',
+        'install',
+        'delete',
+        'remove',
+        'write',
+        'shell',
+        'exec',
+        'git ',
+        'git_',
+        'filesystem',
+        'network',
+        'http',
+        'curl',
+        'trigger'
+    ];
+    const matchesBlockedHint = blockedHints.some((hint) => normalized.includes(hint));
+    return { raw, requestedToolName, matchesBlockedHint };
+}
+function classifySingleRuntimeToolRequest(runtimeSpec, request, index) {
+    const normalized = normalizeDeclaredRuntimeToolRequest(request.declaredAction);
+    const trace = [
+        `request.kind=${request.kind}`,
+        `declaredAction=${normalized.raw || 'empty'}`
+    ];
+    if (!normalized.raw) {
+        return {
+            requestId: `${runtimeSpec.runtimeSpecId}:req:${index + 1}`,
+            sourceRuntimeSpecId: runtimeSpec.runtimeSpecId,
+            sourceSleeveId: runtimeSpec.sleeveId,
+            requestedToolName: null,
+            requestedAction: '',
+            requestedArgsSummary: 'none',
+            classification: 'unknown',
+            riskLevel: 'low',
+            approvalRequired: false,
+            allowlisted: false,
+            executionMode: 'blocked',
+            decisionReason: 'Declared action was empty.',
+            trace: [...trace, 'classification=unknown', 'mode=blocked']
+        };
+    }
+    if (normalized.requestedToolName && READ_ONLY_RUNTIME_TOOL_ALLOWLIST.has(normalized.requestedToolName)) {
+        return {
+            requestId: `${runtimeSpec.runtimeSpecId}:req:${index + 1}`,
+            sourceRuntimeSpecId: runtimeSpec.runtimeSpecId,
+            sourceSleeveId: runtimeSpec.sleeveId,
+            requestedToolName: normalized.requestedToolName,
+            requestedAction: normalized.raw,
+            requestedArgsSummary: 'declared trigger text only',
+            classification: 'available_read_only',
+            riskLevel: 'low',
+            approvalRequired: false,
+            allowlisted: true,
+            executionMode: 'classify_only',
+            decisionReason: 'Known read-only runtime surface; classification only in Alpha7.',
+            trace: [...trace, `tool=${normalized.requestedToolName}`, 'allowlist=read_only', 'classification=available_read_only', 'mode=classify_only']
+        };
+    }
+    if (normalized.matchesBlockedHint) {
+        return {
+            requestId: `${runtimeSpec.runtimeSpecId}:req:${index + 1}`,
+            sourceRuntimeSpecId: runtimeSpec.runtimeSpecId,
+            sourceSleeveId: runtimeSpec.sleeveId,
+            requestedToolName: normalized.requestedToolName,
+            requestedAction: normalized.raw,
+            requestedArgsSummary: 'declared trigger text only',
+            classification: 'blocked_policy',
+            riskLevel: 'high',
+            approvalRequired: false,
+            allowlisted: false,
+            executionMode: 'blocked',
+            decisionReason: 'Declared action falls into a blocked policy class for Alpha7 classifier mode.',
+            trace: [...trace, `tool=${normalized.requestedToolName ?? 'unknown'}`, 'policy=blocked_side_effectful', 'classification=blocked_policy', 'mode=blocked']
+        };
+    }
+    return {
+        requestId: `${runtimeSpec.runtimeSpecId}:req:${index + 1}`,
+        sourceRuntimeSpecId: runtimeSpec.runtimeSpecId,
+        sourceSleeveId: runtimeSpec.sleeveId,
+        requestedToolName: normalized.requestedToolName,
+        requestedAction: normalized.raw,
+        requestedArgsSummary: 'declared trigger text only',
+        classification: 'blocked_unimplemented',
+        riskLevel: 'medium',
+        approvalRequired: false,
+        allowlisted: false,
+        executionMode: 'blocked',
+        decisionReason: 'No Alpha7 classifier policy mapping exists yet for this request.',
+        trace: [...trace, `tool=${normalized.requestedToolName ?? 'unknown'}`, 'classification=blocked_unimplemented', 'mode=blocked']
+    };
+}
+export function classifyRuntimeToolRequests(version, entrypoint = 'dist/plugin-entry.js', root = DEFAULT_LIBRARY_ROOT, input = {}) {
+    let compiled = null;
+    let runtimeSpec = input.runtimeSpec ?? null;
+    if (!runtimeSpec && input.sleeveId && input.compileIfMissing !== false) {
+        compiled = compileRuntimeSleeve(version, entrypoint, root, {
+            sleeveId: input.sleeveId,
+            compileMode: 'dry_run',
+            resolveDepth: 'molt_visible',
+            strictness: 'dev'
+        });
+        if (compiled.ok && compiled.runtimeSpecId && compiled.sleeveId) {
+            runtimeSpec = {
+                runtimeSpecVersion: 'RuntimeSpecV0',
+                runtimeSpecId: compiled.runtimeSpecId,
+                sleeveId: compiled.sleeveId,
+                activeBlocks: compiled.activeBlocks,
+                moltMap: compiled.moltMap,
+                promptParts: compiled.promptParts,
+                strategy: compiled.strategy,
+                constraints: compiled.constraints,
+                context: compiled.context ?? { subject: null, primary: null },
+                values: compiled.values,
+                format: compiled.format,
+                toolRequests: compiled.toolRequests
+            };
+        }
+    }
+    const baseAudit = {
+        execution: 'not_performed',
+        triggerEvaluation: 'not_performed',
+        approvalCheckpointCreated: false,
+        toolExecution: 'not_performed',
+        libraryMutation: 'not_performed',
+        packageMutation: 'not_performed',
+        restart: 'not_performed',
+        publish: 'not_performed'
+    };
+    const base = {
+        version,
+        entrypoint,
+        mode: 'runtime_tool_request_classify',
+        outputContract: { contractId: 'umg.runtime.tool_request.classify.v1', contractStatus: 'NORMALIZED' },
+        executionStatus: 'not_performed',
+        audit: baseAudit
+    };
+    if (!runtimeSpec) {
+        return {
+            ...base,
+            ok: false,
+            classificationStatus: 'CLASSIFICATION_HELD',
+            sourceRuntimeSpecId: null,
+            sleeveId: input.sleeveId ?? null,
+            requestCount: 0,
+            classifications: [],
+            blockedCount: 0,
+            approvalRequiredCount: 0,
+            readOnlyCount: 0,
+            unknownCount: 0,
+            trace: ['runtimeSpec_missing', 'no_execution_performed'],
+            warnings: compiled?.warnings ?? [],
+            errors: compiled?.errors ?? [{ code: 'RUNTIME_SPEC_REQUIRED', message: 'RuntimeSpecV0 or sleeveId compile path is required for classification.' }]
+        };
+    }
+    const filterTool = input.requestedToolName?.toLowerCase() ?? null;
+    const classifications = runtimeSpec.toolRequests
+        .map((request, index) => classifySingleRuntimeToolRequest(runtimeSpec, request, index))
+        .filter((item) => !filterTool || item.requestedToolName === filterTool);
+    const blockedCount = classifications.filter((item) => item.executionMode === 'blocked').length;
+    const approvalRequiredCount = classifications.filter((item) => item.approvalRequired).length;
+    const readOnlyCount = classifications.filter((item) => item.classification === 'available_read_only' || item.classification === 'metadata_only').length;
+    const unknownCount = classifications.filter((item) => item.classification === 'unknown' || item.classification === 'blocked_unimplemented').length;
+    const classificationStatus = classifications.length === 0
+        ? 'CLASSIFICATION_READY'
+        : classifications.some((item) => item.classification === 'unknown')
+            ? 'CLASSIFICATION_PARTIAL'
+            : 'CLASSIFICATION_READY';
+    return {
+        ...base,
+        ok: true,
+        classificationStatus,
+        sourceRuntimeSpecId: runtimeSpec.runtimeSpecId,
+        sleeveId: runtimeSpec.sleeveId,
+        requestCount: classifications.length,
+        classifications: input.includeTrace === false ? classifications.map(({ trace, ...rest }) => ({ ...rest, trace: [] })) : classifications,
+        blockedCount,
+        approvalRequiredCount,
+        readOnlyCount,
+        unknownCount,
+        trace: [
+            `mode=${input.mode ?? 'classify_only'}`,
+            `compiledDuringClassification=${compiled ? 'yes' : 'no'}`,
+            `requestCount=${classifications.length}`,
+            'execution=not_performed'
+        ],
+        warnings: compiled?.warnings ?? [],
+        errors: compiled?.errors ?? []
+    };
+}
+function mapClassificationToGateAction(classification) {
+    let gateDecision = 'block_unimplemented';
+    let plannedMode = 'blocked';
+    let checkpointPreview = null;
+    switch (classification.classification) {
+        case 'metadata_only':
+            gateDecision = 'metadata_only';
+            plannedMode = 'preview';
+            break;
+        case 'mock_only':
+        case 'preview_only':
+            gateDecision = 'preview_only';
+            plannedMode = 'preview';
+            break;
+        case 'available_read_only':
+            gateDecision = 'allow_read_only';
+            plannedMode = 'classify_only';
+            break;
+        case 'available_requires_approval':
+            gateDecision = 'require_approval';
+            plannedMode = 'approval_required';
+            checkpointPreview = {
+                checkpointWouldBeRequired: true,
+                allowedDecisions: ['approve', 'deny', 'edit', 'dry_run_only'],
+                checkpointCreated: false
+            };
+            break;
+        case 'available_allowlisted_direct':
+            gateDecision = 'dry_run_only';
+            plannedMode = classification.allowlisted ? 'dry_run' : 'blocked';
+            break;
+        case 'unknown':
+            gateDecision = 'block_unknown';
+            plannedMode = 'blocked';
+            break;
+        case 'blocked_policy':
+        case 'blocked_unsafe':
+        case 'blocked_missing_approval':
+            gateDecision = 'block_policy';
+            plannedMode = 'blocked';
+            break;
+        case 'blocked_unimplemented':
+        case 'unavailable':
+        default:
+            gateDecision = 'block_unimplemented';
+            plannedMode = 'blocked';
+            break;
+    }
+    return {
+        requestId: classification.requestId,
+        requestedToolName: classification.requestedToolName,
+        requestedAction: classification.requestedAction,
+        classification: classification.classification,
+        riskLevel: classification.riskLevel,
+        approvalRequired: classification.approvalRequired,
+        allowlisted: classification.allowlisted,
+        plannedMode,
+        gateDecision,
+        decisionReason: classification.decisionReason,
+        checkpointPreview,
+        executionStatus: 'not_performed',
+        trace: [...classification.trace, `gateDecision=${gateDecision}`, `plannedMode=${plannedMode}`, 'checkpointCreated=false']
+    };
+}
+export function createRuntimeExecutionGatePlan(version, entrypoint = 'dist/plugin-entry.js', root = DEFAULT_LIBRARY_ROOT, input = {}) {
+    let classificationResult = null;
+    let runtimeSpec = input.runtimeSpec ?? null;
+    let classifications = input.classifications ?? null;
+    if (!classifications && (runtimeSpec || input.sleeveId) && input.classifyIfMissing !== false) {
+        classificationResult = classifyRuntimeToolRequests(version, entrypoint, root, {
+            sleeveId: input.sleeveId,
+            runtimeSpec: runtimeSpec ?? undefined,
+            compileIfMissing: input.compileIfMissing !== false,
+            includeTrace: input.includeTrace !== false,
+            mode: 'classify_only'
+        });
+        if (classificationResult.ok) {
+            classifications = classificationResult.classifications;
+            if (!runtimeSpec && classificationResult.sourceRuntimeSpecId && classificationResult.sleeveId) {
+                runtimeSpec = {
+                    runtimeSpecVersion: 'RuntimeSpecV0',
+                    runtimeSpecId: classificationResult.sourceRuntimeSpecId,
+                    sleeveId: classificationResult.sleeveId,
+                    activeBlocks: [],
+                    moltMap: {},
+                    promptParts: [],
+                    strategy: null,
+                    constraints: null,
+                    context: { subject: null, primary: null },
+                    values: null,
+                    format: null,
+                    toolRequests: []
+                };
+            }
+        }
+    }
+    const baseAudit = {
+        execution: 'not_performed',
+        toolExecution: 'not_performed',
+        approvalCheckpointCreated: false,
+        triggerEvaluation: 'not_performed',
+        libraryMutation: 'not_performed',
+        packageMutation: 'not_performed',
+        restart: 'not_performed',
+        publish: 'not_performed'
+    };
+    const base = {
+        version,
+        entrypoint,
+        mode: 'runtime_execution_gate_plan',
+        outputContract: { contractId: 'umg.runtime.execution_gate.plan.v1', contractStatus: 'NORMALIZED' },
+        executionStatus: 'not_performed',
+        checkpointCreated: false,
+        audit: baseAudit
+    };
+    if (!classifications) {
+        return {
+            ...base,
+            ok: false,
+            planStatus: 'GATE_PLAN_HELD',
+            gatePlanId: `gateplan:${runtimeSpec?.runtimeSpecId ?? input.sleeveId ?? 'unknown'}:held`,
+            sourceRuntimeSpecId: runtimeSpec?.runtimeSpecId ?? null,
+            sourceSleeveId: runtimeSpec?.sleeveId ?? input.sleeveId ?? null,
+            requestCount: 0,
+            plannedActions: [],
+            readOnlyCount: 0,
+            approvalRequiredCount: 0,
+            blockedCount: 0,
+            unknownCount: 0,
+            trace: ['classifications_missing', 'execution=not_performed'],
+            warnings: classificationResult?.warnings ?? [],
+            errors: classificationResult?.errors ?? [{ code: 'CLASSIFICATIONS_REQUIRED', message: 'Runtime classifications are required to create a gate plan.' }]
+        };
+    }
+    const plannedActions = classifications.map((classification) => {
+        const planned = mapClassificationToGateAction(classification);
+        if (input.includeCheckpointPreview === false) {
+            return { ...planned, checkpointPreview: null };
+        }
+        return planned;
+    });
+    const readOnlyCount = plannedActions.filter((item) => item.gateDecision === 'allow_read_only' || item.gateDecision === 'metadata_only' || item.gateDecision === 'preview_only').length;
+    const approvalRequiredCount = plannedActions.filter((item) => item.gateDecision === 'require_approval').length;
+    const blockedCount = plannedActions.filter((item) => item.plannedMode === 'blocked').length;
+    const unknownCount = plannedActions.filter((item) => item.gateDecision === 'block_unknown' || item.gateDecision === 'block_unimplemented').length;
+    const planStatus = plannedActions.length === 0
+        ? 'GATE_PLAN_READY'
+        : unknownCount > 0
+            ? 'GATE_PLAN_PARTIAL'
+            : 'GATE_PLAN_READY';
+    return {
+        ...base,
+        ok: true,
+        planStatus,
+        gatePlanId: `gateplan:${runtimeSpec?.runtimeSpecId ?? classificationResult?.sourceRuntimeSpecId ?? input.sleeveId ?? 'unknown'}`,
+        sourceRuntimeSpecId: runtimeSpec?.runtimeSpecId ?? classificationResult?.sourceRuntimeSpecId ?? null,
+        sourceSleeveId: runtimeSpec?.sleeveId ?? classificationResult?.sleeveId ?? input.sleeveId ?? null,
+        requestCount: plannedActions.length,
+        plannedActions: input.includeTrace === false ? plannedActions.map(({ trace, ...rest }) => ({ ...rest, trace: [] })) : plannedActions,
+        readOnlyCount,
+        approvalRequiredCount,
+        blockedCount,
+        unknownCount,
+        trace: [
+            `mode=${input.mode ?? 'plan_only'}`,
+            `classificationSource=${classificationResult ? 'classifier' : 'provided'}`,
+            `requestCount=${plannedActions.length}`,
+            'execution=not_performed',
+            'checkpointCreated=false'
+        ],
+        warnings: classificationResult?.warnings ?? [],
+        errors: classificationResult?.errors ?? []
+    };
+}
+function simpleStableKey(parts) {
+    const text = parts.map((part) => part ?? '').join('|');
+    let hash = 0;
+    for (let i = 0; i < text.length; i += 1) {
+        hash = ((hash << 5) - hash + text.charCodeAt(i)) | 0;
+    }
+    return Math.abs(hash).toString(36);
+}
+export function createRuntimeApprovalCheckpoints(version, entrypoint = 'dist/plugin-entry.js', root = DEFAULT_LIBRARY_ROOT, input = {}) {
+    let gatePlan = input.gatePlan ?? null;
+    let gatePlanResult = null;
+    if (!gatePlan) {
+        gatePlanResult = createRuntimeExecutionGatePlan(version, entrypoint, root, {
+            sleeveId: input.sleeveId,
+            runtimeSpec: input.runtimeSpec,
+            classifications: input.classifications,
+            compileIfMissing: true,
+            classifyIfMissing: true,
+            mode: 'plan_only',
+            includeTrace: input.includeTrace !== false,
+            includeCheckpointPreview: true
+        });
+        if (gatePlanResult.ok) {
+            gatePlan = gatePlanResult;
+        }
+    }
+    const base = {
+        version,
+        entrypoint,
+        mode: 'runtime_approval_checkpoint_create',
+        outputContract: { contractId: 'umg.runtime.approval_checkpoint.create.v1', contractStatus: 'NORMALIZED' },
+        executionStatus: 'not_performed',
+        checkpointPersistence: 'not_persisted'
+    };
+    if (!gatePlan) {
+        return {
+            ...base,
+            ok: false,
+            checkpointCreateStatus: 'CHECKPOINT_CREATE_HELD',
+            sourceRuntimeSpecId: input.runtimeSpec?.runtimeSpecId ?? null,
+            sourceSleeveId: input.runtimeSpec?.sleeveId ?? input.sleeveId ?? null,
+            sourceGatePlanId: null,
+            checkpointCount: 0,
+            checkpoints: [],
+            skippedActionCount: 0,
+            skippedActions: [],
+            audit: {
+                execution: 'not_performed',
+                toolExecution: 'not_performed',
+                approvalCheckpointCreated: false,
+                approvalCheckpointPersistence: 'not_persisted',
+                triggerEvaluation: 'not_performed',
+                libraryMutation: 'not_performed',
+                packageMutation: 'not_performed',
+                restart: 'not_performed',
+                publish: 'not_performed'
+            },
+            trace: ['gatePlan_missing', 'execution=not_performed'],
+            warnings: gatePlanResult?.warnings ?? [],
+            errors: gatePlanResult?.errors ?? [{ code: 'GATE_PLAN_REQUIRED', message: 'Gate plan is required to create approval checkpoints.' }]
+        };
+    }
+    const requestFilter = input.createForRequestIds ? new Set(input.createForRequestIds) : null;
+    const selectedActions = gatePlan.plannedActions.filter((action) => !requestFilter || requestFilter.has(action.requestId));
+    const checkpoints = [];
+    const skippedActions = [];
+    const seen = new Set();
+    const createdAt = new Date().toISOString();
+    for (const action of selectedActions) {
+        if (action.gateDecision !== 'require_approval') {
+            skippedActions.push({
+                requestId: action.requestId,
+                requestedToolName: action.requestedToolName,
+                requestedAction: action.requestedAction,
+                skipReason: action.gateDecision === 'allow_read_only' || action.gateDecision === 'metadata_only' || action.gateDecision === 'preview_only' || action.gateDecision === 'dry_run_only'
+                    ? 'no_checkpoint_required'
+                    : 'not_applicable'
+            });
+            continue;
+        }
+        const idempotencyKey = simpleStableKey([
+            gatePlan.sourceRuntimeSpecId,
+            gatePlan.sourceSleeveId,
+            gatePlan.gatePlanId,
+            action.requestId,
+            action.requestedToolName,
+            action.requestedAction,
+            action.decisionReason
+        ]);
+        if (seen.has(idempotencyKey)) {
+            continue;
+        }
+        seen.add(idempotencyKey);
+        checkpoints.push({
+            checkpointId: `ckpt_${idempotencyKey}`,
+            checkpointStatus: 'CHECKPOINT_CREATED',
+            sourceRuntimeSpecId: gatePlan.sourceRuntimeSpecId,
+            sourceSleeveId: gatePlan.sourceSleeveId,
+            sourceGatePlanId: gatePlan.gatePlanId,
+            sourceRequestId: action.requestId,
+            requestedToolName: action.requestedToolName,
+            requestedAction: action.requestedAction,
+            argsPreview: action.decisionReason,
+            riskLevel: action.riskLevel,
+            approvalRequired: true,
+            approvalStatus: 'WAITING_FOR_APPROVAL',
+            allowedDecisions: ['approve', 'deny', 'edit', 'dry_run_only'],
+            idempotencyKey,
+            resumeToken: `resume_${idempotencyKey}`,
+            createdAt,
+            expiresAt: null,
+            executionStatus: 'not_performed',
+            audit: {
+                execution: 'not_performed',
+                toolExecution: 'not_performed',
+                approvalCheckpointCreated: true,
+                approvalCheckpointPersistence: 'not_persisted',
+                triggerEvaluation: 'not_performed',
+                libraryMutation: 'not_performed',
+                packageMutation: 'not_performed',
+                restart: 'not_performed',
+                publish: 'not_performed'
+            },
+            trace: [...action.trace, `idempotencyKey=${idempotencyKey}`, 'approvalStatus=WAITING_FOR_APPROVAL', 'checkpointPersistence=not_persisted']
+        });
+    }
+    const checkpointCreateStatus = checkpoints.length === 0
+        ? 'CHECKPOINT_CREATE_READY'
+        : skippedActions.length > 0
+            ? 'CHECKPOINT_CREATE_PARTIAL'
+            : 'CHECKPOINT_CREATE_READY';
+    return {
+        ...base,
+        ok: true,
+        checkpointCreateStatus,
+        sourceRuntimeSpecId: gatePlan.sourceRuntimeSpecId,
+        sourceSleeveId: gatePlan.sourceSleeveId,
+        sourceGatePlanId: gatePlan.gatePlanId,
+        checkpointCount: checkpoints.length,
+        checkpoints: input.includeTrace === false ? checkpoints.map(({ trace, ...rest }) => ({ ...rest, trace: [] })) : checkpoints,
+        skippedActionCount: skippedActions.length,
+        skippedActions,
+        audit: {
+            execution: 'not_performed',
+            toolExecution: 'not_performed',
+            approvalCheckpointCreated: checkpoints.length > 0,
+            approvalCheckpointPersistence: 'not_persisted',
+            triggerEvaluation: 'not_performed',
+            libraryMutation: 'not_performed',
+            packageMutation: 'not_performed',
+            restart: 'not_performed',
+            publish: 'not_performed'
+        },
+        trace: [
+            `mode=${input.mode ?? 'checkpoint_create'}`,
+            `storageMode=${input.storageMode ?? 'returned_only'}`,
+            `checkpointCount=${checkpoints.length}`,
+            `skippedActionCount=${skippedActions.length}`,
+            'execution=not_performed'
+        ],
+        warnings: gatePlanResult?.warnings ?? [],
+        errors: gatePlanResult?.errors ?? []
+    };
+}
+export function resumeRuntimeApprovalCheckpoint(version, entrypoint = 'dist/plugin-entry.js', input) {
+    const checkpoint = input.checkpoint;
+    const base = {
+        version,
+        entrypoint,
+        mode: 'runtime_approval_checkpoint_resume',
+        outputContract: { contractId: 'umg.runtime.approval_checkpoint.resume.v1', contractStatus: 'NORMALIZED' },
+        checkpointPersistence: 'not_persisted',
+        executionStatus: 'not_performed'
+    };
+    if (!checkpoint) {
+        return {
+            ...base,
+            ok: false,
+            resumeStatus: 'CHECKPOINT_RESUME_FAILED',
+            resumeResultId: 'resume_missing_checkpoint',
+            sourceCheckpointId: '',
+            sourceRuntimeSpecId: null,
+            sourceSleeveId: null,
+            sourceGatePlanId: null,
+            sourceRequestId: '',
+            requestedToolName: null,
+            requestedAction: '',
+            decision: input.decision,
+            previousApprovalStatus: 'WAITING_FOR_APPROVAL',
+            nextApprovalStatus: 'WAITING_FOR_APPROVAL',
+            allowedDecision: false,
+            decisionAccepted: false,
+            editRequested: false,
+            dryRunOnly: false,
+            executionEligible: false,
+            updatedCheckpointProjection: null,
+            audit: {
+                execution: 'not_performed',
+                toolExecution: 'not_performed',
+                approvalCheckpointResumed: false,
+                approvalCheckpointPersistence: 'not_persisted',
+                triggerEvaluation: 'not_performed',
+                libraryMutation: 'not_performed',
+                packageMutation: 'not_performed',
+                restart: 'not_performed',
+                publish: 'not_performed'
+            },
+            trace: ['checkpoint_missing', 'execution=not_performed'],
+            errors: [{ code: 'CHECKPOINT_REQUIRED', message: 'Checkpoint is required for resume.' }],
+            warnings: []
+        };
+    }
+    const trace = [
+        `checkpointStatus=${checkpoint.checkpointStatus}`,
+        `previousApprovalStatus=${checkpoint.approvalStatus}`,
+        `decision=${input.decision}`
+    ];
+    const fail = (resumeStatus, message) => ({
+        ...base,
+        ok: false,
+        resumeStatus,
+        resumeResultId: `resume_${checkpoint.checkpointId}_${resumeStatus.toLowerCase()}`,
+        sourceCheckpointId: checkpoint.checkpointId,
+        sourceRuntimeSpecId: checkpoint.sourceRuntimeSpecId,
+        sourceSleeveId: checkpoint.sourceSleeveId,
+        sourceGatePlanId: checkpoint.sourceGatePlanId,
+        sourceRequestId: checkpoint.sourceRequestId,
+        requestedToolName: checkpoint.requestedToolName,
+        requestedAction: checkpoint.requestedAction,
+        decision: input.decision,
+        previousApprovalStatus: checkpoint.approvalStatus,
+        nextApprovalStatus: checkpoint.approvalStatus,
+        allowedDecision: checkpoint.allowedDecisions.includes(input.decision),
+        decisionAccepted: false,
+        editRequested: false,
+        dryRunOnly: false,
+        executionEligible: false,
+        updatedCheckpointProjection: null,
+        audit: {
+            execution: 'not_performed',
+            toolExecution: 'not_performed',
+            approvalCheckpointResumed: false,
+            approvalCheckpointPersistence: 'not_persisted',
+            triggerEvaluation: 'not_performed',
+            libraryMutation: 'not_performed',
+            packageMutation: 'not_performed',
+            restart: 'not_performed',
+            publish: 'not_performed'
+        },
+        trace: [...trace, message, 'execution=not_performed'],
+        errors: [{ code: 'CHECKPOINT_RESUME_INVALID', message }],
+        warnings: []
+    });
+    if (!checkpoint.resumeToken) {
+        return fail('CHECKPOINT_RESUME_FAILED', 'resume_token_missing');
+    }
+    if (input.resumeToken && input.resumeToken !== checkpoint.resumeToken) {
+        return fail('CHECKPOINT_RESUME_HELD', 'resume_token_mismatch');
+    }
+    if (checkpoint.checkpointStatus !== 'CHECKPOINT_CREATED') {
+        return fail('CHECKPOINT_RESUME_HELD', 'checkpoint_not_created');
+    }
+    if (checkpoint.approvalStatus !== 'WAITING_FOR_APPROVAL') {
+        return fail('CHECKPOINT_RESUME_HELD', 'checkpoint_not_waiting_for_approval');
+    }
+    if (!checkpoint.allowedDecisions.includes(input.decision)) {
+        return fail('CHECKPOINT_RESUME_HELD', 'decision_not_allowed');
+    }
+    if (checkpoint.expiresAt && Date.parse(checkpoint.expiresAt) < Date.now()) {
+        return fail('CHECKPOINT_RESUME_HELD', 'checkpoint_expired');
+    }
+    const nextApprovalStatus = input.decision === 'approve' ? 'APPROVED'
+        : input.decision === 'deny' ? 'DENIED'
+            : input.decision === 'edit' ? 'EDIT_REQUESTED'
+                : 'DRY_RUN_ONLY';
+    const resumeStatus = input.decision === 'approve' ? 'CHECKPOINT_RESUME_READY'
+        : input.decision === 'deny' ? 'CHECKPOINT_RESUME_DENIED'
+            : input.decision === 'edit' ? 'CHECKPOINT_RESUME_EDIT_REQUESTED'
+                : 'CHECKPOINT_RESUME_DRY_RUN_ONLY';
+    const updatedCheckpointProjection = {
+        ...checkpoint,
+        approvalStatus: nextApprovalStatus,
+        executionStatus: 'not_performed',
+        trace: [
+            ...checkpoint.trace,
+            `resumeDecision=${input.decision}`,
+            `nextApprovalStatus=${nextApprovalStatus}`,
+            'execution=not_performed'
+        ]
+    };
+    const result = {
+        ...base,
+        ok: true,
+        resumeStatus,
+        resumeResultId: `resume_${checkpoint.checkpointId}_${simpleStableKey([input.decision, input.decisionReason ? String(input.decisionReason) : '', input.editedArgsPreview ? JSON.stringify(input.editedArgsPreview) : ''])}`,
+        sourceCheckpointId: checkpoint.checkpointId,
+        sourceRuntimeSpecId: checkpoint.sourceRuntimeSpecId,
+        sourceSleeveId: checkpoint.sourceSleeveId,
+        sourceGatePlanId: checkpoint.sourceGatePlanId,
+        sourceRequestId: checkpoint.sourceRequestId,
+        requestedToolName: checkpoint.requestedToolName,
+        requestedAction: checkpoint.requestedAction,
+        decision: input.decision,
+        previousApprovalStatus: checkpoint.approvalStatus,
+        nextApprovalStatus,
+        allowedDecision: true,
+        decisionAccepted: true,
+        editRequested: input.decision === 'edit',
+        dryRunOnly: input.decision === 'dry_run_only',
+        executionEligible: input.decision === 'approve',
+        updatedCheckpointProjection,
+        audit: {
+            execution: 'not_performed',
+            toolExecution: 'not_performed',
+            approvalCheckpointResumed: true,
+            approvalCheckpointPersistence: 'not_persisted',
+            triggerEvaluation: 'not_performed',
+            libraryMutation: 'not_performed',
+            packageMutation: 'not_performed',
+            restart: 'not_performed',
+            publish: 'not_performed'
+        },
+        trace: input.includeTrace === false ? [] : [...trace, `nextApprovalStatus=${nextApprovalStatus}`, `executionEligible=${input.decision === 'approve'}`, 'execution=not_performed'],
+        warnings: [],
+        errors: []
+    };
+    return result;
+}
+const APPROVED_ALLOWLISTED_RUNTIME_TOOLS = new Set([
+    'umg_envoy_block_library_status',
+    'umg_envoy_block_library_sleeve_graph_index',
+    'umg_envoy_runtime_preview',
+    'umg_envoy_runtime_compile',
+    'umg_envoy_block_library_manifest_index'
+]);
+export function executeApprovedAllowlistedRuntimeAction(version, entrypoint = 'dist/plugin-entry.js', root = DEFAULT_LIBRARY_ROOT, input) {
+    const checkpoint = input.checkpoint;
+    const resumeResult = input.resumeResult;
+    const base = {
+        version,
+        entrypoint,
+        outputContract: { contractId: 'umg.runtime.execute_approved.allowlisted.v1', contractStatus: 'NORMALIZED' }
+    };
+    const fail = (reason, resultSummary) => ({
+        ...base,
+        ok: false,
+        executionResultId: `exec_${simpleStableKey([checkpoint?.checkpointId ?? 'missing', reason])}`,
+        executionStatus: 'EXECUTION_BLOCKED',
+        sourceCheckpointId: checkpoint?.checkpointId ?? null,
+        sourceRuntimeSpecId: checkpoint?.sourceRuntimeSpecId ?? null,
+        sourceSleeveId: checkpoint?.sourceSleeveId ?? null,
+        sourceGatePlanId: checkpoint?.sourceGatePlanId ?? null,
+        sourceRequestId: checkpoint?.sourceRequestId ?? null,
+        requestedToolName: checkpoint?.requestedToolName ?? null,
+        requestedAction: checkpoint?.requestedAction ?? null,
+        approvalStatus: checkpoint?.approvalStatus ?? null,
+        executionEligible: false,
+        allowlisted: false,
+        readOnly: false,
+        executedAction: null,
+        resultSummary,
+        resultPayload: { blockedReason: reason },
+        sideEffectStatus: 'not_performed',
+        audit: {
+            approvalVerified: false,
+            allowlistVerified: false,
+            readOnlyVerified: false,
+            toolExecution: 'not_performed',
+            triggerEvaluation: 'not_performed',
+            libraryMutation: 'not_performed',
+            packageMutation: 'not_performed',
+            filesystemMutation: 'not_performed',
+            restart: 'not_performed',
+            publish: 'not_performed'
+        },
+        trace: [reason, 'execution=not_performed'],
+        errors: [{ code: reason, message: resultSummary }],
+        warnings: []
+    });
+    if (!checkpoint) {
+        return fail('BLOCKED_MISSING_CHECKPOINT', 'Checkpoint is required for approved allowlisted execution.');
+    }
+    if (!resumeResult) {
+        return fail('BLOCKED_INVALID_RESUME_STATE', 'Resume result is required for approved allowlisted execution.');
+    }
+    if (resumeResult.sourceCheckpointId !== checkpoint.checkpointId || resumeResult.sourceRequestId !== checkpoint.sourceRequestId) {
+        return fail('BLOCKED_INVALID_RESUME_STATE', 'Resume result does not match checkpoint identity.');
+    }
+    if (resumeResult.nextApprovalStatus !== 'APPROVED' || !resumeResult.executionEligible) {
+        return fail('BLOCKED_NOT_APPROVED', 'Checkpoint is not approved for execution.');
+    }
+    if (input.mode !== 'approved_execute') {
+        return fail('BLOCKED_POLICY', 'approved_execute mode is required for allowlisted execution.');
+    }
+    const requestedToolName = checkpoint.requestedToolName;
+    if (!requestedToolName || !APPROVED_ALLOWLISTED_RUNTIME_TOOLS.has(requestedToolName)) {
+        return fail('BLOCKED_NOT_ALLOWLISTED', 'Requested tool is not on the approved allowlisted read-only set.');
+    }
+    let resultPayload = null;
+    let executedAction = null;
+    if (requestedToolName === 'umg_envoy_block_library_status') {
+        resultPayload = getBlockLibraryStatus(version, entrypoint, root);
+        executedAction = 'block_library_status_read';
+    }
+    else if (requestedToolName === 'umg_envoy_block_library_sleeve_graph_index') {
+        resultPayload = getBlockLibrarySleeveGraphIndex(version, entrypoint, root, {
+            sleeveId: checkpoint.sourceSleeveId ?? input.runtimeSpec?.sleeveId ?? 'neomagnetar-dynamic-persona-v1'
+        });
+        executedAction = 'sleeve_graph_index_read';
+    }
+    else if (requestedToolName === 'umg_envoy_runtime_preview') {
+        resultPayload = previewRuntimeSleeve(version, entrypoint, root, {
+            sleeveId: checkpoint.sourceSleeveId ?? input.runtimeSpec?.sleeveId,
+            previewFormat: 'summary',
+            includeActiveStack: true,
+            includeMoltMap: true,
+            includeEnvelope: true,
+            includeToolRequests: true
+        });
+        executedAction = 'runtime_preview_regeneration';
+    }
+    else if (requestedToolName === 'umg_envoy_runtime_compile') {
+        resultPayload = compileRuntimeSleeve(version, entrypoint, root, {
+            sleeveId: checkpoint.sourceSleeveId ?? input.runtimeSpec?.sleeveId,
+            compileMode: 'dry_run',
+            resolveDepth: 'molt_visible',
+            strictness: 'dev'
+        });
+        executedAction = 'runtime_compile_dry_run';
+    }
+    else if (requestedToolName === 'umg_envoy_block_library_manifest_index') {
+        resultPayload = getBlockLibraryManifestIndex(version, entrypoint, root);
+        executedAction = 'manifest_index_read';
+    }
+    else {
+        return fail('BLOCKED_UNSUPPORTED_ACTION', 'Requested tool is allowlisted in name only but has no safe direct internal executor.');
+    }
+    return {
+        ...base,
+        ok: true,
+        executionResultId: `exec_${simpleStableKey([checkpoint.checkpointId, resumeResult.resumeResultId, requestedToolName])}`,
+        executionStatus: 'EXECUTION_READY',
+        sourceCheckpointId: checkpoint.checkpointId,
+        sourceRuntimeSpecId: checkpoint.sourceRuntimeSpecId,
+        sourceSleeveId: checkpoint.sourceSleeveId,
+        sourceGatePlanId: checkpoint.sourceGatePlanId,
+        sourceRequestId: checkpoint.sourceRequestId,
+        requestedToolName,
+        requestedAction: checkpoint.requestedAction,
+        approvalStatus: checkpoint.approvalStatus,
+        executionEligible: true,
+        allowlisted: true,
+        readOnly: true,
+        executedAction,
+        resultSummary: `Executed approved allowlisted read-only action: ${executedAction}`,
+        resultPayload,
+        sideEffectStatus: 'read_only_no_mutation',
+        audit: {
+            approvalVerified: true,
+            allowlistVerified: true,
+            readOnlyVerified: true,
+            toolExecution: 'performed',
+            triggerEvaluation: 'not_performed',
+            libraryMutation: 'not_performed',
+            packageMutation: 'not_performed',
+            filesystemMutation: 'not_performed',
+            restart: 'not_performed',
+            publish: 'not_performed'
+        },
+        trace: [
+            `requestedToolName=${requestedToolName}`,
+            `executedAction=${executedAction}`,
+            'approvalVerified=true',
+            'allowlistVerified=true',
+            'readOnlyVerified=true'
+        ],
+        warnings: [],
+        errors: []
+    };
+}
+export function runRuntimeExecutionChainE2EApprovedReadOnly(version, entrypoint = 'dist/plugin-entry.js', root = DEFAULT_LIBRARY_ROOT, input = {}) {
+    const sleeveId = input.sleeveId ?? 'neomagnetar-dynamic-persona-v1';
+    const requestedToolName = input.requestedToolName ?? 'umg_envoy_block_library_status';
+    const requestedAction = input.requestedAction ?? 'status_read';
+    const approvalDecision = input.approvalDecision ?? 'approve';
+    const chainRunId = `chain_${simpleStableKey([sleeveId, requestedToolName, requestedAction, approvalDecision])}`;
+    const compiled = compileRuntimeSleeve(version, entrypoint, root, {
+        sleeveId,
+        compileMode: 'dry_run',
+        resolveDepth: 'molt_visible',
+        strictness: 'dev'
+    });
+    if (!compiled.ok || !compiled.runtimeSpecId || !compiled.sleeveId) {
+        return {
+            ok: false,
+            outputContract: { contractId: 'umg.runtime.execution_chain.e2e_approved_read_only.v1', contractStatus: 'NORMALIZED' },
+            chainRunId,
+            chainStatus: 'CHAIN_E2E_FAILED',
+            sourceSleeveId: sleeveId,
+            runtimeSpecId: null,
+            classifierResultId: null,
+            gatePlanId: null,
+            checkpointId: null,
+            resumeResultId: null,
+            executionResultId: null,
+            requestedToolName,
+            requestedAction,
+            approvalDecision,
+            executionStatus: 'not_performed',
+            sideEffectStatus: 'not_performed',
+            resultSummary: 'Runtime compile failed before E2E chain could proceed.',
+            resultPayload: null,
+            classifierResult: null,
+            gatePlanResult: null,
+            checkpointCreateResult: null,
+            checkpointResumeResult: null,
+            executionResult: null,
+            audit: {
+                runtimeCompiled: false,
+                classificationPerformed: false,
+                gatePlanCreated: false,
+                approvalCheckpointCreated: false,
+                approvalCheckpointResumed: false,
+                approvalVerified: false,
+                allowlistVerified: false,
+                readOnlyVerified: false,
+                toolExecution: 'not_performed',
+                triggerEvaluation: 'not_performed',
+                libraryMutation: 'not_performed',
+                packageMutation: 'not_performed',
+                filesystemMutation: 'not_performed',
+                restart: 'not_performed',
+                publish: 'not_performed'
+            },
+            trace: ['compile_failed', 'execution=not_performed'],
+            warnings: compiled.warnings,
+            errors: compiled.errors
+        };
+    }
+    const runtimeSpec = {
+        runtimeSpecVersion: 'RuntimeSpecV0',
+        runtimeSpecId: compiled.runtimeSpecId,
+        sleeveId: compiled.sleeveId,
+        activeBlocks: compiled.activeBlocks,
+        moltMap: compiled.moltMap,
+        promptParts: compiled.promptParts,
+        strategy: compiled.strategy,
+        constraints: compiled.constraints,
+        context: compiled.context,
+        values: compiled.values,
+        format: compiled.format,
+        toolRequests: [
+            {
+                kind: 'synthetic_e2e_request',
+                sourceBlockId: 'alpha7-e2e-chain',
+                declaredAction: requestedToolName
+            }
+        ]
+    };
+    const classifierResult = classifyRuntimeToolRequests(version, entrypoint, root, {
+        runtimeSpec,
+        compileIfMissing: false,
+        requestedToolName,
+        mode: 'classify_only',
+        includeTrace: input.includeTrace !== false
+    });
+    const syntheticClassification = {
+        requestId: `${runtimeSpec.runtimeSpecId}:req:e2e`,
+        sourceRuntimeSpecId: runtimeSpec.runtimeSpecId,
+        sourceSleeveId: runtimeSpec.sleeveId,
+        requestedToolName,
+        requestedAction,
+        requestedArgsSummary: 'syntheticForE2E=true',
+        classification: 'available_requires_approval',
+        riskLevel: 'low',
+        approvalRequired: true,
+        allowlisted: APPROVED_ALLOWLISTED_RUNTIME_TOOLS.has(requestedToolName),
+        executionMode: 'approval_required',
+        decisionReason: 'Synthetic approval-required projection for E2E approved read-only proof.',
+        trace: ['syntheticForE2E=true']
+    };
+    const gatePlanResult = createRuntimeExecutionGatePlan(version, entrypoint, root, {
+        runtimeSpec,
+        classifications: [syntheticClassification],
+        compileIfMissing: false,
+        classifyIfMissing: false,
+        mode: 'plan_only',
+        includeTrace: input.includeTrace !== false,
+        includeCheckpointPreview: true
+    });
+    const checkpointCreateResult = createRuntimeApprovalCheckpoints(version, entrypoint, root, {
+        runtimeSpec,
+        gatePlan: gatePlanResult,
+        mode: 'checkpoint_create',
+        includeTrace: input.includeTrace !== false,
+        storageMode: 'returned_only'
+    });
+    const checkpoint = checkpointCreateResult.checkpoints?.[0] ?? null;
+    if (!checkpoint) {
+        return {
+            ok: false,
+            outputContract: { contractId: 'umg.runtime.execution_chain.e2e_approved_read_only.v1', contractStatus: 'NORMALIZED' },
+            chainRunId,
+            chainStatus: 'CHAIN_E2E_BLOCKED',
+            sourceSleeveId: runtimeSpec.sleeveId,
+            runtimeSpecId: runtimeSpec.runtimeSpecId,
+            classifierResultId: runtimeSpec.runtimeSpecId,
+            gatePlanId: gatePlanResult.gatePlanId ?? null,
+            checkpointId: null,
+            resumeResultId: null,
+            executionResultId: null,
+            requestedToolName,
+            requestedAction,
+            approvalDecision,
+            executionStatus: 'not_performed',
+            sideEffectStatus: 'not_performed',
+            resultSummary: 'Checkpoint creation did not return a checkpoint.',
+            resultPayload: null,
+            classifierResult,
+            gatePlanResult,
+            checkpointCreateResult,
+            checkpointResumeResult: null,
+            executionResult: null,
+            audit: {
+                runtimeCompiled: true,
+                classificationPerformed: true,
+                gatePlanCreated: true,
+                approvalCheckpointCreated: false,
+                approvalCheckpointResumed: false,
+                approvalVerified: false,
+                allowlistVerified: false,
+                readOnlyVerified: false,
+                toolExecution: 'not_performed',
+                triggerEvaluation: 'not_performed',
+                libraryMutation: 'not_performed',
+                packageMutation: 'not_performed',
+                filesystemMutation: 'not_performed',
+                restart: 'not_performed',
+                publish: 'not_performed'
+            },
+            trace: ['checkpoint_missing', 'execution=not_performed'],
+            warnings: checkpointCreateResult.warnings ?? [],
+            errors: checkpointCreateResult.errors ?? []
+        };
+    }
+    const checkpointResumeResult = resumeRuntimeApprovalCheckpoint(version, entrypoint, {
+        checkpoint,
+        resumeToken: checkpoint.resumeToken,
+        decision: approvalDecision,
+        mode: 'resume_only',
+        includeTrace: input.includeTrace !== false
+    });
+    const executionResult = executeApprovedAllowlistedRuntimeAction(version, entrypoint, root, {
+        checkpoint,
+        resumeResult: checkpointResumeResult,
+        runtimeSpec,
+        gatePlan: gatePlanResult,
+        actionArgs: { syntheticForE2E: true },
+        mode: 'approved_execute',
+        includeTrace: input.includeTrace !== false
+    });
+    const success = executionResult.ok && executionResult.executionStatus === 'EXECUTION_READY';
+    const blocked = executionResult.executionStatus === 'EXECUTION_BLOCKED';
+    return {
+        ok: success,
+        outputContract: { contractId: 'umg.runtime.execution_chain.e2e_approved_read_only.v1', contractStatus: 'NORMALIZED' },
+        chainRunId,
+        chainStatus: success ? 'CHAIN_E2E_READY' : blocked ? 'CHAIN_E2E_BLOCKED' : 'CHAIN_E2E_FAILED',
+        sourceSleeveId: runtimeSpec.sleeveId,
+        runtimeSpecId: runtimeSpec.runtimeSpecId,
+        classifierResultId: runtimeSpec.runtimeSpecId,
+        gatePlanId: gatePlanResult.gatePlanId ?? null,
+        checkpointId: checkpoint.checkpointId,
+        resumeResultId: checkpointResumeResult.resumeResultId ?? null,
+        executionResultId: executionResult.executionResultId ?? null,
+        requestedToolName,
+        requestedAction,
+        approvalDecision,
+        executionStatus: executionResult.executionStatus,
+        sideEffectStatus: executionResult.sideEffectStatus,
+        resultSummary: executionResult.resultSummary,
+        resultPayload: executionResult.resultPayload,
+        classifierResult,
+        gatePlanResult,
+        checkpointCreateResult,
+        checkpointResumeResult,
+        executionResult,
+        audit: {
+            runtimeCompiled: true,
+            classificationPerformed: true,
+            gatePlanCreated: true,
+            approvalCheckpointCreated: checkpointCreateResult.checkpointCount > 0,
+            approvalCheckpointResumed: checkpointResumeResult.decisionAccepted === true,
+            approvalVerified: executionResult.audit.approvalVerified,
+            allowlistVerified: executionResult.audit.allowlistVerified,
+            readOnlyVerified: executionResult.audit.readOnlyVerified,
+            toolExecution: executionResult.audit.toolExecution,
+            triggerEvaluation: 'not_performed',
+            libraryMutation: 'not_performed',
+            packageMutation: 'not_performed',
+            filesystemMutation: 'not_performed',
+            restart: 'not_performed',
+            publish: 'not_performed'
+        },
+        trace: [
+            `syntheticForE2E=true`,
+            `approvalDecision=${approvalDecision}`,
+            `requestedToolName=${requestedToolName}`,
+            `executionStatus=${executionResult.executionStatus}`
+        ],
+        warnings: [],
+        errors: executionResult.errors ?? []
+    };
+}
+export function inspectRuntimeActiveSleeveIrMatrixEnvelope(version, entrypoint = 'dist/plugin-entry.js', root = DEFAULT_LIBRARY_ROOT, input = {}) {
+    const sleeveId = input.sleeveId ?? 'neomagnetar-dynamic-persona-v1';
+    const inspectorRunId = `inspect_${simpleStableKey([sleeveId, 'ir_matrix_envelope'])}`;
+    const selected = selectRuntimeSleeve(version, entrypoint, root, { sleeveId, selectionMode: 'explicit' });
+    const resolved = resolveRuntimeSleeveGraph(version, entrypoint, root, { sleeveId, resolveDepth: 'molt_visible' });
+    const graph = getBlockLibrarySleeveGraphDrilldown(version, entrypoint, root, { sleeveId, projectionFormat: 'summary' });
+    const resolvedNeoBlockIds = resolved.ok ? resolved.resolvedNeoBlocks.map((block) => block.neoblockId).filter(Boolean) : [];
+    const activeStackBoundary = resolved.ok
+        ? (resolved.resolvedSleeve?.neoStackRefs?.length ? 'runtime sleeve graph inspection with declared neostack references' : 'runtime sleeve graph inspection without declared neostacks; direct neoblock sleeve')
+        : 'runtime sleeve graph unavailable';
+    const activeStackProjection = getBlockLibraryActiveStackProjection(version, entrypoint, root, {
+        neoblockIds: resolvedNeoBlockIds,
+        currentState: resolved.ok ? resolved.resolutionStatus : 'RESOLUTION_UNAVAILABLE',
+        activeSleeve: sleeveId,
+        boundary: activeStackBoundary
+    });
+    const responseEnvelopePreview = resolvedNeoBlockIds.length > 0
+        ? getBlockLibraryResponseEnvelopeFragment(version, entrypoint, root, {
+            neoblockIds: resolvedNeoBlockIds,
+            currentState: resolved.ok ? resolved.resolutionStatus : 'RESOLUTION_UNAVAILABLE',
+            activeSleeve: sleeveId,
+            activeStackBoundary
+        })
+        : {
+            ok: true,
+            version,
+            entrypoint,
+            mode: 'runtime_level_envelope_preview',
+            outputContract: {
+                contractId: 'umg.runtime.envelope.preview.v1',
+                contractStatus: 'NORMALIZED',
+                sourceContractId: 'umg.runtime.compile.v1',
+                sourceMode: 'runtime_spec_fallback',
+                activeStackSourceContract: 'umg.active_stack.projection.v1',
+                activeStackSourceStatus: 'NORMALIZED',
+                automaticResponseTakeover: false,
+                recursiveLoad: false,
+                fullLibraryScan: false
+            },
+            readOnly: true,
+            execution: 'not_performed',
+            directSource: 'not_enabled',
+            query: {
+                neoblockIds: [],
+                project: 'UMG Envoy Agent / OpenClaw',
+                currentState: resolved.ok ? resolved.resolutionStatus : 'RESOLUTION_UNAVAILABLE',
+                activeTool: 'umg_envoy_runtime_active_sleeve_ir_matrix_envelope_inspect',
+                formalResponseContent: 'n/a',
+                projectionFormat: 'both',
+                includeMetadata: true,
+                includeAudit: true,
+                activeSleeve: sleeveId,
+                activeStackBoundary,
+                includeActiveStackProjection: true
+            },
+            sourceComposition: null,
+            sourceActiveStackProjection: activeStackProjection,
+            responseEnvelopeFragment: {
+                fragmentStatus: 'RESPONSE_ENVELOPE_FRAGMENT_UNAVAILABLE',
+                fragmentKind: 'explicit_molt_map_envelope',
+                sections: {
+                    activeStack: {},
+                    envoyIntuition: {},
+                    currentContextMoltMap: {},
+                    formalResponseContent: {},
+                    metadata: {},
+                    audit: {}
+                },
+                sectionOrder: ['Active Stack', 'Envoy Intuition', 'Current Context — MOLT Map', 'Formal Response Content', 'Metadata'],
+                automaticResponseTakeover: false,
+                limitations: ['runtime_level_fallback', 'no_explicit_neoblock_ids', 'no_execution']
+            },
+            envelopeSource: 'runtime_spec',
+            envelopeStatus: 'HELD',
+            heldReason: 'No resolved NeoBlock ids available for explicit envelope fragment composition.',
+            runtimeFallbackPreview: null,
+            nlProjection: null,
+            audit: {
+                execution: 'not_performed',
+                triggerEvaluation: 'not_performed',
+                libraryMutation: 'not_performed'
+            },
+            warnings: [],
+            errors: []
+        };
+    const runtimeSpec = compileRuntimeSleeve(version, entrypoint, root, {
+        sleeveId,
+        compileMode: 'dry_run',
+        resolveDepth: 'molt_visible',
+        strictness: 'dev'
+    });
+    const classifier = classifyRuntimeToolRequests(version, entrypoint, root, {
+        sleeveId,
+        compileIfMissing: true,
+        mode: 'classify_only',
+        includeTrace: true
+    });
+    const gatePlan = createRuntimeExecutionGatePlan(version, entrypoint, root, {
+        sleeveId,
+        compileIfMissing: true,
+        classifyIfMissing: true,
+        mode: 'plan_only',
+        includeTrace: true,
+        includeCheckpointPreview: true
+    });
+    const checkpointCreate = createRuntimeApprovalCheckpoints(version, entrypoint, root, {
+        sleeveId,
+        mode: 'checkpoint_create',
+        includeTrace: true,
+        storageMode: 'returned_only'
+    });
+    const checkpoint = checkpointCreate.checkpoints?.[0] ?? null;
+    const checkpointResume = checkpoint
+        ? resumeRuntimeApprovalCheckpoint(version, entrypoint, {
+            checkpoint,
+            resumeToken: checkpoint.resumeToken,
+            decision: 'approve',
+            mode: 'resume_only',
+            includeTrace: true
+        })
+        : null;
+    const approvedExecution = checkpoint && checkpointResume
+        ? executeApprovedAllowlistedRuntimeAction(version, entrypoint, root, {
+            checkpoint,
+            resumeResult: checkpointResume,
+            mode: 'approved_execute',
+            includeTrace: true
+        })
+        : null;
+    const declaredNeoStackRefs = graph.ok ? graph.declaredNeoStackRefs ?? [] : [];
+    const declaredNeoBlockRefs = graph.ok ? graph.declaredNeoBlockRefs ?? [] : [];
+    const sleeveNativeMoltAvailable = resolved.ok ? resolved.visibleMoltFragments.length > 0 : false;
+    const activeNeoStacks = resolved.ok
+        ? (resolved.resolvedNeoStacks.length > 0
+            ? resolved.resolvedNeoStacks.map((stack, index) => ({
+                neoStackId: stack.ref ?? `declared-stack-${index + 1}`,
+                displayName: stack.ref ?? null,
+                declaredRef: stack.ref ?? null,
+                sourcePath: resolved.resolvedSleeve?.sourcePath ?? null,
+                manifestEntry: resolved.resolvedSleeve?.catalogPath ?? null,
+                activeStatus: stack.status === 'declared_only' ? 'declared_only' : 'resolved',
+                reasonActive: stack.status === 'declared_only' ? 'declared in sleeve graph; bounded resolver does not load neostack payloads in Alpha7' : 'resolved from sleeve graph',
+                reasonUnavailable: null,
+                declaredNeoBlockRefs,
+                resolvedNeoBlockCount: resolved.resolvedNeoBlocks.length,
+                blockedNeoBlockCount: resolved.blockedRefs.length,
+                warnings: []
+            }))
+            : [{
+                    neoStackId: null,
+                    displayName: null,
+                    declaredRef: null,
+                    sourcePath: resolved.resolvedSleeve?.sourcePath ?? null,
+                    manifestEntry: resolved.resolvedSleeve?.catalogPath ?? null,
+                    activeStatus: 'unavailable',
+                    reasonActive: null,
+                    reasonUnavailable: declaredNeoStackRefs.length === 0 ? 'sleeve_declares_no_neostacks' : 'declared_but_not_loaded',
+                    declaredNeoBlockRefs,
+                    resolvedNeoBlockCount: resolved.resolvedNeoBlocks.length,
+                    blockedNeoBlockCount: resolved.blockedRefs.length,
+                    warnings: resolved.resolvedSleeve?.limitations ?? []
+                }])
+        : [{
+                neoStackId: null,
+                displayName: null,
+                declaredRef: null,
+                sourcePath: null,
+                manifestEntry: null,
+                activeStatus: 'unavailable',
+                reasonActive: null,
+                reasonUnavailable: resolved.errors?.[0]?.code ?? 'sleeve_resolution_unavailable',
+                declaredNeoBlockRefs: [],
+                resolvedNeoBlockCount: 0,
+                blockedNeoBlockCount: 0,
+                warnings: resolved.warnings ?? []
+            }];
+    const activeNeoBlocks = resolved.ok
+        ? (resolved.resolvedNeoBlocks.length > 0
+            ? resolved.resolvedNeoBlocks.map((block) => {
+                const summary = block.summary ?? {};
+                const contentSummary = typeof summary.contentPreview === 'string' && summary.contentPreview.length > 0
+                    ? summary.contentPreview
+                    : summary.contentSummary?.content ?? null;
+                const extractedMoltTypes = summary.moltType ? [summary.moltType] : [];
+                return {
+                    neoBlockId: block.neoblockId,
+                    parentNeoStackId: null,
+                    declaredRef: block.neoblockId,
+                    resolvedPath: resolved.resolvedSleeve?.sourcePath ?? null,
+                    manifestSource: resolved.resolvedSleeve?.catalogPath ?? null,
+                    loadStatus: block.status,
+                    visibleMoltFragmentCount: resolved.visibleMoltFragments.filter((fragment) => fragment.neoblockId === block.neoblockId).length,
+                    extractedMoltTypes,
+                    contentSummary,
+                    warnings: summary.limitations ?? []
+                };
+            })
+            : [{
+                    neoBlockId: null,
+                    parentNeoStackId: null,
+                    declaredRef: null,
+                    resolvedPath: null,
+                    manifestSource: null,
+                    loadStatus: 'unavailable',
+                    visibleMoltFragmentCount: 0,
+                    extractedMoltTypes: [],
+                    contentSummary: null,
+                    warnings: [declaredNeoBlockRefs.length === 0 ? 'sleeve_declares_no_neoblocks' : 'declared_but_not_loaded']
+                }])
+        : [{
+                neoBlockId: null,
+                parentNeoStackId: null,
+                declaredRef: null,
+                resolvedPath: null,
+                manifestSource: null,
+                loadStatus: 'unavailable',
+                visibleMoltFragmentCount: 0,
+                extractedMoltTypes: [],
+                contentSummary: null,
+                warnings: [resolved.errors?.[0]?.code ?? 'sleeve_resolution_unavailable']
+            }];
+    const activeMoltBlocks = {
+        Trigger: [],
+        Directive: [],
+        Instruction: [],
+        Subject: [],
+        Primary: [],
+        Philosophy: [],
+        Blueprint: [],
+        Off: [],
+        excluded: []
+    };
+    if (resolved.ok) {
+        for (const fragment of resolved.visibleMoltFragments) {
+            const block = resolved.resolvedNeoBlocks.find((item) => item.neoblockId === fragment.neoblockId);
+            const item = {
+                sourceNeoBlockId: fragment.neoblockId,
+                sourceNeoStackId: null,
+                moltType: fragment.sourceField,
+                contentSummary: fragment.text,
+                activeStatus: 'active',
+                exclusionReason: null,
+                mergeKey: fragment.sourceField,
+                stackKey: null,
+                trace: [`sourceBlockId=${fragment.sourceBlockId ?? 'none'}`, `sourceField=${fragment.sourceField}`],
+                sourceMode: block?.summary?.status === 'alpha6_sample_target' ? 'runtimeSpec_sample_blocks' : 'sleeve_native'
+            };
+            if (Array.isArray(activeMoltBlocks[fragment.sourceField])) {
+                activeMoltBlocks[fragment.sourceField].push(item);
+            }
+            else {
+                activeMoltBlocks.excluded.push({ ...item, activeStatus: 'excluded', exclusionReason: 'unsupported_molt_type' });
+            }
+        }
+    }
+    const activeNeoStacksSection = {
+        count: resolved.ok ? resolved.resolvedNeoStacks.length : 0,
+        status: resolved.ok ? (resolved.resolvedNeoStacks.length > 0 ? 'resolved' : (declaredNeoStackRefs.length === 0 ? 'empty_with_reason' : 'declared_but_not_loaded')) : 'missing',
+        reason: resolved.ok ? (resolved.resolvedNeoStacks.length > 0 ? null : (declaredNeoStackRefs.length === 0 ? 'sleeve_declares_no_neostacks' : 'declared_but_not_loaded')) : (resolved.errors?.[0]?.code ?? 'sleeve_resolution_unavailable'),
+        items: activeNeoStacks
+    };
+    const activeNeoBlocksSection = {
+        count: resolved.ok ? resolved.resolvedNeoBlocks.length : 0,
+        status: resolved.ok ? (resolved.resolvedNeoBlocks.length > 0 ? 'resolved' : (declaredNeoBlockRefs.length === 0 ? 'empty_with_reason' : 'declared_but_not_loaded')) : 'missing',
+        reason: resolved.ok ? (resolved.resolvedNeoBlocks.length > 0 ? null : (declaredNeoBlockRefs.length === 0 ? 'sleeve_declares_no_neoblocks' : 'declared_but_not_loaded')) : (resolved.errors?.[0]?.code ?? 'sleeve_resolution_unavailable'),
+        items: activeNeoBlocks
+    };
+    const activeMoltBlocksSection = {
+        source: sleeveNativeMoltAvailable ? 'sleeve_native' : (runtimeSpec.ok ? 'runtimeSpec_sample_blocks' : 'unavailable'),
+        sleeveNativeMoltFragmentsAvailable: sleeveNativeMoltAvailable,
+        reason: sleeveNativeMoltAvailable ? null : (resolved.ok ? 'no_real_molt_fragments_resolved; using sample/runtime fallback when available' : (resolved.errors?.[0]?.code ?? 'sleeve_resolution_unavailable')),
+        groups: activeMoltBlocks
+    };
+    const runtimeSpecDetail = runtimeSpec.ok ? {
+        ...runtimeSpec,
+        sourceMode: sleeveNativeMoltAvailable ? 'sleeve_native_graph' : 'sample_fallback',
+        usesSampleBlocks: runtimeSpec.activeBlocks.some((id) => id.endsWith('.sample')),
+        usesSleeveNativeBlocks: runtimeSpec.activeBlocks.some((id) => !id.endsWith('.sample')),
+        sleeveNativeBlockCount: runtimeSpec.activeBlocks.filter((id) => !id.endsWith('.sample')).length,
+        sampleBlockCount: runtimeSpec.activeBlocks.filter((id) => id.endsWith('.sample')).length
+    } : runtimeSpec;
+    const irMatrixProjection = {
+        matrixId: `irmatrix_${simpleStableKey([sleeveId, runtimeSpec.runtimeSpecId ?? 'none'])}`,
+        nodes: [
+            { id: `sleeve:${sleeveId}`, type: 'sleeve', label: sleeveId },
+            ...(activeNeoStacksSection.items.map((stack, index) => ({ id: `stack:${stack.neoStackId ?? `diagnostic-${index}`}`, type: stack.neoStackId ? 'neoStack' : 'diagnostic', label: stack.neoStackId ?? stack.reasonUnavailable ?? `stack-${index}` }))),
+            ...(activeNeoBlocksSection.items.map((block, index) => ({ id: `block:${block.neoBlockId ?? `diagnostic-${index}`}`, type: block.neoBlockId ? 'neoBlock' : 'diagnostic', label: block.neoBlockId ?? block.warnings?.[0] ?? `block-${index}` }))),
+            ...(['Trigger', 'Directive', 'Instruction', 'Subject', 'Primary', 'Philosophy', 'Blueprint', 'Off'].flatMap((field) => (activeMoltBlocksSection.groups[field] ?? []).map((molt, index) => ({ id: `molt:${field}:${molt.sourceNeoBlockId ?? index}`, type: 'moltBlock', label: `${field}:${molt.sourceNeoBlockId ?? index}` })))),
+            ...(runtimeSpec.ok ? [{ id: `runtimeSpec:${runtimeSpec.runtimeSpecId}`, type: 'runtimeSpec', label: runtimeSpec.runtimeSpecId }] : [{ id: `runtimeSpec:missing`, type: 'diagnostic', label: 'runtimeSpec_missing' }]),
+            ...(Array.isArray(classifier.classifications) ? classifier.classifications.map((c) => ({ id: `toolRequest:${c.requestId}`, type: 'toolRequest', label: c.requestedToolName ?? c.requestId })) : []),
+            ...(gatePlan.ok ? [{ id: `gatePlan:${gatePlan.gatePlanId}`, type: 'gatePlan', label: gatePlan.gatePlanId }] : []),
+            ...(checkpoint ? [{ id: `checkpoint:${checkpoint.checkpointId}`, type: 'checkpoint', label: checkpoint.checkpointId }] : []),
+            ...(approvedExecution?.ok ? [{ id: `execution:${approvedExecution.executionResultId}`, type: 'executionResult', label: approvedExecution.executionResultId }] : []),
+            { id: `envelope:${sleeveId}`, type: 'envelope', label: 'response-envelope-preview' }
+        ],
+        edges: [
+            ...(activeNeoStacksSection.items.map((stack, index) => ({ from: `sleeve:${sleeveId}`, to: `stack:${stack.neoStackId ?? `diagnostic-${index}`}`, type: stack.neoStackId ? 'contains' : 'declared_but_unresolved' }))),
+            ...(activeNeoBlocksSection.items.map((block, index) => ({ from: block.parentNeoStackId ? `stack:${block.parentNeoStackId}` : `sleeve:${sleeveId}`, to: `block:${block.neoBlockId ?? `diagnostic-${index}`}`, type: block.neoBlockId ? 'resolves_to' : 'not_loaded' }))),
+            ...(['Trigger', 'Directive', 'Instruction', 'Subject', 'Primary', 'Philosophy', 'Blueprint', 'Off'].flatMap((field) => (activeMoltBlocksSection.groups[field] ?? []).map((molt, index) => ({ from: `block:${molt.sourceNeoBlockId ?? `diagnostic-${index}`}`, to: `molt:${field}:${molt.sourceNeoBlockId ?? index}`, type: 'extracts_molt' })))),
+            ...(runtimeSpec.ok ? [{ from: `sleeve:${sleeveId}`, to: `runtimeSpec:${runtimeSpec.runtimeSpecId}`, type: 'compiles_to' }] : []),
+            ...(Array.isArray(classifier.classifications) ? classifier.classifications.map((c) => ({ from: `runtimeSpec:${classifier.sourceRuntimeSpecId ?? runtimeSpec.runtimeSpecId}`, to: `toolRequest:${c.requestId}`, type: 'classifies' })) : []),
+            ...(gatePlan.ok && Array.isArray(gatePlan.plannedActions) ? gatePlan.plannedActions.map((p) => ({ from: `toolRequest:${p.requestId}`, to: `gatePlan:${gatePlan.gatePlanId}`, type: 'gates' })) : []),
+            ...(checkpoint ? [{ from: `gatePlan:${checkpoint.sourceGatePlanId}`, to: `checkpoint:${checkpoint.checkpointId}`, type: 'checkpoints' }] : []),
+            ...(approvedExecution?.ok ? [{ from: `checkpoint:${checkpoint?.checkpointId}`, to: `execution:${approvedExecution.executionResultId}`, type: 'executes' }] : []),
+            { from: `runtimeSpec:${runtimeSpec.runtimeSpecId ?? 'none'}`, to: `envelope:${sleeveId}`, type: 'previews' }
+        ],
+        activeRoute: [
+            `sleeve:${sleeveId}`,
+            ...(runtimeSpec.ok ? [`runtimeSpec:${runtimeSpec.runtimeSpecId}`] : []),
+            ...(gatePlan.ok ? [`gatePlan:${gatePlan.gatePlanId}`] : []),
+            ...(checkpoint ? [`checkpoint:${checkpoint.checkpointId}`] : []),
+            ...(approvedExecution?.ok ? [`execution:${approvedExecution.executionResultId}`] : [])
+        ],
+        blockedRoute: approvedExecution && !approvedExecution.ok ? [`execution_blocked:${approvedExecution.executionResultId}`] : [],
+        offRoute: [],
+        hierarchyEdges: ['contains', 'resolves_to', 'declared_but_unresolved', 'not_loaded'],
+        siblingEdges: [],
+        toolRequestEdges: ['classifies', 'gates'],
+        checkpointEdges: ['checkpoints', 'resumes'],
+        executionEdges: ['executes', 'previews', 'extracts_molt'],
+        symbolsLegend: {
+            sleeve: 'runtime sleeve root',
+            neoStack: 'stack layer',
+            neoBlock: 'resolved block',
+            moltBlock: 'visible MOLT fragment',
+            diagnostic: 'missing/unresolved diagnostic node',
+            runtimeSpec: 'compiled RuntimeSpecV0',
+            toolRequest: 'declared/synthetic request',
+            gatePlan: 'gate planning node',
+            checkpoint: 'approval checkpoint node',
+            executionResult: 'approved allowlisted execution result',
+            envelope: 'response envelope preview'
+        }
+    };
+    return {
+        ok: true,
+        outputContract: { contractId: 'umg.runtime.active_sleeve_ir_matrix_envelope.inspect.v1', contractStatus: 'NORMALIZED' },
+        inspectorRunId,
+        inspectorStatus: runtimeSpec.ok ? 'INSPECTOR_READY' : 'INSPECTOR_PARTIAL',
+        sourceSleeveId: sleeveId,
+        activeSleeve: {
+            sleeveId,
+            sleeveName: resolved.ok ? (resolved.resolvedSleeve?.title ?? sleeveId) : sleeveId,
+            sleeveSource: 'runtime_selection',
+            sleeveStatus: resolved.ok ? (resolved.resolutionStatus === 'RESOLVED' ? 'resolved' : 'held') : 'held',
+            sourceCatalog: 'preferred',
+            resolvedFrom: 'selectRuntimeSleeve+resolveRuntimeSleeveGraph',
+            selectedExplicitly: !!input.sleeveId,
+            runtimeEligible: runtimeSpec.ok,
+            warningList: [...(selected.warnings ?? []), ...(resolved.warnings ?? [])],
+            graphStatus: resolved.ok ? resolved.resolvedSleeve?.graphStatus ?? null : null,
+            sourcePath: resolved.ok ? resolved.resolvedSleeve?.sourcePath ?? null : null,
+            catalogPath: resolved.ok ? resolved.resolvedSleeve?.catalogPath ?? null : null
+        },
+        activeNeoStacks: input.includeNeoStacks === false ? { count: 0, status: 'missing', reason: 'disabled_by_query', items: [] } : activeNeoStacksSection,
+        activeNeoBlocks: input.includeNeoBlocks === false ? { count: 0, status: 'missing', reason: 'disabled_by_query', items: [] } : activeNeoBlocksSection,
+        activeMoltBlocks: input.includeMoltBlocks === false ? { source: 'disabled_by_query', sleeveNativeMoltFragmentsAvailable: false, reason: 'disabled_by_query', groups: {} } : activeMoltBlocksSection,
+        runtimeSpec: input.includeRuntimeSpec === false ? null : runtimeSpecDetail,
+        activeStackProjection,
+        moltMapProjection: runtimeSpec.ok ? runtimeSpec.moltMap : {},
+        irMatrixProjection: input.includeIrMatrix === false ? null : irMatrixProjection,
+        responseEnvelopePreview: input.includeEnvelope === false ? null : {
+            envelopeSource: responseEnvelopePreview.envelopeSource ?? (resolvedNeoBlockIds.length > 0 ? 'neoblock_fragment' : (runtimeSpec.ok ? 'runtime_spec' : 'partial')),
+            envelopeStatus: responseEnvelopePreview.envelopeStatus ?? ((responseEnvelopePreview.ok === false || responseEnvelopePreview.responseEnvelopeFragment?.fragmentStatus === 'RESPONSE_ENVELOPE_FRAGMENT_DENIED') ? 'PARTIAL' : 'READY'),
+            heldReason: responseEnvelopePreview.heldReason ?? ((responseEnvelopePreview.errors?.[0]?.message) ?? null),
+            activeStack: activeStackProjection,
+            currentContextMoltMap: runtimeSpec.ok ? runtimeSpec.moltMap : {},
+            formalResponseContentPreview: responseEnvelopePreview,
+            runtimeFallbackPreview: responseEnvelopePreview.runtimeFallbackPreview ?? {
+                runtimeSpecId: runtimeSpec.runtimeSpecId ?? null,
+                promptParts: runtimeSpec.ok ? runtimeSpec.promptParts : [],
+                strategy: runtimeSpec.ok ? runtimeSpec.strategy : null,
+                constraints: runtimeSpec.ok ? runtimeSpec.constraints : null
+            },
+            metadataTagsHelp: {
+                runtimeSpecId: runtimeSpec.runtimeSpecId ?? null,
+                executionState: 'not_performed'
+            },
+            executionState: 'not_performed'
+        },
+        toolRequestClassification: classifier,
+        executionGatePlan: input.includeExecutionGateState === false ? null : gatePlan,
+        approvalCheckpointState: input.includeExecutionGateState === false ? null : checkpointCreate,
+        approvedExecutionState: input.includeExecutionGateState === false ? null : approvedExecution,
+        executionGateState: input.includeExecutionGateState === false ? null : {
+            toolRequestsCount: Array.isArray(classifier.classifications) ? classifier.classifications.length : 0,
+            classifications: classifier.classifications ?? [],
+            blockedCount: classifier.blockedCount ?? 0,
+            approvalRequiredCount: classifier.approvalRequiredCount ?? 0,
+            readOnlyCount: classifier.readOnlyCount ?? 0,
+            checkpointStatus: checkpointCreate.checkpointCreateStatus ?? null,
+            checkpointCount: checkpointCreate.checkpointCount ?? 0,
+            executionResultStatus: approvedExecution?.executionStatus ?? 'not_performed',
+            blockedReasons: Array.isArray(classifier.classifications) ? classifier.classifications.filter((c) => c.classification === 'blocked_policy').map((c) => c.decisionReason) : [],
+            allowedReadOnlyActions: Array.isArray(classifier.classifications) ? classifier.classifications.filter((c) => c.classification === 'available_read_only').map((c) => c.requestedToolName ?? c.requestId) : []
+        },
+        inspectorCompleteness: {
+            activeSleeve: resolved.ok ? 'full' : 'partial',
+            neoStacks: resolved.ok ? (resolved.resolvedNeoStacks.length > 0 ? 'full' : 'empty_with_reason') : 'missing',
+            neoBlocks: resolved.ok ? (resolved.resolvedNeoBlocks.length > 0 ? 'full' : 'empty_with_reason') : 'missing',
+            moltBlocks: sleeveNativeMoltAvailable ? 'full' : (runtimeSpec.ok ? 'sample_fallback' : 'missing'),
+            runtimeSpec: runtimeSpec.ok ? 'full' : 'partial',
+            irMatrix: input.includeIrMatrix === false ? 'missing' : 'full',
+            envelope: input.includeEnvelope === false ? 'missing' : ((responseEnvelopePreview.envelopeStatus ?? 'PARTIAL') === 'READY' ? 'full' : ((responseEnvelopePreview.envelopeStatus ?? 'PARTIAL') === 'HELD' ? 'held' : 'partial')),
+            executionGateState: input.includeExecutionGateState === false ? 'missing' : 'full'
+        },
+        overallCompleteness: sleeveNativeMoltAvailable ? 'rich_sleeve_native' : (resolved.ok ? 'partial_sleeve_native' : (runtimeSpec.ok ? 'runtime_scaffold_only' : 'failed')),
+        executionStatus: 'not_performed',
+        warnings: [...(selected.warnings ?? []), ...(resolved.warnings ?? []), ...(runtimeSpec.warnings ?? [])],
+        errors: runtimeSpec.errors ?? [],
+        audit: {
+            execution: 'not_performed',
+            toolExecution: 'not_performed',
+            triggerEvaluation: 'not_performed',
+            libraryMutation: 'not_performed',
+            packageMutation: 'not_performed',
+            filesystemMutation: 'not_performed',
+            restart: 'not_performed',
+            publish: 'not_performed'
+        },
+        trace: [
+            `sleeveId=${sleeveId}`,
+            `runtimeSpecId=${runtimeSpec.runtimeSpecId ?? 'none'}`,
+            `classifier=${classifier.ok ? 'available' : 'held'}`,
+            `gatePlan=${gatePlan.ok ? 'available' : 'held'}`,
+            `checkpointState=${checkpointCreate.ok ? 'available' : 'held'}`,
+            `approvedExecutionState=${approvedExecution ? 'available' : 'unavailable'}`,
+            'execution=not_performed'
+        ]
+    };
+}
+export function previewRuntimeSleeve(version, entrypoint = 'dist/plugin-entry.js', root = DEFAULT_LIBRARY_ROOT, input = {}) {
+    const previewFormat = input.previewFormat ?? 'summary';
+    const compiled = compileRuntimeSleeve(version, entrypoint, root, {
+        sleeveId: input.sleeveId,
+        runtimeSessionId: input.runtimeSessionId,
+        resolveDepth: 'molt_visible',
+        strictness: 'dev',
+        compileMode: 'dry_run'
+    });
+    const base = {
+        version,
+        entrypoint,
+        mode: 'runtime_preview',
+        outputContract: { contractId: 'umg.runtime.preview.v1', contractStatus: 'NORMALIZED' },
+        executionStatus: 'not_performed',
+        directSource: 'not_enabled'
+    };
+    if (!compiled.runtimeSpecId || !compiled.sleeveId) {
+        return { ...base, ok: false, previewStatus: 'HELD', runtimeSpec: null, activeStackProjection: null, moltMapProjection: null, responseEnvelopePreview: null, toolRequestPreview: [], warnings: compiled.warnings ?? [], errors: compiled.errors ?? [], nlProjection: 'Runtime Preview unavailable: no selected or resolvable sleeve.' };
+    }
+    const ids = compiled.activeBlocks.length > 0 ? compiled.activeBlocks : compiled.promptParts.map((part) => part.sourceBlockId).filter(Boolean);
+    const activeStackProjection = input.includeActiveStack === false ? null : getBlockLibraryActiveStackProjection(version, entrypoint, root, { currentState: 'RUNTIME_PREVIEW_READY', activeTool: 'umg_envoy_runtime_preview', sourceTool: 'umg_envoy_runtime_compile', neoblockIds: ids, activeSleeve: compiled.sleeveId, boundary: 'preview only; execution not performed', projectionFormat: 'both', includeAudit: true, includeRaw: false });
+    const responseEnvelopePreview = input.includeEnvelope === false ? null : getBlockLibraryResponseEnvelopeFragment(version, entrypoint, root, { neoblockIds: ids, project: 'UMG Envoy Agent / OpenClaw', currentState: 'RUNTIME_PREVIEW_READY', activeTool: 'umg_envoy_runtime_preview', formalResponseContent: compiled.promptParts.map((part) => `${part.field}: ${part.text}`).join('\n\n'), envoyIntuition: compiled.strategy ?? 'n/a', projectionFormat: 'both', includeMetadata: true, includeAudit: true, activeSleeve: compiled.sleeveId, activeStackBoundary: 'preview only; execution not performed', includeActiveStackProjection: true, includeRaw: false });
+    const summaryRuntimeSpec = previewFormat === 'summary' ? { runtimeSpecVersion: compiled.runtimeSpecVersion, runtimeSpecId: compiled.runtimeSpecId, sleeveId: compiled.sleeveId, activeBlocks: compiled.activeBlocks, toolRequests: compiled.toolRequests } : { runtimeSpecVersion: compiled.runtimeSpecVersion, runtimeSpecId: compiled.runtimeSpecId, sleeveId: compiled.sleeveId, activeBlocks: compiled.activeBlocks, moltMap: compiled.moltMap, promptParts: compiled.promptParts, strategy: compiled.strategy, constraints: compiled.constraints, context: compiled.context, values: compiled.values, format: compiled.format, toolRequests: compiled.toolRequests };
+    const nlProjection = [
+        'Runtime Preview:',
+        `- Selected Sleeve: ${compiled.sleeveId}`,
+        `- Compile Status: ${compiled.compileStatus}`,
+        `- Runtime Spec Id: ${compiled.runtimeSpecId}`,
+        `- Active Blocks: ${compiled.activeBlocks.length}`,
+        `- Execution: not_performed`,
+        `- Tool Requests: ${compiled.toolRequests.length}`,
+        `- Active Stack: ${activeStackProjection?.activeStackProjection?.projectionStatus ?? 'n/a'}`,
+        `- Envelope Preview: ${responseEnvelopePreview?.responseEnvelopeFragment?.fragmentStatus ?? 'n/a'}`
+    ].join('\n');
+    return {
+        ...base,
+        ok: compiled.ok,
+        previewStatus: compiled.compileStatus === 'COMPILED' ? 'RUNTIME_PREVIEW_READY' : (compiled.compileStatus === 'PARTIAL' ? 'PARTIAL' : 'FAILED'),
+        runtimeSpec: summaryRuntimeSpec,
+        activeStackProjection,
+        moltMapProjection: input.includeMoltMap === false ? null : compiled.moltMap,
+        responseEnvelopePreview,
+        toolRequestPreview: input.includeToolRequests === false ? [] : compiled.toolRequests,
+        warnings: compiled.warnings,
+        errors: compiled.errors,
+        nlProjection
+    };
+}
+export function getBlockLibraryStatus(version, entrypoint = "dist/plugin-entry.js", root = DEFAULT_LIBRARY_ROOT) {
+    const normalizedRoot = path.resolve(root);
+    if (!normalizedRoot || normalizedRoot.trim().length === 0) {
+        return {
+            ok: false,
+            version,
+            entrypoint,
+            surface: "compiler_backed_12_tool_runtime",
+            readOnly: true,
+            execution: "not_performed",
+            directSource: "not_enabled",
+            libraryRoot: root,
+            rootExists: false,
+            laneSummary: {
+                machineLoadableCandidateCount: 0,
+                publicCuratedCandidateCount: 0,
+                referenceOnlyCount: 0,
+                forbiddenCount: 0
+            },
+            lanes: [],
+            warnings: [],
+            errors: [{ code: "HOLD_LIBRARY_ROOT_REQUIRED", message: "Library root is required." }]
+        };
+    }
+    const lowered = normalizedRoot.toLowerCase();
+    if (["archive", "backups", "artifacts", "release-staging", "publish-stage", "resleever", "vendor", "node_modules"].some((segment) => lowered.includes(`\\${segment.toLowerCase()}`) || lowered.endsWith(`\\${segment.toLowerCase()}`))) {
+        return {
+            ok: false,
+            version,
+            entrypoint,
+            surface: "compiler_backed_12_tool_runtime",
+            readOnly: true,
+            execution: "not_performed",
+            directSource: "not_enabled",
+            libraryRoot: normalizedRoot,
+            rootExists: safeExists(normalizedRoot),
+            laneSummary: {
+                machineLoadableCandidateCount: 0,
+                publicCuratedCandidateCount: 0,
+                referenceOnlyCount: 0,
+                forbiddenCount: 0
+            },
+            lanes: [],
+            warnings: [],
+            errors: [{ code: "HOLD_LIBRARY_ROOT_FORBIDDEN", message: `Library root is forbidden: ${normalizedRoot}` }]
+        };
+    }
+    if (!safeExists(normalizedRoot)) {
+        return {
+            ok: false,
+            version,
+            entrypoint,
+            surface: "compiler_backed_12_tool_runtime",
+            readOnly: true,
+            execution: "not_performed",
+            directSource: "not_enabled",
+            libraryRoot: normalizedRoot,
+            rootExists: false,
+            laneSummary: {
+                machineLoadableCandidateCount: 0,
+                publicCuratedCandidateCount: 0,
+                referenceOnlyCount: 0,
+                forbiddenCount: 0
+            },
+            lanes: [],
+            warnings: [],
+            errors: [{ code: "HOLD_LIBRARY_ROOT_MISSING", message: `Library root missing: ${normalizedRoot}` }]
+        };
+    }
+    const lanes = [
+        ...MACHINE_LANES,
+        ...PUBLIC_CURATED_LANES,
+        ...REFERENCE_ONLY_LANES,
+        ...FORBIDDEN_LANES
+    ].map((lane) => classifyLane(normalizedRoot, lane));
+    return {
+        ok: true,
+        version,
+        entrypoint,
+        surface: "compiler_backed_12_tool_runtime",
+        readOnly: true,
+        execution: "not_performed",
+        directSource: "not_enabled",
+        libraryRoot: normalizedRoot,
+        rootExists: true,
+        laneSummary: {
+            machineLoadableCandidateCount: lanes.filter((lane) => lane.classification === "MACHINE_LOADABLE_CANDIDATE").length,
+            publicCuratedCandidateCount: lanes.filter((lane) => lane.classification === "PUBLIC_CURATED_CANDIDATE").length,
+            referenceOnlyCount: lanes.filter((lane) => lane.classification === "REFERENCE_ONLY").length,
+            forbiddenCount: lanes.filter((lane) => lane.classification === "FORBIDDEN").length
+        },
+        lanes,
+        warnings: [],
+        errors: []
+    };
+}

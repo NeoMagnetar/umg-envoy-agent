@@ -5321,17 +5321,88 @@ export function inspectRuntimeActiveSleeveIrMatrixEnvelope(
   const sleeveId = input.sleeveId ?? 'neomagnetar-dynamic-persona-v1';
   const inspectorRunId = `inspect_${simpleStableKey([sleeveId, 'ir_matrix_envelope'])}`;
 
-  const selected = selectRuntimeSleeve(version, entrypoint, root, { sleeveId, selectionMode: 'preferred' });
-  const resolved = resolveRuntimeSleeveGraph(version, entrypoint, root, { sleeveId, resolveDepth: 'molt_visible', strictness: 'dev' });
-  const graph = getBlockLibrarySleeveGraphDrilldown(version, entrypoint, root, { sleeveId });
+  const selected = selectRuntimeSleeve(version, entrypoint, root, { sleeveId, selectionMode: 'explicit' });
+  const resolved = resolveRuntimeSleeveGraph(version, entrypoint, root, { sleeveId, resolveDepth: 'molt_visible' });
+  const graph = getBlockLibrarySleeveGraphDrilldown(version, entrypoint, root, { sleeveId, projectionFormat: 'summary' });
+  const resolvedNeoBlockIds = resolved.ok ? resolved.resolvedNeoBlocks.map((block) => block.neoblockId).filter(Boolean) : [];
+  const activeStackBoundary = resolved.ok
+    ? (resolved.resolvedSleeve?.neoStackRefs?.length ? 'runtime sleeve graph inspection with declared neostack references' : 'runtime sleeve graph inspection without declared neostacks; direct neoblock sleeve')
+    : 'runtime sleeve graph unavailable';
   const activeStackProjection = getBlockLibraryActiveStackProjection(version, entrypoint, root, {
-    neoblockIds: resolved.ok ? resolved.activeBlocks : [],
-    currentState: resolved.ok ? resolved.currentState : null
+    neoblockIds: resolvedNeoBlockIds,
+    currentState: resolved.ok ? resolved.resolutionStatus : 'RESOLUTION_UNAVAILABLE',
+    activeSleeve: sleeveId,
+    boundary: activeStackBoundary
   });
-  const responseEnvelopePreview = getBlockLibraryResponseEnvelopeFragment(version, entrypoint, root, {
-    neoblockIds: resolved.ok ? resolved.activeBlocks : [],
-    currentState: resolved.ok ? resolved.currentState : null
-  });
+  const responseEnvelopePreview = resolvedNeoBlockIds.length > 0
+    ? getBlockLibraryResponseEnvelopeFragment(version, entrypoint, root, {
+        neoblockIds: resolvedNeoBlockIds,
+        currentState: resolved.ok ? resolved.resolutionStatus : 'RESOLUTION_UNAVAILABLE',
+        activeSleeve: sleeveId,
+        activeStackBoundary
+      })
+    : {
+        ok: true,
+        version,
+        entrypoint,
+        mode: 'runtime_level_envelope_preview',
+        outputContract: {
+          contractId: 'umg.runtime.envelope.preview.v1',
+          contractStatus: 'NORMALIZED',
+          sourceContractId: 'umg.runtime.compile.v1',
+          sourceMode: 'runtime_spec_fallback',
+          activeStackSourceContract: 'umg.active_stack.projection.v1',
+          activeStackSourceStatus: 'NORMALIZED',
+          automaticResponseTakeover: false,
+          recursiveLoad: false,
+          fullLibraryScan: false
+        },
+        readOnly: true,
+        execution: 'not_performed',
+        directSource: 'not_enabled',
+        query: {
+          neoblockIds: [],
+          project: 'UMG Envoy Agent / OpenClaw',
+          currentState: resolved.ok ? resolved.resolutionStatus : 'RESOLUTION_UNAVAILABLE',
+          activeTool: 'umg_envoy_runtime_active_sleeve_ir_matrix_envelope_inspect',
+          formalResponseContent: 'n/a',
+          projectionFormat: 'both',
+          includeMetadata: true,
+          includeAudit: true,
+          activeSleeve: sleeveId,
+          activeStackBoundary,
+          includeActiveStackProjection: true
+        },
+        sourceComposition: null,
+        sourceActiveStackProjection: activeStackProjection,
+        responseEnvelopeFragment: {
+          fragmentStatus: 'RESPONSE_ENVELOPE_FRAGMENT_UNAVAILABLE',
+          fragmentKind: 'explicit_molt_map_envelope',
+          sections: {
+            activeStack: {},
+            envoyIntuition: {},
+            currentContextMoltMap: {},
+            formalResponseContent: {},
+            metadata: {},
+            audit: {}
+          },
+          sectionOrder: ['Active Stack', 'Envoy Intuition', 'Current Context — MOLT Map', 'Formal Response Content', 'Metadata'],
+          automaticResponseTakeover: false,
+          limitations: ['runtime_level_fallback', 'no_explicit_neoblock_ids', 'no_execution']
+        },
+        envelopeSource: 'runtime_spec',
+        envelopeStatus: 'HELD',
+        heldReason: 'No resolved NeoBlock ids available for explicit envelope fragment composition.',
+        runtimeFallbackPreview: null,
+        nlProjection: null,
+        audit: {
+          execution: 'not_performed',
+          triggerEvaluation: 'not_performed',
+          libraryMutation: 'not_performed'
+        },
+        warnings: [],
+        errors: []
+      };
   const runtimeSpec = compileRuntimeSleeve(version, entrypoint, root, {
     sleeveId,
     compileMode: 'dry_run',
@@ -5377,27 +5448,171 @@ export function inspectRuntimeActiveSleeveIrMatrixEnvelope(
       })
     : null;
 
-  const activeNeoStacks = Array.isArray((graph as any)?.stacks) ? (graph as any).stacks : [];
-  const activeNeoBlocks = Array.isArray((graph as any)?.blocks) ? (graph as any).blocks : [];
+  const declaredNeoStackRefs = graph.ok ? graph.declaredNeoStackRefs ?? [] : [];
+  const declaredNeoBlockRefs = graph.ok ? graph.declaredNeoBlockRefs ?? [] : [];
+  const sleeveNativeMoltAvailable = resolved.ok ? resolved.visibleMoltFragments.length > 0 : false;
+
+  const activeNeoStacks = resolved.ok
+    ? (resolved.resolvedNeoStacks.length > 0
+        ? resolved.resolvedNeoStacks.map((stack: any, index: number) => ({
+            neoStackId: stack.ref ?? `declared-stack-${index + 1}`,
+            displayName: stack.ref ?? null,
+            declaredRef: stack.ref ?? null,
+            sourcePath: resolved.resolvedSleeve?.sourcePath ?? null,
+            manifestEntry: resolved.resolvedSleeve?.catalogPath ?? null,
+            activeStatus: stack.status === 'declared_only' ? 'declared_only' : 'resolved',
+            reasonActive: stack.status === 'declared_only' ? 'declared in sleeve graph; bounded resolver does not load neostack payloads in Alpha7' : 'resolved from sleeve graph',
+            reasonUnavailable: null,
+            declaredNeoBlockRefs,
+            resolvedNeoBlockCount: resolved.resolvedNeoBlocks.length,
+            blockedNeoBlockCount: resolved.blockedRefs.length,
+            warnings: []
+          }))
+        : [{
+            neoStackId: null,
+            displayName: null,
+            declaredRef: null,
+            sourcePath: resolved.resolvedSleeve?.sourcePath ?? null,
+            manifestEntry: resolved.resolvedSleeve?.catalogPath ?? null,
+            activeStatus: 'unavailable',
+            reasonActive: null,
+            reasonUnavailable: declaredNeoStackRefs.length === 0 ? 'sleeve_declares_no_neostacks' : 'declared_but_not_loaded',
+            declaredNeoBlockRefs,
+            resolvedNeoBlockCount: resolved.resolvedNeoBlocks.length,
+            blockedNeoBlockCount: resolved.blockedRefs.length,
+            warnings: resolved.resolvedSleeve?.limitations ?? []
+          }])
+    : [{
+        neoStackId: null,
+        displayName: null,
+        declaredRef: null,
+        sourcePath: null,
+        manifestEntry: null,
+        activeStatus: 'unavailable',
+        reasonActive: null,
+        reasonUnavailable: resolved.errors?.[0]?.code ?? 'sleeve_resolution_unavailable',
+        declaredNeoBlockRefs: [],
+        resolvedNeoBlockCount: 0,
+        blockedNeoBlockCount: 0,
+        warnings: resolved.warnings ?? []
+      }];
+
+  const activeNeoBlocks = resolved.ok
+    ? (resolved.resolvedNeoBlocks.length > 0
+        ? resolved.resolvedNeoBlocks.map((block: any) => {
+            const summary = block.summary ?? {};
+            const contentSummary = typeof summary.contentPreview === 'string' && summary.contentPreview.length > 0
+              ? summary.contentPreview
+              : summary.contentSummary?.content ?? null;
+            const extractedMoltTypes = summary.moltType ? [summary.moltType] : [];
+            return {
+              neoBlockId: block.neoblockId,
+              parentNeoStackId: null,
+              declaredRef: block.neoblockId,
+              resolvedPath: resolved.resolvedSleeve?.sourcePath ?? null,
+              manifestSource: resolved.resolvedSleeve?.catalogPath ?? null,
+              loadStatus: block.status,
+              visibleMoltFragmentCount: resolved.visibleMoltFragments.filter((fragment) => fragment.neoblockId === block.neoblockId).length,
+              extractedMoltTypes,
+              contentSummary,
+              warnings: summary.limitations ?? []
+            };
+          })
+        : [{
+            neoBlockId: null,
+            parentNeoStackId: null,
+            declaredRef: null,
+            resolvedPath: null,
+            manifestSource: null,
+            loadStatus: 'unavailable',
+            visibleMoltFragmentCount: 0,
+            extractedMoltTypes: [],
+            contentSummary: null,
+            warnings: [declaredNeoBlockRefs.length === 0 ? 'sleeve_declares_no_neoblocks' : 'declared_but_not_loaded']
+          }])
+    : [{
+        neoBlockId: null,
+        parentNeoStackId: null,
+        declaredRef: null,
+        resolvedPath: null,
+        manifestSource: null,
+        loadStatus: 'unavailable',
+        visibleMoltFragmentCount: 0,
+        extractedMoltTypes: [],
+        contentSummary: null,
+        warnings: [resolved.errors?.[0]?.code ?? 'sleeve_resolution_unavailable']
+      }];
+
   const activeMoltBlocks = {
-    Trigger: Array.isArray((graph as any)?.molt?.Trigger) ? (graph as any).molt.Trigger : [],
-    Directive: Array.isArray((graph as any)?.molt?.Directive) ? (graph as any).molt.Directive : [],
-    Instruction: Array.isArray((graph as any)?.molt?.Instruction) ? (graph as any).molt.Instruction : [],
-    Subject: Array.isArray((graph as any)?.molt?.Subject) ? (graph as any).molt.Subject : [],
-    Primary: Array.isArray((graph as any)?.molt?.Primary) ? (graph as any).molt.Primary : [],
-    Philosophy: Array.isArray((graph as any)?.molt?.Philosophy) ? (graph as any).molt.Philosophy : [],
-    Blueprint: Array.isArray((graph as any)?.molt?.Blueprint) ? (graph as any).molt.Blueprint : [],
-    Off: Array.isArray((graph as any)?.molt?.Off) ? (graph as any).molt.Off : [],
-    excluded: Array.isArray((graph as any)?.molt?.excluded) ? (graph as any).molt.excluded : []
+    Trigger: [],
+    Directive: [],
+    Instruction: [],
+    Subject: [],
+    Primary: [],
+    Philosophy: [],
+    Blueprint: [],
+    Off: [],
+    excluded: []
+  } as Record<string, any[]>;
+  if (resolved.ok) {
+    for (const fragment of resolved.visibleMoltFragments) {
+      const block = resolved.resolvedNeoBlocks.find((item) => item.neoblockId === fragment.neoblockId);
+      const item = {
+        sourceNeoBlockId: fragment.neoblockId,
+        sourceNeoStackId: null,
+        moltType: fragment.sourceField,
+        contentSummary: fragment.text,
+        activeStatus: 'active',
+        exclusionReason: null,
+        mergeKey: fragment.sourceField,
+        stackKey: null,
+        trace: [`sourceBlockId=${fragment.sourceBlockId ?? 'none'}`, `sourceField=${fragment.sourceField}`],
+        sourceMode: block?.summary?.status === 'alpha6_sample_target' ? 'runtimeSpec_sample_blocks' : 'sleeve_native'
+      };
+      if (Array.isArray(activeMoltBlocks[fragment.sourceField])) {
+        activeMoltBlocks[fragment.sourceField].push(item);
+      } else {
+        activeMoltBlocks.excluded.push({ ...item, activeStatus: 'excluded', exclusionReason: 'unsupported_molt_type' });
+      }
+    }
+  }
+
+  const activeNeoStacksSection = {
+    count: resolved.ok ? resolved.resolvedNeoStacks.length : 0,
+    status: resolved.ok ? (resolved.resolvedNeoStacks.length > 0 ? 'resolved' : (declaredNeoStackRefs.length === 0 ? 'empty_with_reason' : 'declared_but_not_loaded')) : 'missing',
+    reason: resolved.ok ? (resolved.resolvedNeoStacks.length > 0 ? null : (declaredNeoStackRefs.length === 0 ? 'sleeve_declares_no_neostacks' : 'declared_but_not_loaded')) : (resolved.errors?.[0]?.code ?? 'sleeve_resolution_unavailable'),
+    items: activeNeoStacks
   };
+  const activeNeoBlocksSection = {
+    count: resolved.ok ? resolved.resolvedNeoBlocks.length : 0,
+    status: resolved.ok ? (resolved.resolvedNeoBlocks.length > 0 ? 'resolved' : (declaredNeoBlockRefs.length === 0 ? 'empty_with_reason' : 'declared_but_not_loaded')) : 'missing',
+    reason: resolved.ok ? (resolved.resolvedNeoBlocks.length > 0 ? null : (declaredNeoBlockRefs.length === 0 ? 'sleeve_declares_no_neoblocks' : 'declared_but_not_loaded')) : (resolved.errors?.[0]?.code ?? 'sleeve_resolution_unavailable'),
+    items: activeNeoBlocks
+  };
+  const activeMoltBlocksSection = {
+    source: sleeveNativeMoltAvailable ? 'sleeve_native' : (runtimeSpec.ok ? 'runtimeSpec_sample_blocks' : 'unavailable'),
+    sleeveNativeMoltFragmentsAvailable: sleeveNativeMoltAvailable,
+    reason: sleeveNativeMoltAvailable ? null : (resolved.ok ? 'no_real_molt_fragments_resolved; using sample/runtime fallback when available' : (resolved.errors?.[0]?.code ?? 'sleeve_resolution_unavailable')),
+    groups: activeMoltBlocks
+  };
+
+  const runtimeSpecDetail = runtimeSpec.ok ? {
+    ...runtimeSpec,
+    sourceMode: sleeveNativeMoltAvailable ? 'sleeve_native_graph' : 'sample_fallback',
+    usesSampleBlocks: runtimeSpec.activeBlocks.some((id: string) => id.endsWith('.sample')),
+    usesSleeveNativeBlocks: runtimeSpec.activeBlocks.some((id: string) => !id.endsWith('.sample')),
+    sleeveNativeBlockCount: runtimeSpec.activeBlocks.filter((id: string) => !id.endsWith('.sample')).length,
+    sampleBlockCount: runtimeSpec.activeBlocks.filter((id: string) => id.endsWith('.sample')).length
+  } : runtimeSpec;
 
   const irMatrixProjection = {
     matrixId: `irmatrix_${simpleStableKey([sleeveId, runtimeSpec.runtimeSpecId ?? 'none'])}`,
     nodes: [
       { id: `sleeve:${sleeveId}`, type: 'sleeve', label: sleeveId },
-      ...(activeNeoStacks.map((stack: any, index: number) => ({ id: `stack:${stack.neoStackId ?? index}`, type: 'neoStack', label: stack.neoStackId ?? `stack-${index}` }))),
-      ...(activeNeoBlocks.map((block: any, index: number) => ({ id: `block:${block.neoBlockId ?? index}`, type: 'neoBlock', label: block.neoBlockId ?? `block-${index}` }))),
-      ...(runtimeSpec.ok ? [{ id: `runtimeSpec:${runtimeSpec.runtimeSpecId}`, type: 'runtimeSpec', label: runtimeSpec.runtimeSpecId }] : []),
+      ...(activeNeoStacksSection.items.map((stack: any, index: number) => ({ id: `stack:${stack.neoStackId ?? `diagnostic-${index}`}`, type: stack.neoStackId ? 'neoStack' : 'diagnostic', label: stack.neoStackId ?? stack.reasonUnavailable ?? `stack-${index}` }))),
+      ...(activeNeoBlocksSection.items.map((block: any, index: number) => ({ id: `block:${block.neoBlockId ?? `diagnostic-${index}`}`, type: block.neoBlockId ? 'neoBlock' : 'diagnostic', label: block.neoBlockId ?? block.warnings?.[0] ?? `block-${index}` }))),
+      ...(['Trigger','Directive','Instruction','Subject','Primary','Philosophy','Blueprint','Off'].flatMap((field) => (activeMoltBlocksSection.groups[field] ?? []).map((molt: any, index: number) => ({ id: `molt:${field}:${molt.sourceNeoBlockId ?? index}`, type: 'moltBlock', label: `${field}:${molt.sourceNeoBlockId ?? index}` })))),
+      ...(runtimeSpec.ok ? [{ id: `runtimeSpec:${runtimeSpec.runtimeSpecId}`, type: 'runtimeSpec', label: runtimeSpec.runtimeSpecId }] : [{ id: `runtimeSpec:missing`, type: 'diagnostic', label: 'runtimeSpec_missing' }]),
       ...(Array.isArray((classifier as any).classifications) ? (classifier as any).classifications.map((c: any) => ({ id: `toolRequest:${c.requestId}`, type: 'toolRequest', label: c.requestedToolName ?? c.requestId })) : []),
       ...(gatePlan.ok ? [{ id: `gatePlan:${gatePlan.gatePlanId}`, type: 'gatePlan', label: gatePlan.gatePlanId }] : []),
       ...(checkpoint ? [{ id: `checkpoint:${checkpoint.checkpointId}`, type: 'checkpoint', label: checkpoint.checkpointId }] : []),
@@ -5405,8 +5620,9 @@ export function inspectRuntimeActiveSleeveIrMatrixEnvelope(
       { id: `envelope:${sleeveId}`, type: 'envelope', label: 'response-envelope-preview' }
     ],
     edges: [
-      ...(activeNeoStacks.map((stack: any, index: number) => ({ from: `sleeve:${sleeveId}`, to: `stack:${stack.neoStackId ?? index}`, type: 'contains' }))),
-      ...(activeNeoBlocks.map((block: any, index: number) => ({ from: `sleeve:${sleeveId}`, to: `block:${block.neoBlockId ?? index}`, type: 'resolves_to' }))),
+      ...(activeNeoStacksSection.items.map((stack: any, index: number) => ({ from: `sleeve:${sleeveId}`, to: `stack:${stack.neoStackId ?? `diagnostic-${index}`}`, type: stack.neoStackId ? 'contains' : 'declared_but_unresolved' }))),
+      ...(activeNeoBlocksSection.items.map((block: any, index: number) => ({ from: block.parentNeoStackId ? `stack:${block.parentNeoStackId}` : `sleeve:${sleeveId}`, to: `block:${block.neoBlockId ?? `diagnostic-${index}`}`, type: block.neoBlockId ? 'resolves_to' : 'not_loaded' }))),
+      ...(['Trigger','Directive','Instruction','Subject','Primary','Philosophy','Blueprint','Off'].flatMap((field) => (activeMoltBlocksSection.groups[field] ?? []).map((molt: any, index: number) => ({ from: `block:${molt.sourceNeoBlockId ?? `diagnostic-${index}`}`, to: `molt:${field}:${molt.sourceNeoBlockId ?? index}`, type: 'extracts_molt' })))),
       ...(runtimeSpec.ok ? [{ from: `sleeve:${sleeveId}`, to: `runtimeSpec:${runtimeSpec.runtimeSpecId}`, type: 'compiles_to' }] : []),
       ...(Array.isArray((classifier as any).classifications) ? (classifier as any).classifications.map((c: any) => ({ from: `runtimeSpec:${(classifier as any).sourceRuntimeSpecId ?? runtimeSpec.runtimeSpecId}`, to: `toolRequest:${c.requestId}`, type: 'classifies' })) : []),
       ...(gatePlan.ok && Array.isArray((gatePlan as any).plannedActions) ? (gatePlan as any).plannedActions.map((p: any) => ({ from: `toolRequest:${p.requestId}`, to: `gatePlan:${gatePlan.gatePlanId}`, type: 'gates' })) : []),
@@ -5423,15 +5639,17 @@ export function inspectRuntimeActiveSleeveIrMatrixEnvelope(
     ],
     blockedRoute: approvedExecution && !approvedExecution.ok ? [`execution_blocked:${approvedExecution.executionResultId}`] : [],
     offRoute: [],
-    hierarchyEdges: ['contains', 'resolves_to'],
+    hierarchyEdges: ['contains', 'resolves_to', 'declared_but_unresolved', 'not_loaded'],
     siblingEdges: [],
     toolRequestEdges: ['classifies', 'gates'],
     checkpointEdges: ['checkpoints', 'resumes'],
-    executionEdges: ['executes', 'previews'],
+    executionEdges: ['executes', 'previews', 'extracts_molt'],
     symbolsLegend: {
       sleeve: 'runtime sleeve root',
       neoStack: 'stack layer',
       neoBlock: 'resolved block',
+      moltBlock: 'visible MOLT fragment',
+      diagnostic: 'missing/unresolved diagnostic node',
       runtimeSpec: 'compiled RuntimeSpecV0',
       toolRequest: 'declared/synthetic request',
       gatePlan: 'gate planning node',
@@ -5449,26 +5667,38 @@ export function inspectRuntimeActiveSleeveIrMatrixEnvelope(
     sourceSleeveId: sleeveId,
     activeSleeve: {
       sleeveId,
-      sleeveName: (selected as any)?.selectedSleeve?.sleeveId ?? sleeveId,
+      sleeveName: resolved.ok ? (resolved.resolvedSleeve?.title ?? sleeveId) : sleeveId,
       sleeveSource: 'runtime_selection',
-      sleeveStatus: selected.ok ? 'selected' : 'held',
-      sourceCatalog: (selected as any)?.selectionMode ?? 'preferred',
-      resolvedFrom: 'selectRuntimeSleeve',
+      sleeveStatus: resolved.ok ? (resolved.resolutionStatus === 'RESOLVED' ? 'resolved' : 'held') : 'held',
+      sourceCatalog: 'preferred',
+      resolvedFrom: 'selectRuntimeSleeve+resolveRuntimeSleeveGraph',
       selectedExplicitly: !!input.sleeveId,
       runtimeEligible: runtimeSpec.ok,
-      warningList: [...(selected.warnings ?? []), ...(resolved.warnings ?? [])]
+      warningList: [...(selected.warnings ?? []), ...(resolved.warnings ?? [])],
+      graphStatus: resolved.ok ? resolved.resolvedSleeve?.graphStatus ?? null : null,
+      sourcePath: resolved.ok ? resolved.resolvedSleeve?.sourcePath ?? null : null,
+      catalogPath: resolved.ok ? resolved.resolvedSleeve?.catalogPath ?? null : null
     },
-    activeNeoStacks: input.includeNeoStacks === false ? [] : activeNeoStacks,
-    activeNeoBlocks: input.includeNeoBlocks === false ? [] : activeNeoBlocks,
-    activeMoltBlocks: input.includeMoltBlocks === false ? {} : activeMoltBlocks,
-    runtimeSpec: input.includeRuntimeSpec === false ? null : runtimeSpec,
+    activeNeoStacks: input.includeNeoStacks === false ? { count: 0, status: 'missing', reason: 'disabled_by_query', items: [] } : activeNeoStacksSection,
+    activeNeoBlocks: input.includeNeoBlocks === false ? { count: 0, status: 'missing', reason: 'disabled_by_query', items: [] } : activeNeoBlocksSection,
+    activeMoltBlocks: input.includeMoltBlocks === false ? { source: 'disabled_by_query', sleeveNativeMoltFragmentsAvailable: false, reason: 'disabled_by_query', groups: {} } : activeMoltBlocksSection,
+    runtimeSpec: input.includeRuntimeSpec === false ? null : runtimeSpecDetail,
     activeStackProjection,
     moltMapProjection: runtimeSpec.ok ? runtimeSpec.moltMap : {},
     irMatrixProjection: input.includeIrMatrix === false ? null : irMatrixProjection,
     responseEnvelopePreview: input.includeEnvelope === false ? null : {
+      envelopeSource: (responseEnvelopePreview as any).envelopeSource ?? (resolvedNeoBlockIds.length > 0 ? 'neoblock_fragment' : (runtimeSpec.ok ? 'runtime_spec' : 'partial')),
+      envelopeStatus: (responseEnvelopePreview as any).envelopeStatus ?? (((responseEnvelopePreview as any).ok === false || (responseEnvelopePreview as any).responseEnvelopeFragment?.fragmentStatus === 'RESPONSE_ENVELOPE_FRAGMENT_DENIED') ? 'PARTIAL' : 'READY'),
+      heldReason: (responseEnvelopePreview as any).heldReason ?? (((responseEnvelopePreview as any).errors?.[0]?.message) ?? null),
       activeStack: activeStackProjection,
       currentContextMoltMap: runtimeSpec.ok ? runtimeSpec.moltMap : {},
       formalResponseContentPreview: responseEnvelopePreview,
+      runtimeFallbackPreview: (responseEnvelopePreview as any).runtimeFallbackPreview ?? {
+        runtimeSpecId: runtimeSpec.runtimeSpecId ?? null,
+        promptParts: runtimeSpec.ok ? runtimeSpec.promptParts : [],
+        strategy: runtimeSpec.ok ? runtimeSpec.strategy : null,
+        constraints: runtimeSpec.ok ? runtimeSpec.constraints : null
+      },
       metadataTagsHelp: {
         runtimeSpecId: runtimeSpec.runtimeSpecId ?? null,
         executionState: 'not_performed'
@@ -5479,6 +5709,29 @@ export function inspectRuntimeActiveSleeveIrMatrixEnvelope(
     executionGatePlan: input.includeExecutionGateState === false ? null : gatePlan,
     approvalCheckpointState: input.includeExecutionGateState === false ? null : checkpointCreate,
     approvedExecutionState: input.includeExecutionGateState === false ? null : approvedExecution,
+    executionGateState: input.includeExecutionGateState === false ? null : {
+      toolRequestsCount: Array.isArray((classifier as any).classifications) ? (classifier as any).classifications.length : 0,
+      classifications: (classifier as any).classifications ?? [],
+      blockedCount: (classifier as any).blockedCount ?? 0,
+      approvalRequiredCount: (classifier as any).approvalRequiredCount ?? 0,
+      readOnlyCount: (classifier as any).readOnlyCount ?? 0,
+      checkpointStatus: checkpointCreate.checkpointCreateStatus ?? null,
+      checkpointCount: checkpointCreate.checkpointCount ?? 0,
+      executionResultStatus: approvedExecution?.executionStatus ?? 'not_performed',
+      blockedReasons: Array.isArray((classifier as any).classifications) ? (classifier as any).classifications.filter((c: any) => c.classification === 'blocked_policy').map((c: any) => c.decisionReason) : [],
+      allowedReadOnlyActions: Array.isArray((classifier as any).classifications) ? (classifier as any).classifications.filter((c: any) => c.classification === 'available_read_only').map((c: any) => c.requestedToolName ?? c.requestId) : []
+    },
+    inspectorCompleteness: {
+      activeSleeve: resolved.ok ? 'full' : 'partial',
+      neoStacks: resolved.ok ? (resolved.resolvedNeoStacks.length > 0 ? 'full' : 'empty_with_reason') : 'missing',
+      neoBlocks: resolved.ok ? (resolved.resolvedNeoBlocks.length > 0 ? 'full' : 'empty_with_reason') : 'missing',
+      moltBlocks: sleeveNativeMoltAvailable ? 'full' : (runtimeSpec.ok ? 'sample_fallback' : 'missing'),
+      runtimeSpec: runtimeSpec.ok ? 'full' : 'partial',
+      irMatrix: input.includeIrMatrix === false ? 'missing' : 'full',
+      envelope: input.includeEnvelope === false ? 'missing' : (((responseEnvelopePreview as any).envelopeStatus ?? 'PARTIAL') === 'READY' ? 'full' : (((responseEnvelopePreview as any).envelopeStatus ?? 'PARTIAL') === 'HELD' ? 'held' : 'partial')),
+      executionGateState: input.includeExecutionGateState === false ? 'missing' : 'full'
+    },
+    overallCompleteness: sleeveNativeMoltAvailable ? 'rich_sleeve_native' : (resolved.ok ? 'partial_sleeve_native' : (runtimeSpec.ok ? 'runtime_scaffold_only' : 'failed')),
     executionStatus: 'not_performed' as const,
     warnings: [...(selected.warnings ?? []), ...(resolved.warnings ?? []), ...(runtimeSpec.warnings ?? [])],
     errors: runtimeSpec.errors ?? [],

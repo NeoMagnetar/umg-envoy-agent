@@ -5,6 +5,7 @@ import { renderUMGPath } from "./umg-path-renderer.js";
 import { validateUMGPath } from "./umg-path-validator.js";
 import { buildPublicPath } from "./public-path-builder.js";
 import { inspectRealLibraryPublicCuratedSleeve, resolveRealLibraryPublicCurated } from "./real-library-resolver.js";
+import { getCurrentSleeveStatus, getSleeveTree, inspectNeoStack, inspectNeoBlock, inspectMoltBlock, getRuntimeIrPath, getRuntimeIrMatrixFull, renderResponseEnvelopeDraft } from "./umg-graph-resolver.js";
 function effectiveConfig(config) {
     return {
         allowRuntimeWrites: false,
@@ -193,7 +194,7 @@ function runPublicSmoke(metaUrl = import.meta.url) {
     return {
         ok: errors.length === 0,
         plugin: "umg-envoy-agent",
-        version: "0.3.0-alpha.5",
+        version: "0.3.0-alpha.8",
         compilerAdapter: "not-shipped-publicly",
         contentMode: "bundled-public",
         sampleSleeves: sleeves.length,
@@ -210,7 +211,7 @@ function statusPayload(config) {
     return {
         ok: true,
         plugin: "umg-envoy-agent",
-        version: "0.3.0-alpha.5",
+        version: "0.3.0-alpha.8",
         publicEntrypoint: "dist/plugin-entry-public.js",
         contentMode: cfg.contentMode,
         compilerMode: cfg.compilerMode,
@@ -263,11 +264,49 @@ function realSleeveList() {
         trace: result.trace
     };
 }
-function realSleeveInspect(sleeveId, libraryRoot) {
+function realSleeveInspect(sleeveId, libraryRoot, shallowLoadTargetRef) {
     return inspectRealLibraryPublicCuratedSleeve({
         sleeveId,
         libraryRoot,
-        mode: "public_curated"
+        mode: "public_curated",
+        shallowLoadTargetRef
+    });
+}
+function currentSleeveStatus(sleeveId, libraryRoot) {
+    return getCurrentSleeveStatus({ sleeveId, libraryRoot });
+}
+function sleeveTree(sleeveId, depth, libraryRoot) {
+    return getSleeveTree({ sleeveId, depth, libraryRoot });
+}
+function neostackInspect(sleeveId, neostackId, includeNeoBlocks, libraryRoot) {
+    return inspectNeoStack({ sleeveId, neostackId, includeNeoBlocks, libraryRoot });
+}
+function neoblockInspect(neoblockId, sleeveId, includeMoltBlocks, libraryRoot) {
+    return inspectNeoBlock({ neoblockId, sleeveId, includeMoltBlocks, libraryRoot });
+}
+function moltblockInspect(moltBlockId, sleeveId, neoblockId, libraryRoot) {
+    return inspectMoltBlock({ moltBlockId, sleeveId, neoblockId, libraryRoot });
+}
+function runtimeIrPath(sleeveId, includeDormant, includeExcludedLanes, libraryRoot) {
+    return getRuntimeIrPath({ sleeveId, includeDormant, includeExcludedLanes, libraryRoot });
+}
+function runtimeIrMatrixFull(sleeveId, includeDormant, includeExcludedLanes, includeEdges, includeNlProjection, libraryRoot) {
+    return getRuntimeIrMatrixFull({ sleeveId, includeDormant, includeExcludedLanes, includeEdges, includeNlProjection, libraryRoot });
+}
+function responseEnvelopeDraft(sleeveId, trigger, directive, instruction, subject, primary, philosophy, blueprint, formalResponseContent, includeIrMatrix, includeMetadata, libraryRoot) {
+    return renderResponseEnvelopeDraft({
+        sleeveId,
+        trigger,
+        directive,
+        instruction,
+        subject,
+        primary,
+        philosophy,
+        blueprint,
+        formalResponseContent,
+        includeIrMatrix,
+        includeMetadata,
+        libraryRoot
     });
 }
 function searchBlocks(query, metaUrl = import.meta.url) {
@@ -440,7 +479,7 @@ function registerCliBridge(api, config) {
         return;
     }
     api.registerCli(({ program }) => {
-        const root = program.command("umg-envoy").description("UMG Envoy Agent minimized public alpha.5 utilities");
+        const root = program.command("umg-envoy").description("UMG Envoy Agent minimized public alpha.6 utilities");
         root.command("status").action(async () => console.log(JSON.stringify(statusPayload(config), null, 2)));
         root.command("library-status").action(async () => console.log(JSON.stringify({ ok: true, ...summarizeBlockLibraries(publicContentRoot(import.meta.url)) }, null, 2)));
         root.command("library-search").requiredOption("--query <text>").action(async (opts) => console.log(JSON.stringify(searchBlocks(opts.query), null, 2)));
@@ -458,7 +497,15 @@ function registerCliBridge(api, config) {
         root.command("sleeve-demo").option("--sleeve <id>").option("--message <text>").action(async (opts) => console.log(JSON.stringify(sleeveDemo(opts.sleeve, opts.message), null, 2)));
         root.command("real-library-status").action(async () => console.log(JSON.stringify(realLibraryStatus(), null, 2)));
         root.command("real-sleeve-list").action(async () => console.log(JSON.stringify(realSleeveList(), null, 2)));
-        root.command("real-sleeve-inspect").requiredOption("--sleeve <id>").option("--library-root <path>").action(async (opts) => console.log(JSON.stringify(realSleeveInspect(opts.sleeve, opts.libraryRoot), null, 2)));
+        root.command("real-sleeve-inspect").requiredOption("--sleeve <id>").option("--library-root <path>").option("--shallow-load-target-ref <ref>").action(async (opts) => console.log(JSON.stringify(realSleeveInspect(opts.sleeve, opts.libraryRoot, opts.shallowLoadTargetRef), null, 2)));
+        root.command("current-sleeve-status").option("--sleeve <id>").option("--library-root <path>").action(async (opts) => console.log(JSON.stringify(currentSleeveStatus(opts.sleeve, opts.libraryRoot), null, 2)));
+        root.command("sleeve-tree").option("--sleeve <id>").option("--depth <n>").option("--library-root <path>").action(async (opts) => console.log(JSON.stringify(sleeveTree(opts.sleeve, opts.depth ? Number(opts.depth) : undefined, opts.libraryRoot), null, 2)));
+        root.command("neostack-inspect").option("--sleeve <id>").option("--neostack <id>").option("--include-neoblocks <bool>").option("--library-root <path>").action(async (opts) => console.log(JSON.stringify(neostackInspect(opts.sleeve, opts.neostack, opts.includeNeoblocks ? opts.includeNeoblocks !== 'false' : undefined, opts.libraryRoot), null, 2)));
+        root.command("neoblock-inspect").option("--neoblock <id>").option("--sleeve <id>").option("--include-moltblocks <bool>").option("--library-root <path>").action(async (opts) => console.log(JSON.stringify(neoblockInspect(opts.neoblock, opts.sleeve, opts.includeMoltblocks ? opts.includeMoltblocks !== 'false' : undefined, opts.libraryRoot), null, 2)));
+        root.command("moltblock-inspect").option("--moltblock <id>").option("--sleeve <id>").option("--neoblock <id>").option("--library-root <path>").action(async (opts) => console.log(JSON.stringify(moltblockInspect(opts.moltblock, opts.sleeve, opts.neoblock, opts.libraryRoot), null, 2)));
+        root.command("runtime-ir-path").option("--sleeve <id>").option("--include-dormant <bool>").option("--include-excluded-lanes <bool>").option("--library-root <path>").action(async (opts) => console.log(JSON.stringify(runtimeIrPath(opts.sleeve, opts.includeDormant ? opts.includeDormant !== 'false' : undefined, opts.includeExcludedLanes ? opts.includeExcludedLanes !== 'false' : undefined, opts.libraryRoot), null, 2)));
+        root.command("runtime-ir-matrix-full").option("--sleeve <id>").option("--include-dormant <bool>").option("--include-excluded-lanes <bool>").option("--include-edges <bool>").option("--include-nl-projection <bool>").option("--library-root <path>").action(async (opts) => console.log(JSON.stringify(runtimeIrMatrixFull(opts.sleeve, opts.includeDormant ? opts.includeDormant !== 'false' : undefined, opts.includeExcludedLanes ? opts.includeExcludedLanes !== 'false' : undefined, opts.includeEdges ? opts.includeEdges !== 'false' : undefined, opts.includeNlProjection ? opts.includeNlProjection !== 'false' : undefined, opts.libraryRoot), null, 2)));
+        root.command("response-envelope-draft").option("--sleeve <id>").option("--trigger <text>").option("--directive <text>").option("--instruction <text>").option("--subject <text>").option("--primary <text>").option("--philosophy <text>").option("--blueprint <text>").option("--formal-response-content <text>").option("--include-ir-matrix <bool>").option("--include-metadata <bool>").option("--library-root <path>").action(async (opts) => console.log(JSON.stringify(responseEnvelopeDraft(opts.sleeve, opts.trigger, opts.directive, opts.instruction, opts.subject, opts.primary, opts.philosophy, opts.blueprint, opts.formalResponseContent, opts.includeIrMatrix ? opts.includeIrMatrix !== 'false' : undefined, opts.includeMetadata ? opts.includeMetadata !== 'false' : undefined, opts.libraryRoot), null, 2)));
         root.command("parse-path").requiredOption("--file <path>").action(async (opts) => console.log(JSON.stringify(parseUMGPath(fs.readFileSync(opts.file, "utf8")), null, 2)));
         root.command("validate-path").requiredOption("--file <path>").action(async (opts) => { const issues = validateUMGPath(parseUMGPath(fs.readFileSync(opts.file, "utf8"))); console.log(JSON.stringify({ ok: issues.every((issue) => issue.severity !== "error"), issues }, null, 2)); });
         root.command("render-path").requiredOption("--file <path>").action(async (opts) => { const raw = fs.readFileSync(opts.file, "utf8"); const parsed = opts.file.toLowerCase().endsWith(".json") ? JSON.parse(raw) : parseUMGPath(raw); console.log(renderUMGPath(parsed)); });
@@ -468,10 +515,10 @@ function registerCliBridge(api, config) {
 const entry = {
     id: "umg-envoy-agent",
     name: "UMG Envoy Agent",
-    description: "Minimized public alpha.5 UMG Envoy Agent for OpenClaw",
+    description: "Minimized public alpha.6 UMG Envoy Agent for OpenClaw",
     register(api, config) {
         registerCliBridge(api, config);
-        api.registerTool({ name: "umg_envoy_status", description: "Report public alpha.5 status.", parameters: Type.Object({}, { additionalProperties: false }), async execute() { return { content: [{ type: "text", text: JSON.stringify(statusPayload(config), null, 2) }] }; } }, { optional: true });
+        api.registerTool({ name: "umg_envoy_status", description: "Report public alpha.6 status.", parameters: Type.Object({}, { additionalProperties: false }), async execute() { return { content: [{ type: "text", text: JSON.stringify(statusPayload(config), null, 2) }] }; } }, { optional: true });
         api.registerTool({ name: "umg_envoy_library_status", description: "Summarize bundled public block library status.", parameters: Type.Object({}, { additionalProperties: false }), async execute() { return { content: [{ type: "text", text: JSON.stringify({ ok: true, ...summarizeBlockLibraries(publicContentRoot(import.meta.url)) }, null, 2) }] }; } }, { optional: true });
         api.registerTool({ name: "umg_envoy_library_search", description: "Search bundled public block content.", parameters: Type.Object({ query: Type.String() }, { additionalProperties: false }), async execute(input) { return { content: [{ type: "text", text: JSON.stringify(searchBlocks(input.query), null, 2) }] }; } }, { optional: true });
         api.registerTool({ name: "umg_envoy_runtime_spec_dry_run", description: "Build a readonly RuntimeSpec-style plan without execution.", parameters: Type.Object({ message: Type.String(), sleeveId: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input) { return { content: [{ type: "text", text: JSON.stringify(localReadonlyPlan(input.message, input.sleeveId), null, 2) }] }; } }, { optional: true });
@@ -488,7 +535,15 @@ const entry = {
         api.registerTool({ name: "umg_envoy_sleeve_demo", description: "Show a sleeve-scoped public readonly demo payload.", parameters: Type.Object({ sleeveId: Type.Optional(Type.String()), message: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input) { return { content: [{ type: "text", text: JSON.stringify(sleeveDemo(input.sleeveId, input.message), null, 2) }] }; } }, { optional: true });
         api.registerTool({ name: "umg_envoy_real_library_status", description: "Load the real public-curated sleeve catalog from the selected UMG Block Library root in readonly mode.", parameters: Type.Object({}, { additionalProperties: false }), async execute() { return { content: [{ type: "text", text: JSON.stringify(realLibraryStatus(), null, 2) }] }; } }, { optional: true });
         api.registerTool({ name: "umg_envoy_real_sleeve_list", description: "Return safe curated sleeve summaries from the real UMG Block Library in readonly mode.", parameters: Type.Object({}, { additionalProperties: false }), async execute() { return { content: [{ type: "text", text: JSON.stringify(realSleeveList(), null, 2) }] }; } }, { optional: true });
-        api.registerTool({ name: "umg_envoy_real_sleeve_inspect", description: "Inspect one safe loadable public-curated sleeve from the real UMG Block Library in readonly mode.", parameters: Type.Object({ sleeveId: Type.String(), libraryRoot: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input) { return { content: [{ type: "text", text: JSON.stringify(realSleeveInspect(input.sleeveId, input.libraryRoot), null, 2) }] }; } }, { optional: true });
+        api.registerTool({ name: "umg_envoy_real_sleeve_inspect", description: "Inspect one safe loadable public-curated sleeve from the real UMG Block Library in readonly mode.", parameters: Type.Object({ sleeveId: Type.String(), libraryRoot: Type.Optional(Type.String()), shallowLoadTargetRef: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input) { return { content: [{ type: "text", text: JSON.stringify(realSleeveInspect(input.sleeveId, input.libraryRoot, input.shallowLoadTargetRef), null, 2) }] }; } }, { optional: true });
+        api.registerTool({ name: "umg_envoy_current_sleeve_status", description: "Return the current/inferred public_curated sleeve graph status in a compact read-only form.", parameters: Type.Object({ sleeveId: Type.Optional(Type.String()), libraryRoot: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input) { return { content: [{ type: "text", text: JSON.stringify(currentSleeveStatus(input.sleeveId, input.libraryRoot), null, 2) }] }; } }, { optional: true });
+        api.registerTool({ name: "umg_envoy_sleeve_tree", description: "Return a depth-limited read-only tree for a public_curated sleeve.", parameters: Type.Object({ sleeveId: Type.Optional(Type.String()), depth: Type.Optional(Type.Number()), libraryRoot: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input) { return { content: [{ type: "text", text: JSON.stringify(sleeveTree(input.sleeveId, input.depth, input.libraryRoot), null, 2) }] }; } }, { optional: true });
+        api.registerTool({ name: "umg_envoy_neostack_inspect", description: "Inspect one declared NeoStack inside a selected sleeve.", parameters: Type.Object({ sleeveId: Type.Optional(Type.String()), neostackId: Type.Optional(Type.String()), includeNeoBlocks: Type.Optional(Type.Boolean()), libraryRoot: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input) { return { content: [{ type: "text", text: JSON.stringify(neostackInspect(input.sleeveId, input.neostackId, input.includeNeoBlocks, input.libraryRoot), null, 2) }] }; } }, { optional: true });
+        api.registerTool({ name: "umg_envoy_neoblock_inspect", description: "Inspect one NeoBlock reference from the active/current public_curated graph.", parameters: Type.Object({ neoblockId: Type.Optional(Type.String()), sleeveId: Type.Optional(Type.String()), includeMoltBlocks: Type.Optional(Type.Boolean()), libraryRoot: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input) { return { content: [{ type: "text", text: JSON.stringify(neoblockInspect(input.neoblockId, input.sleeveId, input.includeMoltBlocks, input.libraryRoot), null, 2) }] }; } }, { optional: true });
+        api.registerTool({ name: "umg_envoy_moltblock_inspect", description: "Inspect one shallow-visible MOLT block from the active/current public_curated graph.", parameters: Type.Object({ moltBlockId: Type.Optional(Type.String()), sleeveId: Type.Optional(Type.String()), neoblockId: Type.Optional(Type.String()), libraryRoot: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input) { return { content: [{ type: "text", text: JSON.stringify(moltblockInspect(input.moltBlockId, input.sleeveId, input.neoblockId, input.libraryRoot), null, 2) }] }; } }, { optional: true });
+        api.registerTool({ name: "umg_envoy_runtime_ir_path", description: "Return the current read-only UMG runtime path from the visible graph.", parameters: Type.Object({ sleeveId: Type.Optional(Type.String()), includeDormant: Type.Optional(Type.Boolean()), includeExcludedLanes: Type.Optional(Type.Boolean()), libraryRoot: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input) { return { content: [{ type: "text", text: JSON.stringify(runtimeIrPath(input.sleeveId, input.includeDormant, input.includeExcludedLanes, input.libraryRoot), null, 2) }] }; } }, { optional: true });
+        api.registerTool({ name: "umg_envoy_runtime_ir_matrix_full", description: "Return the current visible UMG graph as a read-only IR matrix with nodes, edges, states, route path, dormant refs, excluded lanes, and NL projection.", parameters: Type.Object({ sleeveId: Type.Optional(Type.String()), includeDormant: Type.Optional(Type.Boolean()), includeExcludedLanes: Type.Optional(Type.Boolean()), includeEdges: Type.Optional(Type.Boolean()), includeNlProjection: Type.Optional(Type.Boolean()), libraryRoot: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input) { return { content: [{ type: "text", text: JSON.stringify(runtimeIrMatrixFull(input.sleeveId, input.includeDormant, input.includeExcludedLanes, input.includeEdges, input.includeNlProjection, input.libraryRoot), null, 2) }] }; } }, { optional: true });
+        api.registerTool({ name: "umg_envoy_response_envelope_draft", description: "Return a draft UMG-style response envelope using the current visible graph, runtime IR matrix, and supplied MOLT map fields.", parameters: Type.Object({ sleeveId: Type.Optional(Type.String()), trigger: Type.Optional(Type.String()), directive: Type.Optional(Type.String()), instruction: Type.Optional(Type.String()), subject: Type.Optional(Type.String()), primary: Type.Optional(Type.String()), philosophy: Type.Optional(Type.String()), blueprint: Type.Optional(Type.String()), formalResponseContent: Type.Optional(Type.String()), includeIrMatrix: Type.Optional(Type.Boolean()), includeMetadata: Type.Optional(Type.Boolean()), libraryRoot: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input) { return { content: [{ type: "text", text: JSON.stringify(responseEnvelopeDraft(input.sleeveId, input.trigger, input.directive, input.instruction, input.subject, input.primary, input.philosophy, input.blueprint, input.formalResponseContent, input.includeIrMatrix, input.includeMetadata, input.libraryRoot), null, 2) }] }; } }, { optional: true });
     }
 };
 if (process.argv.includes("--smoke")) {
