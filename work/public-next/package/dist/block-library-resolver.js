@@ -4554,6 +4554,28 @@ export function inspectRuntimeSleeveGraphRichness(version, entrypoint = 'dist/pl
         heldReason: inspection.responseEnvelopePreview?.heldReason ?? null
     };
     const neoStackReason = inspection.activeNeoStacks?.reason ?? (neoStackItems.length === 0 ? 'sleeve_declares_no_neostacks' : null);
+    const previewUsesSampleBlocks = runtimeSpecSummary?.usesSampleBlocks === true;
+    const previewUsesNativeBlocks = runtimeSpecSummary?.usesSleeveNativeBlocks === true;
+    const envelopeSource = envelopeSummary?.envelopeSource ?? null;
+    const legacyPreviewResidueDetected = previewUsesSampleBlocks || envelopeSource === 'sample_preview' || envelopeSource === 'legacy_preview';
+    const sourceMode = previewUsesNativeBlocks
+        ? (previewUsesSampleBlocks ? 'sleeve_native_with_sample_fallback' : 'sleeve_native')
+        : (previewUsesSampleBlocks ? 'sample_only' : (legacyPreviewResidueDetected ? 'legacy_preview' : 'unavailable'));
+    const sourceProvenance = {
+        nativeGraphAvailable: neoBlockItems.length > 0,
+        sampleFallbackUsed: previewUsesSampleBlocks,
+        legacyPreviewResidueDetected,
+        legacyPreviewResiduePaths: legacyPreviewResidueDetected
+            ? [
+                ...(previewUsesSampleBlocks ? ['runtimeSpecSummary.usesSampleBlocks'] : []),
+                ...((envelopeSource === 'sample_preview' || envelopeSource === 'legacy_preview') ? ['envelopeSummary.envelopeSource'] : [])
+            ]
+            : [],
+        sourceMode,
+        routePurity: legacyPreviewResidueDetected
+            ? (previewUsesNativeBlocks ? 'native_with_marked_fallback' : 'contaminated')
+            : (previewUsesNativeBlocks ? 'clean_native' : 'unknown')
+    };
     const graphCompleteness = inspection.overallCompleteness === 'rich_sleeve_native'
         ? 'rich_sleeve_native'
         : ((neoBlockItems.length > 0 && (neoStackItems.length === 0 || neoStackReason === 'sleeve_declares_no_neostacks'))
@@ -4602,9 +4624,25 @@ export function inspectRuntimeSleeveGraphRichness(version, entrypoint = 'dist/pl
                 routeReason: req.requestSummary ?? null
             }))
         },
-        runtimeSpecSummary,
-        irMatrixSummary,
-        envelopeSummary,
+        runtimeSpecSummary: runtimeSpecSummary ? {
+            ...runtimeSpecSummary,
+            sourceMode,
+            sourceProvenance,
+            routeWarnings: sourceProvenance.legacyPreviewResidueDetected ? ['runtime_spec_contains_marked_sample_or_legacy_preview_residue'] : []
+        } : null,
+        irMatrixSummary: irMatrixSummary ? {
+            ...irMatrixSummary,
+            sourceMode,
+            sourceProvenance,
+            routePurity: sourceProvenance.routePurity
+        } : null,
+        envelopeSummary: envelopeSummary ? {
+            ...envelopeSummary,
+            sourceMode,
+            sourceProvenance,
+            routePurity: sourceProvenance.routePurity,
+            routeWarnings: sourceProvenance.legacyPreviewResidueDetected ? ['envelope_contains_marked_sample_or_legacy_preview_residue'] : []
+        } : null,
         graphCompleteness,
         diagnostics: input.includeDiagnostics === false ? null : {
             graphRunId,
@@ -4613,6 +4651,14 @@ export function inspectRuntimeSleeveGraphRichness(version, entrypoint = 'dist/pl
             activeMoltSource: inspection.activeMoltBlocks?.source ?? null,
             activeSessionAvailable: !!sessionState.activeSleeveId,
             activeSessionSleeveId: sessionState.activeSleeveId ?? null,
+            sourceMode,
+            sourceProvenance,
+            nativeGraphAvailable: sourceProvenance.nativeGraphAvailable,
+            sampleFallbackUsed: sourceProvenance.sampleFallbackUsed,
+            legacyPreviewResidueDetected: sourceProvenance.legacyPreviewResidueDetected,
+            legacyPreviewResiduePaths: sourceProvenance.legacyPreviewResiduePaths,
+            routePurity: sourceProvenance.routePurity,
+            routeWarnings: sourceProvenance.legacyPreviewResidueDetected ? ['sample_or_legacy_preview_residue_marked'] : [],
             directSourceEnabled: false,
             automaticResponseTakeover: false
         },

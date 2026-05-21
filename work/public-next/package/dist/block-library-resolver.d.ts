@@ -3620,6 +3620,14 @@ export declare function inspectRuntimeSleeveGraphRichness(version: string, entry
         activeMoltSource?: undefined;
         activeSessionAvailable?: undefined;
         activeSessionSleeveId?: undefined;
+        sourceMode?: undefined;
+        sourceProvenance?: undefined;
+        nativeGraphAvailable?: undefined;
+        sampleFallbackUsed?: undefined;
+        legacyPreviewResidueDetected?: undefined;
+        legacyPreviewResiduePaths?: undefined;
+        routePurity?: undefined;
+        routeWarnings?: undefined;
         directSourceEnabled?: undefined;
         automaticResponseTakeover?: undefined;
     };
@@ -3717,14 +3725,33 @@ export declare function inspectRuntimeSleeveGraphRichness(version: string, entry
         requests: any;
     } | null;
     runtimeSpecSummary: {
+        sourceMode: string;
+        sourceProvenance: {
+            nativeGraphAvailable: boolean;
+            sampleFallbackUsed: boolean;
+            legacyPreviewResidueDetected: boolean;
+            legacyPreviewResiduePaths: string[];
+            sourceMode: string;
+            routePurity: string;
+        };
+        routeWarnings: string[];
         runtimeSpecId: string | null;
-        sourceMode: string | null;
         activeBlockCount: number;
         usesSleeveNativeBlocks: boolean | null;
         usesSampleBlocks: boolean | null;
         previewStatus: string;
     } | null;
     irMatrixSummary: {
+        sourceMode: string;
+        sourceProvenance: {
+            nativeGraphAvailable: boolean;
+            sampleFallbackUsed: boolean;
+            legacyPreviewResidueDetected: boolean;
+            legacyPreviewResiduePaths: string[];
+            sourceMode: string;
+            routePurity: string;
+        };
+        routePurity: string;
         matrixId: string | null;
         nodeCount: number;
         edgeCount: number;
@@ -3732,6 +3759,17 @@ export declare function inspectRuntimeSleeveGraphRichness(version: string, entry
         blockedRoute: string[];
     } | null;
     envelopeSummary: {
+        sourceMode: string;
+        sourceProvenance: {
+            nativeGraphAvailable: boolean;
+            sampleFallbackUsed: boolean;
+            legacyPreviewResidueDetected: boolean;
+            legacyPreviewResiduePaths: string[];
+            sourceMode: string;
+            routePurity: string;
+        };
+        routePurity: string;
+        routeWarnings: string[];
         envelopeStatus: any;
         envelopeSource: any;
         heldReason: any;
@@ -3744,6 +3782,21 @@ export declare function inspectRuntimeSleeveGraphRichness(version: string, entry
         activeMoltSource: string;
         activeSessionAvailable: boolean;
         activeSessionSleeveId: string | null;
+        sourceMode: string;
+        sourceProvenance: {
+            nativeGraphAvailable: boolean;
+            sampleFallbackUsed: boolean;
+            legacyPreviewResidueDetected: boolean;
+            legacyPreviewResiduePaths: string[];
+            sourceMode: string;
+            routePurity: string;
+        };
+        nativeGraphAvailable: boolean;
+        sampleFallbackUsed: boolean;
+        legacyPreviewResidueDetected: boolean;
+        legacyPreviewResiduePaths: string[];
+        routePurity: string;
+        routeWarnings: string[];
         directSourceEnabled: boolean;
         automaticResponseTakeover: boolean;
         blockedReason?: undefined;
