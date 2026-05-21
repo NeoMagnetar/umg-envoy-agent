@@ -1,7 +1,7 @@
 {
   "name": "umg-envoy-agent",
-  "version": "0.3.0-alpha.8",
-  "description": "UMG Envoy Agent alpha.8 for OpenClaw with Alpha7 classified/gated approved read-only runtime flow, refined inspector visibility, and real block-library tooling",
+  "version": "0.3.0-alpha.9",
+  "description": "UMG Envoy Agent alpha.9 for OpenClaw with Alpha8 bounded read-only orchestration, Alpha7 classified/gated approved read-only runtime flow, refined inspector visibility, and real block-library tooling",
   "type": "module",
   "main": "dist/plugin-entry.js",
   "types": "dist/index.d.ts",

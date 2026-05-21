@@ -1,15 +1,16 @@
-# UMG Envoy Agent 0.3.0-alpha.8
+# UMG Envoy Agent 0.3.0-alpha.9
 
-UMG Envoy Agent 0.3.0-alpha.8 is an OpenClaw plugin with a real block-library-backed runtime path, Alpha7 classified/gated approved read-only execution flow, and a refined active sleeve / IR matrix / envelope inspector.
+UMG Envoy Agent 0.3.0-alpha.9 is an OpenClaw plugin with a real block-library-backed runtime path, Alpha8 bounded read-only orchestration, Alpha7 classified/gated approved read-only execution flow, and a refined active sleeve / IR matrix / envelope inspector.
 
 It is not a broad execution agent package.
 
 - `0.3.0-alpha.7` may be referenced historically as the public package baseline.
-- `0.3.0-alpha.8` is the current Alpha7 local/runtime truth for package prep.
+- `0.3.0-alpha.8` is the previous verified public release.
+- `0.3.0-alpha.9` is the current package candidate for Alpha8 bounded read-only orchestration.
 
-## alpha.8 capability note
+## alpha.9 capability note
 
-alpha.8 includes the Alpha6 real block-library runtime path plus Alpha7 controlled runtime flow additions:
+alpha.9 includes the Alpha6 real block-library runtime path, Alpha7 controlled runtime flow additions, and the Alpha8 bounded read-only orchestration surface:
 - runtime tool request classifier
 - execution gate plan
 - approval checkpoint create
@@ -18,7 +19,7 @@ alpha.8 includes the Alpha6 real block-library runtime path plus Alpha7 controll
 - end-to-end dry-run-to-approved-read-only execution chain
 - active sleeve / IR Matrix / envelope inspector
 
-alpha.8 preserves strict safety boundaries:
+alpha.9 preserves strict safety boundaries:
 - approved only
 - allowlisted only
 - read-only only
@@ -81,7 +82,7 @@ alpha.8 preserves strict safety boundaries:
 - `umg_envoy_build_path`
 - `umg_envoy_matrix_status`
 
-## What alpha.8 does
+## What alpha.9 does
 
 - inspects the real block-library through bounded approved lanes
 - resolves a real sleeve into a bounded dry-run graph
@@ -95,7 +96,7 @@ alpha.8 preserves strict safety boundaries:
 - renders Active Stack and response-envelope previews
 - inspects active sleeve, NeoStacks, NeoBlocks, MOLT blocks, RuntimeSpec, IR Matrix, envelope preview, and execution gate state
 
-## What alpha.8 does not do
+## What alpha.9 does not do
 
 - broad execution
 - unapproved execution
@@ -131,7 +132,8 @@ This is roadmap guidance, not a claim that Alpha8 implementation is already comp
 
 ## Install
 
-- `openclaw plugins install clawhub:umg-envoy-agent@0.3.0-alpha.8`
+- previous public release: `openclaw plugins install clawhub:umg-envoy-agent@0.3.0-alpha.8`
+- current package candidate for prep: `umg-envoy-agent@0.3.0-alpha.9`
 
 ## Build and test
 
