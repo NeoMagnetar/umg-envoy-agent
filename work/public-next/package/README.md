@@ -55,7 +55,7 @@ alpha.8 preserves strict safety boundaries:
 - `umg_envoy_runtime_compile`
 - `umg_envoy_runtime_preview`
 
-### Alpha7 runtime control / visibility tools
+### Alpha7/Alpha8 runtime control / visibility tools
 
 - `umg_envoy_runtime_tool_request_classify`
 - `umg_envoy_runtime_execution_gate_plan`
@@ -64,6 +64,7 @@ alpha.8 preserves strict safety boundaries:
 - `umg_envoy_runtime_execute_approved_allowlisted`
 - `umg_envoy_runtime_execution_chain_e2e_approved_read_only`
 - `umg_envoy_runtime_active_sleeve_ir_matrix_envelope_inspect`
+- `umg_envoy_runtime_bounded_read_only_orchestrate`
 
 ### Existing utility tools
 

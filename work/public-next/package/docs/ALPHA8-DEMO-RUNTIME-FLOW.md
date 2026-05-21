@@ -1,6 +1,23 @@
 ﻿# Alpha8 Demo Runtime Flow
 
-## Demo 1 — Runtime E2E approved read-only flow
+## Demo 1 — Bounded read-only orchestration flow
+
+Recommended tool:
+- `umg_envoy_runtime_bounded_read_only_orchestrate`
+
+Sequence:
+- active sleeve inspection
+- runtime preview / RuntimeSpec summary
+- classify
+- gate plan
+- checkpoint create
+- checkpoint resume `approve`
+- execute approved `status_read`
+- final orchestration report
+
+This is the new Alpha8 fast-path surface built on top of the proven Alpha7 pieces.
+
+## Demo 1b — Runtime E2E approved read-only flow
 
 Sequence:
 - runtime path
@@ -11,7 +28,7 @@ Sequence:
 - execute approved `status_read`
 - result
 
-This is the corrected successful demo path.
+This remains the corrected successful lower-level demo path.
 
 ## Demo 2 — Inspector flow
 

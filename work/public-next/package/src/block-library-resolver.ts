@@ -5761,6 +5761,137 @@ export function inspectRuntimeActiveSleeveIrMatrixEnvelope(
   };
 }
 
+export function runBoundedReadOnlyOrchestration(
+  version: string,
+  entrypoint = 'dist/plugin-entry.js',
+  root = DEFAULT_LIBRARY_ROOT,
+  input: {
+    sleeveId?: string;
+    requestedToolName?: string;
+    requestedAction?: string;
+    approvalDecision?: 'approve' | 'deny' | 'edit' | 'dry_run_only';
+    mode?: 'inspect_only' | 'dry_run' | 'approved_read_only' | string;
+    includeInspector?: boolean;
+    includeRuntimePreview?: boolean;
+    includeIrMatrix?: boolean;
+    includeEnvelope?: boolean;
+    includeExecutionGateState?: boolean;
+    includeTrace?: boolean;
+  } = {}
+) {
+  const orchestrationRunId = `orch_${simpleStableKey([input.sleeveId ?? 'default', input.requestedToolName ?? 'status', input.requestedAction ?? 'status_read', input.mode ?? 'dry_run', input.approvalDecision ?? 'dry_run_only'])}`;
+  const sleeveId = input.sleeveId ?? 'neomagnetar-dynamic-persona-v1';
+  const requestedToolName = input.requestedToolName ?? 'umg_envoy_block_library_status';
+  const requestedAction = input.requestedAction ?? 'status_read';
+  const mode = (input.mode ?? 'dry_run') as 'inspect_only' | 'dry_run' | 'approved_read_only';
+  const approvalDecision = input.approvalDecision ?? (mode === 'approved_read_only' ? 'approve' : 'dry_run_only');
+  const includeTrace = input.includeTrace !== false;
+  const boundaryPolicy = {
+    approvedOnly: true,
+    allowlistedOnly: true,
+    readOnlyOnly: true,
+    broadAutonomousExecution: false,
+    triggerEvaluationAsExecutionAuthority: false,
+    externalMoltBlockFileLoading: false,
+    fullLibraryScan: false,
+    unboundedRecursiveTraversal: false,
+    umgBlockLibraryMutation: false,
+    restartExecution: false,
+    publishExecution: false,
+    packageExecution: false,
+    automaticResponseTakeover: false,
+    directSourceEnabled: false
+  };
+
+  const inspector = input.includeInspector === false ? null : inspectRuntimeActiveSleeveIrMatrixEnvelope(version, entrypoint, root, {
+    sleeveId,
+    includeNeoStacks: true,
+    includeNeoBlocks: true,
+    includeMoltBlocks: true,
+    includeRuntimeSpec: true,
+    includeIrMatrix: input.includeIrMatrix !== false,
+    includeEnvelope: input.includeEnvelope !== false,
+    includeExecutionGateState: input.includeExecutionGateState !== false,
+    mode: 'inspect_only'
+  });
+  const runtimePreview = input.includeRuntimePreview === false ? null : previewRuntimeSleeve(version, entrypoint, root, {
+    sleeveId,
+    previewFormat: 'summary',
+    includeActiveStack: true,
+    includeMoltMap: true,
+    includeEnvelope: input.includeEnvelope !== false,
+    includeToolRequests: true
+  });
+
+  const chainInput = {
+    sleeveId,
+    requestedToolName,
+    requestedAction,
+    approvalDecision,
+    mode: mode === 'approved_read_only' ? 'e2e_approved_read_only' : 'dry_run_only',
+    includeTrace
+  };
+  const chain = runRuntimeExecutionChainE2EApprovedReadOnly(version, entrypoint, root, chainInput);
+  const executionAllowed = mode === 'approved_read_only' && approvalDecision === 'approve' && chain.executionStatus === 'EXECUTION_READY';
+  const blockedActions = chain.executionStatus === 'EXECUTION_BLOCKED' ? [{
+    requestedToolName,
+    requestedAction,
+    blockedReason: chain.executionResult?.blockedReason ?? chain.resultSummary ?? 'execution_blocked'
+  }] : [];
+
+  return {
+    ok: true,
+    outputContract: { contractId: 'umg.runtime.orchestration.bounded_read_only.v1' as const, contractStatus: 'NORMALIZED' as const },
+    orchestrationRunId,
+    orchestrationStatus: chain.executionStatus === 'EXECUTION_BLOCKED'
+      ? 'ORCHESTRATION_BLOCKED' as const
+      : (chain.ok ? 'ORCHESTRATION_READY' as const : 'ORCHESTRATION_PARTIAL' as const),
+    sourceSleeveId: sleeveId,
+    mode,
+    boundaryPolicy,
+    activeSleeveInspection: inspector?.activeSleeve ?? null,
+    runtimePreview,
+    runtimeSpecSummary: inspector?.runtimeSpec ?? runtimePreview?.runtimeSpec ?? null,
+    irMatrixSummary: inspector?.irMatrixProjection ?? null,
+    envelopeSummary: inspector?.responseEnvelopePreview ?? null,
+    toolRequestClassification: chain.classifierResult ?? null,
+    executionGatePlan: chain.gatePlanResult ?? null,
+    approvalCheckpointCreate: chain.checkpointCreateResult ?? null,
+    approvalCheckpointResume: approvalDecision === 'dry_run_only' && mode !== 'approved_read_only' ? null : (chain.checkpointResumeResult ?? null),
+    approvedReadOnlyExecution: executionAllowed ? (chain.executionResult ?? null) : null,
+    blockedActions,
+    warnings: [...(runtimePreview?.warnings ?? []), ...(inspector?.warnings ?? []), ...(chain.warnings ?? [])],
+    errors: [...(runtimePreview?.errors ?? []), ...(inspector?.errors ?? []), ...(chain.errors ?? [])],
+    audit: {
+      inspectorPerformed: inspector !== null,
+      runtimePreviewPerformed: runtimePreview !== null,
+      classificationPerformed: true,
+      gatePlanCreated: true,
+      approvalCheckpointCreated: (chain.checkpointCreateResult?.checkpointCount ?? 0) > 0,
+      approvalCheckpointResumed: !!chain.checkpointResumeResult,
+      readOnlyExecutionPerformed: executionAllowed,
+      triggerEvaluation: 'not_performed' as const,
+      externalMoltBlockFileLoading: 'not_performed' as const,
+      fullLibraryScan: 'not_performed' as const,
+      unboundedRecursiveTraversal: 'not_performed' as const,
+      libraryMutation: 'not_performed' as const,
+      packageMutation: 'not_performed' as const,
+      restart: 'not_performed' as const,
+      publish: 'not_performed' as const,
+      automaticResponseTakeover: false,
+      directSource: 'disabled' as const
+    },
+    trace: includeTrace ? [
+      `orchestrationRunId=${orchestrationRunId}`,
+      `mode=${mode}`,
+      `requestedToolName=${requestedToolName}`,
+      `requestedAction=${requestedAction}`,
+      `approvalDecision=${approvalDecision}`,
+      `executionStatus=${chain.executionStatus}`
+    ] : []
+  };
+}
+
 export function previewRuntimeSleeve(
   version: string,
   entrypoint = 'dist/plugin-entry.js',

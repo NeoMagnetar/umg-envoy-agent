@@ -70,7 +70,37 @@ Expected inspector result:
 - `envelope = neoblock_fragment, READY`
 - `overall completeness = rich_sleeve_native`
 
-## Alpha7 tool list summary
+## Alpha8 fast-path orchestration tool
+
+Recommended orchestration input:
+
+```json
+{
+  "sleeveId": "neomagnetar-dynamic-persona-v1",
+  "requestedToolName": "umg_envoy_block_library_status",
+  "requestedAction": "status_read",
+  "approvalDecision": "approve",
+  "mode": "approved_read_only",
+  "includeInspector": true,
+  "includeRuntimePreview": true,
+  "includeIrMatrix": true,
+  "includeEnvelope": true,
+  "includeExecutionGateState": true,
+  "includeTrace": true
+}
+```
+
+Expected:
+- `orchestrationStatus = ORCHESTRATION_READY`
+- active sleeve inspection present
+- RuntimeSpec summary present
+- IR Matrix summary present
+- envelope summary present
+- read-only status execution performed
+- `sideEffectStatus = read_only_no_mutation`
+- hard boundary policy visible
+
+## Alpha7/Alpha8 tool list summary
 
 - `umg_envoy_runtime_tool_request_classify`
 - `umg_envoy_runtime_execution_gate_plan`
@@ -79,6 +109,7 @@ Expected inspector result:
 - `umg_envoy_runtime_execute_approved_allowlisted`
 - `umg_envoy_runtime_execution_chain_e2e_approved_read_only`
 - `umg_envoy_runtime_active_sleeve_ir_matrix_envelope_inspect`
+- `umg_envoy_runtime_bounded_read_only_orchestrate`
 
 ## Safety model
 
