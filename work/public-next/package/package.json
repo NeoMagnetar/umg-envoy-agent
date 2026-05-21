@@ -1,7 +1,7 @@
 {
   "name": "umg-envoy-agent",
-  "version": "0.3.0-alpha.9",
-  "description": "UMG Envoy Agent alpha.9 for OpenClaw with Alpha8 bounded read-only orchestration, Alpha7 classified/gated approved read-only runtime flow, refined inspector visibility, and real block-library tooling",
+  "version": "0.3.0-alpha.11",
+  "description": "Run Universal Modular Generation as a modular cognitive architectural runtime inside OpenClaw, with sleeve-aware orchestration, active sleeve session state, runtime inspection, IR Matrix visibility, and approved read-only tool gating.",
   "type": "module",
   "main": "dist/plugin-entry.js",
   "types": "dist/index.d.ts",
