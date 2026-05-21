@@ -65,7 +65,11 @@
     "umg_envoy_runtime_execute_approved_allowlisted",
     "umg_envoy_runtime_execution_chain_e2e_approved_read_only",
     "umg_envoy_runtime_active_sleeve_ir_matrix_envelope_inspect",
-    "umg_envoy_runtime_bounded_read_only_orchestrate"
+    "umg_envoy_runtime_bounded_read_only_orchestrate",
+    "umg_envoy_sleeve_session_select",
+    "umg_envoy_sleeve_session_current",
+    "umg_envoy_sleeve_session_clear",
+    "umg_envoy_sleeve_session_inspect"
   ],
   "toolMetadata": {
     "umg_envoy_runtime_bounded_read_only_orchestrate": {

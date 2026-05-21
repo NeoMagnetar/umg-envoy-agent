@@ -2,7 +2,13 @@
 const defs = [];
 await entry.register({ registerTool(def){ defs.push(def); }, registerCli(){} }, {});
 const tool = defs.find(d => d.name === 'umg_envoy_runtime_bounded_read_only_orchestrate');
+const selectTool = defs.find(d => d.name === 'umg_envoy_sleeve_session_select');
+const clearTool = defs.find(d => d.name === 'umg_envoy_sleeve_session_clear');
 if (!tool) throw new Error('tool missing: umg_envoy_runtime_bounded_read_only_orchestrate');
+if (!selectTool) throw new Error('tool missing: umg_envoy_sleeve_session_select');
+if (!clearTool) throw new Error('tool missing: umg_envoy_sleeve_session_clear');
+await clearTool.execute({ clearReason:'pre-smoke reset', includePreviousState:false, includeTrace:true });
+await selectTool.execute({ sleeveId:'neomagnetar-dynamic-persona-v1', selectionReason:'alpha8 orchestration smoke', persistenceMode:'memory_only', includeInspection:true, includeRuntimePreview:true, includeTrace:true });
 const dryRun = JSON.parse((await tool.execute({ includeTrace:true })).content[0].text);
 if (dryRun.outputContract?.contractId !== 'umg.runtime.orchestration.bounded_read_only.v1') throw new Error('contract drift');
 if (!['ORCHESTRATION_READY','ORCHESTRATION_PARTIAL','ORCHESTRATION_BLOCKED'].includes(dryRun.orchestrationStatus)) throw new Error('bad orchestration status');
@@ -33,4 +39,5 @@ if (approved.audit?.libraryMutation !== 'not_performed') throw new Error('librar
 if (approved.audit?.packageMutation !== 'not_performed') throw new Error('package mutation drift');
 if (approved.audit?.restart !== 'not_performed') throw new Error('restart drift');
 if (approved.audit?.publish !== 'not_performed') throw new Error('publish drift');
+await clearTool.execute({ clearReason:'post-smoke cleanup', includePreviousState:false, includeTrace:true });
 console.log(JSON.stringify({ ok:true, smoke:'alpha8-bounded-read-only-orchestration', dryRunStatus:dryRun.orchestrationStatus, approvedStatus:approved.orchestrationStatus }, null, 2));

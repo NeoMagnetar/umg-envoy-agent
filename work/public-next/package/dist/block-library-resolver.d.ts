@@ -7,6 +7,37 @@ export interface BlockLibraryLaneStatus {
     loadPolicy: "readonly_allowed" | "not_machine_loaded" | "do_not_load";
     notes: string[];
 }
+export type RuntimeSleeveSessionStatus = "NO_ACTIVE_SLEEVE" | "SLEEVE_SELECTED" | "SLEEVE_ACTIVE" | "SLEEVE_HELD" | "SLEEVE_CLEARED" | "SESSION_ERROR";
+export type RuntimeSleeveSessionPersistenceMode = "memory_only" | "request_scoped" | "disabled";
+export type RuntimeSleeveSelectionSource = "explicit_user_request" | "explicit_agent_request" | "runtime_default" | "test_fixture" | "unknown";
+export type RuntimeSleeveSessionStateV0 = {
+    outputContract: {
+        contractId: "umg.runtime.sleeve_session.v1";
+        contractStatus: "NORMALIZED";
+    };
+    sessionId: string;
+    sessionStatus: RuntimeSleeveSessionStatus;
+    selectedSleeveId: string | null;
+    activeSleeveId: string | null;
+    selectionSource: RuntimeSleeveSelectionSource;
+    selectionReason: string | null;
+    runtimeEligible: boolean;
+    selectionTimestamp: string | null;
+    expiresAt: string | null;
+    persistenceMode: RuntimeSleeveSessionPersistenceMode;
+    automaticResponseTakeover: false;
+    directSourceEnabled: false;
+    lastInspectionSummary: unknown;
+    lastRuntimePreviewSummary: unknown;
+    warnings: string[];
+    errors: Array<{
+        code: string;
+        message: string;
+    }>;
+    audit: Record<string, unknown>;
+    trace: string[];
+    previousSleeveId?: string | null;
+};
 export interface BlockLibraryStatusResult {
     ok: boolean;
     version: string;
@@ -1415,7 +1446,7 @@ export declare function selectRuntimeSleeve(version: string, entrypoint?: string
         message: string;
     }>;
 } | {
-    selectionStatus: "SLEEVE_SELECTED" | "NO_ACTIVE_SLEEVE";
+    selectionStatus: "NO_ACTIVE_SLEEVE" | "SLEEVE_SELECTED";
     activeSleeveId: string | null;
     selectionMode: "current";
     selectionSource: "current";
@@ -3523,8 +3554,38 @@ export declare function inspectRuntimeActiveSleeveIrMatrixEnvelope(version: stri
     };
     trace: string[];
 };
+export declare function getCurrentRuntimeSleeveSession(version: string, entrypoint?: string, root?: string, input?: {
+    includeInspection?: boolean;
+    includeRuntimePreview?: boolean;
+    includeTrace?: boolean;
+}): RuntimeSleeveSessionStateV0;
+export declare function selectRuntimeSleeveSession(version: string, entrypoint: string | undefined, root: string | undefined, input: {
+    sleeveId: string;
+    selectionReason?: string;
+    persistenceMode?: RuntimeSleeveSessionPersistenceMode;
+    includeInspection?: boolean;
+    includeRuntimePreview?: boolean;
+    includeTrace?: boolean;
+}): RuntimeSleeveSessionStateV0;
+export declare function clearRuntimeSleeveSession(input?: {
+    clearReason?: string;
+    includePreviousState?: boolean;
+    includeTrace?: boolean;
+}): RuntimeSleeveSessionStateV0;
+export declare function inspectRuntimeSleeveSession(version: string, entrypoint?: string, root?: string, input?: {
+    includeNeoStacks?: boolean;
+    includeNeoBlocks?: boolean;
+    includeMoltBlocks?: boolean;
+    includeRuntimeSpec?: boolean;
+    includeIrMatrix?: boolean;
+    includeEnvelope?: boolean;
+    includeExecutionGateState?: boolean;
+    includeTrace?: boolean;
+}): RuntimeSleeveSessionStateV0;
 export declare function runBoundedReadOnlyOrchestration(version: string, entrypoint?: string, root?: string, input?: {
     sleeveId?: string;
+    useActiveSessionSleeve?: boolean;
+    selectSession?: boolean;
     requestedToolName?: string;
     requestedAction?: string;
     approvalDecision?: 'approve' | 'deny' | 'edit' | 'dry_run_only';
@@ -3536,6 +3597,72 @@ export declare function runBoundedReadOnlyOrchestration(version: string, entrypo
     includeExecutionGateState?: boolean;
     includeTrace?: boolean;
 }): {
+    ok: boolean;
+    outputContract: {
+        contractId: "umg.runtime.orchestration.bounded_read_only.v1";
+        contractStatus: "NORMALIZED";
+    };
+    orchestrationRunId: string;
+    orchestrationStatus: "ORCHESTRATION_BLOCKED";
+    sourceSleeveId: null;
+    mode: "inspect_only" | "dry_run" | "approved_read_only";
+    boundaryPolicy: {
+        approvedOnly: boolean;
+        allowlistedOnly: boolean;
+        readOnlyOnly: boolean;
+        broadAutonomousExecution: boolean;
+        triggerEvaluationAsExecutionAuthority: boolean;
+        externalMoltBlockFileLoading: boolean;
+        fullLibraryScan: boolean;
+        unboundedRecursiveTraversal: boolean;
+        umgBlockLibraryMutation: boolean;
+        restartExecution: boolean;
+        publishExecution: boolean;
+        packageExecution: boolean;
+        automaticResponseTakeover: boolean;
+        directSourceEnabled: boolean;
+    };
+    activeSleeveInspection: null;
+    runtimePreview: null;
+    runtimeSpecSummary: null;
+    irMatrixSummary: null;
+    envelopeSummary: null;
+    toolRequestClassification: null;
+    executionGatePlan: null;
+    approvalCheckpointCreate: null;
+    approvalCheckpointResume: null;
+    approvedReadOnlyExecution: null;
+    blockedActions: {
+        requestedToolName: string;
+        requestedAction: string;
+        blockedReason: string;
+    }[];
+    warnings: never[];
+    errors: {
+        code: string;
+        message: string;
+    }[];
+    audit: {
+        inspectorPerformed: boolean;
+        runtimePreviewPerformed: boolean;
+        classificationPerformed: boolean;
+        gatePlanCreated: boolean;
+        approvalCheckpointCreated: boolean;
+        approvalCheckpointResumed: boolean;
+        readOnlyExecutionPerformed: boolean;
+        triggerEvaluation: "not_performed";
+        externalMoltBlockFileLoading: "not_performed";
+        fullLibraryScan: "not_performed";
+        unboundedRecursiveTraversal: "not_performed";
+        libraryMutation: "not_performed";
+        packageMutation: "not_performed";
+        restart: "not_performed";
+        publish: "not_performed";
+        automaticResponseTakeover: boolean;
+        directSource: "disabled";
+    };
+    trace: string[];
+} | {
     ok: boolean;
     outputContract: {
         contractId: "umg.runtime.orchestration.bounded_read_only.v1";

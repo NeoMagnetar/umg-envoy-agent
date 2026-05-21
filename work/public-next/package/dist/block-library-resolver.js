@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+const runtimeSleeveSessionStore = new Map();
 const DEFAULT_LIBRARY_ROOT = "C:\\.openclaw\\workspace\\UMG-Block-Library";
 const runtimeSelectionState = new Map();
 const MACHINE_LANES = [
@@ -4261,10 +4262,272 @@ export function inspectRuntimeActiveSleeveIrMatrixEnvelope(version, entrypoint =
         ]
     };
 }
+function runtimeSleeveSessionId() {
+    return 'umg.runtime.session.main';
+}
+function buildRuntimeSleeveSessionState(overrides = {}) {
+    return {
+        outputContract: { contractId: 'umg.runtime.sleeve_session.v1', contractStatus: 'NORMALIZED' },
+        sessionId: runtimeSleeveSessionId(),
+        sessionStatus: 'NO_ACTIVE_SLEEVE',
+        selectedSleeveId: null,
+        activeSleeveId: null,
+        selectionSource: 'unknown',
+        selectionReason: null,
+        runtimeEligible: false,
+        selectionTimestamp: null,
+        expiresAt: null,
+        persistenceMode: 'memory_only',
+        automaticResponseTakeover: false,
+        directSourceEnabled: false,
+        lastInspectionSummary: null,
+        lastRuntimePreviewSummary: null,
+        warnings: [],
+        errors: [],
+        audit: {
+            execution: 'not_performed',
+            toolExecution: 'not_performed',
+            libraryMutation: 'not_performed',
+            packageMutation: 'not_performed',
+            filesystemMutation: 'not_performed',
+            restart: 'not_performed',
+            publish: 'not_performed',
+            automaticResponseTakeover: false,
+            directSource: 'disabled'
+        },
+        trace: [],
+        ...overrides
+    };
+}
+function getRuntimeSleeveSessionState() {
+    return runtimeSleeveSessionStore.get(runtimeSleeveSessionId()) ?? buildRuntimeSleeveSessionState();
+}
+function setRuntimeSleeveSessionState(state) {
+    runtimeSleeveSessionStore.set(runtimeSleeveSessionId(), state);
+    return state;
+}
+export function getCurrentRuntimeSleeveSession(version, entrypoint = 'dist/plugin-entry.js', root = DEFAULT_LIBRARY_ROOT, input = {}) {
+    const state = getRuntimeSleeveSessionState();
+    if (!state.activeSleeveId) {
+        return buildRuntimeSleeveSessionState({
+            ...state,
+            sessionStatus: 'NO_ACTIVE_SLEEVE',
+            trace: input.includeTrace === false ? [] : ['sessionStatus=NO_ACTIVE_SLEEVE', 'execution=not_performed']
+        });
+    }
+    const inspection = input.includeInspection === false ? null : inspectRuntimeActiveSleeveIrMatrixEnvelope(version, entrypoint, root, {
+        sleeveId: state.activeSleeveId,
+        includeNeoStacks: true,
+        includeNeoBlocks: true,
+        includeMoltBlocks: true,
+        includeRuntimeSpec: true,
+        includeIrMatrix: true,
+        includeEnvelope: true,
+        includeExecutionGateState: true,
+        mode: 'inspect_only'
+    });
+    const runtimePreview = input.includeRuntimePreview === false ? null : previewRuntimeSleeve(version, entrypoint, root, {
+        sleeveId: state.activeSleeveId,
+        previewFormat: 'summary',
+        includeActiveStack: true,
+        includeMoltMap: true,
+        includeEnvelope: true,
+        includeToolRequests: true
+    });
+    return buildRuntimeSleeveSessionState({
+        ...state,
+        sessionStatus: state.runtimeEligible ? 'SLEEVE_ACTIVE' : 'SLEEVE_HELD',
+        lastInspectionSummary: inspection ? {
+            sleeveId: inspection.sourceSleeveId,
+            overallCompleteness: inspection.overallCompleteness,
+            neoBlockCount: inspection.activeNeoBlocks?.count ?? 0,
+            neoStackCount: inspection.activeNeoStacks?.count ?? 0,
+            envelopeStatus: inspection.responseEnvelopePreview?.envelopeStatus ?? null
+        } : state.lastInspectionSummary,
+        lastRuntimePreviewSummary: runtimePreview ? {
+            sleeveId: runtimePreview.runtimeSpec?.sleeveId ?? state.activeSleeveId,
+            runtimeSpecId: runtimePreview.runtimeSpec?.runtimeSpecId ?? null,
+            previewStatus: runtimePreview.previewStatus,
+            activeBlockCount: runtimePreview.runtimeSpec?.activeBlocks?.length ?? 0
+        } : state.lastRuntimePreviewSummary,
+        trace: input.includeTrace === false ? [] : [`activeSleeveId=${state.activeSleeveId}`, `runtimeEligible=${state.runtimeEligible}`, 'execution=not_performed']
+    });
+}
+export function selectRuntimeSleeveSession(version, entrypoint = 'dist/plugin-entry.js', root = DEFAULT_LIBRARY_ROOT, input) {
+    const persistenceMode = input.persistenceMode ?? 'memory_only';
+    if (persistenceMode === 'disabled') {
+        return buildRuntimeSleeveSessionState({
+            sessionStatus: 'SESSION_ERROR',
+            selectionSource: 'explicit_agent_request',
+            selectionReason: input.selectionReason ?? null,
+            persistenceMode,
+            warnings: [],
+            errors: [{ code: 'SESSION_PERSISTENCE_DISABLED', message: 'Session selection is disabled for this request.' }],
+            trace: input.includeTrace === false ? [] : ['selection=blocked', 'persistenceMode=disabled', 'execution=not_performed']
+        });
+    }
+    const selected = selectRuntimeSleeve(version, entrypoint, root, { sleeveId: input.sleeveId, selectionMode: 'explicit' });
+    const runtimePreview = input.includeRuntimePreview === false ? null : previewRuntimeSleeve(version, entrypoint, root, {
+        sleeveId: input.sleeveId,
+        previewFormat: 'summary',
+        includeActiveStack: true,
+        includeMoltMap: true,
+        includeEnvelope: true,
+        includeToolRequests: true
+    });
+    const inspection = input.includeInspection === false ? null : inspectRuntimeActiveSleeveIrMatrixEnvelope(version, entrypoint, root, {
+        sleeveId: input.sleeveId,
+        includeNeoStacks: true,
+        includeNeoBlocks: true,
+        includeMoltBlocks: true,
+        includeRuntimeSpec: true,
+        includeIrMatrix: true,
+        includeEnvelope: true,
+        includeExecutionGateState: true,
+        mode: 'inspect_only'
+    });
+    const runtimeEligible = selected.ok && runtimePreview?.ok === true;
+    const state = buildRuntimeSleeveSessionState({
+        sessionStatus: runtimeEligible ? 'SLEEVE_ACTIVE' : 'SLEEVE_HELD',
+        selectedSleeveId: input.sleeveId,
+        activeSleeveId: input.sleeveId,
+        selectionSource: 'explicit_agent_request',
+        selectionReason: input.selectionReason ?? null,
+        runtimeEligible,
+        selectionTimestamp: new Date().toISOString(),
+        expiresAt: null,
+        persistenceMode,
+        lastInspectionSummary: inspection ? {
+            sleeveId: inspection.sourceSleeveId,
+            overallCompleteness: inspection.overallCompleteness,
+            neoBlockCount: inspection.activeNeoBlocks?.count ?? 0,
+            neoStackCount: inspection.activeNeoStacks?.count ?? 0,
+            envelopeStatus: inspection.responseEnvelopePreview?.envelopeStatus ?? null
+        } : null,
+        lastRuntimePreviewSummary: runtimePreview ? {
+            sleeveId: runtimePreview.runtimeSpec?.sleeveId ?? input.sleeveId,
+            runtimeSpecId: runtimePreview.runtimeSpec?.runtimeSpecId ?? null,
+            previewStatus: runtimePreview.previewStatus,
+            activeBlockCount: runtimePreview.runtimeSpec?.activeBlocks?.length ?? 0
+        } : null,
+        warnings: [...(selected.warnings ?? []), ...(runtimePreview?.warnings ?? []), ...(inspection?.warnings ?? [])],
+        errors: [...(selected.errors ?? []), ...(runtimePreview?.errors ?? []), ...(inspection?.errors ?? [])],
+        trace: input.includeTrace === false ? [] : [`selectedSleeveId=${input.sleeveId}`, `runtimeEligible=${runtimeEligible}`, `persistenceMode=${persistenceMode}`, 'execution=not_performed']
+    });
+    return setRuntimeSleeveSessionState(state);
+}
+export function clearRuntimeSleeveSession(input = {}) {
+    const previous = getRuntimeSleeveSessionState();
+    runtimeSleeveSessionStore.delete(runtimeSleeveSessionId());
+    return buildRuntimeSleeveSessionState({
+        sessionStatus: 'SLEEVE_CLEARED',
+        selectedSleeveId: null,
+        activeSleeveId: null,
+        selectionSource: previous.selectionSource ?? 'unknown',
+        selectionReason: input.clearReason ?? null,
+        runtimeEligible: false,
+        selectionTimestamp: new Date().toISOString(),
+        expiresAt: null,
+        persistenceMode: previous.persistenceMode ?? 'memory_only',
+        previousSleeveId: input.includePreviousState === false ? null : previous.activeSleeveId,
+        lastInspectionSummary: input.includePreviousState === false ? null : previous.lastInspectionSummary,
+        lastRuntimePreviewSummary: input.includePreviousState === false ? null : previous.lastRuntimePreviewSummary,
+        trace: input.includeTrace === false ? [] : [`previousSleeveId=${previous.activeSleeveId ?? 'none'}`, 'sessionStatus=SLEEVE_CLEARED', 'execution=not_performed']
+    });
+}
+export function inspectRuntimeSleeveSession(version, entrypoint = 'dist/plugin-entry.js', root = DEFAULT_LIBRARY_ROOT, input = {}) {
+    const state = getRuntimeSleeveSessionState();
+    if (!state.activeSleeveId) {
+        return buildRuntimeSleeveSessionState({
+            ...state,
+            sessionStatus: 'NO_ACTIVE_SLEEVE',
+            trace: input.includeTrace === false ? [] : ['sessionStatus=NO_ACTIVE_SLEEVE', 'execution=not_performed']
+        });
+    }
+    const inspection = inspectRuntimeActiveSleeveIrMatrixEnvelope(version, entrypoint, root, {
+        sleeveId: state.activeSleeveId,
+        includeNeoStacks: input.includeNeoStacks !== false,
+        includeNeoBlocks: input.includeNeoBlocks !== false,
+        includeMoltBlocks: input.includeMoltBlocks !== false,
+        includeRuntimeSpec: input.includeRuntimeSpec !== false,
+        includeIrMatrix: input.includeIrMatrix !== false,
+        includeEnvelope: input.includeEnvelope !== false,
+        includeExecutionGateState: input.includeExecutionGateState !== false,
+        mode: 'inspect_only'
+    });
+    return buildRuntimeSleeveSessionState({
+        ...state,
+        sessionStatus: state.runtimeEligible ? 'SLEEVE_ACTIVE' : 'SLEEVE_HELD',
+        lastInspectionSummary: inspection,
+        trace: input.includeTrace === false ? [] : [`activeSleeveId=${state.activeSleeveId}`, 'inspection=performed', 'execution=not_performed']
+    });
+}
 export function runBoundedReadOnlyOrchestration(version, entrypoint = 'dist/plugin-entry.js', root = DEFAULT_LIBRARY_ROOT, input = {}) {
-    const orchestrationRunId = `orch_${simpleStableKey([input.sleeveId ?? 'default', input.requestedToolName ?? 'status', input.requestedAction ?? 'status_read', input.mode ?? 'dry_run', input.approvalDecision ?? 'dry_run_only'])}`;
-    const sleeveId = input.sleeveId ?? 'neomagnetar-dynamic-persona-v1';
+    const useActiveSessionSleeve = input.useActiveSessionSleeve !== false;
+    const sessionState = getRuntimeSleeveSessionState();
+    const resolvedSleeveId = input.sleeveId ?? (useActiveSessionSleeve ? sessionState.activeSleeveId ?? undefined : undefined);
+    const orchestrationRunId = `orch_${simpleStableKey([resolvedSleeveId ?? 'no_active_sleeve', input.requestedToolName ?? 'status', input.requestedAction ?? 'status_read', input.mode ?? 'dry_run', input.approvalDecision ?? 'dry_run_only'])}`;
+    const sleeveId = resolvedSleeveId;
     const requestedToolName = input.requestedToolName ?? 'umg_envoy_block_library_status';
+    if (!sleeveId) {
+        return {
+            ok: true,
+            outputContract: { contractId: 'umg.runtime.orchestration.bounded_read_only.v1', contractStatus: 'NORMALIZED' },
+            orchestrationRunId,
+            orchestrationStatus: 'ORCHESTRATION_BLOCKED',
+            sourceSleeveId: null,
+            mode: (input.mode ?? 'dry_run'),
+            boundaryPolicy: {
+                approvedOnly: true,
+                allowlistedOnly: true,
+                readOnlyOnly: true,
+                broadAutonomousExecution: false,
+                triggerEvaluationAsExecutionAuthority: false,
+                externalMoltBlockFileLoading: false,
+                fullLibraryScan: false,
+                unboundedRecursiveTraversal: false,
+                umgBlockLibraryMutation: false,
+                restartExecution: false,
+                publishExecution: false,
+                packageExecution: false,
+                automaticResponseTakeover: false,
+                directSourceEnabled: false
+            },
+            activeSleeveInspection: null,
+            runtimePreview: null,
+            runtimeSpecSummary: null,
+            irMatrixSummary: null,
+            envelopeSummary: null,
+            toolRequestClassification: null,
+            executionGatePlan: null,
+            approvalCheckpointCreate: null,
+            approvalCheckpointResume: null,
+            approvedReadOnlyExecution: null,
+            blockedActions: [{ requestedToolName, requestedAction: input.requestedAction ?? 'status_read', blockedReason: 'no_active_sleeve' }],
+            warnings: [],
+            errors: [{ code: 'NO_ACTIVE_SLEEVE', message: 'No active sleeve session exists and no sleeveId was provided.' }],
+            audit: {
+                inspectorPerformed: false,
+                runtimePreviewPerformed: false,
+                classificationPerformed: false,
+                gatePlanCreated: false,
+                approvalCheckpointCreated: false,
+                approvalCheckpointResumed: false,
+                readOnlyExecutionPerformed: false,
+                triggerEvaluation: 'not_performed',
+                externalMoltBlockFileLoading: 'not_performed',
+                fullLibraryScan: 'not_performed',
+                unboundedRecursiveTraversal: 'not_performed',
+                libraryMutation: 'not_performed',
+                packageMutation: 'not_performed',
+                restart: 'not_performed',
+                publish: 'not_performed',
+                automaticResponseTakeover: false,
+                directSource: 'disabled'
+            },
+            trace: input.includeTrace === false ? [] : ['blockedReason=no_active_sleeve', 'execution=not_performed']
+        };
+    }
     const requestedAction = input.requestedAction ?? 'status_read';
     const mode = (input.mode ?? 'dry_run');
     const approvalDecision = input.approvalDecision ?? (mode === 'approved_read_only' ? 'approve' : 'dry_run_only');
