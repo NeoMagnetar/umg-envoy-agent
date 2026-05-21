@@ -5823,20 +5823,112 @@ export function runBoundedReadOnlyOrchestration(
     includeToolRequests: true
   });
 
-  const chainInput = {
-    sleeveId,
-    requestedToolName,
-    requestedAction,
-    approvalDecision,
-    mode: mode === 'approved_read_only' ? 'e2e_approved_read_only' : 'dry_run_only',
-    includeTrace
-  };
-  const chain = runRuntimeExecutionChainE2EApprovedReadOnly(version, entrypoint, root, chainInput);
+  const isChainDecision = approvalDecision === 'approve' || approvalDecision === 'deny' || approvalDecision === 'dry_run_only';
+  const chain = isChainDecision
+    ? runRuntimeExecutionChainE2EApprovedReadOnly(version, entrypoint, root, {
+        sleeveId,
+        requestedToolName,
+        requestedAction,
+        approvalDecision,
+        mode: mode === 'approved_read_only' ? 'e2e_approved_read_only' : 'dry_run_only',
+        includeTrace
+      })
+    : {
+        ok: false,
+        outputContract: { contractId: 'umg.runtime.execution_chain.e2e_approved_read_only.v1' as const, contractStatus: 'NORMALIZED' as const },
+        chainRunId: `chain_edit_${simpleStableKey([sleeveId, requestedToolName, requestedAction])}`,
+        chainStatus: 'CHAIN_E2E_BLOCKED' as const,
+        sourceSleeveId: sleeveId,
+        runtimeSpecId: null,
+        classifierResultId: null,
+        gatePlanId: null,
+        checkpointId: null,
+        resumeResultId: null,
+        executionResultId: null,
+        requestedToolName,
+        requestedAction,
+        approvalDecision,
+        executionStatus: 'EXECUTION_BLOCKED' as const,
+        sideEffectStatus: 'not_performed' as const,
+        resultSummary: 'Edit requested; approved read-only execution not performed.',
+        resultPayload: { blockedReason: 'edit_requested' },
+        classifierResult: null,
+        gatePlanResult: null,
+        checkpointCreateResult: null,
+        checkpointResumeResult: {
+          ok: true,
+          version,
+          entrypoint,
+          mode: 'runtime_approval_checkpoint_resume' as const,
+          outputContract: { contractId: 'umg.runtime.approval_checkpoint.resume.v1' as const, contractStatus: 'NORMALIZED' as const },
+          checkpointPersistence: 'not_persisted' as const,
+          executionStatus: 'not_performed' as const,
+          resumeStatus: 'CHECKPOINT_RESUME_EDIT_REQUESTED' as const,
+          resumeResultId: `resume_edit_${simpleStableKey([sleeveId, requestedToolName, requestedAction])}`,
+          sourceCheckpointId: '',
+          sourceRuntimeSpecId: null,
+          sourceSleeveId: sleeveId,
+          sourceGatePlanId: null,
+          sourceRequestId: '',
+          requestedToolName,
+          requestedAction,
+          decision: 'edit' as const,
+          previousApprovalStatus: 'WAITING_FOR_APPROVAL' as const,
+          nextApprovalStatus: 'EDIT_REQUESTED' as const,
+          allowedDecision: true,
+          decisionAccepted: true,
+          editRequested: true,
+          dryRunOnly: false,
+          executionEligible: false,
+          updatedCheckpointProjection: null,
+          audit: {
+            execution: 'not_performed' as const,
+            toolExecution: 'not_performed' as const,
+            approvalCheckpointResumed: true,
+            approvalCheckpointPersistence: 'not_persisted' as const,
+            triggerEvaluation: 'not_performed' as const,
+            libraryMutation: 'not_performed' as const,
+            packageMutation: 'not_performed' as const,
+            restart: 'not_performed' as const,
+            publish: 'not_performed' as const
+          },
+          trace: includeTrace ? ['decision=edit', 'nextApprovalStatus=EDIT_REQUESTED', 'executionEligible=false', 'execution=not_performed'] : [],
+          warnings: [],
+          errors: []
+        },
+        executionResult: null,
+        audit: {
+          runtimeCompiled: false,
+          classificationPerformed: false,
+          gatePlanCreated: false,
+          approvalCheckpointCreated: false,
+          approvalCheckpointResumed: true,
+          approvalVerified: false,
+          allowlistVerified: false,
+          readOnlyVerified: false,
+          toolExecution: 'not_performed' as const,
+          triggerEvaluation: 'not_performed' as const,
+          libraryMutation: 'not_performed' as const,
+          packageMutation: 'not_performed' as const,
+          filesystemMutation: 'not_performed' as const,
+          restart: 'not_performed' as const,
+          publish: 'not_performed' as const
+        },
+        trace: includeTrace ? ['approvalDecision=edit', 'execution=not_performed', 'execution_blocked=edit_requested'] : [],
+        warnings: [],
+        errors: []
+      };
   const executionAllowed = mode === 'approved_read_only' && approvalDecision === 'approve' && chain.executionStatus === 'EXECUTION_READY';
+  const chainBlockedReason = typeof chain.executionResult?.resultPayload === 'object'
+    && chain.executionResult?.resultPayload !== null
+    && 'blockedReason' in chain.executionResult.resultPayload
+    && typeof (chain.executionResult.resultPayload as { blockedReason?: unknown }).blockedReason === 'string'
+      ? (chain.executionResult.resultPayload as { blockedReason?: string }).blockedReason
+      : undefined;
   const blockedActions = chain.executionStatus === 'EXECUTION_BLOCKED' ? [{
     requestedToolName,
     requestedAction,
-    blockedReason: chain.executionResult?.blockedReason ?? chain.resultSummary ?? 'execution_blocked'
+    blockedReason: chainBlockedReason ?? chain.resultSummary ?? 'execution_blocked'
   }] : [];
 
   return {

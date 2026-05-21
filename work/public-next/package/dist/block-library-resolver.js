@@ -4061,6 +4061,10 @@ export function inspectRuntimeActiveSleeveIrMatrixEnvelope(version, entrypoint =
     if (resolved.ok) {
         for (const fragment of resolved.visibleMoltFragments) {
             const block = resolved.resolvedNeoBlocks.find((item) => item.neoblockId === fragment.neoblockId);
+            const blockSummary = block?.summary;
+            const blockSummaryStatus = typeof blockSummary === 'object' && blockSummary !== null && 'status' in blockSummary
+                ? blockSummary.status
+                : undefined;
             const item = {
                 sourceNeoBlockId: fragment.neoblockId,
                 sourceNeoStackId: null,
@@ -4071,7 +4075,7 @@ export function inspectRuntimeActiveSleeveIrMatrixEnvelope(version, entrypoint =
                 mergeKey: fragment.sourceField,
                 stackKey: null,
                 trace: [`sourceBlockId=${fragment.sourceBlockId ?? 'none'}`, `sourceField=${fragment.sourceField}`],
-                sourceMode: block?.summary?.status === 'alpha6_sample_target' ? 'runtimeSpec_sample_blocks' : 'sleeve_native'
+                sourceMode: blockSummaryStatus === 'alpha6_sample_target' ? 'runtimeSpec_sample_blocks' : 'sleeve_native'
             };
             if (Array.isArray(activeMoltBlocks[fragment.sourceField])) {
                 activeMoltBlocks[fragment.sourceField].push(item);
@@ -4255,6 +4259,208 @@ export function inspectRuntimeActiveSleeveIrMatrixEnvelope(version, entrypoint =
             `approvedExecutionState=${approvedExecution ? 'available' : 'unavailable'}`,
             'execution=not_performed'
         ]
+    };
+}
+export function runBoundedReadOnlyOrchestration(version, entrypoint = 'dist/plugin-entry.js', root = DEFAULT_LIBRARY_ROOT, input = {}) {
+    const orchestrationRunId = `orch_${simpleStableKey([input.sleeveId ?? 'default', input.requestedToolName ?? 'status', input.requestedAction ?? 'status_read', input.mode ?? 'dry_run', input.approvalDecision ?? 'dry_run_only'])}`;
+    const sleeveId = input.sleeveId ?? 'neomagnetar-dynamic-persona-v1';
+    const requestedToolName = input.requestedToolName ?? 'umg_envoy_block_library_status';
+    const requestedAction = input.requestedAction ?? 'status_read';
+    const mode = (input.mode ?? 'dry_run');
+    const approvalDecision = input.approvalDecision ?? (mode === 'approved_read_only' ? 'approve' : 'dry_run_only');
+    const includeTrace = input.includeTrace !== false;
+    const boundaryPolicy = {
+        approvedOnly: true,
+        allowlistedOnly: true,
+        readOnlyOnly: true,
+        broadAutonomousExecution: false,
+        triggerEvaluationAsExecutionAuthority: false,
+        externalMoltBlockFileLoading: false,
+        fullLibraryScan: false,
+        unboundedRecursiveTraversal: false,
+        umgBlockLibraryMutation: false,
+        restartExecution: false,
+        publishExecution: false,
+        packageExecution: false,
+        automaticResponseTakeover: false,
+        directSourceEnabled: false
+    };
+    const inspector = input.includeInspector === false ? null : inspectRuntimeActiveSleeveIrMatrixEnvelope(version, entrypoint, root, {
+        sleeveId,
+        includeNeoStacks: true,
+        includeNeoBlocks: true,
+        includeMoltBlocks: true,
+        includeRuntimeSpec: true,
+        includeIrMatrix: input.includeIrMatrix !== false,
+        includeEnvelope: input.includeEnvelope !== false,
+        includeExecutionGateState: input.includeExecutionGateState !== false,
+        mode: 'inspect_only'
+    });
+    const runtimePreview = input.includeRuntimePreview === false ? null : previewRuntimeSleeve(version, entrypoint, root, {
+        sleeveId,
+        previewFormat: 'summary',
+        includeActiveStack: true,
+        includeMoltMap: true,
+        includeEnvelope: input.includeEnvelope !== false,
+        includeToolRequests: true
+    });
+    const isChainDecision = approvalDecision === 'approve' || approvalDecision === 'deny' || approvalDecision === 'dry_run_only';
+    const chain = isChainDecision
+        ? runRuntimeExecutionChainE2EApprovedReadOnly(version, entrypoint, root, {
+            sleeveId,
+            requestedToolName,
+            requestedAction,
+            approvalDecision,
+            mode: mode === 'approved_read_only' ? 'e2e_approved_read_only' : 'dry_run_only',
+            includeTrace
+        })
+        : {
+            ok: false,
+            outputContract: { contractId: 'umg.runtime.execution_chain.e2e_approved_read_only.v1', contractStatus: 'NORMALIZED' },
+            chainRunId: `chain_edit_${simpleStableKey([sleeveId, requestedToolName, requestedAction])}`,
+            chainStatus: 'CHAIN_E2E_BLOCKED',
+            sourceSleeveId: sleeveId,
+            runtimeSpecId: null,
+            classifierResultId: null,
+            gatePlanId: null,
+            checkpointId: null,
+            resumeResultId: null,
+            executionResultId: null,
+            requestedToolName,
+            requestedAction,
+            approvalDecision,
+            executionStatus: 'EXECUTION_BLOCKED',
+            sideEffectStatus: 'not_performed',
+            resultSummary: 'Edit requested; approved read-only execution not performed.',
+            resultPayload: { blockedReason: 'edit_requested' },
+            classifierResult: null,
+            gatePlanResult: null,
+            checkpointCreateResult: null,
+            checkpointResumeResult: {
+                ok: true,
+                version,
+                entrypoint,
+                mode: 'runtime_approval_checkpoint_resume',
+                outputContract: { contractId: 'umg.runtime.approval_checkpoint.resume.v1', contractStatus: 'NORMALIZED' },
+                checkpointPersistence: 'not_persisted',
+                executionStatus: 'not_performed',
+                resumeStatus: 'CHECKPOINT_RESUME_EDIT_REQUESTED',
+                resumeResultId: `resume_edit_${simpleStableKey([sleeveId, requestedToolName, requestedAction])}`,
+                sourceCheckpointId: '',
+                sourceRuntimeSpecId: null,
+                sourceSleeveId: sleeveId,
+                sourceGatePlanId: null,
+                sourceRequestId: '',
+                requestedToolName,
+                requestedAction,
+                decision: 'edit',
+                previousApprovalStatus: 'WAITING_FOR_APPROVAL',
+                nextApprovalStatus: 'EDIT_REQUESTED',
+                allowedDecision: true,
+                decisionAccepted: true,
+                editRequested: true,
+                dryRunOnly: false,
+                executionEligible: false,
+                updatedCheckpointProjection: null,
+                audit: {
+                    execution: 'not_performed',
+                    toolExecution: 'not_performed',
+                    approvalCheckpointResumed: true,
+                    approvalCheckpointPersistence: 'not_persisted',
+                    triggerEvaluation: 'not_performed',
+                    libraryMutation: 'not_performed',
+                    packageMutation: 'not_performed',
+                    restart: 'not_performed',
+                    publish: 'not_performed'
+                },
+                trace: includeTrace ? ['decision=edit', 'nextApprovalStatus=EDIT_REQUESTED', 'executionEligible=false', 'execution=not_performed'] : [],
+                warnings: [],
+                errors: []
+            },
+            executionResult: null,
+            audit: {
+                runtimeCompiled: false,
+                classificationPerformed: false,
+                gatePlanCreated: false,
+                approvalCheckpointCreated: false,
+                approvalCheckpointResumed: true,
+                approvalVerified: false,
+                allowlistVerified: false,
+                readOnlyVerified: false,
+                toolExecution: 'not_performed',
+                triggerEvaluation: 'not_performed',
+                libraryMutation: 'not_performed',
+                packageMutation: 'not_performed',
+                filesystemMutation: 'not_performed',
+                restart: 'not_performed',
+                publish: 'not_performed'
+            },
+            trace: includeTrace ? ['approvalDecision=edit', 'execution=not_performed', 'execution_blocked=edit_requested'] : [],
+            warnings: [],
+            errors: []
+        };
+    const executionAllowed = mode === 'approved_read_only' && approvalDecision === 'approve' && chain.executionStatus === 'EXECUTION_READY';
+    const chainBlockedReason = typeof chain.executionResult?.resultPayload === 'object'
+        && chain.executionResult?.resultPayload !== null
+        && 'blockedReason' in chain.executionResult.resultPayload
+        && typeof chain.executionResult.resultPayload.blockedReason === 'string'
+        ? chain.executionResult.resultPayload.blockedReason
+        : undefined;
+    const blockedActions = chain.executionStatus === 'EXECUTION_BLOCKED' ? [{
+            requestedToolName,
+            requestedAction,
+            blockedReason: chainBlockedReason ?? chain.resultSummary ?? 'execution_blocked'
+        }] : [];
+    return {
+        ok: true,
+        outputContract: { contractId: 'umg.runtime.orchestration.bounded_read_only.v1', contractStatus: 'NORMALIZED' },
+        orchestrationRunId,
+        orchestrationStatus: chain.executionStatus === 'EXECUTION_BLOCKED'
+            ? 'ORCHESTRATION_BLOCKED'
+            : (chain.ok ? 'ORCHESTRATION_READY' : 'ORCHESTRATION_PARTIAL'),
+        sourceSleeveId: sleeveId,
+        mode,
+        boundaryPolicy,
+        activeSleeveInspection: inspector?.activeSleeve ?? null,
+        runtimePreview,
+        runtimeSpecSummary: inspector?.runtimeSpec ?? runtimePreview?.runtimeSpec ?? null,
+        irMatrixSummary: inspector?.irMatrixProjection ?? null,
+        envelopeSummary: inspector?.responseEnvelopePreview ?? null,
+        toolRequestClassification: chain.classifierResult ?? null,
+        executionGatePlan: chain.gatePlanResult ?? null,
+        approvalCheckpointCreate: chain.checkpointCreateResult ?? null,
+        approvalCheckpointResume: approvalDecision === 'dry_run_only' && mode !== 'approved_read_only' ? null : (chain.checkpointResumeResult ?? null),
+        approvedReadOnlyExecution: executionAllowed ? (chain.executionResult ?? null) : null,
+        blockedActions,
+        warnings: [...(runtimePreview?.warnings ?? []), ...(inspector?.warnings ?? []), ...(chain.warnings ?? [])],
+        errors: [...(runtimePreview?.errors ?? []), ...(inspector?.errors ?? []), ...(chain.errors ?? [])],
+        audit: {
+            inspectorPerformed: inspector !== null,
+            runtimePreviewPerformed: runtimePreview !== null,
+            classificationPerformed: true,
+            gatePlanCreated: true,
+            approvalCheckpointCreated: (chain.checkpointCreateResult?.checkpointCount ?? 0) > 0,
+            approvalCheckpointResumed: !!chain.checkpointResumeResult,
+            readOnlyExecutionPerformed: executionAllowed,
+            triggerEvaluation: 'not_performed',
+            externalMoltBlockFileLoading: 'not_performed',
+            fullLibraryScan: 'not_performed',
+            unboundedRecursiveTraversal: 'not_performed',
+            libraryMutation: 'not_performed',
+            packageMutation: 'not_performed',
+            restart: 'not_performed',
+            publish: 'not_performed',
+            automaticResponseTakeover: false,
+            directSource: 'disabled'
+        },
+        trace: includeTrace ? [
+            `orchestrationRunId=${orchestrationRunId}`,
+            `mode=${mode}`,
+            `requestedToolName=${requestedToolName}`,
+            `requestedAction=${requestedAction}`,
+            `approvalDecision=${approvalDecision}`,
+            `executionStatus=${chain.executionStatus}`
+        ] : []
     };
 }
 export function previewRuntimeSleeve(version, entrypoint = 'dist/plugin-entry.js', root = DEFAULT_LIBRARY_ROOT, input = {}) {

@@ -3523,6 +3523,717 @@ export declare function inspectRuntimeActiveSleeveIrMatrixEnvelope(version: stri
     };
     trace: string[];
 };
+export declare function runBoundedReadOnlyOrchestration(version: string, entrypoint?: string, root?: string, input?: {
+    sleeveId?: string;
+    requestedToolName?: string;
+    requestedAction?: string;
+    approvalDecision?: 'approve' | 'deny' | 'edit' | 'dry_run_only';
+    mode?: 'inspect_only' | 'dry_run' | 'approved_read_only' | string;
+    includeInspector?: boolean;
+    includeRuntimePreview?: boolean;
+    includeIrMatrix?: boolean;
+    includeEnvelope?: boolean;
+    includeExecutionGateState?: boolean;
+    includeTrace?: boolean;
+}): {
+    ok: boolean;
+    outputContract: {
+        contractId: "umg.runtime.orchestration.bounded_read_only.v1";
+        contractStatus: "NORMALIZED";
+    };
+    orchestrationRunId: string;
+    orchestrationStatus: "ORCHESTRATION_BLOCKED" | "ORCHESTRATION_READY" | "ORCHESTRATION_PARTIAL";
+    sourceSleeveId: string;
+    mode: "dry_run" | "inspect_only" | "approved_read_only";
+    boundaryPolicy: {
+        approvedOnly: boolean;
+        allowlistedOnly: boolean;
+        readOnlyOnly: boolean;
+        broadAutonomousExecution: boolean;
+        triggerEvaluationAsExecutionAuthority: boolean;
+        externalMoltBlockFileLoading: boolean;
+        fullLibraryScan: boolean;
+        unboundedRecursiveTraversal: boolean;
+        umgBlockLibraryMutation: boolean;
+        restartExecution: boolean;
+        publishExecution: boolean;
+        packageExecution: boolean;
+        automaticResponseTakeover: boolean;
+        directSourceEnabled: boolean;
+    };
+    activeSleeveInspection: {
+        sleeveId: string;
+        sleeveName: string;
+        sleeveSource: string;
+        sleeveStatus: string;
+        sourceCatalog: string;
+        resolvedFrom: string;
+        selectedExplicitly: boolean;
+        runtimeEligible: boolean;
+        warningList: string[];
+        graphStatus: "INDEXED_REFERENCE_ONLY" | null;
+        sourcePath: string | null;
+        catalogPath: string | null;
+    } | null;
+    runtimePreview: {
+        ok: boolean;
+        previewStatus: "HELD";
+        runtimeSpec: null;
+        activeStackProjection: null;
+        moltMapProjection: null;
+        responseEnvelopePreview: null;
+        toolRequestPreview: never[];
+        warnings: string[];
+        errors: never[] | {
+            code: BlockLibraryHoldCode;
+            message: string;
+        }[] | {
+            code: string;
+            message: string;
+        }[] | {
+            code: string;
+            message: string;
+        }[] | {
+            code: string;
+            message: string;
+        }[] | {
+            code: string;
+            message: string;
+        }[] | {
+            code: string;
+            message: string;
+        }[] | {
+            code: string;
+            message: string;
+        }[];
+        nlProjection: string;
+        version: string;
+        entrypoint: string;
+        mode: "runtime_preview";
+        outputContract: {
+            contractId: "umg.runtime.preview.v1";
+            contractStatus: "NORMALIZED";
+        };
+        executionStatus: "not_performed";
+        directSource: "not_enabled";
+    } | {
+        ok: boolean;
+        previewStatus: "PARTIAL" | "FAILED" | "RUNTIME_PREVIEW_READY";
+        runtimeSpec: {
+            runtimeSpecVersion: "RuntimeSpecV0";
+            runtimeSpecId: string;
+            sleeveId: string;
+            activeBlocks: string[];
+            toolRequests: {
+                kind: string;
+                sourceBlockId: string | null;
+                declaredAction: string;
+            }[];
+            moltMap?: undefined;
+            promptParts?: undefined;
+            strategy?: undefined;
+            constraints?: undefined;
+            context?: undefined;
+            values?: undefined;
+            format?: undefined;
+        } | {
+            runtimeSpecVersion: "RuntimeSpecV0";
+            runtimeSpecId: string;
+            sleeveId: string;
+            activeBlocks: string[];
+            moltMap: Record<string, string>;
+            promptParts: {
+                field: string;
+                text: string;
+                sourceBlockId: string | null;
+            }[];
+            strategy: string | null;
+            constraints: string | null;
+            context: {
+                subject: string | null;
+                primary: string | null;
+            };
+            values: string | null;
+            format: string | null;
+            toolRequests: {
+                kind: string;
+                sourceBlockId: string | null;
+                declaredAction: string;
+            }[];
+        };
+        activeStackProjection: BlockLibraryActiveStackProjectionResult | null;
+        moltMapProjection: Record<string, string> | null;
+        responseEnvelopePreview: BlockLibraryResponseEnvelopeFragmentResult | null;
+        toolRequestPreview: {
+            kind: string;
+            sourceBlockId: string | null;
+            declaredAction: string;
+        }[];
+        warnings: string[];
+        errors: {
+            code: string;
+            message: string;
+        }[];
+        nlProjection: string;
+        version: string;
+        entrypoint: string;
+        mode: "runtime_preview";
+        outputContract: {
+            contractId: "umg.runtime.preview.v1";
+            contractStatus: "NORMALIZED";
+        };
+        executionStatus: "not_performed";
+        directSource: "not_enabled";
+    } | null;
+    runtimeSpecSummary: {
+        ok: boolean;
+        compileStatus: "HELD";
+        runtimeSpecVersion: string;
+        runtimeSpecId: null;
+        sleeveId: string | null;
+        activeBlocks: never[];
+        moltMap: {};
+        promptParts: never[];
+        strategy: null;
+        constraints: null;
+        context: null;
+        values: null;
+        format: null;
+        toolRequests: never[];
+        warnings: string[];
+        errors: never[] | {
+            code: BlockLibraryHoldCode;
+            message: string;
+        }[] | {
+            code: string;
+            message: string;
+        }[] | {
+            code: string;
+            message: string;
+        }[] | {
+            code: string;
+            message: string;
+        }[] | {
+            code: string;
+            message: string;
+        }[] | {
+            code: string;
+            message: string;
+        }[];
+        trace: {
+            resolutionStatus: "RESOLVED" | "PARTIAL" | "HELD" | "DENIED";
+            strictness?: undefined;
+        };
+        version: string;
+        entrypoint: string;
+        mode: "runtime_compile";
+        outputContract: {
+            contractId: "umg.runtime.compile.v1";
+            contractStatus: "NORMALIZED";
+        };
+        readOnly: true;
+        execution: "not_performed";
+        directSource: "not_enabled";
+    } | {
+        runtimeSpecVersion: "RuntimeSpecV0";
+        runtimeSpecId: string;
+        sleeveId: string;
+        activeBlocks: string[];
+        toolRequests: {
+            kind: string;
+            sourceBlockId: string | null;
+            declaredAction: string;
+        }[];
+        moltMap?: undefined;
+        promptParts?: undefined;
+        strategy?: undefined;
+        constraints?: undefined;
+        context?: undefined;
+        values?: undefined;
+        format?: undefined;
+    } | {
+        runtimeSpecVersion: "RuntimeSpecV0";
+        runtimeSpecId: string;
+        sleeveId: string;
+        activeBlocks: string[];
+        moltMap: Record<string, string>;
+        promptParts: {
+            field: string;
+            text: string;
+            sourceBlockId: string | null;
+        }[];
+        strategy: string | null;
+        constraints: string | null;
+        context: {
+            subject: string | null;
+            primary: string | null;
+        };
+        values: string | null;
+        format: string | null;
+        toolRequests: {
+            kind: string;
+            sourceBlockId: string | null;
+            declaredAction: string;
+        }[];
+    } | null;
+    irMatrixSummary: {
+        matrixId: string;
+        nodes: any[];
+        edges: any[];
+        activeRoute: string[];
+        blockedRoute: string[];
+        offRoute: never[];
+        hierarchyEdges: string[];
+        siblingEdges: never[];
+        toolRequestEdges: string[];
+        checkpointEdges: string[];
+        executionEdges: string[];
+        symbolsLegend: {
+            sleeve: string;
+            neoStack: string;
+            neoBlock: string;
+            moltBlock: string;
+            diagnostic: string;
+            runtimeSpec: string;
+            toolRequest: string;
+            gatePlan: string;
+            checkpoint: string;
+            executionResult: string;
+            envelope: string;
+        };
+    } | null;
+    envelopeSummary: {
+        envelopeSource: any;
+        envelopeStatus: any;
+        heldReason: any;
+        activeStack: BlockLibraryActiveStackProjectionResult;
+        currentContextMoltMap: {};
+        formalResponseContentPreview: BlockLibraryResponseEnvelopeFragmentResult | {
+            ok: boolean;
+            version: string;
+            entrypoint: string;
+            mode: string;
+            outputContract: {
+                contractId: string;
+                contractStatus: string;
+                sourceContractId: string;
+                sourceMode: string;
+                activeStackSourceContract: string;
+                activeStackSourceStatus: string;
+                automaticResponseTakeover: boolean;
+                recursiveLoad: boolean;
+                fullLibraryScan: boolean;
+            };
+            readOnly: boolean;
+            execution: string;
+            directSource: string;
+            query: {
+                neoblockIds: never[];
+                project: string;
+                currentState: string;
+                activeTool: string;
+                formalResponseContent: string;
+                projectionFormat: string;
+                includeMetadata: boolean;
+                includeAudit: boolean;
+                activeSleeve: string;
+                activeStackBoundary: string;
+                includeActiveStackProjection: boolean;
+            };
+            sourceComposition: null;
+            sourceActiveStackProjection: BlockLibraryActiveStackProjectionResult;
+            responseEnvelopeFragment: {
+                fragmentStatus: string;
+                fragmentKind: string;
+                sections: {
+                    activeStack: {};
+                    envoyIntuition: {};
+                    currentContextMoltMap: {};
+                    formalResponseContent: {};
+                    metadata: {};
+                    audit: {};
+                };
+                sectionOrder: string[];
+                automaticResponseTakeover: boolean;
+                limitations: string[];
+            };
+            envelopeSource: string;
+            envelopeStatus: string;
+            heldReason: string;
+            runtimeFallbackPreview: null;
+            nlProjection: null;
+            audit: {
+                execution: string;
+                triggerEvaluation: string;
+                libraryMutation: string;
+            };
+            warnings: never[];
+            errors: never[];
+        };
+        runtimeFallbackPreview: any;
+        metadataTagsHelp: {
+            runtimeSpecId: string | null;
+            executionState: string;
+        };
+        executionState: string;
+    } | null;
+    toolRequestClassification: {
+        ok: boolean;
+        classificationStatus: "CLASSIFICATION_HELD";
+        sourceRuntimeSpecId: null;
+        sleeveId: string | null;
+        requestCount: number;
+        classifications: never[];
+        blockedCount: number;
+        approvalRequiredCount: number;
+        readOnlyCount: number;
+        unknownCount: number;
+        trace: string[];
+        warnings: string[];
+        errors: {
+            code: string;
+            message: string;
+        }[];
+        version: string;
+        entrypoint: string;
+        mode: "runtime_tool_request_classify";
+        outputContract: {
+            contractId: "umg.runtime.tool_request.classify.v1";
+            contractStatus: "NORMALIZED";
+        };
+        executionStatus: "not_performed";
+        audit: {
+            execution: "not_performed";
+            triggerEvaluation: "not_performed";
+            approvalCheckpointCreated: boolean;
+            toolExecution: "not_performed";
+            libraryMutation: "not_performed";
+            packageMutation: "not_performed";
+            restart: "not_performed";
+            publish: "not_performed";
+        };
+    } | {
+        ok: boolean;
+        classificationStatus: string;
+        sourceRuntimeSpecId: string;
+        sleeveId: string;
+        requestCount: number;
+        classifications: RuntimeToolRequestClassificationV0[];
+        blockedCount: number;
+        approvalRequiredCount: number;
+        readOnlyCount: number;
+        unknownCount: number;
+        trace: string[];
+        warnings: string[];
+        errors: {
+            code: string;
+            message: string;
+        }[];
+        version: string;
+        entrypoint: string;
+        mode: "runtime_tool_request_classify";
+        outputContract: {
+            contractId: "umg.runtime.tool_request.classify.v1";
+            contractStatus: "NORMALIZED";
+        };
+        executionStatus: "not_performed";
+        audit: {
+            execution: "not_performed";
+            triggerEvaluation: "not_performed";
+            approvalCheckpointCreated: boolean;
+            toolExecution: "not_performed";
+            libraryMutation: "not_performed";
+            packageMutation: "not_performed";
+            restart: "not_performed";
+            publish: "not_performed";
+        };
+    } | null;
+    executionGatePlan: {
+        ok: boolean;
+        planStatus: "GATE_PLAN_HELD";
+        gatePlanId: string;
+        sourceRuntimeSpecId: string | null;
+        sourceSleeveId: string | null;
+        requestCount: number;
+        plannedActions: never[];
+        readOnlyCount: number;
+        approvalRequiredCount: number;
+        blockedCount: number;
+        unknownCount: number;
+        trace: string[];
+        warnings: string[];
+        errors: {
+            code: string;
+            message: string;
+        }[];
+        version: string;
+        entrypoint: string;
+        mode: "runtime_execution_gate_plan";
+        outputContract: {
+            contractId: "umg.runtime.execution_gate.plan.v1";
+            contractStatus: "NORMALIZED";
+        };
+        executionStatus: "not_performed";
+        checkpointCreated: false;
+        audit: {
+            execution: "not_performed";
+            toolExecution: "not_performed";
+            approvalCheckpointCreated: boolean;
+            triggerEvaluation: "not_performed";
+            libraryMutation: "not_performed";
+            packageMutation: "not_performed";
+            restart: "not_performed";
+            publish: "not_performed";
+        };
+    } | {
+        ok: boolean;
+        planStatus: "GATE_PLAN_READY" | "GATE_PLAN_PARTIAL";
+        gatePlanId: string;
+        sourceRuntimeSpecId: string | null;
+        sourceSleeveId: string | null;
+        requestCount: number;
+        plannedActions: RuntimeExecutionGatePlannedActionV0[];
+        readOnlyCount: number;
+        approvalRequiredCount: number;
+        blockedCount: number;
+        unknownCount: number;
+        trace: string[];
+        warnings: string[];
+        errors: {
+            code: string;
+            message: string;
+        }[];
+        version: string;
+        entrypoint: string;
+        mode: "runtime_execution_gate_plan";
+        outputContract: {
+            contractId: "umg.runtime.execution_gate.plan.v1";
+            contractStatus: "NORMALIZED";
+        };
+        executionStatus: "not_performed";
+        checkpointCreated: false;
+        audit: {
+            execution: "not_performed";
+            toolExecution: "not_performed";
+            approvalCheckpointCreated: boolean;
+            triggerEvaluation: "not_performed";
+            libraryMutation: "not_performed";
+            packageMutation: "not_performed";
+            restart: "not_performed";
+            publish: "not_performed";
+        };
+    } | null;
+    approvalCheckpointCreate: {
+        ok: boolean;
+        checkpointCreateStatus: "CHECKPOINT_CREATE_HELD";
+        sourceRuntimeSpecId: string | null;
+        sourceSleeveId: string | null;
+        sourceGatePlanId: null;
+        checkpointCount: number;
+        checkpoints: never[];
+        skippedActionCount: number;
+        skippedActions: never[];
+        audit: {
+            execution: "not_performed";
+            toolExecution: "not_performed";
+            approvalCheckpointCreated: boolean;
+            approvalCheckpointPersistence: "not_persisted";
+            triggerEvaluation: "not_performed";
+            libraryMutation: "not_performed";
+            packageMutation: "not_performed";
+            restart: "not_performed";
+            publish: "not_performed";
+        };
+        trace: string[];
+        warnings: string[];
+        errors: {
+            code: string;
+            message: string;
+        }[];
+        version: string;
+        entrypoint: string;
+        mode: "runtime_approval_checkpoint_create";
+        outputContract: {
+            contractId: "umg.runtime.approval_checkpoint.create.v1";
+            contractStatus: "NORMALIZED";
+        };
+        executionStatus: "not_performed";
+        checkpointPersistence: "not_persisted";
+    } | {
+        ok: boolean;
+        checkpointCreateStatus: "CHECKPOINT_CREATE_READY" | "CHECKPOINT_CREATE_PARTIAL";
+        sourceRuntimeSpecId: string | null;
+        sourceSleeveId: string | null;
+        sourceGatePlanId: string;
+        checkpointCount: number;
+        checkpoints: RuntimeApprovalCheckpointV0[];
+        skippedActionCount: number;
+        skippedActions: {
+            requestId: string;
+            requestedToolName: string | null;
+            requestedAction: string;
+            skipReason: string;
+        }[];
+        audit: {
+            execution: "not_performed";
+            toolExecution: "not_performed";
+            approvalCheckpointCreated: boolean;
+            approvalCheckpointPersistence: "not_persisted";
+            triggerEvaluation: "not_performed";
+            libraryMutation: "not_performed";
+            packageMutation: "not_performed";
+            restart: "not_performed";
+            publish: "not_performed";
+        };
+        trace: string[];
+        warnings: string[];
+        errors: {
+            code: string;
+            message: string;
+        }[];
+        version: string;
+        entrypoint: string;
+        mode: "runtime_approval_checkpoint_create";
+        outputContract: {
+            contractId: "umg.runtime.approval_checkpoint.create.v1";
+            contractStatus: "NORMALIZED";
+        };
+        executionStatus: "not_performed";
+        checkpointPersistence: "not_persisted";
+    } | null;
+    approvalCheckpointResume: {
+        ok: boolean;
+        resumeStatus: RuntimeApprovalCheckpointResumeStatus;
+        resumeResultId: string;
+        sourceCheckpointId: string;
+        sourceRuntimeSpecId: string | null;
+        sourceSleeveId: string | null;
+        sourceGatePlanId: string | null;
+        sourceRequestId: string;
+        requestedToolName: string | null;
+        requestedAction: string;
+        decision: "dry_run_only" | "approve" | "deny" | "edit";
+        previousApprovalStatus: RuntimeApprovalStatus;
+        nextApprovalStatus: RuntimeApprovalStatus;
+        allowedDecision: boolean;
+        decisionAccepted: boolean;
+        editRequested: boolean;
+        dryRunOnly: boolean;
+        executionEligible: boolean;
+        updatedCheckpointProjection: null;
+        audit: {
+            execution: "not_performed";
+            toolExecution: "not_performed";
+            approvalCheckpointResumed: boolean;
+            approvalCheckpointPersistence: "not_persisted";
+            triggerEvaluation: "not_performed";
+            libraryMutation: "not_performed";
+            packageMutation: "not_performed";
+            restart: "not_performed";
+            publish: "not_performed";
+        };
+        trace: string[];
+        errors: {
+            code: string;
+            message: string;
+        }[];
+        warnings: never[];
+        version: string;
+        entrypoint: string;
+        mode: "runtime_approval_checkpoint_resume";
+        outputContract: {
+            contractId: "umg.runtime.approval_checkpoint.resume.v1";
+            contractStatus: "NORMALIZED";
+        };
+        checkpointPersistence: "not_persisted";
+        executionStatus: "not_performed";
+    } | {
+        ok: boolean;
+        resumeStatus: "CHECKPOINT_RESUME_READY" | "CHECKPOINT_RESUME_DENIED" | "CHECKPOINT_RESUME_EDIT_REQUESTED" | "CHECKPOINT_RESUME_DRY_RUN_ONLY";
+        resumeResultId: string;
+        sourceCheckpointId: string;
+        sourceRuntimeSpecId: string | null;
+        sourceSleeveId: string | null;
+        sourceGatePlanId: string | null;
+        sourceRequestId: string;
+        requestedToolName: string | null;
+        requestedAction: string;
+        decision: "dry_run_only" | "approve" | "deny" | "edit";
+        previousApprovalStatus: "WAITING_FOR_APPROVAL";
+        nextApprovalStatus: "DENIED" | "APPROVED" | "EDIT_REQUESTED" | "DRY_RUN_ONLY";
+        allowedDecision: boolean;
+        decisionAccepted: boolean;
+        editRequested: boolean;
+        dryRunOnly: boolean;
+        executionEligible: boolean;
+        updatedCheckpointProjection: RuntimeApprovalCheckpointV0;
+        audit: {
+            execution: "not_performed";
+            toolExecution: "not_performed";
+            approvalCheckpointResumed: boolean;
+            approvalCheckpointPersistence: "not_persisted";
+            triggerEvaluation: "not_performed";
+            libraryMutation: "not_performed";
+            packageMutation: "not_performed";
+            restart: "not_performed";
+            publish: "not_performed";
+        };
+        trace: string[];
+        warnings: never[];
+        errors: never[];
+        version: string;
+        entrypoint: string;
+        mode: "runtime_approval_checkpoint_resume";
+        outputContract: {
+            contractId: "umg.runtime.approval_checkpoint.resume.v1";
+            contractStatus: "NORMALIZED";
+        };
+        checkpointPersistence: "not_persisted";
+        executionStatus: "not_performed";
+    } | null;
+    approvedReadOnlyExecution: (RuntimeApprovedAllowlistedExecutionV0 & {
+        ok: boolean;
+        outputContract: {
+            contractId: "umg.runtime.execute_approved.allowlisted.v1";
+            contractStatus: "NORMALIZED";
+        };
+        errors?: Array<{
+            code: string;
+            message: string;
+        }>;
+        warnings?: string[];
+    }) | null;
+    blockedActions: {
+        requestedToolName: string;
+        requestedAction: string;
+        blockedReason: string;
+    }[];
+    warnings: string[];
+    errors: {
+        code: string;
+        message: string;
+    }[];
+    audit: {
+        inspectorPerformed: boolean;
+        runtimePreviewPerformed: boolean;
+        classificationPerformed: boolean;
+        gatePlanCreated: boolean;
+        approvalCheckpointCreated: boolean;
+        approvalCheckpointResumed: boolean;
+        readOnlyExecutionPerformed: boolean;
+        triggerEvaluation: "not_performed";
+        externalMoltBlockFileLoading: "not_performed";
+        fullLibraryScan: "not_performed";
+        unboundedRecursiveTraversal: "not_performed";
+        libraryMutation: "not_performed";
+        packageMutation: "not_performed";
+        restart: "not_performed";
+        publish: "not_performed";
+        automaticResponseTakeover: boolean;
+        directSource: "disabled";
+    };
+    trace: string[];
+};
 export declare function previewRuntimeSleeve(version: string, entrypoint?: string, root?: string, input?: {
     sleeveId?: string;
     runtimeSessionId?: string;
