@@ -1,0 +1,271 @@
+{
+  "sleeveId": "umg-runtime-inspector-native-v1",
+  "sleeveName": "UMG Runtime Inspector Native Sleeve",
+  "nativeGraph": {
+    "schemaVersion": "umg.native_sleeve_graph.v1",
+    "sleeveId": "umg-runtime-inspector-native-v1",
+    "sleeveName": "UMG Runtime Inspector Native Sleeve",
+    "nativeGraphId": "native-graph.umg-runtime-inspector-native-v1",
+    "provenance": {
+      "category": "sleeve_native",
+      "declaredBy": "sleeve",
+      "sourceId": "umg-runtime-inspector-native-v1",
+      "sourcePath": "AI/SLEEVES/umg-runtime-inspector-native-v1/native-graph.json",
+      "evidence": [
+        "nativeGraph.schemaVersion=umg.native_sleeve_graph.v1"
+      ]
+    },
+    "neoStacks": [
+      {
+        "stackId": "runtime-inspector-core-stack",
+        "label": "Runtime Inspector Core Stack",
+        "purpose": "Defines the sleeve as a read-only inspector of active runtime identity and graph state.",
+        "containedNeoBlockIds": [
+          "nb.runtime_inspector.trigger",
+          "nb.runtime_inspector.directive",
+          "nb.runtime_inspector.subject",
+          "nb.runtime_inspector.identity"
+        ],
+        "order": 10,
+        "activation": {
+          "defaultActive": true,
+          "reason": "Primary runtime inspection stack."
+        },
+        "provenance": {
+          "category": "sleeve_native",
+          "declaredBy": "sleeve",
+          "sourceId": "runtime-inspector-core-stack"
+        }
+      },
+      {
+        "stackId": "runtime-inspector-output-stack",
+        "label": "Runtime Inspector Output Stack",
+        "purpose": "Shapes the runtime, IR matrix, envelope, and provenance explanation output.",
+        "containedNeoBlockIds": [
+          "nb.runtime_inspector.instruction",
+          "nb.runtime_inspector.provenance",
+          "nb.runtime_inspector.blueprint"
+        ],
+        "order": 20,
+        "activation": {
+          "defaultActive": true,
+          "reason": "Runtime inspection output stack."
+        },
+        "provenance": {
+          "category": "sleeve_native",
+          "declaredBy": "sleeve",
+          "sourceId": "runtime-inspector-output-stack"
+        }
+      }
+    ],
+    "neoBlocks": [
+      {
+        "neoBlockId": "nb.runtime_inspector.trigger",
+        "label": "Inspector Trigger",
+        "role": "Activates explicit read-only runtime inspection.",
+        "parentStackIds": ["runtime-inspector-core-stack"],
+        "contributesTo": ["MOLT", "RuntimeSpec", "IRMatrix"],
+        "provenance": { "category": "sleeve_native", "declaredBy": "sleeve", "sourceId": "nb.runtime_inspector.trigger" }
+      },
+      {
+        "neoBlockId": "nb.runtime_inspector.directive",
+        "label": "Inspector Directive",
+        "role": "Constrains inspection to approved allowlisted read-only flows.",
+        "parentStackIds": ["runtime-inspector-core-stack"],
+        "contributesTo": ["MOLT", "RuntimeSpec", "ToolRequest"],
+        "provenance": { "category": "sleeve_native", "declaredBy": "sleeve", "sourceId": "nb.runtime_inspector.directive" }
+      },
+      {
+        "neoBlockId": "nb.runtime_inspector.subject",
+        "label": "Runtime Subject",
+        "role": "Directs the sleeve to active sleeve, RuntimeSpec, IR Matrix, envelope, and provenance surfaces.",
+        "parentStackIds": ["runtime-inspector-core-stack"],
+        "contributesTo": ["MOLT", "RuntimeSpec", "IRMatrix"],
+        "provenance": { "category": "sleeve_native", "declaredBy": "sleeve", "sourceId": "nb.runtime_inspector.subject" }
+      },
+      {
+        "neoBlockId": "nb.runtime_inspector.identity",
+        "label": "Inspector Identity",
+        "role": "Makes the sleeve behave like a runtime state auditor.",
+        "parentStackIds": ["runtime-inspector-core-stack"],
+        "contributesTo": ["MOLT", "RuntimeSpec", "Envelope"],
+        "provenance": { "category": "sleeve_native", "declaredBy": "sleeve", "sourceId": "nb.runtime_inspector.identity" }
+      },
+      {
+        "neoBlockId": "nb.runtime_inspector.instruction",
+        "label": "Inspection Instruction",
+        "role": "Requires explicit reporting of active runtime state and graph completeness.",
+        "parentStackIds": ["runtime-inspector-output-stack"],
+        "contributesTo": ["MOLT", "RuntimeSpec", "Envelope"],
+        "provenance": { "category": "sleeve_native", "declaredBy": "sleeve", "sourceId": "nb.runtime_inspector.instruction" }
+      },
+      {
+        "neoBlockId": "nb.runtime_inspector.provenance",
+        "label": "Provenance Instruction",
+        "role": "Requires provenance, route purity, and contamination state to be explicit.",
+        "parentStackIds": ["runtime-inspector-output-stack"],
+        "contributesTo": ["MOLT", "RuntimeSpec", "IRMatrix"],
+        "provenance": { "category": "sleeve_native", "declaredBy": "sleeve", "sourceId": "nb.runtime_inspector.provenance" }
+      },
+      {
+        "neoBlockId": "nb.runtime_inspector.blueprint",
+        "label": "Inspection Blueprint",
+        "role": "Shapes output as a runtime, IR matrix, envelope, and diagnostics audit.",
+        "parentStackIds": ["runtime-inspector-output-stack"],
+        "contributesTo": ["MOLT", "RuntimeSpec", "IRMatrix", "Envelope"],
+        "provenance": { "category": "sleeve_native", "declaredBy": "sleeve", "sourceId": "nb.runtime_inspector.blueprint" }
+      }
+    ],
+    "moltFragments": [
+      {
+        "fragmentId": "molt.runtime_inspector.trigger",
+        "sourceNeoBlockId": "nb.runtime_inspector.trigger",
+        "moltType": "Trigger",
+        "role": "Explicit runtime inspection trigger.",
+        "content": "Activate only for explicit runtime/state/provenance inspection.",
+        "provenance": { "category": "sleeve_native_derived", "declaredBy": "neoblock", "sourceId": "nb.runtime_inspector.trigger", "derivedFrom": ["runtime-inspector-core-stack"] }
+      },
+      {
+        "fragmentId": "molt.runtime_inspector.directive",
+        "sourceNeoBlockId": "nb.runtime_inspector.directive",
+        "moltType": "Directive",
+        "role": "Runtime inspection governance directive.",
+        "content": "Inspect active sleeve, RuntimeSpec, IR Matrix, envelope, and provenance under approved, allowlisted, read-only rules only.",
+        "provenance": { "category": "sleeve_native_derived", "declaredBy": "neoblock", "sourceId": "nb.runtime_inspector.directive", "derivedFrom": ["runtime-inspector-core-stack"] }
+      },
+      {
+        "fragmentId": "molt.runtime_inspector.primary",
+        "sourceNeoBlockId": "nb.runtime_inspector.identity",
+        "moltType": "Primary",
+        "role": "Runtime inspector identity.",
+        "content": "UMG Envoy operating as a runtime and provenance inspector.",
+        "provenance": { "category": "sleeve_native_derived", "declaredBy": "neoblock", "sourceId": "nb.runtime_inspector.identity" }
+      },
+      {
+        "fragmentId": "molt.runtime_inspector.subject",
+        "sourceNeoBlockId": "nb.runtime_inspector.subject",
+        "moltType": "Subject",
+        "role": "Runtime inspection subject.",
+        "content": "Inspect active sleeve state, RuntimeSpec route, IR Matrix route, envelope source, and diagnostics surfaces.",
+        "provenance": { "category": "sleeve_native_derived", "declaredBy": "neoblock", "sourceId": "nb.runtime_inspector.subject" }
+      },
+      {
+        "fragmentId": "molt.runtime_inspector.instruction",
+        "sourceNeoBlockId": "nb.runtime_inspector.instruction",
+        "moltType": "Instruction",
+        "role": "Inspection output instruction.",
+        "content": "Return runtime identity, active sleeve, graph completeness, and diagnostic state explicitly.",
+        "provenance": { "category": "sleeve_native_derived", "declaredBy": "neoblock", "sourceId": "nb.runtime_inspector.instruction" }
+      },
+      {
+        "fragmentId": "molt.runtime_inspector.philosophy",
+        "sourceNeoBlockId": "nb.runtime_inspector.provenance",
+        "moltType": "Philosophy",
+        "role": "Provenance philosophy.",
+        "content": "Runtime provenance must be declared precisely, including route purity and contamination state.",
+        "provenance": { "category": "sleeve_native_derived", "declaredBy": "neoblock", "sourceId": "nb.runtime_inspector.provenance" }
+      },
+      {
+        "fragmentId": "molt.runtime_inspector.blueprint",
+        "sourceNeoBlockId": "nb.runtime_inspector.blueprint",
+        "moltType": "Blueprint",
+        "role": "Inspector envelope blueprint.",
+        "content": "Render active sleeve state, RuntimeSpec summary, IR Matrix summary, envelope summary, and native diagnostics clearly.",
+        "provenance": { "category": "sleeve_native_derived", "declaredBy": "neoblock", "sourceId": "nb.runtime_inspector.blueprint" }
+      }
+    ],
+    "toolRequests": [
+      {
+        "requestId": "tool.runtime_inspector.active_inspect",
+        "requestedToolName": "umg_envoy_runtime_active_sleeve_ir_matrix_envelope_inspect",
+        "requestedAction": "active_runtime_inspect",
+        "purpose": "Read the current active sleeve, RuntimeSpec, IR Matrix, envelope, and diagnostic state.",
+        "policyClass": "read_only",
+        "executableUnderBoundedRules": true,
+        "provenance": { "category": "sleeve_native", "declaredBy": "sleeve", "sourceId": "tool.runtime_inspector.active_inspect" }
+      },
+      {
+        "requestId": "tool.runtime_inspector.richness",
+        "requestedToolName": "umg_envoy_runtime_sleeve_graph_richness_inspect",
+        "requestedAction": "graph_richness_inspect",
+        "purpose": "Inspect graph richness, sourceMode, routePurity, and provenance state.",
+        "policyClass": "read_only",
+        "executableUnderBoundedRules": true,
+        "provenance": { "category": "sleeve_native", "declaredBy": "sleeve", "sourceId": "tool.runtime_inspector.richness" }
+      }
+    ],
+    "runtimeRoutes": [
+      {
+        "routeId": "runtime.runtime_inspector.clean_native.v1",
+        "routeType": "RuntimeSpecV0",
+        "sourceNeoBlockIds": [
+          "nb.runtime_inspector.trigger",
+          "nb.runtime_inspector.directive",
+          "nb.runtime_inspector.subject",
+          "nb.runtime_inspector.identity",
+          "nb.runtime_inspector.instruction",
+          "nb.runtime_inspector.provenance",
+          "nb.runtime_inspector.blueprint"
+        ],
+        "sourceMoltFragmentIds": [
+          "molt.runtime_inspector.trigger",
+          "molt.runtime_inspector.directive",
+          "molt.runtime_inspector.primary",
+          "molt.runtime_inspector.subject",
+          "molt.runtime_inspector.instruction",
+          "molt.runtime_inspector.philosophy",
+          "molt.runtime_inspector.blueprint"
+        ],
+        "sourceToolRequestIds": [
+          "tool.runtime_inspector.active_inspect",
+          "tool.runtime_inspector.richness"
+        ],
+        "sourceMode": "sleeve_native",
+        "provenance": { "category": "sleeve_native_derived", "declaredBy": "runtime", "sourceId": "runtime.runtime_inspector.clean_native.v1", "derivedFrom": ["runtime-inspector-core-stack", "runtime-inspector-output-stack"] }
+      }
+    ],
+    "irRoutes": [
+      {
+        "routeId": "ir.runtime_inspector.clean_native.v1",
+        "nodes": [
+          { "nodeId": "node.sleeve.runtime_inspector", "nodeType": "sleeve", "sourceId": "umg-runtime-inspector-native-v1", "provenance": { "category": "sleeve_native", "declaredBy": "sleeve", "sourceId": "umg-runtime-inspector-native-v1" } },
+          { "nodeId": "node.stack.runtime_inspector.core", "nodeType": "neoStack", "sourceId": "runtime-inspector-core-stack", "provenance": { "category": "sleeve_native", "declaredBy": "sleeve", "sourceId": "runtime-inspector-core-stack" } },
+          { "nodeId": "node.stack.runtime_inspector.output", "nodeType": "neoStack", "sourceId": "runtime-inspector-output-stack", "provenance": { "category": "sleeve_native", "declaredBy": "sleeve", "sourceId": "runtime-inspector-output-stack" } },
+          { "nodeId": "node.runtime.runtime_inspector", "nodeType": "runtimeSpec", "sourceId": "runtime.runtime_inspector.clean_native.v1", "provenance": { "category": "sleeve_native_derived", "declaredBy": "runtime", "sourceId": "runtime.runtime_inspector.clean_native.v1" } },
+          { "nodeId": "node.envelope.runtime_inspector", "nodeType": "envelope", "sourceId": "envelope.runtime_inspector.clean_native.v1", "provenance": { "category": "sleeve_native_derived", "declaredBy": "runtime", "sourceId": "envelope.runtime_inspector.clean_native.v1" } }
+        ],
+        "edges": [
+          { "edgeId": "edge.runtime_inspector.contains.core", "edgeType": "contains", "from": "node.sleeve.runtime_inspector", "to": "node.stack.runtime_inspector.core", "provenance": { "category": "sleeve_native", "declaredBy": "sleeve", "sourceId": "runtime-inspector-core-stack" } },
+          { "edgeId": "edge.runtime_inspector.contains.output", "edgeType": "contains", "from": "node.sleeve.runtime_inspector", "to": "node.stack.runtime_inspector.output", "provenance": { "category": "sleeve_native", "declaredBy": "sleeve", "sourceId": "runtime-inspector-output-stack" } },
+          { "edgeId": "edge.runtime_inspector.compile.runtime", "edgeType": "compiles_to", "from": "node.stack.runtime_inspector.core", "to": "node.runtime.runtime_inspector", "provenance": { "category": "sleeve_native_derived", "declaredBy": "runtime", "sourceId": "runtime.runtime_inspector.clean_native.v1" } },
+          { "edgeId": "edge.runtime_inspector.preview.envelope", "edgeType": "previews", "from": "node.runtime.runtime_inspector", "to": "node.envelope.runtime_inspector", "provenance": { "category": "sleeve_native_derived", "declaredBy": "runtime", "sourceId": "envelope.runtime_inspector.clean_native.v1" } }
+        ],
+        "routePurity": "clean_native",
+        "provenance": { "category": "sleeve_native_derived", "declaredBy": "runtime", "sourceId": "ir.runtime_inspector.clean_native.v1" }
+      }
+    ],
+    "envelopeSources": [
+      {
+        "envelopeId": "envelope.runtime_inspector.clean_native.v1",
+        "sourceRuntimeRouteId": "runtime.runtime_inspector.clean_native.v1",
+        "sourceIrRouteId": "ir.runtime_inspector.clean_native.v1",
+        "sections": {
+          "activeStack": "Runtime Inspector Core Stack + Runtime Inspector Output Stack",
+          "currentContextMoltMap": "Trigger, Directive, Primary, Subject, Instruction, Philosophy, Blueprint",
+          "formalResponsePreview": "Respond with runtime state, active sleeve, RuntimeSpec, IR Matrix, envelope, and provenance diagnostics.",
+          "metadata": "sourceMode=sleeve_native; routePurity=clean_native"
+        },
+        "envelopeSource": "sleeve_native_derived",
+        "provenance": { "category": "sleeve_native_derived", "declaredBy": "runtime", "sourceId": "envelope.runtime_inspector.clean_native.v1", "derivedFrom": ["runtime.runtime_inspector.clean_native.v1", "ir.runtime_inspector.clean_native.v1"] }
+      }
+    ],
+    "safety": {
+      "approvedOnly": true,
+      "allowlistedOnly": true,
+      "readOnlyOnly": true,
+      "directSourceEnabled": false,
+      "automaticResponseTakeover": false,
+      "umgBlockLibraryMutation": "not_performed"
+    }
+  }
+}
