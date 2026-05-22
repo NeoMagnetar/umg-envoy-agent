@@ -1,0 +1,66 @@
+{
+  "designStatus": "read_only_observer_design_only",
+  "sleeveId": "umg-desktop-bridge-observer-native-v1",
+  "sleeveName": "UMG Desktop Bridge Observer Native Sleeve",
+  "designKind": "desktop_bridge_read_only_observer",
+  "baselineVersion": "0.3.0-alpha.12",
+  "hardBoundaries": {
+    "approvedOnly": true,
+    "allowlistedOnly": true,
+    "readOnlyOnly": true,
+    "desktopActionsEnabled": false,
+    "fileWritesEnabled": false,
+    "commandExecutionEnabled": false,
+    "bridgeMutationEnabled": false,
+    "directSourceEnabled": false,
+    "automaticResponseTakeover": false,
+    "umgBlockLibraryMutation": "not_performed"
+  },
+  "bundleAlignment": [
+    "active-sleeve-inspection",
+    "native-graph-inspection",
+    "read-only-ops-diagnostics"
+  ],
+  "observationModel": {
+    "allowedReadOnlyRoutes": [
+      "desktop.window_list",
+      "desktop.focus_state_metadata",
+      "desktop.screenshot_status",
+      "desktop.ocr_status",
+      "desktop.bridge_capabilities",
+      "desktop.bridge_health"
+    ],
+    "blockedVisibleRoutes": [
+      "desktop.click_action",
+      "desktop.type_text_action",
+      "desktop.key_press_action",
+      "desktop.file_mutation",
+      "desktop.command_execution"
+    ],
+    "execution": "not_performed"
+  },
+  "graphIntent": {
+    "sourceMode": "sleeve_native",
+    "routePurity": "clean_native",
+    "sampleFallbackUsed": false,
+    "legacyPreviewResidueDetected": false,
+    "bridgeObservationProvenance": [
+      "bridge_observed",
+      "bridge_capability_blocked"
+    ]
+  },
+  "recommendedNeoStacks": [
+    "desktop-bridge-observer-core-stack",
+    "desktop-bridge-observer-output-stack",
+    "desktop-bridge-observer-policy-stack"
+  ],
+  "recommendedOutputs": [
+    "bridge availability",
+    "bridge health/status",
+    "read-only capability set",
+    "blocked/action capability set",
+    "provenance summary",
+    "route purity summary",
+    "explicit no-action statement"
+  ]
+}
