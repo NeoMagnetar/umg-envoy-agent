@@ -1,18 +1,19 @@
-# UMG Envoy Agent 0.3.0-alpha.11
+# UMG Envoy Agent 0.3.0-alpha.12
 
-UMG Envoy Agent 0.3.0-alpha.11 lets you run Universal Modular Generation as a modular cognitive architectural runtime inside OpenClaw, with sleeve-aware orchestration, active sleeve session state, runtime inspection, IR Matrix visibility, and approved read-only tool gating.
+UMG Envoy Agent 0.3.0-alpha.12 lets you run Universal Modular Generation as a modular cognitive architectural runtime inside OpenClaw, with sleeve-aware orchestration, active sleeve session state, runtime inspection, IR Matrix visibility, and approved read-only tool gating.
 
 It is not a broad execution agent package.
 
 - `0.3.0-alpha.7` may be referenced historically as the public package baseline.
 - `0.3.0-alpha.8` is the previous verified public release.
 - `0.3.0-alpha.9` is the previous verified public release.
-- `0.3.0-alpha.10` is the current verified public release.
-- `0.3.0-alpha.11` is the current package candidate for sleeve graph richness and native route cleanup.
+- `0.3.0-alpha.10` is the previous verified public release.
+- `0.3.0-alpha.11` is the previous public release.
+- `0.3.0-alpha.12` is the current clean native graph fixture/runtime integration package.
 
-## alpha.11 capability note
+## alpha.12 capability note
 
-alpha.11 includes the Alpha6 real block-library runtime path, Alpha7 controlled runtime flow additions, the Alpha8 bounded read-only orchestration surface, explicit active sleeve session state, and richer sleeve graph visibility with native-route provenance labeling:
+alpha.12 includes the Alpha6 real block-library runtime path, Alpha7 controlled runtime flow additions, the Alpha8 bounded read-only orchestration surface, explicit active sleeve session state, richer sleeve graph visibility, and clean native graph fixture/runtime integration:
 - runtime tool request classifier
 - execution gate plan
 - approval checkpoint create
@@ -21,7 +22,7 @@ alpha.11 includes the Alpha6 real block-library runtime path, Alpha7 controlled 
 - end-to-end dry-run-to-approved-read-only execution chain
 - active sleeve / IR Matrix / envelope inspector
 
-alpha.11 preserves strict safety boundaries:
+alpha.12 preserves strict safety boundaries:
 - approved only
 - allowlisted only
 - read-only only
@@ -88,7 +89,7 @@ alpha.11 preserves strict safety boundaries:
 - `umg_envoy_build_path`
 - `umg_envoy_matrix_status`
 
-## What alpha.11 does
+## What alpha.12 does
 
 - inspects the real block-library through bounded approved lanes
 - resolves a real sleeve into a bounded dry-run graph
@@ -105,7 +106,7 @@ alpha.11 preserves strict safety boundaries:
 - clears active sleeve session state without hidden fallback
 - inspects active sleeve, NeoStacks, NeoBlocks, MOLT blocks, RuntimeSpec, IR Matrix, envelope preview, and execution gate state
 
-## What alpha.11 does not do
+## What alpha.12 does not do
 
 - broad execution
 - unapproved execution
@@ -141,8 +142,8 @@ This is roadmap guidance, not a claim that Alpha8 implementation is already comp
 
 ## Install
 
-- previous public release: `openclaw plugins install clawhub:umg-envoy-agent@0.3.0-alpha.8`
-- current package candidate for prep: `umg-envoy-agent@0.3.0-alpha.11`
+- current public release: `openclaw plugins install clawhub:umg-envoy-agent@0.3.0-alpha.12`
+- current source/package target: `umg-envoy-agent@0.3.0-alpha.12`
 
 ## Build and test
 
@@ -155,3 +156,5 @@ This is roadmap guidance, not a claim that Alpha8 implementation is already comp
 ## Entrypoint
 
 - `dist/plugin-entry.js`
+
+

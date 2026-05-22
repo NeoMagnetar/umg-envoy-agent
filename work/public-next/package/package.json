@@ -1,6 +1,6 @@
 {
   "name": "umg-envoy-agent",
-  "version": "0.3.0-alpha.11",
+  "version": "0.3.0-alpha.12",
   "description": "Run Universal Modular Generation as a modular cognitive architectural runtime inside OpenClaw, with sleeve-aware orchestration, active sleeve session state, runtime inspection, IR Matrix visibility, and approved read-only tool gating.",
   "type": "module",
   "main": "dist/plugin-entry.js",
@@ -11,6 +11,8 @@
     "openclaw.plugin.json",
     "package.json",
     "docs",
+    "fixtures",
+    "schemas",
     "public-content"
   ],
   "scripts": {
@@ -18,6 +20,7 @@
     "check": "tsc --noEmit",
     "smoke": "node dist/plugin-entry.js --smoke",
     "pack:dry": "npm pack --dry-run",
+    "validate:alpha-current": "node scripts/validate-alpha-current.mjs",
     "alpha6:real-library-resolver:smoke": "node scripts/alpha6-real-library-resolver-smoke.mjs",
     "alpha6:real-block-library-manifest-index:smoke": "node scripts/alpha6-real-block-library-manifest-index-smoke.mjs",
     "alpha6:real-block-library-manifest-entry-lookup:smoke": "node scripts/alpha6-real-block-library-manifest-entry-lookup-smoke.mjs",
@@ -63,6 +66,3 @@
     "typescript": "^5.8.3"
   }
 }
-
-
-
