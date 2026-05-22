@@ -3862,6 +3862,16 @@ export declare function inspectRuntimeSleeveGraphRichness(version: string, entry
         routePurity: string;
         routeWarnings: string[];
         nativeFixtureResolution: NativeFixtureResolutionDiagnostics;
+        runtimeCodeIdentity: {
+            moduleUrl: string;
+            processCwd: string;
+            resolvedPackageRoot: string;
+            fixtureCandidateRoots: string[];
+            lane: "ALPHA8_NATIVE_GRAPH_LIVE_CODE_IDENTITY_DIAGNOSIS_SOURCE";
+            marker: "native-graph-fixture-resolution-parity-v2";
+            expectedVersion: "0.3.0-alpha.11";
+            buildIdentity: "native-graph-live-code-identity-2026-05-21";
+        };
         directSourceEnabled: false;
         automaticResponseTakeover: false;
     } | null;

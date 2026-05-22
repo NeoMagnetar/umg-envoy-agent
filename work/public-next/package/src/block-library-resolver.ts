@@ -115,6 +115,13 @@ export type RuntimeSleeveSessionStateV0 = {
 
 const runtimeSleeveSessionStore = new Map<string, RuntimeSleeveSessionStateV0>();
 
+const NATIVE_GRAPH_RUNTIME_IDENTITY = {
+  lane: 'ALPHA8_NATIVE_GRAPH_LIVE_CODE_IDENTITY_DIAGNOSIS_SOURCE',
+  marker: 'native-graph-fixture-resolution-parity-v2',
+  expectedVersion: '0.3.0-alpha.11',
+  buildIdentity: 'native-graph-live-code-identity-2026-05-21',
+} as const;
+
 export interface BlockLibraryStatusResult {
   ok: boolean;
   version: string;
@@ -1338,29 +1345,20 @@ function safeJsonParse<T>(raw: string): T | null {
   }
 }
 
-function getModulePackageRoot(metaUrl: string | undefined): string | null {
-  if (!metaUrl) return null;
+function getRuntimePackageRootFromModuleUrl(moduleUrl: string | undefined): string | null {
+  if (!moduleUrl) return null;
 
   try {
-    const filename = fileURLToPath(metaUrl);
-    const dir = path.dirname(filename);
+    const filePath = fileURLToPath(moduleUrl);
+    const lowerPath = filePath.toLowerCase();
+    const distNeedle = `${path.sep}dist${path.sep}`;
+    const distIndex = lowerPath.lastIndexOf(distNeedle);
 
-    if (dir.endsWith('\\dist') || dir.endsWith('/dist')) {
-      return path.resolve(dir, '..');
+    if (distIndex >= 0) {
+      return path.resolve(filePath.slice(0, distIndex));
     }
 
-    const lower = dir.toLowerCase();
-    const distIndexWin = lower.lastIndexOf('\\dist');
-    if (distIndexWin >= 0) {
-      return path.resolve(dir.slice(0, distIndexWin));
-    }
-
-    const distIndexPosix = lower.lastIndexOf('/dist');
-    if (distIndexPosix >= 0) {
-      return path.resolve(dir.slice(0, distIndexPosix));
-    }
-
-    return dir;
+    return path.dirname(filePath);
   } catch {
     return null;
   }
@@ -1378,7 +1376,7 @@ function candidateFixtureFileNames(sleeveId: string): string[] {
 
 function buildNativeFixtureCandidateRoots(args: { explicitPackageRoot?: string | null; moduleMetaUrl?: string | null; }): string[] {
   const cwd = process.cwd();
-  const modulePackageRoot = getModulePackageRoot(args.moduleMetaUrl ?? undefined);
+  const modulePackageRoot = getRuntimePackageRootFromModuleUrl(args.moduleMetaUrl ?? undefined);
 
   return uniqueStrings([
     args.explicitPackageRoot ?? null,
@@ -6452,6 +6450,7 @@ export function inspectRuntimeSleeveGraphRichness(
     includeExecutionGateState: true,
     mode: 'inspect_only'
   });
+  const resolvedPackageRoot = getRuntimePackageRootFromModuleUrl(import.meta.url) ?? path.resolve(root);
   const nativeFixtureRead = readNativeSleeveFixtureFromPackage({
     sleeveId,
     explicitPackageRoot: path.resolve(root),
@@ -6711,6 +6710,13 @@ export function inspectRuntimeSleeveGraphRichness(
       routePurity: sourceProvenance.routePurity,
       routeWarnings: sourceProvenance.legacyPreviewResidueDetected ? ['sample_or_legacy_preview_residue_marked'] : [],
       nativeFixtureResolution: nativeFixtureRead.diagnostics,
+      runtimeCodeIdentity: {
+        ...NATIVE_GRAPH_RUNTIME_IDENTITY,
+        moduleUrl: import.meta.url,
+        processCwd: process.cwd(),
+        resolvedPackageRoot,
+        fixtureCandidateRoots: nativeFixtureRead.diagnostics.candidateRootsChecked,
+      },
       directSourceEnabled: false,
       automaticResponseTakeover: false
     }),
