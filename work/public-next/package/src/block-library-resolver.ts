@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from 'node:url';
 import { projectNativeSleeveGraph } from './native-graph-adapter.js';
 
 export type BlockLibraryLaneClassification =
@@ -1287,48 +1288,189 @@ function readJsonFile(filePath: string): unknown {
   return JSON.parse(stripBom(fs.readFileSync(filePath, "utf8")));
 }
 
-function readNativeSleeveFixtureFromPackage(packageRoot: string, sleeveId: string): unknown | null {
-  const candidateRoots = Array.from(new Set([
-    packageRoot,
-    process.cwd(),
-    path.resolve(process.cwd(), 'work', 'public-next', 'package')
-  ]));
-  const directCandidatePaths = candidateRoots.map((root) => path.join(root, 'fixtures', 'native-sleeves', `${sleeveId}.json`));
+type NativeFixtureResolutionAttempt = {
+  root: string;
+  candidateFile: string;
+  exists: boolean;
+  matched: boolean;
+  reason?: string;
+};
 
-  for (const candidatePath of directCandidatePaths) {
-    if (!safeExists(candidatePath)) {
-      continue;
-    }
-    try {
-      const parsed = readJsonFile(candidatePath);
-      if (parsed && typeof parsed === 'object') {
-        return parsed;
-      }
-    } catch {
-      continue;
-    }
+type NativeFixtureResolutionDiagnostics = {
+  requestedSleeveId: string;
+  candidateRootsChecked: string[];
+  candidateFilesChecked: string[];
+  matchedFile: string | null;
+  matchedSleeveId: string | null;
+  mismatchReasons: string[];
+  attempts: NativeFixtureResolutionAttempt[];
+};
+
+type NativeSleeveFixtureReadResult = {
+  fixture: Record<string, unknown> | null;
+  diagnostics: NativeFixtureResolutionDiagnostics;
+};
+
+function asString(value: unknown): string | null {
+  return typeof value === 'string' && value.trim().length > 0 ? value : null;
+}
+
+function uniqueStrings(values: Array<string | null | undefined>): string[] {
+  const seen = new Set<string>();
+  const output: string[] = [];
+
+  for (const value of values) {
+    if (!value) continue;
+    const normalized = path.resolve(value);
+    if (seen.has(normalized)) continue;
+    seen.add(normalized);
+    output.push(normalized);
   }
 
-  if (sleeveId !== 'neomagnetar-dynamic-persona-v1') {
+  return output;
+}
+
+function safeJsonParse<T>(raw: string): T | null {
+  try {
+    return JSON.parse(raw) as T;
+  } catch {
     return null;
   }
+}
+
+function getModulePackageRoot(metaUrl: string | undefined): string | null {
+  if (!metaUrl) return null;
+
+  try {
+    const filename = fileURLToPath(metaUrl);
+    const dir = path.dirname(filename);
+
+    if (dir.endsWith('\\dist') || dir.endsWith('/dist')) {
+      return path.resolve(dir, '..');
+    }
+
+    const lower = dir.toLowerCase();
+    const distIndexWin = lower.lastIndexOf('\\dist');
+    if (distIndexWin >= 0) {
+      return path.resolve(dir.slice(0, distIndexWin));
+    }
+
+    const distIndexPosix = lower.lastIndexOf('/dist');
+    if (distIndexPosix >= 0) {
+      return path.resolve(dir.slice(0, distIndexPosix));
+    }
+
+    return dir;
+  } catch {
+    return null;
+  }
+}
+
+function candidateFixtureFileNames(sleeveId: string): string[] {
+  const safeId = sleeveId.replace(/[^a-zA-Z0-9._-]/g, '-');
+
+  return [
+    `${safeId}.json`,
+    `${sleeveId}.json`,
+    'neomagnetar-dynamic-persona-native-v1.json'
+  ];
+}
+
+function buildNativeFixtureCandidateRoots(args: { explicitPackageRoot?: string | null; moduleMetaUrl?: string | null; }): string[] {
+  const cwd = process.cwd();
+  const modulePackageRoot = getModulePackageRoot(args.moduleMetaUrl ?? undefined);
+
+  return uniqueStrings([
+    args.explicitPackageRoot ?? null,
+    modulePackageRoot,
+    cwd,
+    path.join(cwd, 'work', 'public-next', 'package'),
+    path.join(cwd, '..'),
+    path.join(cwd, '..', '..')
+  ]);
+}
+
+function readNativeSleeveFixtureFromPackage(args: { sleeveId: string; explicitPackageRoot?: string | null; moduleMetaUrl?: string | null; }): NativeSleeveFixtureReadResult {
+  const sleeveId = args.sleeveId;
+  const candidateRoots = buildNativeFixtureCandidateRoots({
+    explicitPackageRoot: args.explicitPackageRoot ?? null,
+    moduleMetaUrl: args.moduleMetaUrl ?? null,
+  });
+
+  const candidateFilesChecked: string[] = [];
+  const mismatchReasons: string[] = [];
+  const attempts: NativeFixtureResolutionAttempt[] = [];
+  const fileNames = candidateFixtureFileNames(sleeveId);
 
   for (const root of candidateRoots) {
-    const fallbackPath = path.join(root, 'fixtures', 'native-sleeves', 'neomagnetar-dynamic-persona-native-v1.json');
-    if (!safeExists(fallbackPath)) {
-      continue;
-    }
-    try {
-      const parsed = readJsonFile(fallbackPath) as Record<string, unknown>;
-      if (parsed && typeof parsed === 'object' && parsed.sleeveId === sleeveId) {
-        return parsed;
+    const fixtureDir = path.join(root, 'fixtures', 'native-sleeves');
+
+    for (const fileName of fileNames) {
+      const candidateFile = path.join(fixtureDir, fileName);
+      candidateFilesChecked.push(candidateFile);
+
+      const exists = safeExists(candidateFile);
+      const attempt: NativeFixtureResolutionAttempt = {
+        root,
+        candidateFile,
+        exists,
+        matched: false,
+      };
+
+      if (!exists) {
+        attempt.reason = 'file_not_found';
+        attempts.push(attempt);
+        continue;
       }
-    } catch {
-      continue;
+
+      const parsed = safeJsonParse<Record<string, unknown>>(fs.readFileSync(candidateFile, 'utf8'));
+
+      if (!parsed || typeof parsed !== 'object') {
+        attempt.reason = 'invalid_json_or_not_object';
+        mismatchReasons.push(`${candidateFile}: invalid_json_or_not_object`);
+        attempts.push(attempt);
+        continue;
+      }
+
+      const parsedSleeveId = asString(parsed.sleeveId) ?? asString(parsed.id);
+
+      if (parsedSleeveId !== sleeveId) {
+        attempt.reason = `sleeve_id_mismatch:${parsedSleeveId ?? 'missing'}`;
+        mismatchReasons.push(`${candidateFile}: sleeve_id_mismatch:${parsedSleeveId ?? 'missing'}`);
+        attempts.push(attempt);
+        continue;
+      }
+
+      attempt.matched = true;
+      attempts.push(attempt);
+
+      return {
+        fixture: parsed,
+        diagnostics: {
+          requestedSleeveId: sleeveId,
+          candidateRootsChecked: candidateRoots,
+          candidateFilesChecked,
+          matchedFile: candidateFile,
+          matchedSleeveId: parsedSleeveId,
+          mismatchReasons,
+          attempts,
+        },
+      };
     }
   }
 
-  return null;
+  return {
+    fixture: null,
+    diagnostics: {
+      requestedSleeveId: sleeveId,
+      candidateRootsChecked: candidateRoots,
+      candidateFilesChecked,
+      matchedFile: null,
+      matchedSleeveId: null,
+      mismatchReasons,
+      attempts,
+    },
+  };
 }
 
 function buildNativeGraphRichnessSummaries(
@@ -6310,7 +6452,12 @@ export function inspectRuntimeSleeveGraphRichness(
     includeExecutionGateState: true,
     mode: 'inspect_only'
   });
-  const nativeFixtureCandidate = readNativeSleeveFixtureFromPackage(path.resolve(root), sleeveId);
+  const nativeFixtureRead = readNativeSleeveFixtureFromPackage({
+    sleeveId,
+    explicitPackageRoot: path.resolve(root),
+    moduleMetaUrl: import.meta.url,
+  });
+  const nativeFixtureCandidate = nativeFixtureRead.fixture;
   const nativeProjection = nativeFixtureCandidate ? projectNativeSleeveGraph(nativeFixtureCandidate) : null;
   const drilldown = getBlockLibrarySleeveGraphDrilldown(version, entrypoint, root, { sleeveId, projectionFormat: 'summary' });
   const runtimePreview = previewRuntimeSleeve(version, entrypoint, root, {
@@ -6563,6 +6710,7 @@ export function inspectRuntimeSleeveGraphRichness(
       legacyPreviewResiduePaths: sourceProvenance.legacyPreviewResiduePaths,
       routePurity: sourceProvenance.routePurity,
       routeWarnings: sourceProvenance.legacyPreviewResidueDetected ? ['sample_or_legacy_preview_residue_marked'] : [],
+      nativeFixtureResolution: nativeFixtureRead.diagnostics,
       directSourceEnabled: false,
       automaticResponseTakeover: false
     }),

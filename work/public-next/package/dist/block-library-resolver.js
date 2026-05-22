@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from 'node:url';
 import { projectNativeSleeveGraph } from './native-graph-adapter.js';
 const runtimeSleeveSessionStore = new Map();
 const DEFAULT_LIBRARY_ROOT = "C:\\.openclaw\\workspace\\UMG-Block-Library";
@@ -114,46 +115,144 @@ function stripBom(text) {
 function readJsonFile(filePath) {
     return JSON.parse(stripBom(fs.readFileSync(filePath, "utf8")));
 }
-function readNativeSleeveFixtureFromPackage(packageRoot, sleeveId) {
-    const candidateRoots = Array.from(new Set([
-        packageRoot,
-        process.cwd(),
-        path.resolve(process.cwd(), 'work', 'public-next', 'package')
-    ]));
-    const directCandidatePaths = candidateRoots.map((root) => path.join(root, 'fixtures', 'native-sleeves', `${sleeveId}.json`));
-    for (const candidatePath of directCandidatePaths) {
-        if (!safeExists(candidatePath)) {
+function asString(value) {
+    return typeof value === 'string' && value.trim().length > 0 ? value : null;
+}
+function uniqueStrings(values) {
+    const seen = new Set();
+    const output = [];
+    for (const value of values) {
+        if (!value)
             continue;
-        }
-        try {
-            const parsed = readJsonFile(candidatePath);
-            if (parsed && typeof parsed === 'object') {
-                return parsed;
-            }
-        }
-        catch {
+        const normalized = path.resolve(value);
+        if (seen.has(normalized))
             continue;
-        }
+        seen.add(normalized);
+        output.push(normalized);
     }
-    if (sleeveId !== 'neomagnetar-dynamic-persona-v1') {
+    return output;
+}
+function safeJsonParse(raw) {
+    try {
+        return JSON.parse(raw);
+    }
+    catch {
         return null;
     }
+}
+function getModulePackageRoot(metaUrl) {
+    if (!metaUrl)
+        return null;
+    try {
+        const filename = fileURLToPath(metaUrl);
+        const dir = path.dirname(filename);
+        if (dir.endsWith('\\dist') || dir.endsWith('/dist')) {
+            return path.resolve(dir, '..');
+        }
+        const lower = dir.toLowerCase();
+        const distIndexWin = lower.lastIndexOf('\\dist');
+        if (distIndexWin >= 0) {
+            return path.resolve(dir.slice(0, distIndexWin));
+        }
+        const distIndexPosix = lower.lastIndexOf('/dist');
+        if (distIndexPosix >= 0) {
+            return path.resolve(dir.slice(0, distIndexPosix));
+        }
+        return dir;
+    }
+    catch {
+        return null;
+    }
+}
+function candidateFixtureFileNames(sleeveId) {
+    const safeId = sleeveId.replace(/[^a-zA-Z0-9._-]/g, '-');
+    return [
+        `${safeId}.json`,
+        `${sleeveId}.json`,
+        'neomagnetar-dynamic-persona-native-v1.json'
+    ];
+}
+function buildNativeFixtureCandidateRoots(args) {
+    const cwd = process.cwd();
+    const modulePackageRoot = getModulePackageRoot(args.moduleMetaUrl ?? undefined);
+    return uniqueStrings([
+        args.explicitPackageRoot ?? null,
+        modulePackageRoot,
+        cwd,
+        path.join(cwd, 'work', 'public-next', 'package'),
+        path.join(cwd, '..'),
+        path.join(cwd, '..', '..')
+    ]);
+}
+function readNativeSleeveFixtureFromPackage(args) {
+    const sleeveId = args.sleeveId;
+    const candidateRoots = buildNativeFixtureCandidateRoots({
+        explicitPackageRoot: args.explicitPackageRoot ?? null,
+        moduleMetaUrl: args.moduleMetaUrl ?? null,
+    });
+    const candidateFilesChecked = [];
+    const mismatchReasons = [];
+    const attempts = [];
+    const fileNames = candidateFixtureFileNames(sleeveId);
     for (const root of candidateRoots) {
-        const fallbackPath = path.join(root, 'fixtures', 'native-sleeves', 'neomagnetar-dynamic-persona-native-v1.json');
-        if (!safeExists(fallbackPath)) {
-            continue;
-        }
-        try {
-            const parsed = readJsonFile(fallbackPath);
-            if (parsed && typeof parsed === 'object' && parsed.sleeveId === sleeveId) {
-                return parsed;
+        const fixtureDir = path.join(root, 'fixtures', 'native-sleeves');
+        for (const fileName of fileNames) {
+            const candidateFile = path.join(fixtureDir, fileName);
+            candidateFilesChecked.push(candidateFile);
+            const exists = safeExists(candidateFile);
+            const attempt = {
+                root,
+                candidateFile,
+                exists,
+                matched: false,
+            };
+            if (!exists) {
+                attempt.reason = 'file_not_found';
+                attempts.push(attempt);
+                continue;
             }
-        }
-        catch {
-            continue;
+            const parsed = safeJsonParse(fs.readFileSync(candidateFile, 'utf8'));
+            if (!parsed || typeof parsed !== 'object') {
+                attempt.reason = 'invalid_json_or_not_object';
+                mismatchReasons.push(`${candidateFile}: invalid_json_or_not_object`);
+                attempts.push(attempt);
+                continue;
+            }
+            const parsedSleeveId = asString(parsed.sleeveId) ?? asString(parsed.id);
+            if (parsedSleeveId !== sleeveId) {
+                attempt.reason = `sleeve_id_mismatch:${parsedSleeveId ?? 'missing'}`;
+                mismatchReasons.push(`${candidateFile}: sleeve_id_mismatch:${parsedSleeveId ?? 'missing'}`);
+                attempts.push(attempt);
+                continue;
+            }
+            attempt.matched = true;
+            attempts.push(attempt);
+            return {
+                fixture: parsed,
+                diagnostics: {
+                    requestedSleeveId: sleeveId,
+                    candidateRootsChecked: candidateRoots,
+                    candidateFilesChecked,
+                    matchedFile: candidateFile,
+                    matchedSleeveId: parsedSleeveId,
+                    mismatchReasons,
+                    attempts,
+                },
+            };
         }
     }
-    return null;
+    return {
+        fixture: null,
+        diagnostics: {
+            requestedSleeveId: sleeveId,
+            candidateRootsChecked: candidateRoots,
+            candidateFilesChecked,
+            matchedFile: null,
+            matchedSleeveId: null,
+            mismatchReasons,
+            attempts,
+        },
+    };
 }
 function buildNativeGraphRichnessSummaries(nativeProjection, graphRunId, sessionState, sleeveId) {
     const nativeGraph = nativeProjection?.nativeGraph;
@@ -4697,7 +4796,12 @@ export function inspectRuntimeSleeveGraphRichness(version, entrypoint = 'dist/pl
         includeExecutionGateState: true,
         mode: 'inspect_only'
     });
-    const nativeFixtureCandidate = readNativeSleeveFixtureFromPackage(path.resolve(root), sleeveId);
+    const nativeFixtureRead = readNativeSleeveFixtureFromPackage({
+        sleeveId,
+        explicitPackageRoot: path.resolve(root),
+        moduleMetaUrl: import.meta.url,
+    });
+    const nativeFixtureCandidate = nativeFixtureRead.fixture;
     const nativeProjection = nativeFixtureCandidate ? projectNativeSleeveGraph(nativeFixtureCandidate) : null;
     const drilldown = getBlockLibrarySleeveGraphDrilldown(version, entrypoint, root, { sleeveId, projectionFormat: 'summary' });
     const runtimePreview = previewRuntimeSleeve(version, entrypoint, root, {
@@ -4950,6 +5054,7 @@ export function inspectRuntimeSleeveGraphRichness(version, entrypoint = 'dist/pl
             legacyPreviewResiduePaths: sourceProvenance.legacyPreviewResiduePaths,
             routePurity: sourceProvenance.routePurity,
             routeWarnings: sourceProvenance.legacyPreviewResidueDetected ? ['sample_or_legacy_preview_residue_marked'] : [],
+            nativeFixtureResolution: nativeFixtureRead.diagnostics,
             directSourceEnabled: false,
             automaticResponseTakeover: false
         }),

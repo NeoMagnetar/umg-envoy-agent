@@ -1071,6 +1071,22 @@ export interface RuntimeActiveSleeveIrMatrixEnvelopeInspectV0 {
     trace: string[];
 }
 export declare function defaultBlockLibraryRoot(): string;
+type NativeFixtureResolutionAttempt = {
+    root: string;
+    candidateFile: string;
+    exists: boolean;
+    matched: boolean;
+    reason?: string;
+};
+type NativeFixtureResolutionDiagnostics = {
+    requestedSleeveId: string;
+    candidateRootsChecked: string[];
+    candidateFilesChecked: string[];
+    matchedFile: string | null;
+    matchedSleeveId: string | null;
+    mismatchReasons: string[];
+    attempts: NativeFixtureResolutionAttempt[];
+};
 export declare function getBlockLibraryManifestIndex(version: string, entrypoint?: string, root?: string): BlockLibraryManifestIndexResult;
 export declare function getBlockLibraryManifestEntryLookup(version: string, entrypoint?: string, root?: string, input?: {
     entryId?: string;
@@ -3845,6 +3861,7 @@ export declare function inspectRuntimeSleeveGraphRichness(version: string, entry
         legacyPreviewResiduePaths: string[];
         routePurity: string;
         routeWarnings: string[];
+        nativeFixtureResolution: NativeFixtureResolutionDiagnostics;
         directSourceEnabled: false;
         automaticResponseTakeover: false;
     } | null;
