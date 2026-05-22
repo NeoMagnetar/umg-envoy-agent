@@ -1,0 +1,239 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "umg.controlled_action_gate.v1",
+  "title": "UMG Controlled Action Gate",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "gateId",
+    "gateVersion",
+    "baselineVersion",
+    "executionAuthorityExpanded",
+    "hardBoundaries",
+    "actionRoutes",
+    "blockedActionCategories",
+    "bridgePolicies",
+    "metadataVisibility"
+  ],
+  "properties": {
+    "gateId": { "type": "string", "minLength": 1 },
+    "gateVersion": { "const": "umg.controlled_action_gate.v1" },
+    "baselineVersion": { "type": "string", "minLength": 1 },
+    "executionAuthorityExpanded": { "const": false },
+    "hardBoundaries": { "$ref": "#/$defs/hardBoundaries" },
+    "actionRoutes": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/actionRoute" }
+    },
+    "blockedActionCategories": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "bridgePolicies": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["desktopBridge", "phaseBridge"],
+      "properties": {
+        "desktopBridge": { "$ref": "#/$defs/bridgePolicy" },
+        "phaseBridge": { "$ref": "#/$defs/bridgePolicy" }
+      }
+    },
+    "metadataVisibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "blockedRoutesVisibleAsMetadata",
+        "approvalNeededVisibleAsMetadata",
+        "riskSummariesVisibleAsMetadata",
+        "executionEnabled"
+      ],
+      "properties": {
+        "blockedRoutesVisibleAsMetadata": { "const": true },
+        "approvalNeededVisibleAsMetadata": { "const": true },
+        "riskSummariesVisibleAsMetadata": { "const": true },
+        "executionEnabled": { "const": false }
+      }
+    }
+  },
+  "$defs": {
+    "hardBoundaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "approvedOnly",
+        "allowlistedOnly",
+        "readOnlyOnly",
+        "directSourceEnabled",
+        "automaticResponseTakeover",
+        "umgBlockLibraryMutation",
+        "desktopBridgeActionsEnabled",
+        "phaseBridgeActionsEnabled",
+        "fileWritesEnabled",
+        "commandExecutionEnabled"
+      ],
+      "properties": {
+        "approvedOnly": { "const": true },
+        "allowlistedOnly": { "const": true },
+        "readOnlyOnly": { "const": true },
+        "directSourceEnabled": { "const": false },
+        "automaticResponseTakeover": { "const": false },
+        "umgBlockLibraryMutation": { "const": "not_performed" },
+        "desktopBridgeActionsEnabled": { "const": false },
+        "phaseBridgeActionsEnabled": { "const": false },
+        "fileWritesEnabled": { "const": false },
+        "commandExecutionEnabled": { "const": false }
+      }
+    },
+    "actionRoute": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "actionId",
+        "actionClass",
+        "riskLevel",
+        "allowedExecutionMode",
+        "approvalRequirements",
+        "allowlistRequirements",
+        "scopeBoundary",
+        "previewRequirements",
+        "rollbackRequirements",
+        "auditRequirements",
+        "sleeveDeclaredPolicy"
+      ],
+      "properties": {
+        "actionId": { "type": "string", "minLength": 1 },
+        "actionClass": {
+          "enum": [
+            "metadata_only",
+            "dry_run_preview",
+            "reversible_low_risk_action",
+            "bounded_mutation_action",
+            "forbidden_action"
+          ]
+        },
+        "riskLevel": {
+          "enum": [
+            "metadata_only",
+            "low_reversible",
+            "medium_bounded",
+            "high_mutation",
+            "forbidden"
+          ]
+        },
+        "allowedExecutionMode": {
+          "enum": [
+            "metadata_only",
+            "preview_only",
+            "approval_gated_disabled_now",
+            "forbidden"
+          ]
+        },
+        "approvalRequirements": { "$ref": "#/$defs/approvalRequirements" },
+        "allowlistRequirements": { "$ref": "#/$defs/allowlistRequirements" },
+        "scopeBoundary": { "$ref": "#/$defs/scopeBoundary" },
+        "previewRequirements": { "$ref": "#/$defs/previewRequirements" },
+        "rollbackRequirements": { "$ref": "#/$defs/rollbackRequirements" },
+        "auditRequirements": { "$ref": "#/$defs/auditRequirements" },
+        "sleeveDeclaredPolicy": { "$ref": "#/$defs/sleeveDeclaredPolicy" },
+        "blockedCategories": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "approvalRequirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approvalRequired", "approvalMode", "approvalScopeRequired", "approvalExpiryRequired"],
+      "properties": {
+        "approvalRequired": { "type": "boolean" },
+        "approvalMode": { "enum": ["none", "explicit_user_approval", "future_gate_checkpoint"] },
+        "approvalScopeRequired": { "type": "boolean" },
+        "approvalExpiryRequired": { "type": "boolean" }
+      }
+    },
+    "allowlistRequirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowlistRequired", "routeAllowlistRequired", "targetAllowlistRequired"],
+      "properties": {
+        "allowlistRequired": { "type": "boolean" },
+        "routeAllowlistRequired": { "type": "boolean" },
+        "targetAllowlistRequired": { "type": "boolean" }
+      }
+    },
+    "scopeBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scopeKind", "scopeTarget", "deniedOperationFamilies", "blastRadius"],
+      "properties": {
+        "scopeKind": {
+          "enum": ["metadata_only", "file_path_allowlist", "bridge_capability_route", "workflow_lane_segment", "session_state_only"]
+        },
+        "scopeTarget": { "type": "string", "minLength": 1 },
+        "deniedOperationFamilies": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "blastRadius": { "enum": ["none", "single_target", "bounded_multi_target", "forbidden"] }
+      }
+    },
+    "previewRequirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dryRunRequired", "mustEnumerateTargets", "mustEnumerateRisks"],
+      "properties": {
+        "dryRunRequired": { "type": "boolean" },
+        "mustEnumerateTargets": { "type": "boolean" },
+        "mustEnumerateRisks": { "type": "boolean" }
+      }
+    },
+    "rollbackRequirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["backupRequired", "reversibility", "rollbackReferenceRequired"],
+      "properties": {
+        "backupRequired": { "type": "boolean" },
+        "reversibility": {
+          "enum": ["not_needed", "automatic_rollback_available", "manual_rollback_required", "not_reliably_reversible"]
+        },
+        "rollbackReferenceRequired": { "type": "boolean" }
+      }
+    },
+    "auditRequirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["auditRequired", "recordApprovalRef", "recordPreviewRef", "recordExecutionResult"],
+      "properties": {
+        "auditRequired": { "const": true },
+        "recordApprovalRef": { "type": "boolean" },
+        "recordPreviewRef": { "type": "boolean" },
+        "recordExecutionResult": { "type": "boolean" }
+      }
+    },
+    "sleeveDeclaredPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["routeVisibleAsMetadata", "enabledNow", "futureCapable"],
+      "properties": {
+        "routeVisibleAsMetadata": { "const": true },
+        "enabledNow": { "const": false },
+        "futureCapable": { "type": "boolean" }
+      }
+    },
+    "bridgePolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["futureActionFamilies", "enabledNow"],
+      "properties": {
+        "futureActionFamilies": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "enabledNow": { "const": false }
+      }
+    }
+  }
+}

@@ -1,0 +1,197 @@
+{
+  "gateId": "umg-controlled-action-gate-example-v1",
+  "gateVersion": "umg.controlled_action_gate.v1",
+  "baselineVersion": "0.3.0-alpha.12",
+  "executionAuthorityExpanded": false,
+  "hardBoundaries": {
+    "approvedOnly": true,
+    "allowlistedOnly": true,
+    "readOnlyOnly": true,
+    "directSourceEnabled": false,
+    "automaticResponseTakeover": false,
+    "umgBlockLibraryMutation": "not_performed",
+    "desktopBridgeActionsEnabled": false,
+    "phaseBridgeActionsEnabled": false,
+    "fileWritesEnabled": false,
+    "commandExecutionEnabled": false
+  },
+  "actionRoutes": [
+    {
+      "actionId": "desktop.click.preview_only",
+      "actionClass": "dry_run_preview",
+      "riskLevel": "low_reversible",
+      "allowedExecutionMode": "preview_only",
+      "approvalRequirements": {
+        "approvalRequired": false,
+        "approvalMode": "none",
+        "approvalScopeRequired": false,
+        "approvalExpiryRequired": false
+      },
+      "allowlistRequirements": {
+        "allowlistRequired": true,
+        "routeAllowlistRequired": true,
+        "targetAllowlistRequired": true
+      },
+      "scopeBoundary": {
+        "scopeKind": "bridge_capability_route",
+        "scopeTarget": "desktop.click_route",
+        "deniedOperationFamilies": ["execution", "mutation"],
+        "blastRadius": "none"
+      },
+      "previewRequirements": {
+        "dryRunRequired": false,
+        "mustEnumerateTargets": true,
+        "mustEnumerateRisks": true
+      },
+      "rollbackRequirements": {
+        "backupRequired": false,
+        "reversibility": "not_needed",
+        "rollbackReferenceRequired": false
+      },
+      "auditRequirements": {
+        "auditRequired": true,
+        "recordApprovalRef": false,
+        "recordPreviewRef": true,
+        "recordExecutionResult": true
+      },
+      "sleeveDeclaredPolicy": {
+        "routeVisibleAsMetadata": true,
+        "enabledNow": false,
+        "futureCapable": true
+      },
+      "blockedCategories": [
+        "unrestricted_desktop_bridge_action"
+      ]
+    },
+    {
+      "actionId": "phasebridge.resume.approval_gated",
+      "actionClass": "bounded_mutation_action",
+      "riskLevel": "high_mutation",
+      "allowedExecutionMode": "approval_gated_disabled_now",
+      "approvalRequirements": {
+        "approvalRequired": true,
+        "approvalMode": "explicit_user_approval",
+        "approvalScopeRequired": true,
+        "approvalExpiryRequired": true
+      },
+      "allowlistRequirements": {
+        "allowlistRequired": true,
+        "routeAllowlistRequired": true,
+        "targetAllowlistRequired": true
+      },
+      "scopeBoundary": {
+        "scopeKind": "workflow_lane_segment",
+        "scopeTarget": "phasebridge.resume_route",
+        "deniedOperationFamilies": ["wildcard_execution", "bridge_mutation_outside_lane"],
+        "blastRadius": "single_target"
+      },
+      "previewRequirements": {
+        "dryRunRequired": true,
+        "mustEnumerateTargets": true,
+        "mustEnumerateRisks": true
+      },
+      "rollbackRequirements": {
+        "backupRequired": true,
+        "reversibility": "manual_rollback_required",
+        "rollbackReferenceRequired": true
+      },
+      "auditRequirements": {
+        "auditRequired": true,
+        "recordApprovalRef": true,
+        "recordPreviewRef": true,
+        "recordExecutionResult": true
+      },
+      "sleeveDeclaredPolicy": {
+        "routeVisibleAsMetadata": true,
+        "enabledNow": false,
+        "futureCapable": true
+      },
+      "blockedCategories": [
+        "unrestricted_phasebridge_mutation"
+      ]
+    },
+    {
+      "actionId": "direct_source.enable.forbidden",
+      "actionClass": "forbidden_action",
+      "riskLevel": "forbidden",
+      "allowedExecutionMode": "forbidden",
+      "approvalRequirements": {
+        "approvalRequired": false,
+        "approvalMode": "none",
+        "approvalScopeRequired": false,
+        "approvalExpiryRequired": false
+      },
+      "allowlistRequirements": {
+        "allowlistRequired": false,
+        "routeAllowlistRequired": false,
+        "targetAllowlistRequired": false
+      },
+      "scopeBoundary": {
+        "scopeKind": "metadata_only",
+        "scopeTarget": "direct_source_enablement",
+        "deniedOperationFamilies": ["all"],
+        "blastRadius": "forbidden"
+      },
+      "previewRequirements": {
+        "dryRunRequired": false,
+        "mustEnumerateTargets": false,
+        "mustEnumerateRisks": true
+      },
+      "rollbackRequirements": {
+        "backupRequired": false,
+        "reversibility": "not_needed",
+        "rollbackReferenceRequired": false
+      },
+      "auditRequirements": {
+        "auditRequired": true,
+        "recordApprovalRef": false,
+        "recordPreviewRef": false,
+        "recordExecutionResult": true
+      },
+      "sleeveDeclaredPolicy": {
+        "routeVisibleAsMetadata": true,
+        "enabledNow": false,
+        "futureCapable": false
+      },
+      "blockedCategories": [
+        "direct_source_enablement"
+      ]
+    }
+  ],
+  "blockedActionCategories": [
+    "direct_source_enablement",
+    "automatic_response_takeover",
+    "broad_command_execution",
+    "unrestricted_desktop_bridge_action",
+    "unrestricted_phasebridge_mutation",
+    "unconstrained_umg_block_library_mutation",
+    "unbounded_repo_mutation"
+  ],
+  "bridgePolicies": {
+    "desktopBridge": {
+      "futureActionFamilies": [
+        "click_route",
+        "type_route",
+        "key_press_route",
+        "focus_switch_route"
+      ],
+      "enabledNow": false
+    },
+    "phaseBridge": {
+      "futureActionFamilies": [
+        "resume_route",
+        "stop_route",
+        "relay_route",
+        "ledger_mutation_route",
+        "worklog_mutation_route"
+      ],
+      "enabledNow": false
+    }
+  },
+  "metadataVisibility": {
+    "blockedRoutesVisibleAsMetadata": true,
+    "approvalNeededVisibleAsMetadata": true,
+    "riskSummariesVisibleAsMetadata": true,
+    "executionEnabled": false
+  }
+}
