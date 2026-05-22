@@ -11,16 +11,40 @@ It is not a broad execution agent package.
 - `0.3.0-alpha.11` is the previous public release.
 - `0.3.0-alpha.12` is the current clean native graph fixture/runtime integration package.
 
-## alpha.12 capability note
+## alpha.12 capability summary
 
-alpha.12 includes the Alpha6 real block-library runtime path, Alpha7 controlled runtime flow additions, the Alpha8 bounded read-only orchestration surface, explicit active sleeve session state, richer sleeve graph visibility, and clean native graph fixture/runtime integration:
+alpha.12 includes:
+- bounded read-only orchestration
+- active sleeve session state
+- sleeve graph richness
+- native route provenance cleanup
+- clean native graph fixture/runtime integration
+- native graph schema/types/adapter
+- runtimeCodeIdentity diagnostics
+- nativeFixtureResolution diagnostics
+- packaged `fixtures/native-sleeves`
+- packaged `schemas`
+
+It also preserves the broader Alpha6/Alpha7/Alpha8 runtime surfaces, including:
 - runtime tool request classifier
 - execution gate plan
-- approval checkpoint create
-- approval checkpoint resume
+- approval checkpoint create/resume
 - approved allowlisted read-only execution
-- end-to-end dry-run-to-approved-read-only execution chain
+- end-to-end approved read-only execution chain
 - active sleeve / IR Matrix / envelope inspector
+
+## alpha.12 proof caveat
+
+Direct custom live graph probe was not callable from the chat harness during final alpha.12 proof.
+
+Accepted proof chain:
+- artifact verification
+- local install verification
+- runtime identity proof
+- installed fixture/schema presence
+- installed runtime smoke result
+
+## alpha.12 safety posture
 
 alpha.12 preserves strict safety boundaries:
 - approved only
@@ -59,7 +83,7 @@ alpha.12 preserves strict safety boundaries:
 - `umg_envoy_runtime_compile`
 - `umg_envoy_runtime_preview`
 
-### Alpha7/Alpha8/Alpha10 runtime control / visibility tools
+### Alpha7/Alpha8/Alpha10+ runtime control / visibility tools
 
 - `umg_envoy_runtime_tool_request_classify`
 - `umg_envoy_runtime_execution_gate_plan`
@@ -73,6 +97,7 @@ alpha.12 preserves strict safety boundaries:
 - `umg_envoy_sleeve_session_current`
 - `umg_envoy_sleeve_session_clear`
 - `umg_envoy_sleeve_session_inspect`
+- `umg_envoy_runtime_sleeve_graph_richness_inspect`
 
 ### Existing utility tools
 
@@ -118,6 +143,13 @@ alpha.12 preserves strict safety boundaries:
 - mutation of the UMG-Block-Library
 - package / publish / restart execution
 
+## Known stabilization notes
+
+- `validate:alpha-current` exists but requires dependencies/bootstrap before `npm run check` can pass in a clean worktree.
+- current failure mode: `tsc` missing.
+- no tracked `node_modules`.
+- legacy tracked publish-stage/artifact debt remains and should be cleaned in a dedicated repo hygiene lane.
+
 ## Default posture
 
 - allowRuntimeWrites: false
@@ -129,16 +161,8 @@ alpha.12 preserves strict safety boundaries:
 
 - Quickstart: `docs/ALPHA8-QUICKSTART.md`
 - Demo runtime flow: `docs/ALPHA8-DEMO-RUNTIME-FLOW.md`
-
-## Alpha8 fast path
-
-Recommended next development direction:
-1. release hygiene and demo docs
-2. bounded read-only orchestration surface
-3. active sleeve session state design
-4. richer sleeve graph support
-
-This is roadmap guidance, not a claim that Alpha8 implementation is already complete.
+- Public alpha.12 notes: `docs/ALPHA12-PUBLIC-STATUS.md`
+- Release ledger: `../RELEASE_LEDGER.md`
 
 ## Install
 
@@ -147,14 +171,10 @@ This is roadmap guidance, not a claim that Alpha8 implementation is already comp
 
 ## Build and test
 
-- npm install
-- npm run check
-- npm run build
-- npm run smoke
-- npm run pack:dry
+- `npm run validate:alpha-current`
+- `npm run smoke`
+- `npm run pack:dry`
 
 ## Entrypoint
 
 - `dist/plugin-entry.js`
-
-
