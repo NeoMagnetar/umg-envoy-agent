@@ -1,0 +1,488 @@
+{
+  "ok": true,
+  "defaultSleeve": "public-basic-envoy",
+  "results": [
+    {
+      "name": "umg_envoy_status",
+      "ok": true,
+      "input": {},
+      "text": "{\n  \"ok\": true,\n  \"plugin\": \"umg-envoy-agent\",\n  \"version\": \"0.2.0\",\n  \"compilerAdapter\": \"available\",\n  \"contentMode\": \"bundled-public\",\n  \"compilerMode\": \"bundled-adapter\",\n  \"allowRuntimeWrites\": false,\n  \"sampleSleeves\": 2,\n  \"sampleBlocks\": 7,\n  \"supportedTools\": [\n    \"umg_envoy_status\",\n    \"umg_envoy_compiler_smoke_test\",\n    \"umg_envoy_list_sleeves\",\n    \"umg_envoy_list_block_libraries\",\n    \"umg_envoy_compile_sleeve\",\n    \"umg_envoy_validate_runtime_output\",\n    \"umg_envoy_compare_sleeves\",\n    \"umg_envoy_parse_path\",\n    \"umg_envoy_validate_path\",\n    \"umg_envoy_render_path\",\n    \"umg_envoy_build_path\",\n    \"umg_envoy_matrix_status\"\n  ]\n}",
+      "parsed": {
+        "ok": true,
+        "plugin": "umg-envoy-agent",
+        "version": "0.2.0",
+        "compilerAdapter": "available",
+        "contentMode": "bundled-public",
+        "compilerMode": "bundled-adapter",
+        "allowRuntimeWrites": false,
+        "sampleSleeves": 2,
+        "sampleBlocks": 7,
+        "supportedTools": [
+          "umg_envoy_status",
+          "umg_envoy_compiler_smoke_test",
+          "umg_envoy_list_sleeves",
+          "umg_envoy_list_block_libraries",
+          "umg_envoy_compile_sleeve",
+          "umg_envoy_validate_runtime_output",
+          "umg_envoy_compare_sleeves",
+          "umg_envoy_parse_path",
+          "umg_envoy_validate_path",
+          "umg_envoy_render_path",
+          "umg_envoy_build_path",
+          "umg_envoy_matrix_status"
+        ]
+      }
+    },
+    {
+      "name": "umg_envoy_compiler_smoke_test",
+      "ok": true,
+      "input": {},
+      "text": "{\n  \"ok\": true,\n  \"plugin\": \"umg-envoy-agent\",\n  \"version\": \"0.2.0\",\n  \"compilerAdapter\": \"available\",\n  \"contentMode\": \"bundled-public\",\n  \"sampleSleeves\": 2,\n  \"sampleBlocks\": 7,\n  \"runtimeValidation\": \"passed\",\n  \"errors\": []\n}",
+      "parsed": {
+        "ok": true,
+        "plugin": "umg-envoy-agent",
+        "version": "0.2.0",
+        "compilerAdapter": "available",
+        "contentMode": "bundled-public",
+        "sampleSleeves": 2,
+        "sampleBlocks": 7,
+        "runtimeValidation": "passed",
+        "errors": []
+      }
+    },
+    {
+      "name": "umg_envoy_list_sleeves",
+      "ok": true,
+      "input": {},
+      "text": "[\n  {\n    \"sleeve_id\": \"public-basic-envoy\",\n    \"title\": \"Public Basic Envoy\",\n    \"snap_id\": \"default\",\n    \"primary_shell_block_id\": \"primary.sample\",\n    \"block_refs\": [\n      {\n        \"block_id\": \"primary.sample\",\n        \"enabled\": true\n      },\n      {\n        \"block_id\": \"directive.sample\",\n        \"enabled\": true\n      },\n      {\n        \"block_id\": \"instruction.sample\",\n        \"enabled\": true\n      },\n      {\n        \"block_id\": \"subject.sample\",\n        \"enabled\": true\n      },\n      {\n        \"block_id\": \"philosophy.sample\",\n        \"enabled\": true\n      },\n      {\n        \"block_id\": \"blueprint.sample\",\n        \"enabled\": true\n      },\n      {\n        \"block_id\": \"trigger.sample\",\n        \"enabled\": false\n      }\n    ],\n    \"strategy\": {\n      \"mode\": \"public-basic\",\n      \"compiler\": \"bundled-adapter\"\n    },\n    \"constraints\": [\n      \"public-safe\",\n      \"read-only-default\"\n    ],\n    \"context\": {\n      \"audience\": \"public\"\n    },\n    \"values\": {\n      \"transparency\": true\n    },\n    \"format\": {\n      \"style\": \"structured\"\n    },\n    \"tool_requests\": []\n  },\n  {\n    \"sleeve_id\": \"public-coder-envoy\",\n    \"title\": \"Public Coder Envoy\",\n    \"snap_id\": \"default\",\n    \"primary_shell_block_id\": \"primary.sample\",\n    \"block_refs\": [\n      {\n        \"block_id\": \"primary.sample\",\n        \"enabled\": true\n      },\n      {\n        \"block_id\": \"directive.sample\",\n        \"enabled\": true\n      },\n      {\n        \"block_id\": \"instruction.sample\",\n        \"enabled\": true\n      },\n      {\n        \"block_id\": \"subject.sample\",\n        \"enabled\": true\n      },\n      {\n        \"block_id\": \"philosophy.sample\",\n        \"enabled\": true\n      },\n      {\n        \"block_id\": \"blueprint.sample\",\n        \"enabled\": true\n      },\n      {\n        \"block_id\": \"trigger.sample\",\n        \"enabled\": true\n      }\n    ],\n    \"strategy\": {\n      \"mode\": \"public-coder\",\n      \"compiler\": \"bundled-adapter\"\n    },\n    \"constraints\": [\n      \"public-safe\",\n      \"compiler-visible\",\n      \"no-private-paths\"\n    ],\n    \"context\": {\n      \"audience\": \"developers\"\n    },\n    \"values\": {\n      \"debuggable\": true\n    },\n    \"format\": {\n      \"style\": \"technical\"\n    },\n    \"tool_requests\": [\n      {\n        \"name\": \"inspect\"\n      }\n    ]\n  }\n]",
+      "parsed": [
+        {
+          "sleeve_id": "public-basic-envoy",
+          "title": "Public Basic Envoy",
+          "snap_id": "default",
+          "primary_shell_block_id": "primary.sample",
+          "block_refs": [
+            {
+              "block_id": "primary.sample",
+              "enabled": true
+            },
+            {
+              "block_id": "directive.sample",
+              "enabled": true
+            },
+            {
+              "block_id": "instruction.sample",
+              "enabled": true
+            },
+            {
+              "block_id": "subject.sample",
+              "enabled": true
+            },
+            {
+              "block_id": "philosophy.sample",
+              "enabled": true
+            },
+            {
+              "block_id": "blueprint.sample",
+              "enabled": true
+            },
+            {
+              "block_id": "trigger.sample",
+              "enabled": false
+            }
+          ],
+          "strategy": {
+            "mode": "public-basic",
+            "compiler": "bundled-adapter"
+          },
+          "constraints": [
+            "public-safe",
+            "read-only-default"
+          ],
+          "context": {
+            "audience": "public"
+          },
+          "values": {
+            "transparency": true
+          },
+          "format": {
+            "style": "structured"
+          },
+          "tool_requests": []
+        },
+        {
+          "sleeve_id": "public-coder-envoy",
+          "title": "Public Coder Envoy",
+          "snap_id": "default",
+          "primary_shell_block_id": "primary.sample",
+          "block_refs": [
+            {
+              "block_id": "primary.sample",
+              "enabled": true
+            },
+            {
+              "block_id": "directive.sample",
+              "enabled": true
+            },
+            {
+              "block_id": "instruction.sample",
+              "enabled": true
+            },
+            {
+              "block_id": "subject.sample",
+              "enabled": true
+            },
+            {
+              "block_id": "philosophy.sample",
+              "enabled": true
+            },
+            {
+              "block_id": "blueprint.sample",
+              "enabled": true
+            },
+            {
+              "block_id": "trigger.sample",
+              "enabled": true
+            }
+          ],
+          "strategy": {
+            "mode": "public-coder",
+            "compiler": "bundled-adapter"
+          },
+          "constraints": [
+            "public-safe",
+            "compiler-visible",
+            "no-private-paths"
+          ],
+          "context": {
+            "audience": "developers"
+          },
+          "values": {
+            "debuggable": true
+          },
+          "format": {
+            "style": "technical"
+          },
+          "tool_requests": [
+            {
+              "name": "inspect"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "umg_envoy_list_block_libraries",
+      "ok": true,
+      "input": {},
+      "text": "{\n  \"totalBlocks\": 7,\n  \"byKind\": {\n    \"blueprint\": 1,\n    \"directive\": 1,\n    \"instruction\": 1,\n    \"philosophy\": 1,\n    \"primary\": 1,\n    \"subject\": 1,\n    \"trigger\": 1\n  },\n  \"blockIds\": [\n    \"blueprint.sample\",\n    \"directive.sample\",\n    \"instruction.sample\",\n    \"philosophy.sample\",\n    \"primary.sample\",\n    \"subject.sample\",\n    \"trigger.sample\"\n  ]\n}",
+      "parsed": {
+        "totalBlocks": 7,
+        "byKind": {
+          "blueprint": 1,
+          "directive": 1,
+          "instruction": 1,
+          "philosophy": 1,
+          "primary": 1,
+          "subject": 1,
+          "trigger": 1
+        },
+        "blockIds": [
+          "blueprint.sample",
+          "directive.sample",
+          "instruction.sample",
+          "philosophy.sample",
+          "primary.sample",
+          "subject.sample",
+          "trigger.sample"
+        ]
+      }
+    },
+    {
+      "name": "umg_envoy_compile_sleeve",
+      "ok": true,
+      "input": {
+        "sleeveId": "public-basic-envoy"
+      },
+      "text": "{\n  \"ok\": true,\n  \"sleeveId\": \"public-basic-envoy\",\n  \"runtimeSpec\": {\n    \"runtimespec_id\": \"runtime-public-basic-envoy\",\n    \"sleeve_id\": \"public-basic-envoy\",\n    \"snap_id\": \"default\",\n    \"primary_shell_block_id\": \"primary.sample\",\n    \"active_blocks\": [\n      \"primary.sample\",\n      \"directive.sample\",\n      \"instruction.sample\",\n      \"subject.sample\",\n      \"philosophy.sample\",\n      \"blueprint.sample\"\n    ],\n    \"prompt_parts\": [\n      {\n        \"block_id\": \"primary.sample\",\n        \"kind\": \"primary\",\n        \"authority\": 10,\n        \"text\": \"Maintain public-safe operation, honest validation, and stable runtime emission.\"\n      },\n      {\n        \"block_id\": \"directive.sample\",\n        \"kind\": \"directive\",\n        \"authority\": 20,\n        \"text\": \"Prefer concise, public-safe, compiler-visible directives.\"\n      },\n      {\n        \"block_id\": \"instruction.sample\",\n        \"kind\": \"instruction\",\n        \"authority\": 30,\n        \"text\": \"Assemble a stable prompt part list from active bundled blocks.\"\n      },\n      {\n        \"block_id\": \"subject.sample\",\n        \"kind\": \"subject\",\n        \"authority\": 40,\n        \"text\": \"The subject of this public sleeve is transparent compiler-backed envoy behavior.\"\n      },\n      {\n        \"block_id\": \"philosophy.sample\",\n        \"kind\": \"philosophy\",\n        \"authority\": 50,\n        \"text\": \"Fail closed, bundle public examples, and avoid private path assumptions.\"\n      },\n      {\n        \"block_id\": \"blueprint.sample\",\n        \"kind\": \"blueprint\",\n        \"authority\": 55,\n        \"text\": \"Emit a documented RuntimeSpec-like object from bundled sleeve and block content.\"\n      }\n    ],\n    \"strategy\": {\n      \"mode\": \"public-basic\",\n      \"compiler\": \"bundled-adapter\"\n    },\n    \"constraints\": [\n      \"public-safe\",\n      \"read-only-default\"\n    ],\n    \"context\": {\n      \"audience\": \"public\"\n    },\n    \"values\": {\n      \"transparency\": true\n    },\n    \"format\": {\n      \"style\": \"structured\"\n    },\n    \"tool_requests\": [],\n    \"errors\": [],\n    \"warnings\": [\n      \"disabled block skipped: trigger.sample\"\n    ]\n  }\n}",
+      "parsed": {
+        "ok": true,
+        "sleeveId": "public-basic-envoy",
+        "runtimeSpec": {
+          "runtimespec_id": "runtime-public-basic-envoy",
+          "sleeve_id": "public-basic-envoy",
+          "snap_id": "default",
+          "primary_shell_block_id": "primary.sample",
+          "active_blocks": [
+            "primary.sample",
+            "directive.sample",
+            "instruction.sample",
+            "subject.sample",
+            "philosophy.sample",
+            "blueprint.sample"
+          ],
+          "prompt_parts": [
+            {
+              "block_id": "primary.sample",
+              "kind": "primary",
+              "authority": 10,
+              "text": "Maintain public-safe operation, honest validation, and stable runtime emission."
+            },
+            {
+              "block_id": "directive.sample",
+              "kind": "directive",
+              "authority": 20,
+              "text": "Prefer concise, public-safe, compiler-visible directives."
+            },
+            {
+              "block_id": "instruction.sample",
+              "kind": "instruction",
+              "authority": 30,
+              "text": "Assemble a stable prompt part list from active bundled blocks."
+            },
+            {
+              "block_id": "subject.sample",
+              "kind": "subject",
+              "authority": 40,
+              "text": "The subject of this public sleeve is transparent compiler-backed envoy behavior."
+            },
+            {
+              "block_id": "philosophy.sample",
+              "kind": "philosophy",
+              "authority": 50,
+              "text": "Fail closed, bundle public examples, and avoid private path assumptions."
+            },
+            {
+              "block_id": "blueprint.sample",
+              "kind": "blueprint",
+              "authority": 55,
+              "text": "Emit a documented RuntimeSpec-like object from bundled sleeve and block content."
+            }
+          ],
+          "strategy": {
+            "mode": "public-basic",
+            "compiler": "bundled-adapter"
+          },
+          "constraints": [
+            "public-safe",
+            "read-only-default"
+          ],
+          "context": {
+            "audience": "public"
+          },
+          "values": {
+            "transparency": true
+          },
+          "format": {
+            "style": "structured"
+          },
+          "tool_requests": [],
+          "errors": [],
+          "warnings": [
+            "disabled block skipped: trigger.sample"
+          ]
+        }
+      }
+    },
+    {
+      "name": "umg_envoy_validate_runtime_output",
+      "ok": true,
+      "input": {
+        "runtimeOutput": {
+          "runtimespec_id": "runtime-public-basic-envoy",
+          "sleeve_id": "public-basic-envoy",
+          "snap_id": "default",
+          "primary_shell_block_id": "primary.sample",
+          "active_blocks": [
+            "primary.sample",
+            "directive.sample",
+            "instruction.sample",
+            "subject.sample",
+            "philosophy.sample",
+            "blueprint.sample"
+          ],
+          "prompt_parts": [
+            {
+              "block_id": "primary.sample",
+              "kind": "primary",
+              "authority": 10,
+              "text": "Maintain public-safe operation, honest validation, and stable runtime emission."
+            },
+            {
+              "block_id": "directive.sample",
+              "kind": "directive",
+              "authority": 20,
+              "text": "Prefer concise, public-safe, compiler-visible directives."
+            },
+            {
+              "block_id": "instruction.sample",
+              "kind": "instruction",
+              "authority": 30,
+              "text": "Assemble a stable prompt part list from active bundled blocks."
+            },
+            {
+              "block_id": "subject.sample",
+              "kind": "subject",
+              "authority": 40,
+              "text": "The subject of this public sleeve is transparent compiler-backed envoy behavior."
+            },
+            {
+              "block_id": "philosophy.sample",
+              "kind": "philosophy",
+              "authority": 50,
+              "text": "Fail closed, bundle public examples, and avoid private path assumptions."
+            },
+            {
+              "block_id": "blueprint.sample",
+              "kind": "blueprint",
+              "authority": 55,
+              "text": "Emit a documented RuntimeSpec-like object from bundled sleeve and block content."
+            }
+          ],
+          "strategy": {
+            "mode": "public-basic",
+            "compiler": "bundled-adapter"
+          },
+          "constraints": [
+            "public-safe",
+            "read-only-default"
+          ],
+          "context": {
+            "audience": "public"
+          },
+          "values": {
+            "transparency": true
+          },
+          "format": {
+            "style": "structured"
+          },
+          "tool_requests": [],
+          "errors": [],
+          "warnings": [
+            "disabled block skipped: trigger.sample"
+          ]
+        }
+      },
+      "text": "{\n  \"ok\": true,\n  \"valid\": true,\n  \"errors\": [],\n  \"warnings\": []\n}",
+      "parsed": {
+        "ok": true,
+        "valid": true,
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "name": "umg_envoy_compare_sleeves",
+      "ok": true,
+      "input": {
+        "left": "public-basic-envoy",
+        "right": "public-coder-envoy"
+      },
+      "text": "{\n  \"ok\": true,\n  \"left\": {\n    \"sleeveId\": \"public-basic-envoy\",\n    \"active_blocks\": [\n      \"primary.sample\",\n      \"directive.sample\",\n      \"instruction.sample\",\n      \"subject.sample\",\n      \"philosophy.sample\",\n      \"blueprint.sample\"\n    ],\n    \"prompt_parts\": [\n      \"primary.sample\",\n      \"directive.sample\",\n      \"instruction.sample\",\n      \"subject.sample\",\n      \"philosophy.sample\",\n      \"blueprint.sample\"\n    ]\n  },\n  \"right\": {\n    \"sleeveId\": \"public-coder-envoy\",\n    \"active_blocks\": [\n      \"primary.sample\",\n      \"directive.sample\",\n      \"instruction.sample\",\n      \"subject.sample\",\n      \"philosophy.sample\",\n      \"blueprint.sample\",\n      \"trigger.sample\"\n    ],\n    \"prompt_parts\": [\n      \"primary.sample\",\n      \"directive.sample\",\n      \"instruction.sample\",\n      \"subject.sample\",\n      \"philosophy.sample\",\n      \"blueprint.sample\",\n      \"trigger.sample\"\n    ]\n  },\n  \"onlyLeftBlocks\": [],\n  \"onlyRightBlocks\": [\n    \"trigger.sample\"\n  ]\n}",
+      "parsed": {
+        "ok": true,
+        "left": {
+          "sleeveId": "public-basic-envoy",
+          "active_blocks": [
+            "primary.sample",
+            "directive.sample",
+            "instruction.sample",
+            "subject.sample",
+            "philosophy.sample",
+            "blueprint.sample"
+          ],
+          "prompt_parts": [
+            "primary.sample",
+            "directive.sample",
+            "instruction.sample",
+            "subject.sample",
+            "philosophy.sample",
+            "blueprint.sample"
+          ]
+        },
+        "right": {
+          "sleeveId": "public-coder-envoy",
+          "active_blocks": [
+            "primary.sample",
+            "directive.sample",
+            "instruction.sample",
+            "subject.sample",
+            "philosophy.sample",
+            "blueprint.sample",
+            "trigger.sample"
+          ],
+          "prompt_parts": [
+            "primary.sample",
+            "directive.sample",
+            "instruction.sample",
+            "subject.sample",
+            "philosophy.sample",
+            "blueprint.sample",
+            "trigger.sample"
+          ]
+        },
+        "onlyLeftBlocks": [],
+        "onlyRightBlocks": [
+          "trigger.sample"
+        ]
+      }
+    },
+    {
+      "name": "umg_envoy_parse_path",
+      "ok": false,
+      "input": {
+        "source": "TRIGGER: audit alpha6 surface\nAIM: preserve working recovery\nUSE: inspect current plugin surface"
+      },
+      "error": "Error: Unknown line: TRIGGER: audit alpha6 surface\n    at parseUMGPath (file:///C:/Users/Magne/.openclaw/extensions/umg-envoy-agent/dist/umg-path-parser.js:204:15)\n    at Object.execute (file:///C:/Users/Magne/.openclaw/extensions/umg-envoy-agent/dist/plugin-entry.js:144:263)\n    at run (file:///C:/.openclaw/workspace/tmp-umg-alpha6-probe.mjs:13:27)\n    at file:///C:/.openclaw/workspace/tmp-umg-alpha6-probe.mjs:44:7"
+    },
+    {
+      "name": "umg_envoy_validate_path",
+      "ok": false,
+      "input": {
+        "source": "TRIGGER: audit alpha6 surface\nAIM: preserve working recovery\nUSE: inspect current plugin surface"
+      },
+      "error": "Error: Unknown line: TRIGGER: audit alpha6 surface\n    at parseUMGPath (file:///C:/Users/Magne/.openclaw/extensions/umg-envoy-agent/dist/umg-path-parser.js:204:15)\n    at Object.execute (file:///C:/Users/Magne/.openclaw/extensions/umg-envoy-agent/dist/plugin-entry.js:145:251)\n    at run (file:///C:/.openclaw/workspace/tmp-umg-alpha6-probe.mjs:13:27)\n    at file:///C:/.openclaw/workspace/tmp-umg-alpha6-probe.mjs:45:7"
+    },
+    {
+      "name": "umg_envoy_render_path",
+      "ok": false,
+      "input": {
+        "source": "TRIGGER: audit alpha6 surface\nAIM: preserve working recovery\nUSE: inspect current plugin surface"
+      },
+      "error": "Error: Unknown line: TRIGGER: audit alpha6 surface\n    at parseUMGPath (file:///C:/Users/Magne/.openclaw/extensions/umg-envoy-agent/dist/umg-path-parser.js:204:15)\n    at Object.execute (file:///C:/Users/Magne/.openclaw/extensions/umg-envoy-agent/dist/plugin-entry.js:146:284)\n    at run (file:///C:/.openclaw/workspace/tmp-umg-alpha6-probe.mjs:13:27)\n    at file:///C:/.openclaw/workspace/tmp-umg-alpha6-probe.mjs:46:7"
+    },
+    {
+      "name": "umg_envoy_build_path",
+      "ok": true,
+      "input": {
+        "message": "Audit current alpha6 surface",
+        "sleeveId": "public-basic-envoy"
+      },
+      "text": "USE[public_compile_and_render_path]\nAIM[public_safe_human_inspectable_route]\nNEED[bundled_public_content,compiler_visible_output]\nSLV[public-basic-envoy]\nTRG[public.default]\nGATE[]\nLOAD[S.PUBLIC.01,S.PUBLIC.02]\n\nSTACK[S.PUBLIC.01]\nBLOCK[NB.PUBLIC.01]\nMOLT[+Pprimary.sample]\nENDBLOCK\nENDSTACK\nSTACK[S.PUBLIC.02]\nBLOCK[NB.PUBLIC.02]\nMOLT[+Iinstruction.sample]\nENDBLOCK\nENDSTACK\n\nWIN[chain]=NB.PUBLIC.02>instruction.sample\nCMP[validate>normalize>emit]",
+      "parsed": null
+    },
+    {
+      "name": "umg_envoy_matrix_status",
+      "ok": true,
+      "input": {},
+      "text": "{\n  \"ok\": true,\n  \"compilerAdapter\": \"available\",\n  \"contentMode\": \"bundled-public\",\n  \"compilerMode\": \"bundled-adapter\",\n  \"sampleSleeves\": 2,\n  \"sampleBlocks\": 7,\n  \"blockKinds\": [\n    \"blueprint\",\n    \"directive\",\n    \"instruction\",\n    \"philosophy\",\n    \"primary\",\n    \"subject\",\n    \"trigger\"\n  ]\n}",
+      "parsed": {
+        "ok": true,
+        "compilerAdapter": "available",
+        "contentMode": "bundled-public",
+        "compilerMode": "bundled-adapter",
+        "sampleSleeves": 2,
+        "sampleBlocks": 7,
+        "blockKinds": [
+          "blueprint",
+          "directive",
+          "instruction",
+          "philosophy",
+          "primary",
+          "subject",
+          "trigger"
+        ]
+      }
+    }
+  ]
+}

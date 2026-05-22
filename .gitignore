@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Package artifacts
+*.tgz
+*.tar.gz
+
+# Publish/staging outputs
+umg-envoy-agent-publish-stage/
+publish-stage/
+*-publish-stage/
+*-folder-publish/
+package-extract-verify/
+*extract-verify*/
+
+# OpenClaw local install/backups
+alpha*-local-live-promotion-backups/
+alpha*-package-local-install-verify-backups/
+alpha*-runtime-identity-reconcile-backups/
+.openclaw/extensions/
+extensions/
+*.backup-*/
+
+# Temp/generated
+tmp/
+temp/
+.cache/
