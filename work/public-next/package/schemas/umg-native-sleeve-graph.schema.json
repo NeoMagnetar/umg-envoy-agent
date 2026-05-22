@@ -3,6 +3,7 @@
   "$id": "umg.native_sleeve_graph.v1",
   "title": "UMG Native Sleeve Graph",
   "type": "object",
+  "additionalProperties": false,
   "required": [
     "sleeveId",
     "sleeveName",
@@ -19,9 +20,11 @@
     },
     "nativeGraph": {
       "type": "object",
+      "additionalProperties": false,
       "required": [
         "schemaVersion",
         "sleeveId",
+        "sleeveName",
         "nativeGraphId",
         "provenance",
         "neoStacks",
@@ -38,74 +41,70 @@
           "const": "umg.native_sleeve_graph.v1"
         },
         "sleeveId": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "sleeveName": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "nativeGraphId": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "provenance": {
           "$ref": "#/$defs/provenance"
         },
         "neoStacks": {
           "type": "array",
-          "minItems": 1
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/neoStack"
+          }
         },
         "neoBlocks": {
           "type": "array",
-          "minItems": 1
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/neoBlock"
+          }
         },
         "moltFragments": {
           "type": "array",
-          "minItems": 1
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/moltFragment"
+          }
         },
         "toolRequests": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/toolRequest"
+          }
         },
         "runtimeRoutes": {
           "type": "array",
-          "minItems": 1
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/runtimeRoute"
+          }
         },
         "irRoutes": {
           "type": "array",
-          "minItems": 1
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/irRoute"
+          }
         },
         "envelopeSources": {
           "type": "array",
-          "minItems": 1
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/envelopeSource"
+          }
         },
         "safety": {
-          "type": "object",
-          "required": [
-            "approvedOnly",
-            "allowlistedOnly",
-            "readOnlyOnly",
-            "directSourceEnabled",
-            "automaticResponseTakeover",
-            "umgBlockLibraryMutation"
-          ],
-          "properties": {
-            "approvedOnly": {
-              "const": true
-            },
-            "allowlistedOnly": {
-              "const": true
-            },
-            "readOnlyOnly": {
-              "const": true
-            },
-            "directSourceEnabled": {
-              "const": false
-            },
-            "automaticResponseTakeover": {
-              "const": false
-            },
-            "umgBlockLibraryMutation": {
-              "const": "not_performed"
-            }
-          }
+          "$ref": "#/$defs/safety"
         }
       }
     }
@@ -113,6 +112,7 @@
   "$defs": {
     "provenance": {
       "type": "object",
+      "additionalProperties": false,
       "required": [
         "category",
         "declaredBy",
@@ -139,23 +139,254 @@
           ]
         },
         "sourceId": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "sourcePath": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "derivedFrom": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           }
         },
         "evidence": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           }
         }
+      }
+    },
+    "neoStack": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stackId",
+        "label",
+        "purpose",
+        "containedNeoBlockIds",
+        "provenance"
+      ],
+      "properties": {
+        "stackId": { "type": "string", "minLength": 1 },
+        "label": { "type": "string", "minLength": 1 },
+        "purpose": { "type": "string", "minLength": 1 },
+        "containedNeoBlockIds": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "order": { "type": "number" },
+        "activation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["defaultActive", "reason"],
+          "properties": {
+            "defaultActive": { "type": "boolean" },
+            "reason": { "type": "string", "minLength": 1 }
+          }
+        },
+        "provenance": { "$ref": "#/$defs/provenance" }
+      }
+    },
+    "neoBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "neoBlockId",
+        "label",
+        "role",
+        "parentStackIds",
+        "contributesTo",
+        "provenance"
+      ],
+      "properties": {
+        "neoBlockId": { "type": "string", "minLength": 1 },
+        "label": { "type": "string", "minLength": 1 },
+        "role": { "type": "string", "minLength": 1 },
+        "parentStackIds": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "contributesTo": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "enum": ["MOLT", "RuntimeSpec", "IRMatrix", "Envelope", "ToolRequest"]
+          }
+        },
+        "provenance": { "$ref": "#/$defs/provenance" }
+      }
+    },
+    "moltFragment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fragmentId",
+        "sourceNeoBlockId",
+        "moltType",
+        "role",
+        "content",
+        "provenance"
+      ],
+      "properties": {
+        "fragmentId": { "type": "string", "minLength": 1 },
+        "sourceNeoBlockId": { "type": "string", "minLength": 1 },
+        "moltType": {
+          "enum": ["Trigger", "Directive", "Instruction", "Subject", "Primary", "Philosophy", "Blueprint", "Off"]
+        },
+        "role": { "type": "string", "minLength": 1 },
+        "content": { "type": "string", "minLength": 1 },
+        "mergeKey": { "type": "string", "minLength": 1 },
+        "stackKey": { "type": "string", "minLength": 1 },
+        "provenance": { "$ref": "#/$defs/provenance" }
+      }
+    },
+    "toolRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "requestedToolName",
+        "requestedAction",
+        "purpose",
+        "policyClass",
+        "executableUnderBoundedRules",
+        "provenance"
+      ],
+      "properties": {
+        "requestId": { "type": "string", "minLength": 1 },
+        "requestedToolName": { "type": "string", "minLength": 1 },
+        "requestedAction": { "type": "string", "minLength": 1 },
+        "purpose": { "type": "string", "minLength": 1 },
+        "policyClass": {
+          "enum": ["read_only", "approval_required", "blocked", "metadata_only"]
+        },
+        "executableUnderBoundedRules": { "type": "boolean" },
+        "provenance": { "$ref": "#/$defs/provenance" }
+      }
+    },
+    "runtimeRoute": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "routeId",
+        "routeType",
+        "sourceNeoBlockIds",
+        "sourceMoltFragmentIds",
+        "sourceToolRequestIds",
+        "sourceMode",
+        "provenance"
+      ],
+      "properties": {
+        "routeId": { "type": "string", "minLength": 1 },
+        "routeType": { "const": "RuntimeSpecV0" },
+        "sourceNeoBlockIds": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "sourceMoltFragmentIds": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "sourceToolRequestIds": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "sourceMode": {
+          "enum": ["sleeve_native", "sleeve_native_with_sample_fallback", "sample_only", "legacy_preview", "unavailable"]
+        },
+        "provenance": { "$ref": "#/$defs/provenance" }
+      }
+    },
+    "irNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nodeId", "nodeType", "sourceId", "provenance"],
+      "properties": {
+        "nodeId": { "type": "string", "minLength": 1 },
+        "nodeType": {
+          "enum": ["sleeve", "neoStack", "neoBlock", "moltFragment", "toolRequest", "runtimeSpec", "irMatrix", "envelope"]
+        },
+        "sourceId": { "type": "string", "minLength": 1 },
+        "provenance": { "$ref": "#/$defs/provenance" }
+      }
+    },
+    "irEdge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["edgeId", "edgeType", "from", "to", "provenance"],
+      "properties": {
+        "edgeId": { "type": "string", "minLength": 1 },
+        "edgeType": {
+          "enum": ["contains", "contributes_to", "declares", "derives", "compiles_to", "routes_to", "previews"]
+        },
+        "from": { "type": "string", "minLength": 1 },
+        "to": { "type": "string", "minLength": 1 },
+        "provenance": { "$ref": "#/$defs/provenance" }
+      }
+    },
+    "irRoute": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["routeId", "nodes", "edges", "routePurity", "provenance"],
+      "properties": {
+        "routeId": { "type": "string", "minLength": 1 },
+        "nodes": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/irNode" } },
+        "edges": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/irEdge" } },
+        "routePurity": {
+          "enum": ["clean_native", "native_with_marked_fallback", "contaminated", "unknown"]
+        },
+        "provenance": { "$ref": "#/$defs/provenance" }
+      }
+    },
+    "envelopeSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "envelopeId",
+        "sourceRuntimeRouteId",
+        "sourceIrRouteId",
+        "sections",
+        "envelopeSource",
+        "provenance"
+      ],
+      "properties": {
+        "envelopeId": { "type": "string", "minLength": 1 },
+        "sourceRuntimeRouteId": { "type": "string", "minLength": 1 },
+        "sourceIrRouteId": { "type": "string", "minLength": 1 },
+        "sections": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["activeStack", "currentContextMoltMap", "formalResponsePreview", "metadata"],
+          "properties": {
+            "activeStack": { "type": "string", "minLength": 1 },
+            "currentContextMoltMap": { "type": "string", "minLength": 1 },
+            "formalResponsePreview": { "type": "string", "minLength": 1 },
+            "metadata": { "type": "string", "minLength": 1 }
+          }
+        },
+        "envelopeSource": {
+          "enum": ["sleeve_native_declared", "sleeve_native_derived", "sample_fallback", "legacy_preview_residue"]
+        },
+        "provenance": { "$ref": "#/$defs/provenance" }
+      }
+    },
+    "safety": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "approvedOnly",
+        "allowlistedOnly",
+        "readOnlyOnly",
+        "directSourceEnabled",
+        "automaticResponseTakeover",
+        "umgBlockLibraryMutation"
+      ],
+      "properties": {
+        "approvedOnly": { "const": true },
+        "allowlistedOnly": { "const": true },
+        "readOnlyOnly": { "const": true },
+        "directSourceEnabled": { "const": false },
+        "automaticResponseTakeover": { "const": false },
+        "umgBlockLibraryMutation": { "const": "not_performed" }
       }
     }
   }
