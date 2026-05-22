@@ -1,0 +1,19 @@
+{
+  "bundleId": "native-graph-inspection",
+  "bundleName": "Native Graph Inspection Bundle",
+  "bundleVersion": "0.3.0-alpha.12",
+  "category": "read_only_runtime_bundle",
+  "purpose": "Inspect native graph richness, clean-native eligibility, route purity, and diagnostics surfaces.",
+  "toolRequests": [
+    "umg_envoy_runtime_sleeve_graph_richness_inspect",
+    "umg_envoy_runtime_active_sleeve_ir_matrix_envelope_inspect"
+  ],
+  "safety": {
+    "approvedOnly": true,
+    "allowlistedOnly": true,
+    "readOnlyOnly": true,
+    "directSourceEnabled": false,
+    "automaticResponseTakeover": false,
+    "umgBlockLibraryMutation": "not_performed"
+  }
+}

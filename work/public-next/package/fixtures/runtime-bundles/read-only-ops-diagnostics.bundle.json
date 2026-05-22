@@ -1,0 +1,20 @@
+{
+  "bundleId": "read-only-ops-diagnostics",
+  "bundleName": "Read-Only Ops Diagnostics Bundle",
+  "bundleVersion": "0.3.0-alpha.12",
+  "category": "read_only_runtime_bundle",
+  "purpose": "Inspect status, active sleeve session state, and bounded read-only orchestration diagnostics safely.",
+  "toolRequests": [
+    "umg_envoy_status",
+    "umg_envoy_sleeve_session_current",
+    "umg_envoy_runtime_bounded_read_only_orchestrate"
+  ],
+  "safety": {
+    "approvedOnly": true,
+    "allowlistedOnly": true,
+    "readOnlyOnly": true,
+    "directSourceEnabled": false,
+    "automaticResponseTakeover": false,
+    "umgBlockLibraryMutation": "not_performed"
+  }
+}

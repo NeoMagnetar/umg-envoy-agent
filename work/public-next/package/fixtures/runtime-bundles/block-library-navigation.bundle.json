@@ -1,0 +1,21 @@
+{
+  "bundleId": "block-library-navigation",
+  "bundleName": "Block Library Navigation Bundle",
+  "bundleVersion": "0.3.0-alpha.12",
+  "category": "read_only_runtime_bundle",
+  "purpose": "Inspect block-library manifest index, manifest entries, NeoBlocks, and visible MOLT fragments safely.",
+  "toolRequests": [
+    "umg_envoy_block_library_manifest_index",
+    "umg_envoy_block_library_manifest_entry_lookup",
+    "umg_envoy_block_library_neoblock_inspect",
+    "umg_envoy_block_library_moltblock_visible_extract"
+  ],
+  "safety": {
+    "approvedOnly": true,
+    "allowlistedOnly": true,
+    "readOnlyOnly": true,
+    "directSourceEnabled": false,
+    "automaticResponseTakeover": false,
+    "umgBlockLibraryMutation": "not_performed"
+  }
+}

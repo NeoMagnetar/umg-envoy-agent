@@ -1,0 +1,20 @@
+{
+  "bundleId": "coding-project-inspection",
+  "bundleName": "Coding Project Inspection Bundle",
+  "bundleVersion": "0.3.0-alpha.12",
+  "category": "read_only_runtime_bundle",
+  "purpose": "Inspect status, runtime outputs, and graph-richness surfaces for structured implementation planning.",
+  "toolRequests": [
+    "umg_envoy_status",
+    "umg_envoy_validate_runtime_output",
+    "umg_envoy_runtime_sleeve_graph_richness_inspect"
+  ],
+  "safety": {
+    "approvedOnly": true,
+    "allowlistedOnly": true,
+    "readOnlyOnly": true,
+    "directSourceEnabled": false,
+    "automaticResponseTakeover": false,
+    "umgBlockLibraryMutation": "not_performed"
+  }
+}
