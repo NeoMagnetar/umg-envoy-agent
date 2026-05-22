@@ -3836,6 +3836,8 @@ export declare function inspectRuntimeSleeveGraphRichness(version: string, entry
         legacyPreviewResiduePaths: never[];
         routePurity: string;
         routeWarnings: never[];
+        nativeFixtureResolution: NativeFixtureResolutionDiagnostics;
+        runtimeCodeIdentity: Record<string, unknown>;
         directSourceEnabled: boolean;
         automaticResponseTakeover: boolean;
         sleeveId: string;

@@ -253,7 +253,7 @@ function readNativeSleeveFixtureFromPackage(args) {
         },
     };
 }
-function buildNativeGraphRichnessSummaries(nativeProjection, graphRunId, sessionState, sleeveId) {
+function buildNativeGraphRichnessSummaries(nativeProjection, graphRunId, sessionState, sleeveId, nativeFixtureResolution, runtimeCodeIdentity) {
     const nativeGraph = nativeProjection?.nativeGraph;
     const sourceProvenance = {
         nativeGraphAvailable: true,
@@ -375,6 +375,8 @@ function buildNativeGraphRichnessSummaries(nativeProjection, graphRunId, session
         legacyPreviewResiduePaths: [],
         routePurity: 'clean_native',
         routeWarnings: [],
+        nativeFixtureResolution,
+        runtimeCodeIdentity,
         directSourceEnabled: false,
         automaticResponseTakeover: false,
         sleeveId
@@ -4819,8 +4821,17 @@ export function inspectRuntimeSleeveGraphRichness(version, entrypoint = 'dist/pl
         includeTrace: true
     });
     const nativeGraph = nativeProjection?.nativeGraphAvailable ? nativeProjection.nativeGraph : null;
+    const runtimeCodeIdentity = {
+        ...NATIVE_GRAPH_RUNTIME_IDENTITY,
+        moduleUrl: import.meta.url,
+        processCwd: process.cwd(),
+        resolvedPackageRoot,
+        fixtureCandidateRoots: nativeFixtureRead.diagnostics.candidateRootsChecked,
+    };
     const useNativeProjection = Boolean(nativeGraph && nativeProjection?.nativeGraphAvailable && nativeProjection?.sourceMode === 'sleeve_native' && nativeProjection?.routePurity === 'clean_native');
-    const nativeSummaries = useNativeProjection ? buildNativeGraphRichnessSummaries(nativeProjection, graphRunId, sessionState, sleeveId) : null;
+    const nativeSummaries = useNativeProjection
+        ? buildNativeGraphRichnessSummaries(nativeProjection, graphRunId, sessionState, sleeveId, nativeFixtureRead.diagnostics, runtimeCodeIdentity)
+        : null;
     const neoStackItems = useNativeProjection
         ? (nativeGraph?.neoStacks ?? []).map((stack) => ({
             neoStackId: stack.stackId,
@@ -5055,13 +5066,7 @@ export function inspectRuntimeSleeveGraphRichness(version, entrypoint = 'dist/pl
             routePurity: sourceProvenance.routePurity,
             routeWarnings: sourceProvenance.legacyPreviewResidueDetected ? ['sample_or_legacy_preview_residue_marked'] : [],
             nativeFixtureResolution: nativeFixtureRead.diagnostics,
-            runtimeCodeIdentity: {
-                ...NATIVE_GRAPH_RUNTIME_IDENTITY,
-                moduleUrl: import.meta.url,
-                processCwd: process.cwd(),
-                resolvedPackageRoot,
-                fixtureCandidateRoots: nativeFixtureRead.diagnostics.candidateRootsChecked,
-            },
+            runtimeCodeIdentity,
             directSourceEnabled: false,
             automaticResponseTakeover: false
         }),
