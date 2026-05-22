@@ -7,7 +7,7 @@ const runtimeSleeveSessionStore = new Map();
 const NATIVE_GRAPH_RUNTIME_IDENTITY = {
     lane: 'ALPHA8_NATIVE_GRAPH_LIVE_CODE_IDENTITY_DIAGNOSIS_SOURCE',
     marker: 'native-graph-fixture-resolution-parity-v2',
-    expectedVersion: '0.3.0-alpha.11',
+    expectedVersion: '0.3.0-alpha.12',
     buildIdentity: 'native-graph-live-code-identity-2026-05-21',
 };
 const DEFAULT_LIBRARY_ROOT = "C:\\.openclaw\\workspace\\UMG-Block-Library";
