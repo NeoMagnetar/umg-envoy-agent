@@ -1,0 +1,101 @@
+{
+  "designStatus": "gate_design_only",
+  "designId": "umg-controlled-action-gate-v1",
+  "baselineVersion": "0.3.0-alpha.12",
+  "executionAuthorityExpanded": false,
+  "hardBoundaries": {
+    "approvedOnly": true,
+    "allowlistedOnly": true,
+    "readOnlyOnly": true,
+    "directSourceEnabled": false,
+    "automaticResponseTakeover": false,
+    "umgBlockLibraryMutation": "not_performed",
+    "desktopBridgeActionsEnabled": false,
+    "phaseBridgeActionsEnabled": false,
+    "fileWritesEnabled": false,
+    "commandExecutionEnabled": false
+  },
+  "actionClasses": [
+    {
+      "classId": "metadata_only",
+      "riskLevel": "metadata_only",
+      "approvalRequired": false,
+      "allowlistRequired": false,
+      "dryRunRequired": false,
+      "auditRequired": true,
+      "reversibility": "not_needed"
+    },
+    {
+      "classId": "dry_run_preview",
+      "riskLevel": "low_reversible",
+      "approvalRequired": false,
+      "allowlistRequired": true,
+      "dryRunRequired": false,
+      "auditRequired": true,
+      "reversibility": "not_needed"
+    },
+    {
+      "classId": "reversible_low_risk_action",
+      "riskLevel": "low_reversible",
+      "approvalRequired": true,
+      "allowlistRequired": true,
+      "dryRunRequired": true,
+      "auditRequired": true,
+      "reversibility": "automatic_rollback_available"
+    },
+    {
+      "classId": "bounded_mutation_action",
+      "riskLevel": "high_mutation",
+      "approvalRequired": true,
+      "allowlistRequired": true,
+      "dryRunRequired": true,
+      "auditRequired": true,
+      "reversibility": "manual_rollback_required"
+    },
+    {
+      "classId": "forbidden_action",
+      "riskLevel": "forbidden",
+      "approvalRequired": false,
+      "allowlistRequired": false,
+      "dryRunRequired": false,
+      "auditRequired": true,
+      "reversibility": "not_needed"
+    }
+  ],
+  "blockedCategories": [
+    "direct_source_enablement",
+    "automatic_response_takeover",
+    "broad_command_execution",
+    "unrestricted_desktop_bridge_action",
+    "unrestricted_phasebridge_mutation",
+    "unconstrained_umg_block_library_mutation",
+    "unbounded_repo_mutation"
+  ],
+  "bridgeSpecificGateConcepts": {
+    "desktopBridge": {
+      "futureActionFamilies": [
+        "click_route",
+        "type_route",
+        "key_press_route",
+        "focus_switch_route"
+      ],
+      "enabledNow": false
+    },
+    "phaseBridge": {
+      "futureActionFamilies": [
+        "resume_route",
+        "stop_route",
+        "relay_route",
+        "ledger_mutation_route",
+        "worklog_mutation_route"
+      ],
+      "enabledNow": false
+    }
+  },
+  "metadataVisibility": {
+    "blockedRoutesVisibleAsMetadata": true,
+    "approvalNeededVisibleAsMetadata": true,
+    "riskSummariesVisibleAsMetadata": true,
+    "executionEnabled": false
+  }
+}
