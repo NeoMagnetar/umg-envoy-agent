@@ -1,0 +1,68 @@
+{
+  "designStatus": "read_only_observer_design_only",
+  "sleeveId": "umg-phasebridge-observer-native-v1",
+  "sleeveName": "UMG PhaseBridge Observer Native Sleeve",
+  "designKind": "phasebridge_read_only_observer",
+  "baselineVersion": "0.3.0-alpha.12",
+  "hardBoundaries": {
+    "approvedOnly": true,
+    "allowlistedOnly": true,
+    "readOnlyOnly": true,
+    "phaseBridgeActionsEnabled": false,
+    "fileWritesEnabled": false,
+    "commandExecutionEnabled": false,
+    "bridgeMutationEnabled": false,
+    "directSourceEnabled": false,
+    "automaticResponseTakeover": false,
+    "umgBlockLibraryMutation": "not_performed"
+  },
+  "bundleAlignment": [
+    "active-sleeve-inspection",
+    "native-graph-inspection",
+    "read-only-ops-diagnostics"
+  ],
+  "observationModel": {
+    "allowedReadOnlyRoutes": [
+      "phasebridge.ledger_status",
+      "phasebridge.current_step_visibility",
+      "phasebridge.next_legal_step_visibility",
+      "phasebridge.stop_reason_visibility",
+      "phasebridge.work_lane_summary",
+      "phasebridge.validation_status",
+      "phasebridge.runner_readiness"
+    ],
+    "blockedVisibleRoutes": [
+      "phasebridge.resume_execution",
+      "phasebridge.stop_execution",
+      "phasebridge.relay_to_external_target",
+      "phasebridge.ledger_mutation",
+      "phasebridge.worklog_mutation"
+    ],
+    "execution": "not_performed"
+  },
+  "graphIntent": {
+    "sourceMode": "sleeve_native",
+    "routePurity": "clean_native",
+    "sampleFallbackUsed": false,
+    "legacyPreviewResidueDetected": false,
+    "phaseBridgeObservationProvenance": [
+      "phasebridge_observed",
+      "phasebridge_capability_blocked"
+    ]
+  },
+  "recommendedNeoStacks": [
+    "phasebridge-observer-core-stack",
+    "phasebridge-observer-output-stack",
+    "phasebridge-observer-policy-stack"
+  ],
+  "recommendedOutputs": [
+    "bridge availability",
+    "bridge health/status",
+    "read-only capability set",
+    "blocked/action capability set",
+    "current workflow visibility state",
+    "provenance summary",
+    "route purity summary",
+    "explicit no-action statement"
+  ]
+}
