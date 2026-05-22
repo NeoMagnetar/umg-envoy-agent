@@ -22,6 +22,7 @@
     "src/umg-path-renderer.ts",
     "src/umg-path-types.ts",
     "src/umg-path-validator.ts",
+    "src/action-gate-policy-projection.ts",
     "src/compiler/**/*.ts"
   ]
 }
