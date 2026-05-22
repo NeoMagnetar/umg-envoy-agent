@@ -44,9 +44,13 @@ const explicit = inspectRuntimeSleeveGraphRichness(version, entrypoint, undefine
 });
 assert(explicit.outputContract.contractId === 'umg.runtime.sleeve_graph.richness.v1', 'explicit contract mismatch');
 assert(explicit.sourceSleeveId === sleeveId, 'explicit sleeve inspect failed');
-assert(explicit.neoStackSummary?.reason === 'sleeve_declares_no_neostacks', 'neoStack empty reason must be explicit');
+assert((explicit.neoStackSummary?.count ?? 0) > 0, 'native fixture should expose NeoStacks');
 assert((explicit.neoBlockSummary?.count ?? 0) > 0, 'neoBlocks should resolve');
-assert((explicit.moltFragmentSummary?.visibleCount ?? 0) >= 0, 'molt fragment summary should exist');
+assert((explicit.moltFragmentSummary?.visibleCount ?? 0) > 0, 'molt fragment summary should exist');
+assert(explicit.runtimeSpecSummary?.sourceMode === 'sleeve_native', 'native fixture runtimeSpec sourceMode drift');
+assert(explicit.diagnostics?.routePurity === 'clean_native', 'native fixture routePurity drift');
+assert(explicit.diagnostics?.legacyPreviewResidueDetected === false, 'native fixture legacy residue drift');
+assert(explicit.diagnostics?.sampleFallbackUsed === false, 'native fixture sample fallback drift');
 assert(explicit.runtimeSpecSummary?.runtimeSpecId, 'runtimeSpec summary missing');
 assert(explicit.irMatrixSummary?.matrixId, 'irMatrix summary missing');
 assert(explicit.envelopeSummary?.envelopeStatus, 'envelope summary missing');

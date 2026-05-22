@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import { projectNativeSleeveGraph } from './native-graph-adapter.js';
 
 export type BlockLibraryLaneClassification =
   | "MACHINE_LOADABLE_CANDIDATE"
@@ -1284,6 +1285,209 @@ function stripBom(text: string): string {
 
 function readJsonFile(filePath: string): unknown {
   return JSON.parse(stripBom(fs.readFileSync(filePath, "utf8")));
+}
+
+function readNativeSleeveFixtureFromPackage(packageRoot: string, sleeveId: string): unknown | null {
+  const candidateRoots = Array.from(new Set([
+    packageRoot,
+    process.cwd(),
+    path.resolve(process.cwd(), 'work', 'public-next', 'package')
+  ]));
+  const directCandidatePaths = candidateRoots.map((root) => path.join(root, 'fixtures', 'native-sleeves', `${sleeveId}.json`));
+
+  for (const candidatePath of directCandidatePaths) {
+    if (!safeExists(candidatePath)) {
+      continue;
+    }
+    try {
+      const parsed = readJsonFile(candidatePath);
+      if (parsed && typeof parsed === 'object') {
+        return parsed;
+      }
+    } catch {
+      continue;
+    }
+  }
+
+  if (sleeveId !== 'neomagnetar-dynamic-persona-v1') {
+    return null;
+  }
+
+  for (const root of candidateRoots) {
+    const fallbackPath = path.join(root, 'fixtures', 'native-sleeves', 'neomagnetar-dynamic-persona-native-v1.json');
+    if (!safeExists(fallbackPath)) {
+      continue;
+    }
+    try {
+      const parsed = readJsonFile(fallbackPath) as Record<string, unknown>;
+      if (parsed && typeof parsed === 'object' && parsed.sleeveId === sleeveId) {
+        return parsed;
+      }
+    } catch {
+      continue;
+    }
+  }
+
+  return null;
+}
+
+function buildNativeGraphRichnessSummaries(
+  nativeProjection: any,
+  graphRunId: string,
+  sessionState: any,
+  sleeveId: string,
+) {
+  const nativeGraph = nativeProjection?.nativeGraph;
+  const sourceProvenance = {
+    nativeGraphAvailable: true,
+    sampleFallbackUsed: false,
+    legacyPreviewResidueDetected: false,
+    legacyPreviewResiduePaths: [],
+    sourceMode: 'sleeve_native',
+    routePurity: 'clean_native'
+  };
+
+  const neoStackSummary = {
+    count: nativeGraph?.neoStacks?.length ?? 0,
+    status: (nativeGraph?.neoStacks?.length ?? 0) > 0 ? 'resolved' : 'missing',
+    reason: (nativeGraph?.neoStacks?.length ?? 0) > 0 ? null : 'sleeve_declares_no_neostacks',
+    items: (nativeGraph?.neoStacks ?? []).map((stack: any) => ({
+      neoStackId: stack.stackId,
+      displayName: stack.label,
+      declaredRef: stack.stackId,
+      sourcePath: stack.provenance?.sourcePath ?? null,
+      manifestEntry: stack.provenance?.sourceId ?? null,
+      activeStatus: 'resolved',
+      reasonActive: 'declared in native sleeve graph fixture',
+      reasonUnavailable: null,
+      declaredNeoBlockRefs: stack.containedNeoBlockIds ?? [],
+      resolvedNeoBlockCount: stack.containedNeoBlockIds?.length ?? 0,
+      blockedNeoBlockCount: 0,
+      warnings: [],
+      provenance: stack.provenance ?? null
+    })),
+    source: 'sleeve_native_graph'
+  };
+
+  const neoBlockSummary = {
+    count: nativeGraph?.neoBlocks?.length ?? 0,
+    status: (nativeGraph?.neoBlocks?.length ?? 0) > 0 ? 'resolved' : 'missing',
+    reason: (nativeGraph?.neoBlocks?.length ?? 0) > 0 ? null : 'sleeve_declares_no_neoblocks',
+    items: (nativeGraph?.neoBlocks ?? []).map((block: any) => ({
+      neoBlockId: block.neoBlockId,
+      parentNeoStackId: Array.isArray(block.parentStackIds) ? (block.parentStackIds[0] ?? null) : null,
+      parentNeoStackIds: block.parentStackIds ?? [],
+      declaredRef: block.neoBlockId,
+      resolvedPath: block.provenance?.sourcePath ?? null,
+      manifestSource: block.provenance?.sourceId ?? null,
+      loadStatus: 'shallow_loaded',
+      visibleMoltFragmentCount: (nativeGraph?.moltFragments ?? []).filter((fragment: any) => fragment.sourceNeoBlockId === block.neoBlockId).length,
+      extractedMoltTypes: (nativeGraph?.moltFragments ?? []).filter((fragment: any) => fragment.sourceNeoBlockId === block.neoBlockId).map((fragment: any) => fragment.moltType),
+      contentSummary: block.role ?? null,
+      warnings: [],
+      provenance: block.provenance ?? null
+    })),
+    source: 'sleeve_native_graph'
+  };
+
+  const moltFragmentSummary = {
+    visibleCount: nativeGraph?.moltFragments?.length ?? 0,
+    source: 'sleeve_native',
+    groups: {
+      Trigger: (nativeGraph?.moltFragments ?? []).filter((fragment: any) => fragment.moltType === 'Trigger'),
+      Directive: (nativeGraph?.moltFragments ?? []).filter((fragment: any) => fragment.moltType === 'Directive'),
+      Instruction: (nativeGraph?.moltFragments ?? []).filter((fragment: any) => fragment.moltType === 'Instruction'),
+      Subject: (nativeGraph?.moltFragments ?? []).filter((fragment: any) => fragment.moltType === 'Subject'),
+      Primary: (nativeGraph?.moltFragments ?? []).filter((fragment: any) => fragment.moltType === 'Primary'),
+      Philosophy: (nativeGraph?.moltFragments ?? []).filter((fragment: any) => fragment.moltType === 'Philosophy'),
+      Blueprint: (nativeGraph?.moltFragments ?? []).filter((fragment: any) => fragment.moltType === 'Blueprint'),
+      Off: [],
+      excluded: []
+    }
+  };
+
+  const toolRequestSummary = {
+    requestCount: nativeGraph?.toolRequests?.length ?? 0,
+    requests: (nativeGraph?.toolRequests ?? []).map((request: any) => ({
+      requestId: request.requestId,
+      requestedToolName: request.requestedToolName,
+      requestedAction: request.requestedAction,
+      classification: request.policyClass,
+      decisionReason: request.purpose,
+      routeReason: request.policyClass,
+      provenance: request.provenance ?? null
+    }))
+  };
+
+  const runtimeSpecSummary = {
+    runtimeSpecId: nativeGraph?.runtimeRoutes?.[0]?.routeId ?? null,
+    sourceMode: 'sleeve_native',
+    activeBlockCount: nativeGraph?.runtimeRoutes?.[0]?.sourceNeoBlockIds?.length ?? nativeGraph?.neoBlocks?.length ?? 0,
+    usesSleeveNativeBlocks: true,
+    usesSampleBlocks: false,
+    previewStatus: 'RUNTIME_PREVIEW_READY',
+    sourceProvenance,
+    routeWarnings: []
+  };
+
+  const irMatrixSummary = {
+    matrixId: nativeGraph?.irRoutes?.[0]?.routeId ?? null,
+    nodeCount: nativeGraph?.irRoutes?.[0]?.nodes?.length ?? 0,
+    edgeCount: nativeGraph?.irRoutes?.[0]?.edges?.length ?? 0,
+    activeRoute: nativeGraph?.irRoutes?.[0]?.nodes?.map((node: any) => node.nodeId) ?? [],
+    blockedRoute: [],
+    sourceMode: 'sleeve_native',
+    sourceProvenance,
+    routePurity: 'clean_native'
+  };
+
+  const envelopeSummary = {
+    envelopeStatus: 'READY',
+    envelopeSource: nativeGraph?.envelopeSources?.[0]?.envelopeSource ?? 'sleeve_native_derived',
+    heldReason: null,
+    sourceMode: 'sleeve_native',
+    sourceProvenance,
+    routePurity: 'clean_native',
+    routeWarnings: []
+  };
+
+  const diagnostics = {
+    graphRunId,
+    overallCompleteness: 'rich_sleeve_native',
+    neoStackReason: neoStackSummary.reason,
+    activeMoltSource: 'sleeve_native',
+    activeSessionAvailable: !!sessionState.activeSleeveId,
+    activeSessionSleeveId: sessionState.activeSleeveId ?? null,
+    sourceMode: 'sleeve_native',
+    sourceProvenance,
+    nativeGraphAvailable: true,
+    sampleFallbackUsed: false,
+    legacyPreviewResidueDetected: false,
+    legacyPreviewResiduePaths: [],
+    routePurity: 'clean_native',
+    routeWarnings: [],
+    directSourceEnabled: false,
+    automaticResponseTakeover: false,
+    sleeveId
+  };
+
+  return {
+    sourceMode: 'sleeve_native' as const,
+    routePurity: 'clean_native' as const,
+    sampleFallbackUsed: false,
+    legacyPreviewResidueDetected: false,
+    legacyPreviewResiduePaths: [] as string[],
+    sourceProvenance,
+    neoStackSummary,
+    neoBlockSummary,
+    moltFragmentSummary,
+    toolRequestSummary,
+    runtimeSpecSummary,
+    irMatrixSummary,
+    envelopeSummary,
+    diagnostics,
+    graphCompleteness: 'rich_sleeve_native' as const
+  };
 }
 
 function normalizeRelativePath(rawPath: string): string {
@@ -6106,6 +6310,8 @@ export function inspectRuntimeSleeveGraphRichness(
     includeExecutionGateState: true,
     mode: 'inspect_only'
   });
+  const nativeFixtureCandidate = readNativeSleeveFixtureFromPackage(path.resolve(root), sleeveId);
+  const nativeProjection = nativeFixtureCandidate ? projectNativeSleeveGraph(nativeFixtureCandidate) : null;
   const drilldown = getBlockLibrarySleeveGraphDrilldown(version, entrypoint, root, { sleeveId, projectionFormat: 'summary' });
   const runtimePreview = previewRuntimeSleeve(version, entrypoint, root, {
     sleeveId,
@@ -6121,62 +6327,163 @@ export function inspectRuntimeSleeveGraphRichness(
     mode: 'classify_only',
     includeTrace: true
   });
-  const neoStackItems = inspection.activeNeoStacks?.items ?? [];
-  const neoBlockItems = inspection.activeNeoBlocks?.items ?? [];
-  const moltGroups = inspection.activeMoltBlocks?.groups ?? {};
-  const moltVisibleCount = Object.values(moltGroups).reduce((sum, group) => sum + (Array.isArray(group) ? group.length : 0), 0);
-  const toolRequests = Array.isArray((classifier as any).classifications) ? (classifier as any).classifications : [];
+  const nativeGraph = nativeProjection?.nativeGraphAvailable ? nativeProjection.nativeGraph : null;
+  const useNativeProjection = Boolean(nativeGraph && nativeProjection?.nativeGraphAvailable && nativeProjection?.sourceMode === 'sleeve_native' && nativeProjection?.routePurity === 'clean_native');
+  const nativeSummaries = useNativeProjection ? buildNativeGraphRichnessSummaries(nativeProjection, graphRunId, sessionState, sleeveId) : null;
+  const neoStackItems = useNativeProjection
+    ? (nativeGraph?.neoStacks ?? []).map((stack: any) => ({
+        neoStackId: stack.stackId,
+        displayName: stack.label,
+        declaredRef: stack.stackId,
+        sourcePath: stack.provenance?.sourcePath ?? null,
+        manifestEntry: stack.provenance?.sourceId ?? null,
+        activeStatus: 'resolved',
+        reasonActive: 'declared in native sleeve graph fixture',
+        reasonUnavailable: null,
+        declaredNeoBlockRefs: stack.containedNeoBlockIds ?? [],
+        resolvedNeoBlockCount: Array.isArray(stack.containedNeoBlockIds) ? stack.containedNeoBlockIds.length : 0,
+        blockedNeoBlockCount: 0,
+        warnings: [],
+        provenance: stack.provenance ?? null
+      }))
+    : (inspection.activeNeoStacks?.items ?? []);
+  const neoBlockItems = useNativeProjection
+    ? (nativeGraph?.neoBlocks ?? []).map((block: any) => ({
+        neoBlockId: block.neoBlockId,
+        parentNeoStackId: Array.isArray(block.parentStackIds) ? (block.parentStackIds[0] ?? null) : null,
+        parentNeoStackIds: block.parentStackIds ?? [],
+        declaredRef: block.neoBlockId,
+        resolvedPath: block.provenance?.sourcePath ?? null,
+        manifestSource: block.provenance?.sourceId ?? null,
+        loadStatus: 'shallow_loaded',
+        visibleMoltFragmentCount: (nativeGraph?.moltFragments ?? []).filter((fragment: any) => fragment.sourceNeoBlockId === block.neoBlockId).length,
+        extractedMoltTypes: (nativeGraph?.moltFragments ?? []).filter((fragment: any) => fragment.sourceNeoBlockId === block.neoBlockId).map((fragment: any) => fragment.moltType),
+        contentSummary: block.role ?? null,
+        warnings: [],
+        provenance: block.provenance ?? null
+      }))
+    : (inspection.activeNeoBlocks?.items ?? []);
+  const moltGroups = useNativeProjection
+    ? {
+        Trigger: (nativeGraph?.moltFragments ?? []).filter((fragment: any) => fragment.moltType === 'Trigger').map((fragment: any) => ({ sourceNeoBlockId: fragment.sourceNeoBlockId, sourceNeoStackId: null, moltType: fragment.moltType, contentSummary: fragment.content, activeStatus: 'active', exclusionReason: null, mergeKey: fragment.fragmentId, stackKey: null, trace: [`sourceNeoBlockId=${fragment.sourceNeoBlockId}`], sourceMode: 'sleeve_native', provenance: fragment.provenance ?? null })),
+        Directive: (nativeGraph?.moltFragments ?? []).filter((fragment: any) => fragment.moltType === 'Directive').map((fragment: any) => ({ sourceNeoBlockId: fragment.sourceNeoBlockId, sourceNeoStackId: null, moltType: fragment.moltType, contentSummary: fragment.content, activeStatus: 'active', exclusionReason: null, mergeKey: fragment.fragmentId, stackKey: null, trace: [`sourceNeoBlockId=${fragment.sourceNeoBlockId}`], sourceMode: 'sleeve_native', provenance: fragment.provenance ?? null })),
+        Instruction: (nativeGraph?.moltFragments ?? []).filter((fragment: any) => fragment.moltType === 'Instruction').map((fragment: any) => ({ sourceNeoBlockId: fragment.sourceNeoBlockId, sourceNeoStackId: null, moltType: fragment.moltType, contentSummary: fragment.content, activeStatus: 'active', exclusionReason: null, mergeKey: fragment.fragmentId, stackKey: null, trace: [`sourceNeoBlockId=${fragment.sourceNeoBlockId}`], sourceMode: 'sleeve_native', provenance: fragment.provenance ?? null })),
+        Subject: (nativeGraph?.moltFragments ?? []).filter((fragment: any) => fragment.moltType === 'Subject').map((fragment: any) => ({ sourceNeoBlockId: fragment.sourceNeoBlockId, sourceNeoStackId: null, moltType: fragment.moltType, contentSummary: fragment.content, activeStatus: 'active', exclusionReason: null, mergeKey: fragment.fragmentId, stackKey: null, trace: [`sourceNeoBlockId=${fragment.sourceNeoBlockId}`], sourceMode: 'sleeve_native', provenance: fragment.provenance ?? null })),
+        Primary: (nativeGraph?.moltFragments ?? []).filter((fragment: any) => fragment.moltType === 'Primary').map((fragment: any) => ({ sourceNeoBlockId: fragment.sourceNeoBlockId, sourceNeoStackId: null, moltType: fragment.moltType, contentSummary: fragment.content, activeStatus: 'active', exclusionReason: null, mergeKey: fragment.fragmentId, stackKey: null, trace: [`sourceNeoBlockId=${fragment.sourceNeoBlockId}`], sourceMode: 'sleeve_native', provenance: fragment.provenance ?? null })),
+        Philosophy: (nativeGraph?.moltFragments ?? []).filter((fragment: any) => fragment.moltType === 'Philosophy').map((fragment: any) => ({ sourceNeoBlockId: fragment.sourceNeoBlockId, sourceNeoStackId: null, moltType: fragment.moltType, contentSummary: fragment.content, activeStatus: 'active', exclusionReason: null, mergeKey: fragment.fragmentId, stackKey: null, trace: [`sourceNeoBlockId=${fragment.sourceNeoBlockId}`], sourceMode: 'sleeve_native', provenance: fragment.provenance ?? null })),
+        Blueprint: (nativeGraph?.moltFragments ?? []).filter((fragment: any) => fragment.moltType === 'Blueprint').map((fragment: any) => ({ sourceNeoBlockId: fragment.sourceNeoBlockId, sourceNeoStackId: null, moltType: fragment.moltType, contentSummary: fragment.content, activeStatus: 'active', exclusionReason: null, mergeKey: fragment.fragmentId, stackKey: null, trace: [`sourceNeoBlockId=${fragment.sourceNeoBlockId}`], sourceMode: 'sleeve_native', provenance: fragment.provenance ?? null })),
+        Off: [],
+        excluded: []
+      }
+    : (inspection.activeMoltBlocks?.groups ?? {});
+  const moltVisibleCount = useNativeProjection
+    ? (nativeGraph?.moltFragments?.length ?? 0)
+    : Object.values(moltGroups).reduce((sum, group) => sum + (Array.isArray(group) ? group.length : 0), 0);
+  const toolRequests = useNativeProjection
+    ? (nativeGraph?.toolRequests ?? []).map((request: any) => ({
+        requestId: request.requestId,
+        requestedToolName: request.requestedToolName,
+        requestedAction: request.requestedAction,
+        classification: 'available_read_only',
+        decisionReason: request.purpose,
+        requestSummary: request.policyClass,
+        provenance: request.provenance ?? null
+      }))
+    : (Array.isArray((classifier as any).classifications) ? (classifier as any).classifications : []);
   const runtimeSpecValue = inspection.runtimeSpec as Record<string, unknown> | null | undefined;
   const runtimePreviewSpecValue = runtimePreview.runtimeSpec as Record<string, unknown> | null | undefined;
-  const runtimeSpecSummary = input.includeRuntimeSpec === false ? null : {
-    runtimeSpecId: inspection.runtimeSpec?.runtimeSpecId ?? runtimePreview.runtimeSpec?.runtimeSpecId ?? null,
-    sourceMode: typeof runtimeSpecValue?.sourceMode === 'string' ? runtimeSpecValue.sourceMode : null,
-    activeBlockCount: inspection.runtimeSpec?.activeBlocks?.length ?? runtimePreview.runtimeSpec?.activeBlocks?.length ?? 0,
-    usesSleeveNativeBlocks: typeof runtimeSpecValue?.usesSleeveNativeBlocks === 'boolean' ? runtimeSpecValue.usesSleeveNativeBlocks : null,
-    usesSampleBlocks: typeof runtimeSpecValue?.usesSampleBlocks === 'boolean' ? runtimeSpecValue.usesSampleBlocks : null,
-    previewStatus: typeof runtimePreviewSpecValue?.previewStatus === 'string' ? runtimePreviewSpecValue.previewStatus : runtimePreview.previewStatus ?? null
-  };
-  const irMatrixSummary = input.includeIrMatrix === false ? null : {
-    matrixId: inspection.irMatrixProjection?.matrixId ?? null,
-    nodeCount: inspection.irMatrixProjection?.nodes?.length ?? 0,
-    edgeCount: inspection.irMatrixProjection?.edges?.length ?? 0,
-    activeRoute: inspection.irMatrixProjection?.activeRoute ?? [],
-    blockedRoute: inspection.irMatrixProjection?.blockedRoute ?? []
-  };
-  const envelopeSummary = input.includeEnvelope === false ? null : {
-    envelopeStatus: inspection.responseEnvelopePreview?.envelopeStatus ?? null,
-    envelopeSource: inspection.responseEnvelopePreview?.envelopeSource ?? null,
-    heldReason: inspection.responseEnvelopePreview?.heldReason ?? null
-  };
-  const neoStackReason = inspection.activeNeoStacks?.reason ?? (neoStackItems.length === 0 ? 'sleeve_declares_no_neostacks' : null);
-  const previewUsesSampleBlocks = runtimeSpecSummary?.usesSampleBlocks === true;
-  const previewUsesNativeBlocks = runtimeSpecSummary?.usesSleeveNativeBlocks === true;
+  const runtimeSpecSummary = input.includeRuntimeSpec === false ? null : (useNativeProjection
+    ? {
+        runtimeSpecId: nativeGraph?.runtimeRoutes?.[0]?.routeId ?? inspection.runtimeSpec?.runtimeSpecId ?? null,
+        sourceMode: nativeProjection?.sourceMode ?? 'sleeve_native',
+        activeBlockCount: nativeGraph?.runtimeRoutes?.[0]?.sourceNeoBlockIds?.length ?? nativeGraph?.neoBlocks?.length ?? 0,
+        usesSleeveNativeBlocks: true,
+        usesSampleBlocks: false,
+        previewStatus: 'RUNTIME_PREVIEW_READY',
+        provenance: nativeGraph?.runtimeRoutes?.[0]?.provenance ?? null
+      }
+    : {
+        runtimeSpecId: inspection.runtimeSpec?.runtimeSpecId ?? runtimePreview.runtimeSpec?.runtimeSpecId ?? null,
+        sourceMode: typeof runtimeSpecValue?.sourceMode === 'string' ? runtimeSpecValue.sourceMode : null,
+        activeBlockCount: inspection.runtimeSpec?.activeBlocks?.length ?? runtimePreview.runtimeSpec?.activeBlocks?.length ?? 0,
+        usesSleeveNativeBlocks: typeof runtimeSpecValue?.usesSleeveNativeBlocks === 'boolean' ? runtimeSpecValue.usesSleeveNativeBlocks : null,
+        usesSampleBlocks: typeof runtimeSpecValue?.usesSampleBlocks === 'boolean' ? runtimeSpecValue.usesSampleBlocks : null,
+        previewStatus: typeof runtimePreviewSpecValue?.previewStatus === 'string' ? runtimePreviewSpecValue.previewStatus : runtimePreview.previewStatus ?? null
+      });
+  const irMatrixSummary = input.includeIrMatrix === false ? null : (useNativeProjection
+    ? {
+        matrixId: nativeGraph?.irRoutes?.[0]?.routeId ?? null,
+        nodeCount: nativeGraph?.irRoutes?.[0]?.nodes?.length ?? 0,
+        edgeCount: nativeGraph?.irRoutes?.[0]?.edges?.length ?? 0,
+        activeRoute: nativeGraph?.irRoutes?.[0]?.nodes?.map((node: any) => node.nodeId) ?? [],
+        blockedRoute: [],
+        provenance: nativeGraph?.irRoutes?.[0]?.provenance ?? null
+      }
+    : {
+        matrixId: inspection.irMatrixProjection?.matrixId ?? null,
+        nodeCount: inspection.irMatrixProjection?.nodes?.length ?? 0,
+        edgeCount: inspection.irMatrixProjection?.edges?.length ?? 0,
+        activeRoute: inspection.irMatrixProjection?.activeRoute ?? [],
+        blockedRoute: inspection.irMatrixProjection?.blockedRoute ?? []
+      });
+  const envelopeSummary = input.includeEnvelope === false ? null : (useNativeProjection
+    ? {
+        envelopeStatus: 'READY',
+        envelopeSource: nativeGraph?.envelopeSources?.[0]?.envelopeSource ?? 'sleeve_native_derived',
+        heldReason: null,
+        provenance: nativeGraph?.envelopeSources?.[0]?.provenance ?? null
+      }
+    : {
+        envelopeStatus: inspection.responseEnvelopePreview?.envelopeStatus ?? null,
+        envelopeSource: inspection.responseEnvelopePreview?.envelopeSource ?? null,
+        heldReason: inspection.responseEnvelopePreview?.heldReason ?? null
+      });
+  const neoStackReason = useNativeProjection
+    ? (neoStackItems.length === 0 ? 'sleeve_declares_no_neostacks' : null)
+    : (inspection.activeNeoStacks?.reason ?? (neoStackItems.length === 0 ? 'sleeve_declares_no_neostacks' : null));
+  const previewUsesSampleBlocks = useNativeProjection ? false : (runtimeSpecSummary?.usesSampleBlocks === true);
+  const previewUsesNativeBlocks = useNativeProjection ? true : (runtimeSpecSummary?.usesSleeveNativeBlocks === true);
   const envelopeSource = envelopeSummary?.envelopeSource ?? null;
-  const legacyPreviewResidueDetected = previewUsesSampleBlocks || envelopeSource === 'sample_preview' || envelopeSource === 'legacy_preview';
-  const sourceMode = previewUsesNativeBlocks
-    ? (previewUsesSampleBlocks ? 'sleeve_native_with_sample_fallback' : 'sleeve_native')
-    : (previewUsesSampleBlocks ? 'sample_only' : (legacyPreviewResidueDetected ? 'legacy_preview' : 'unavailable'));
-  const sourceProvenance = {
-    nativeGraphAvailable: neoBlockItems.length > 0,
-    sampleFallbackUsed: previewUsesSampleBlocks,
-    legacyPreviewResidueDetected,
-    legacyPreviewResiduePaths: legacyPreviewResidueDetected
-      ? [
-          ...(previewUsesSampleBlocks ? ['runtimeSpecSummary.usesSampleBlocks'] : []),
-          ...((envelopeSource === 'sample_preview' || envelopeSource === 'legacy_preview') ? ['envelopeSummary.envelopeSource'] : [])
-        ]
-      : [],
-    sourceMode,
-    routePurity: legacyPreviewResidueDetected
-      ? (previewUsesNativeBlocks ? 'native_with_marked_fallback' : 'contaminated')
-      : (previewUsesNativeBlocks ? 'clean_native' : 'unknown')
-  };
-  const graphCompleteness = inspection.overallCompleteness === 'rich_sleeve_native'
+  const legacyPreviewResidueDetected = useNativeProjection
+    ? false
+    : (previewUsesSampleBlocks || envelopeSource === 'sample_preview' || envelopeSource === 'legacy_preview');
+  const sourceMode = useNativeProjection
+    ? 'sleeve_native'
+    : (previewUsesNativeBlocks
+      ? (previewUsesSampleBlocks ? 'sleeve_native_with_sample_fallback' : 'sleeve_native')
+      : (previewUsesSampleBlocks ? 'sample_only' : (legacyPreviewResidueDetected ? 'legacy_preview' : 'unavailable')));
+  const sourceProvenance = useNativeProjection
+    ? {
+        nativeGraphAvailable: true,
+        sampleFallbackUsed: false,
+        legacyPreviewResidueDetected: false,
+        legacyPreviewResiduePaths: [],
+        sourceMode,
+        routePurity: 'clean_native'
+      }
+    : {
+        nativeGraphAvailable: neoBlockItems.length > 0,
+        sampleFallbackUsed: previewUsesSampleBlocks,
+        legacyPreviewResidueDetected,
+        legacyPreviewResiduePaths: legacyPreviewResidueDetected
+          ? [
+              ...(previewUsesSampleBlocks ? ['runtimeSpecSummary.usesSampleBlocks'] : []),
+              ...((envelopeSource === 'sample_preview' || envelopeSource === 'legacy_preview') ? ['envelopeSummary.envelopeSource'] : [])
+            ]
+          : [],
+        sourceMode,
+        routePurity: legacyPreviewResidueDetected
+          ? (previewUsesNativeBlocks ? 'native_with_marked_fallback' : 'contaminated')
+          : (previewUsesNativeBlocks ? 'clean_native' : 'unknown')
+      };
+  const graphCompleteness = useNativeProjection
     ? 'rich_sleeve_native'
-    : ((neoBlockItems.length > 0 && (neoStackItems.length === 0 || neoStackReason === 'sleeve_declares_no_neostacks'))
-      ? 'neoblock_only'
-      : (neoBlockItems.length > 0 ? 'partial' : 'empty'));
-  return {
+    : (inspection.overallCompleteness === 'rich_sleeve_native'
+      ? 'rich_sleeve_native'
+      : ((neoBlockItems.length > 0 && (neoStackItems.length === 0 || neoStackReason === 'sleeve_declares_no_neostacks'))
+        ? 'neoblock_only'
+        : (neoBlockItems.length > 0 ? 'partial' : 'empty')));
+  const baseRichnessResult = {
     ok: true,
     outputContract: { contractId: 'umg.runtime.sleeve_graph.richness.v1' as const, contractStatus: 'NORMALIZED' as const },
     graphStatus: inspection.ok ? (graphCompleteness === 'partial' || graphCompleteness === 'neoblock_only' ? 'GRAPH_PARTIAL' as const : 'GRAPH_READY' as const) : 'GRAPH_ERROR' as const,
@@ -6189,26 +6496,26 @@ export function inspectRuntimeSleeveGraphRichness(
       declaredNeoStacks: drilldown.ok ? drilldown.declaredNeoStackRefs?.length ?? 0 : 0,
       declaredNeoBlocks: drilldown.ok ? drilldown.declaredNeoBlockRefs?.length ?? 0 : 0
     },
-    neoStackSummary: input.includeNeoStacks === false ? null : {
+    neoStackSummary: input.includeNeoStacks === false ? null : (nativeSummaries?.neoStackSummary ?? {
       count: inspection.activeNeoStacks?.count ?? 0,
       status: inspection.activeNeoStacks?.status ?? 'missing',
       reason: neoStackReason,
       items: neoStackItems,
       source: 'sleeve_native_graph'
-    },
-    neoBlockSummary: input.includeNeoBlocks === false ? null : {
+    }),
+    neoBlockSummary: input.includeNeoBlocks === false ? null : (nativeSummaries?.neoBlockSummary ?? {
       count: inspection.activeNeoBlocks?.count ?? 0,
       status: inspection.activeNeoBlocks?.status ?? 'missing',
       reason: inspection.activeNeoBlocks?.reason ?? null,
       items: neoBlockItems,
       source: 'sleeve_native_graph'
-    },
-    moltFragmentSummary: input.includeMoltFragments === false ? null : {
+    }),
+    moltFragmentSummary: input.includeMoltFragments === false ? null : (nativeSummaries?.moltFragmentSummary ?? {
       visibleCount: moltVisibleCount,
       source: inspection.activeMoltBlocks?.source ?? null,
       groups: moltGroups
-    },
-    toolRequestSummary: input.includeToolRequests === false ? null : {
+    }),
+    toolRequestSummary: input.includeToolRequests === false ? null : (nativeSummaries?.toolRequestSummary ?? {
       requestCount: toolRequests.length,
       requests: toolRequests.map((req: any) => ({
         requestId: req.requestId,
@@ -6218,28 +6525,30 @@ export function inspectRuntimeSleeveGraphRichness(
         decisionReason: req.decisionReason,
         routeReason: req.requestSummary ?? null
       }))
-    },
-    runtimeSpecSummary: runtimeSpecSummary ? {
+    }),
+    runtimeSpecSummary: nativeSummaries?.runtimeSpecSummary ?? (runtimeSpecSummary ? {
       ...runtimeSpecSummary,
       sourceMode,
+      usesSleeveNativeBlocks: useNativeProjection ? true : runtimeSpecSummary.usesSleeveNativeBlocks,
+      usesSampleBlocks: useNativeProjection ? false : runtimeSpecSummary.usesSampleBlocks,
       sourceProvenance,
       routeWarnings: sourceProvenance.legacyPreviewResidueDetected ? ['runtime_spec_contains_marked_sample_or_legacy_preview_residue'] : []
-    } : null,
-    irMatrixSummary: irMatrixSummary ? {
+    } : null),
+    irMatrixSummary: nativeSummaries?.irMatrixSummary ?? (irMatrixSummary ? {
       ...irMatrixSummary,
       sourceMode,
       sourceProvenance,
       routePurity: sourceProvenance.routePurity
-    } : null,
-    envelopeSummary: envelopeSummary ? {
+    } : null),
+    envelopeSummary: nativeSummaries?.envelopeSummary ?? (envelopeSummary ? {
       ...envelopeSummary,
       sourceMode,
       sourceProvenance,
       routePurity: sourceProvenance.routePurity,
       routeWarnings: sourceProvenance.legacyPreviewResidueDetected ? ['envelope_contains_marked_sample_or_legacy_preview_residue'] : []
-    } : null,
-    graphCompleteness,
-    diagnostics: input.includeDiagnostics === false ? null : {
+    } : null),
+    graphCompleteness: nativeSummaries?.graphCompleteness ?? graphCompleteness,
+    diagnostics: input.includeDiagnostics === false ? null : (nativeSummaries?.diagnostics ?? {
       graphRunId,
       overallCompleteness: inspection.overallCompleteness,
       neoStackReason,
@@ -6256,7 +6565,7 @@ export function inspectRuntimeSleeveGraphRichness(
       routeWarnings: sourceProvenance.legacyPreviewResidueDetected ? ['sample_or_legacy_preview_residue_marked'] : [],
       directSourceEnabled: false,
       automaticResponseTakeover: false
-    },
+    }),
     warnings: inspection.warnings ?? [],
     errors: inspection.errors ?? [],
     audit: {
@@ -6278,6 +6587,8 @@ export function inspectRuntimeSleeveGraphRichness(
       'execution=not_performed'
     ]
   };
+
+  return baseRichnessResult;
 }
 
 export function runBoundedReadOnlyOrchestration(

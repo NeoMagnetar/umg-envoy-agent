@@ -3600,60 +3600,6 @@ export declare function inspectRuntimeSleeveGraphRichness(version: string, entry
         contractId: "umg.runtime.sleeve_graph.richness.v1";
         contractStatus: "NORMALIZED";
     };
-    graphStatus: "GRAPH_BLOCKED";
-    sourceSleeveId: null;
-    activeSessionUsed: boolean;
-    sleeveSummary: null;
-    neoStackSummary: null;
-    neoBlockSummary: null;
-    moltFragmentSummary: null;
-    toolRequestSummary: null;
-    runtimeSpecSummary: null;
-    irMatrixSummary: null;
-    envelopeSummary: null;
-    graphCompleteness: "blocked";
-    diagnostics: {
-        blockedReason: string;
-        graphRunId: string;
-        overallCompleteness?: undefined;
-        neoStackReason?: undefined;
-        activeMoltSource?: undefined;
-        activeSessionAvailable?: undefined;
-        activeSessionSleeveId?: undefined;
-        sourceMode?: undefined;
-        sourceProvenance?: undefined;
-        nativeGraphAvailable?: undefined;
-        sampleFallbackUsed?: undefined;
-        legacyPreviewResidueDetected?: undefined;
-        legacyPreviewResiduePaths?: undefined;
-        routePurity?: undefined;
-        routeWarnings?: undefined;
-        directSourceEnabled?: undefined;
-        automaticResponseTakeover?: undefined;
-    };
-    warnings: never[];
-    errors: {
-        code: string;
-        message: string;
-    }[];
-    audit: {
-        execution: "not_performed";
-        toolExecution: "not_performed";
-        libraryMutation: "not_performed";
-        packageMutation: "not_performed";
-        filesystemMutation: "not_performed";
-        restart: "not_performed";
-        publish: "not_performed";
-        automaticResponseTakeover: boolean;
-        directSource: "disabled";
-    };
-    trace: string[];
-} | {
-    ok: boolean;
-    outputContract: {
-        contractId: "umg.runtime.sleeve_graph.richness.v1";
-        contractStatus: "NORMALIZED";
-    };
     graphStatus: "GRAPH_PARTIAL" | "GRAPH_READY" | "GRAPH_ERROR";
     sourceSleeveId: string;
     activeSessionUsed: boolean;
@@ -3665,57 +3611,34 @@ export declare function inspectRuntimeSleeveGraphRichness(version: string, entry
         declaredNeoBlocks: number;
     };
     neoStackSummary: {
-        count: number;
+        count: any;
         status: string;
         reason: string | null;
-        items: {
-            neoStackId: any;
-            displayName: any;
-            declaredRef: any;
-            sourcePath: string | null;
-            manifestEntry: string | null;
-            activeStatus: string;
-            reasonActive: string;
-            reasonUnavailable: null;
-            declaredNeoBlockRefs: string[];
-            resolvedNeoBlockCount: number;
-            blockedNeoBlockCount: number;
-            warnings: never[];
-        }[] | {
-            neoStackId: null;
-            displayName: null;
-            declaredRef: null;
-            sourcePath: string | null;
-            manifestEntry: string | null;
-            activeStatus: string;
-            reasonActive: null;
-            reasonUnavailable: string;
-            declaredNeoBlockRefs: string[];
-            resolvedNeoBlockCount: number;
-            blockedNeoBlockCount: number;
-            warnings: string[];
-        }[];
+        items: any;
         source: string;
     } | null;
     neoBlockSummary: {
-        count: number;
+        count: any;
         status: string;
         reason: string | null;
-        items: {
-            neoBlockId: any;
-            parentNeoStackId: null;
-            declaredRef: any;
-            resolvedPath: string | null;
-            manifestSource: string | null;
-            loadStatus: any;
-            visibleMoltFragmentCount: number;
-            extractedMoltTypes: any[];
-            contentSummary: any;
-            warnings: any;
-        }[];
+        items: any;
         source: string;
     } | null;
     moltFragmentSummary: {
+        visibleCount: any;
+        source: string;
+        groups: {
+            Trigger: any;
+            Directive: any;
+            Instruction: any;
+            Subject: any;
+            Primary: any;
+            Philosophy: any;
+            Blueprint: any;
+            Off: never[];
+            excluded: never[];
+        };
+    } | {
         visibleCount: number;
         source: string;
         groups: Record<string, any[]>;
@@ -3725,7 +3648,25 @@ export declare function inspectRuntimeSleeveGraphRichness(version: string, entry
         requests: any;
     } | null;
     runtimeSpecSummary: {
+        runtimeSpecId: any;
         sourceMode: string;
+        activeBlockCount: any;
+        usesSleeveNativeBlocks: boolean;
+        usesSampleBlocks: boolean;
+        previewStatus: string;
+        sourceProvenance: {
+            nativeGraphAvailable: boolean;
+            sampleFallbackUsed: boolean;
+            legacyPreviewResidueDetected: boolean;
+            legacyPreviewResiduePaths: never[];
+            sourceMode: string;
+            routePurity: string;
+        };
+        routeWarnings: never[];
+    } | {
+        sourceMode: string;
+        usesSleeveNativeBlocks: boolean | null;
+        usesSampleBlocks: boolean | null;
         sourceProvenance: {
             nativeGraphAvailable: boolean;
             sampleFallbackUsed: boolean;
@@ -3737,11 +3678,60 @@ export declare function inspectRuntimeSleeveGraphRichness(version: string, entry
         routeWarnings: string[];
         runtimeSpecId: string | null;
         activeBlockCount: number;
+        previewStatus: string;
+        provenance: import("./native-graph-types.js").NativeGraphProvenance | null;
+    } | {
+        sourceMode: string;
         usesSleeveNativeBlocks: boolean | null;
         usesSampleBlocks: boolean | null;
+        sourceProvenance: {
+            nativeGraphAvailable: boolean;
+            sampleFallbackUsed: boolean;
+            legacyPreviewResidueDetected: boolean;
+            legacyPreviewResiduePaths: string[];
+            sourceMode: string;
+            routePurity: string;
+        };
+        routeWarnings: string[];
+        runtimeSpecId: string | null;
+        activeBlockCount: number;
         previewStatus: string;
+        provenance?: undefined;
     } | null;
     irMatrixSummary: {
+        matrixId: any;
+        nodeCount: any;
+        edgeCount: any;
+        activeRoute: any;
+        blockedRoute: never[];
+        sourceMode: string;
+        sourceProvenance: {
+            nativeGraphAvailable: boolean;
+            sampleFallbackUsed: boolean;
+            legacyPreviewResidueDetected: boolean;
+            legacyPreviewResiduePaths: never[];
+            sourceMode: string;
+            routePurity: string;
+        };
+        routePurity: string;
+    } | {
+        sourceMode: string;
+        sourceProvenance: {
+            nativeGraphAvailable: boolean;
+            sampleFallbackUsed: boolean;
+            legacyPreviewResidueDetected: boolean;
+            legacyPreviewResiduePaths: string[];
+            sourceMode: string;
+            routePurity: string;
+        };
+        routePurity: string;
+        matrixId: string | null;
+        nodeCount: number;
+        edgeCount: number;
+        activeRoute: any[];
+        blockedRoute: never[];
+        provenance: import("./native-graph-types.js").NativeGraphProvenance | null;
+    } | {
         sourceMode: string;
         sourceProvenance: {
             nativeGraphAvailable: boolean;
@@ -3757,8 +3747,40 @@ export declare function inspectRuntimeSleeveGraphRichness(version: string, entry
         edgeCount: number;
         activeRoute: string[];
         blockedRoute: string[];
+        provenance?: undefined;
     } | null;
     envelopeSummary: {
+        envelopeStatus: string;
+        envelopeSource: any;
+        heldReason: null;
+        sourceMode: string;
+        sourceProvenance: {
+            nativeGraphAvailable: boolean;
+            sampleFallbackUsed: boolean;
+            legacyPreviewResidueDetected: boolean;
+            legacyPreviewResiduePaths: never[];
+            sourceMode: string;
+            routePurity: string;
+        };
+        routePurity: string;
+        routeWarnings: never[];
+    } | {
+        sourceMode: string;
+        sourceProvenance: {
+            nativeGraphAvailable: boolean;
+            sampleFallbackUsed: boolean;
+            legacyPreviewResidueDetected: boolean;
+            legacyPreviewResiduePaths: string[];
+            sourceMode: string;
+            routePurity: string;
+        };
+        routePurity: string;
+        routeWarnings: string[];
+        envelopeStatus: string;
+        envelopeSource: "sleeve_native_derived" | "sample_fallback" | "legacy_preview_residue" | "sleeve_native_declared";
+        heldReason: null;
+        provenance: import("./native-graph-types.js").NativeGraphProvenance | null;
+    } | {
         sourceMode: string;
         sourceProvenance: {
             nativeGraphAvailable: boolean;
@@ -3773,9 +3795,35 @@ export declare function inspectRuntimeSleeveGraphRichness(version: string, entry
         envelopeStatus: any;
         envelopeSource: any;
         heldReason: any;
+        provenance?: undefined;
     } | null;
     graphCompleteness: string;
     diagnostics: {
+        graphRunId: string;
+        overallCompleteness: string;
+        neoStackReason: string | null;
+        activeMoltSource: string;
+        activeSessionAvailable: boolean;
+        activeSessionSleeveId: any;
+        sourceMode: string;
+        sourceProvenance: {
+            nativeGraphAvailable: boolean;
+            sampleFallbackUsed: boolean;
+            legacyPreviewResidueDetected: boolean;
+            legacyPreviewResiduePaths: never[];
+            sourceMode: string;
+            routePurity: string;
+        };
+        nativeGraphAvailable: boolean;
+        sampleFallbackUsed: boolean;
+        legacyPreviewResidueDetected: boolean;
+        legacyPreviewResiduePaths: never[];
+        routePurity: string;
+        routeWarnings: never[];
+        directSourceEnabled: boolean;
+        automaticResponseTakeover: boolean;
+        sleeveId: string;
+    } | {
         graphRunId: string;
         overallCompleteness: string;
         neoStackReason: string | null;
@@ -3797,9 +3845,8 @@ export declare function inspectRuntimeSleeveGraphRichness(version: string, entry
         legacyPreviewResiduePaths: string[];
         routePurity: string;
         routeWarnings: string[];
-        directSourceEnabled: boolean;
-        automaticResponseTakeover: boolean;
-        blockedReason?: undefined;
+        directSourceEnabled: false;
+        automaticResponseTakeover: false;
     } | null;
     warnings: string[];
     errors: never[] | {
@@ -3821,6 +3868,45 @@ export declare function inspectRuntimeSleeveGraphRichness(version: string, entry
         code: string;
         message: string;
     }[] | {
+        code: string;
+        message: string;
+    }[];
+    audit: {
+        execution: "not_performed";
+        toolExecution: "not_performed";
+        libraryMutation: "not_performed";
+        packageMutation: "not_performed";
+        filesystemMutation: "not_performed";
+        restart: "not_performed";
+        publish: "not_performed";
+        automaticResponseTakeover: boolean;
+        directSource: "disabled";
+    };
+    trace: string[];
+} | {
+    ok: boolean;
+    outputContract: {
+        contractId: "umg.runtime.sleeve_graph.richness.v1";
+        contractStatus: "NORMALIZED";
+    };
+    graphStatus: "GRAPH_BLOCKED";
+    sourceSleeveId: null;
+    activeSessionUsed: boolean;
+    sleeveSummary: null;
+    neoStackSummary: null;
+    neoBlockSummary: null;
+    moltFragmentSummary: null;
+    toolRequestSummary: null;
+    runtimeSpecSummary: null;
+    irMatrixSummary: null;
+    envelopeSummary: null;
+    graphCompleteness: "blocked";
+    diagnostics: {
+        blockedReason: string;
+        graphRunId: string;
+    };
+    warnings: never[];
+    errors: {
         code: string;
         message: string;
     }[];

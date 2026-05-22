@@ -215,7 +215,7 @@ const assertions = {
 };
 
 const ok =
-  assertions.packageVersion === '0.3.0-alpha.8' &&
+  assertions.packageVersion === '0.3.0-alpha.11' &&
   assertions.e2eToolRegistered === true &&
   assertions.approvedContractId === 'umg.runtime.execution_chain.e2e_approved_read_only.v1' &&
   assertions.approvedChainStatus === 'CHAIN_E2E_READY' &&
