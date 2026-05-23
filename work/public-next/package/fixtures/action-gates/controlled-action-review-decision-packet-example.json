@@ -1,0 +1,143 @@
+{
+  "packetId": "review-decision-packet-example",
+  "packetType": "controlled_action_review_decision_packet",
+  "schemaVersion": "1.0.0",
+  "status": "design_only",
+  "createdAt": "2026-05-23T07:08:00.000Z",
+  "sourceReviewBundle": {
+    "reviewBundleId": "review-bundle-example",
+    "sourceExportId": "audit-packet-export-example",
+    "sourcePacketId": "audit-packet-example",
+    "reviewBundleDoesNotEqualApproval": true,
+    "reviewBundleDoesNotEqualExecution": true
+  },
+  "decisionRequest": {
+    "decisionRequestId": "review-decision-request-example",
+    "reviewBundleId": "review-bundle-example",
+    "requestedBy": "reviewer_or_agent",
+    "requestedAt": "2026-05-23T07:08:00.000Z",
+    "targetRoutes": [
+      {
+        "routeId": "route-request-more-evidence",
+        "requestedDecision": "request_more_evidence",
+        "reviewReason": "Missing dry-run evidence and approval checkpoint.",
+        "evidencePresent": ["audit_packet_review_bundle", "audit_packet_export"],
+        "evidenceMissing": ["dry_run_projection", "approval_checkpoint"],
+        "blockedReasonsReviewed": ["blocked_dry_run_required"],
+        "missingRequirementsReviewed": ["dryRun", "approval"],
+        "hardBoundariesReviewed": ["reviewDecisionPacketDoesNotEqualExecution"]
+      },
+      {
+        "routeId": "route-deny",
+        "requestedDecision": "deny",
+        "reviewReason": "Risk remains too high for current review posture.",
+        "evidencePresent": ["audit_packet_review_bundle", "policy_trace_report"],
+        "evidenceMissing": [],
+        "blockedReasonsReviewed": ["blocked_write_actions_disabled"],
+        "missingRequirementsReviewed": ["writeActions"],
+        "hardBoundariesReviewed": ["reviewDecisionPacketDoesNotEqualApproval"]
+      },
+      {
+        "routeId": "route-no-decision",
+        "requestedDecision": "no_decision",
+        "reviewReason": "Metadata route retained without action review.",
+        "evidencePresent": ["audit_packet_review_bundle"],
+        "evidenceMissing": [],
+        "blockedReasonsReviewed": [],
+        "missingRequirementsReviewed": [],
+        "hardBoundariesReviewed": ["reviewBundleDoesNotEqualExecution"]
+      }
+    ],
+    "executionPerformed": false,
+    "approvalGranted": false
+  },
+  "decisionResult": {
+    "decisionResultId": "review-decision-result-example",
+    "decisionRequestId": "review-decision-request-example",
+    "resultState": "review_decision_recorded_metadata_only",
+    "routeDecisionResults": [
+      {
+        "routeId": "route-request-more-evidence",
+        "decision": "request_more_evidence",
+        "decisionAccepted": true,
+        "decisionDoesNotGrantApproval": true,
+        "decisionDoesNotGrantExecution": true,
+        "executionPerformed": false
+      },
+      {
+        "routeId": "route-deny",
+        "decision": "deny",
+        "decisionAccepted": true,
+        "decisionDoesNotGrantApproval": true,
+        "decisionDoesNotGrantExecution": true,
+        "executionPerformed": false
+      },
+      {
+        "routeId": "route-no-decision",
+        "decision": "no_decision",
+        "decisionAccepted": true,
+        "decisionDoesNotGrantApproval": true,
+        "decisionDoesNotGrantExecution": true,
+        "executionPerformed": false
+      }
+    ],
+    "approvalGranted": false,
+    "executionPerformed": false
+  },
+  "evidenceRequirements": {
+    "auditPacketReviewBundle": { "required": true, "present": true, "referenceId": "review-bundle-example", "notes": "present" },
+    "auditPacketExport": { "required": true, "present": true, "referenceId": "audit-packet-export-example", "notes": "present" },
+    "auditPacket": { "required": true, "present": true, "referenceId": "audit-packet-example", "notes": "present" },
+    "policyTraceReport": { "required": true, "present": true, "referenceId": "policy-trace-example", "notes": "present" },
+    "policyToReadinessIntegration": { "required": true, "present": true, "referenceId": "policy-readiness-example", "notes": "present" },
+    "readinessMatrix": { "required": true, "present": true, "referenceId": "readiness-matrix-example", "notes": "present" },
+    "blockedRouteSummary": { "required": true, "present": true, "referenceId": "blocked-route-summary-example", "notes": "present" },
+    "dryRunProjection": { "required": true, "present": false, "referenceId": "dry-run-example", "notes": "missing for one route" },
+    "decisionSimulation": { "required": true, "present": true, "referenceId": "decision-sim-example", "notes": "present" },
+    "approvalCheckpoint": { "required": true, "present": false, "referenceId": "approval-checkpoint-example", "notes": "missing for one route" },
+    "approvalFlowProjection": { "required": true, "present": true, "referenceId": "approval-flow-example", "notes": "present" },
+    "policyProjection": { "required": true, "present": true, "referenceId": "policy-projection-example", "notes": "present" }
+  },
+  "hardBoundaries": {
+    "policyDoesNotEqualExecution": true,
+    "approvalDoesNotEqualExecution": true,
+    "checkpointDoesNotEqualExecution": true,
+    "dryRunDoesNotEqualExecution": true,
+    "decisionSimulationDoesNotEqualExecution": true,
+    "decisionSimulationOnly": true,
+    "readinessDoesNotEqualExecution": true,
+    "traceReportDoesNotEqualExecution": true,
+    "auditPacketDoesNotEqualExecution": true,
+    "auditPacketExportDoesNotEqualExecution": true,
+    "reviewBundleDoesNotEqualApproval": true,
+    "reviewBundleDoesNotEqualExecution": true,
+    "reviewDecisionPacketDoesNotEqualApproval": true,
+    "reviewDecisionPacketDoesNotEqualExecution": true,
+    "executionPerformed": false,
+    "approvalGranted": false,
+    "writeActionPerformed": false,
+    "bridgeActionPerformed": false,
+    "fileWritten": false,
+    "externalTransmissionPerformed": false,
+    "packagePublished": false,
+    "directSourceEnabled": false,
+    "automaticResponseTakeoverEnabled": false
+  },
+  "blockedDecisionCategories": [
+    { "category": "execute_action", "reason": "not allowed in this design", "requiresFutureLane": true, "requiresExplicitApproval": true },
+    { "category": "approve_for_execution", "reason": "not allowed in this design", "requiresFutureLane": true, "requiresExplicitApproval": true },
+    { "category": "authorize_write_action", "reason": "not allowed in this design", "requiresFutureLane": true, "requiresExplicitApproval": true },
+    { "category": "authorize_bridge_action", "reason": "not allowed in this design", "requiresFutureLane": true, "requiresExplicitApproval": true },
+    { "category": "enable_direct_source", "reason": "not allowed in this design", "requiresFutureLane": true, "requiresExplicitApproval": true },
+    { "category": "enable_automatic_response_takeover", "reason": "not allowed in this design", "requiresFutureLane": true, "requiresExplicitApproval": true },
+    { "category": "publish_package", "reason": "not allowed in this design", "requiresFutureLane": true, "requiresExplicitApproval": true },
+    { "category": "restart_openclaw", "reason": "not allowed in this design", "requiresFutureLane": true, "requiresExplicitApproval": true },
+    { "category": "mutate_block_library", "reason": "not allowed in this design", "requiresFutureLane": true, "requiresExplicitApproval": true },
+    { "category": "touch_resleever", "reason": "not allowed in this design", "requiresFutureLane": true, "requiresExplicitApproval": true }
+  ],
+  "executionPerformed": false,
+  "approvalGranted": false,
+  "reviewDecisionRecorded": false,
+  "reviewDecisionPacketDoesNotEqualApproval": true,
+  "reviewDecisionPacketDoesNotEqualExecution": true
+}

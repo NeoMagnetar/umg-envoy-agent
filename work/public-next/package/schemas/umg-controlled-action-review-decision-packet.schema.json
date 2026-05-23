@@ -1,0 +1,266 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "umg.controlled_action_review_decision_packet.v1",
+  "title": "UMG Controlled Action Review Decision Packet",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "packetId",
+    "packetType",
+    "schemaVersion",
+    "status",
+    "createdAt",
+    "sourceReviewBundle",
+    "decisionRequest",
+    "decisionResult",
+    "evidenceRequirements",
+    "hardBoundaries",
+    "blockedDecisionCategories",
+    "executionPerformed",
+    "approvalGranted",
+    "reviewDecisionRecorded",
+    "reviewDecisionPacketDoesNotEqualApproval",
+    "reviewDecisionPacketDoesNotEqualExecution"
+  ],
+  "properties": {
+    "packetId": { "type": "string", "minLength": 1 },
+    "packetType": { "const": "controlled_action_review_decision_packet" },
+    "schemaVersion": { "const": "1.0.0" },
+    "status": { "enum": ["design_only", "metadata_only"] },
+    "createdAt": { "type": "string", "minLength": 1 },
+    "sourceReviewBundle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reviewBundleId", "sourceExportId", "sourcePacketId", "reviewBundleDoesNotEqualApproval", "reviewBundleDoesNotEqualExecution"],
+      "properties": {
+        "reviewBundleId": { "type": "string", "minLength": 1 },
+        "sourceExportId": { "type": "string", "minLength": 1 },
+        "sourcePacketId": { "type": "string", "minLength": 1 },
+        "reviewBundleDoesNotEqualApproval": { "const": true },
+        "reviewBundleDoesNotEqualExecution": { "const": true }
+      }
+    },
+    "decisionRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decisionRequestId", "reviewBundleId", "requestedBy", "requestedAt", "targetRoutes", "executionPerformed", "approvalGranted"],
+      "properties": {
+        "decisionRequestId": { "type": "string", "minLength": 1 },
+        "reviewBundleId": { "type": "string", "minLength": 1 },
+        "requestedBy": { "type": "string", "minLength": 1 },
+        "requestedAt": { "type": "string", "minLength": 1 },
+        "targetRoutes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["routeId", "requestedDecision", "reviewReason", "evidencePresent", "evidenceMissing", "blockedReasonsReviewed", "missingRequirementsReviewed", "hardBoundariesReviewed"],
+            "properties": {
+              "routeId": { "type": "string", "minLength": 1 },
+              "requestedDecision": { "$ref": "#/$defs/allowedDecisionType" },
+              "reviewReason": { "type": "string", "minLength": 1 },
+              "evidencePresent": { "type": "array", "items": { "type": "string" } },
+              "evidenceMissing": { "type": "array", "items": { "type": "string" } },
+              "blockedReasonsReviewed": { "type": "array", "items": { "type": "string" } },
+              "missingRequirementsReviewed": { "type": "array", "items": { "type": "string" } },
+              "hardBoundariesReviewed": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "executionPerformed": { "const": false },
+        "approvalGranted": { "const": false }
+      }
+    },
+    "decisionResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decisionResultId", "decisionRequestId", "resultState", "routeDecisionResults", "approvalGranted", "executionPerformed"],
+      "properties": {
+        "decisionResultId": { "type": "string", "minLength": 1 },
+        "decisionRequestId": { "type": "string", "minLength": 1 },
+        "resultState": { "$ref": "#/$defs/allowedResultState" },
+        "routeDecisionResults": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["routeId", "decision", "decisionAccepted", "decisionDoesNotGrantApproval", "decisionDoesNotGrantExecution", "executionPerformed"],
+            "properties": {
+              "routeId": { "type": "string", "minLength": 1 },
+              "decision": { "$ref": "#/$defs/allowedDecisionType" },
+              "decisionAccepted": { "type": "boolean" },
+              "decisionDoesNotGrantApproval": { "const": true },
+              "decisionDoesNotGrantExecution": { "const": true },
+              "executionPerformed": { "const": false }
+            }
+          }
+        },
+        "approvalGranted": { "const": false },
+        "executionPerformed": { "const": false }
+      }
+    },
+    "evidenceRequirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "auditPacketReviewBundle",
+        "auditPacketExport",
+        "auditPacket",
+        "policyTraceReport",
+        "policyToReadinessIntegration",
+        "readinessMatrix",
+        "blockedRouteSummary",
+        "dryRunProjection",
+        "decisionSimulation",
+        "approvalCheckpoint",
+        "approvalFlowProjection",
+        "policyProjection"
+      ],
+      "properties": {
+        "auditPacketReviewBundle": { "$ref": "#/$defs/evidenceItem" },
+        "auditPacketExport": { "$ref": "#/$defs/evidenceItem" },
+        "auditPacket": { "$ref": "#/$defs/evidenceItem" },
+        "policyTraceReport": { "$ref": "#/$defs/evidenceItem" },
+        "policyToReadinessIntegration": { "$ref": "#/$defs/evidenceItem" },
+        "readinessMatrix": { "$ref": "#/$defs/evidenceItem" },
+        "blockedRouteSummary": { "$ref": "#/$defs/evidenceItem" },
+        "dryRunProjection": { "$ref": "#/$defs/evidenceItem" },
+        "decisionSimulation": { "$ref": "#/$defs/evidenceItem" },
+        "approvalCheckpoint": { "$ref": "#/$defs/evidenceItem" },
+        "approvalFlowProjection": { "$ref": "#/$defs/evidenceItem" },
+        "policyProjection": { "$ref": "#/$defs/evidenceItem" }
+      }
+    },
+    "hardBoundaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policyDoesNotEqualExecution",
+        "approvalDoesNotEqualExecution",
+        "checkpointDoesNotEqualExecution",
+        "dryRunDoesNotEqualExecution",
+        "decisionSimulationDoesNotEqualExecution",
+        "decisionSimulationOnly",
+        "readinessDoesNotEqualExecution",
+        "traceReportDoesNotEqualExecution",
+        "auditPacketDoesNotEqualExecution",
+        "auditPacketExportDoesNotEqualExecution",
+        "reviewBundleDoesNotEqualApproval",
+        "reviewBundleDoesNotEqualExecution",
+        "reviewDecisionPacketDoesNotEqualApproval",
+        "reviewDecisionPacketDoesNotEqualExecution",
+        "executionPerformed",
+        "approvalGranted",
+        "writeActionPerformed",
+        "bridgeActionPerformed",
+        "fileWritten",
+        "externalTransmissionPerformed",
+        "packagePublished",
+        "directSourceEnabled",
+        "automaticResponseTakeoverEnabled"
+      ],
+      "properties": {
+        "policyDoesNotEqualExecution": { "const": true },
+        "approvalDoesNotEqualExecution": { "const": true },
+        "checkpointDoesNotEqualExecution": { "const": true },
+        "dryRunDoesNotEqualExecution": { "const": true },
+        "decisionSimulationDoesNotEqualExecution": { "const": true },
+        "decisionSimulationOnly": { "const": true },
+        "readinessDoesNotEqualExecution": { "const": true },
+        "traceReportDoesNotEqualExecution": { "const": true },
+        "auditPacketDoesNotEqualExecution": { "const": true },
+        "auditPacketExportDoesNotEqualExecution": { "const": true },
+        "reviewBundleDoesNotEqualApproval": { "const": true },
+        "reviewBundleDoesNotEqualExecution": { "const": true },
+        "reviewDecisionPacketDoesNotEqualApproval": { "const": true },
+        "reviewDecisionPacketDoesNotEqualExecution": { "const": true },
+        "executionPerformed": { "const": false },
+        "approvalGranted": { "const": false },
+        "writeActionPerformed": { "const": false },
+        "bridgeActionPerformed": { "const": false },
+        "fileWritten": { "const": false },
+        "externalTransmissionPerformed": { "const": false },
+        "packagePublished": { "const": false },
+        "directSourceEnabled": { "const": false },
+        "automaticResponseTakeoverEnabled": { "const": false }
+      }
+    },
+    "blockedDecisionCategories": {
+      "type": "array",
+      "minItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["category", "reason", "requiresFutureLane", "requiresExplicitApproval"],
+        "properties": {
+          "category": {
+            "enum": [
+              "execute_action",
+              "approve_for_execution",
+              "authorize_write_action",
+              "authorize_bridge_action",
+              "enable_direct_source",
+              "enable_automatic_response_takeover",
+              "publish_package",
+              "restart_openclaw",
+              "mutate_block_library",
+              "touch_resleever"
+            ]
+          },
+          "reason": { "type": "string", "minLength": 1 },
+          "requiresFutureLane": { "const": true },
+          "requiresExplicitApproval": { "const": true }
+        }
+      }
+    },
+    "executionPerformed": { "const": false },
+    "approvalGranted": { "const": false },
+    "reviewDecisionRecorded": { "const": false },
+    "reviewDecisionPacketDoesNotEqualApproval": { "const": true },
+    "reviewDecisionPacketDoesNotEqualExecution": { "const": true }
+  },
+  "$defs": {
+    "allowedDecisionType": {
+      "type": "string",
+      "enum": [
+        "deny",
+        "request_more_evidence",
+        "mark_incomplete",
+        "approve_for_dry_run_only",
+        "approve_for_future_execution_review_only",
+        "revoke_prior_review",
+        "supersede_prior_review",
+        "expire_review",
+        "no_decision"
+      ]
+    },
+    "allowedResultState": {
+      "type": "string",
+      "enum": [
+        "review_decision_recorded_metadata_only",
+        "review_decision_denied",
+        "review_decision_needs_more_evidence",
+        "review_decision_incomplete",
+        "review_decision_dry_run_only",
+        "review_decision_future_execution_review_only",
+        "review_decision_revoked",
+        "review_decision_superseded",
+        "review_decision_expired",
+        "review_decision_rejected_invalid"
+      ]
+    },
+    "evidenceItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "present", "referenceId", "notes"],
+      "properties": {
+        "required": { "type": "boolean" },
+        "present": { "type": "boolean" },
+        "referenceId": { "type": "string", "minLength": 1 },
+        "notes": { "type": "string" }
+      }
+    }
+  }
+}
