@@ -31,6 +31,7 @@
     "src/controlled-action-execution-readiness-matrix.ts",
     "src/controlled-action-policy-readiness-integration.ts",
     "src/controlled-action-policy-trace-report.ts",
+    "src/controlled-action-audit-packet.ts",
     "src/compiler/**/*.ts"
   ]
 }
