@@ -34,6 +34,7 @@
     "src/controlled-action-audit-packet.ts",
     "src/controlled-action-audit-packet-export.ts",
     "src/controlled-action-audit-packet-review-bundle.ts",
+    "src/controlled-action-review-decision-packet-projection.ts",
     "src/compiler/**/*.ts"
   ]
 }
