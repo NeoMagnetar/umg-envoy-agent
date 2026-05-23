@@ -29,6 +29,7 @@
     "src/controlled-action-dry-run-projection.ts",
     "src/controlled-action-blocked-route-summary.ts",
     "src/controlled-action-execution-readiness-matrix.ts",
+    "src/controlled-action-policy-readiness-integration.ts",
     "src/compiler/**/*.ts"
   ]
 }
