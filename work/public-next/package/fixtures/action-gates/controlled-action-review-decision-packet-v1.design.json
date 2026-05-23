@@ -1,0 +1,163 @@
+{
+  "designId": "controlled-action-review-decision-packet-v1",
+  "designType": "controlled_action_review_decision_packet_design",
+  "version": "1.0.0",
+  "status": "design_only",
+  "executionPerformed": false,
+  "approvalGranted": false,
+  "reviewDecisionRecorded": false,
+  "reviewDecisionPacketDoesNotEqualApproval": true,
+  "reviewDecisionPacketDoesNotEqualExecution": true,
+  "identity": {
+    "packetKind": "review_decision_packet",
+    "packetRole": "metadata_only_future_design"
+  },
+  "sourceReviewBundle": {
+    "reviewBundleId": "review-bundle-example",
+    "reviewProfile": "approval_precheck"
+  },
+  "reviewedRoutes": [
+    {
+      "routeId": "route-example",
+      "linkedActionId": "action-example",
+      "linkedPolicyId": "policy-example"
+    }
+  ],
+  "allowedDecisionTypes": [
+    "deny",
+    "request_more_evidence",
+    "mark_incomplete",
+    "approve_for_dry_run_only",
+    "approve_for_future_execution_review_only",
+    "revoke_prior_review",
+    "supersede_prior_review",
+    "expire_review",
+    "no_decision"
+  ],
+  "decisionRequestShape": {
+    "decisionRequestId": "review-decision-request-example",
+    "reviewBundleId": "review-bundle-example",
+    "requestedBy": "reviewer_or_agent",
+    "requestedAt": "2026-05-22T00:00:00.000Z",
+    "targetRoutes": [
+      {
+        "routeId": "route-example",
+        "requestedDecision": "request_more_evidence",
+        "reviewReason": "Missing dry-run evidence and approval checkpoint."
+      }
+    ],
+    "executionPerformed": false,
+    "approvalGranted": false
+  },
+  "decisionResultShape": {
+    "decisionResultId": "review-decision-result-example",
+    "decisionRequestId": "review-decision-request-example",
+    "resultState": "review_decision_recorded_metadata_only",
+    "routeDecisionResults": [
+      {
+        "routeId": "route-example",
+        "decision": "request_more_evidence",
+        "decisionAccepted": true,
+        "decisionDoesNotGrantApproval": true,
+        "decisionDoesNotGrantExecution": true,
+        "executionPerformed": false
+      }
+    ],
+    "approvalGranted": false,
+    "executionPerformed": false,
+    "allowedResultStates": [
+      "review_decision_recorded_metadata_only",
+      "review_decision_denied",
+      "review_decision_needs_more_evidence",
+      "review_decision_incomplete",
+      "review_decision_dry_run_only",
+      "review_decision_future_execution_review_only",
+      "review_decision_revoked",
+      "review_decision_superseded",
+      "review_decision_expired",
+      "review_decision_rejected_invalid"
+    ]
+  },
+  "evidenceRequirements": {
+    "requiredSources": [
+      "audit_packet_review_bundle",
+      "audit_packet_export",
+      "audit_packet",
+      "policy_trace_report",
+      "policy_to_readiness_integration",
+      "readiness_matrix",
+      "blocked_route_summary",
+      "dry_run_projection",
+      "decision_simulation",
+      "approval_checkpoint",
+      "approval_flow_projection",
+      "policy_projection"
+    ],
+    "routeDecisionTracking": [
+      "evidencePresent",
+      "evidenceMissing",
+      "reviewerFocus",
+      "blockedReasonsReviewed",
+      "missingRequirementsReviewed",
+      "hardBoundariesReviewed"
+    ]
+  },
+  "missingEvidencePolicy": {
+    "defaultDecision": "request_more_evidence"
+  },
+  "expirationPolicy": {
+    "supportsExpiration": true
+  },
+  "supersessionPolicy": {
+    "supportsSupersession": true
+  },
+  "revocationPolicy": {
+    "supportsRevocation": true
+  },
+  "auditTrail": {
+    "required": true,
+    "recordsDecisionMetadataOnly": true
+  },
+  "hardBoundaries": {
+    "principles": [
+      "Policy does not equal execution.",
+      "Approval does not equal execution.",
+      "Checkpoint does not equal execution.",
+      "Dry-run does not equal execution.",
+      "Decision simulation does not equal execution.",
+      "Readiness does not equal execution.",
+      "Trace report does not equal execution.",
+      "Audit packet does not equal execution.",
+      "Audit packet export does not equal execution.",
+      "Review bundle does not equal approval.",
+      "Review bundle does not equal execution.",
+      "Review decision packet does not equal approval.",
+      "Review decision packet does not equal execution."
+    ],
+    "executionPerformed": false,
+    "approvalGranted": false,
+    "writeActionPerformed": false,
+    "bridgeActionPerformed": false,
+    "fileWritten": false,
+    "externalTransmissionPerformed": false,
+    "packagePublished": false,
+    "directSourceEnabled": false,
+    "automaticResponseTakeoverEnabled": false
+  },
+  "blockedDecisionCategories": {
+    "execute_action": "not allowed in this design; requires future explicit implementation lane, explicit safety design, and explicit user approval later",
+    "approve_for_execution": "not allowed in this design; requires future explicit implementation lane, explicit safety design, and explicit user approval later",
+    "authorize_write_action": "not allowed in this design; requires future explicit implementation lane, explicit safety design, and explicit user approval later",
+    "authorize_bridge_action": "not allowed in this design; requires future explicit implementation lane, explicit safety design, and explicit user approval later",
+    "enable_direct_source": "not allowed in this design; requires future explicit implementation lane, explicit safety design, and explicit user approval later",
+    "enable_automatic_response_takeover": "not allowed in this design; requires future explicit implementation lane, explicit safety design, and explicit user approval later",
+    "publish_package": "not allowed in this design; requires future explicit implementation lane, explicit safety design, and explicit user approval later",
+    "restart_openclaw": "not allowed in this design; requires future explicit implementation lane, explicit safety design, and explicit user approval later",
+    "mutate_block_library": "not allowed in this design; requires future explicit implementation lane, explicit safety design, and explicit user approval later",
+    "touch_resleever": "not allowed in this design; requires future explicit implementation lane, explicit safety design, and explicit user approval later"
+  },
+  "futureImplementationNotes": [
+    "Schema lane should formalize request/result structures.",
+    "Runtime lane must not let review decisions imply execution automatically."
+  ]
+}
