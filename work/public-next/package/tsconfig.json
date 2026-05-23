@@ -41,6 +41,7 @@
                     "src/controlled-action-review-decision-packet-recording-handoff-bundle.ts",
                     "src/controlled-action-review-decision-packet-recording-phase-summary.ts",
                     "src/controlled-action-runtime-report-integration.ts",
+                    "src/controlled-action-runtime-report-tool-surface.ts",
                     "src/compiler/**/*.ts"
                 ]
 }
