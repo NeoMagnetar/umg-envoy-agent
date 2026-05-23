@@ -1,0 +1,96 @@
+{
+  "dryRunId": "dryrun.desktop-click.preview.v1",
+  "dryRunVersion": "umg.controlled_action_dry_run.v1",
+  "baselineVersion": "0.3.0-alpha.12",
+  "linkedActionId": "desktop.click.preview_only",
+  "linkedPolicyId": "umg-controlled-action-gate-example-v1",
+  "linkedApprovalId": "approval.desktop-click.preview.v1",
+  "linkedCheckpointId": "checkpoint.approval.desktop-click.preview.v1",
+  "linkedDecisionSimulationId": "simulation.desktop.click.preview.v1",
+  "dryRunState": "execution_blocked_after_dry_run",
+  "dryRunRequest": {
+    "requestedAt": "2026-05-22T00:10:00Z",
+    "requestedBy": "human_user:example",
+    "requestedScope": {
+      "scopeKind": "bridge_capability_route",
+      "scopeTarget": "desktop.click_route",
+      "scopeBounded": true,
+      "deniedOperationFamilies": ["execution_without_future_gate", "unrestricted_desktop_bridge_action"],
+      "blastRadius": "single_target"
+    },
+    "requestedTargets": {
+      "targetKind": "bridge_route",
+      "targets": ["desktop.click_route"]
+    }
+  },
+  "dryRunResult": {
+    "resultState": "preview_generated",
+    "wouldExecuteLater": true,
+    "currentlyBlocked": true,
+    "actualExecutionUnavailableInThisBuild": true
+  },
+  "requiredPreconditions": [
+    "route_declared_in_policy",
+    "policy_projection_visible",
+    "approval_checkpoint_exists",
+    "scope_is_bounded",
+    "preview_before_approval_rule_satisfied"
+  ],
+  "blockedPreconditions": [
+    "bridge_execution_implementation_absent",
+    "bridge_route_disabled_now",
+    "actual_execution_unavailable_in_this_build"
+  ],
+  "scopePreview": {
+    "scopeKind": "bridge_capability_route",
+    "scopeTarget": "desktop.click_route",
+    "scopeBounded": true,
+    "deniedOperationFamilies": ["execution_without_future_gate", "unrestricted_desktop_bridge_action"],
+    "blastRadius": "single_target"
+  },
+  "targetPreview": {
+    "targetKind": "bridge_route",
+    "targets": ["desktop.click_route"]
+  },
+  "expectedSideEffects": {
+    "wouldTouchExternalState": true,
+    "currentlyBlocked": true,
+    "description": "A future implementation would touch a desktop bridge click route, but current build does not execute it."
+  },
+  "rollbackPreview": {
+    "rollbackRequired": true,
+    "reversibility": "manual_rollback_required"
+  },
+  "backupPreview": {
+    "backupRequired": true,
+    "backupTargetDescription": "Desktop bridge interaction context snapshot and audit record before any future execution."
+  },
+  "auditPreview": {
+    "auditRequired": true,
+    "wouldRecord": [
+      "route id",
+      "approval id",
+      "checkpoint id",
+      "scope",
+      "targets",
+      "preview ref",
+      "decision ref",
+      "execution result placeholder"
+    ]
+  },
+  "riskConfirmation": {
+    "actionClass": "dry_run_preview",
+    "riskLevel": "low_reversible",
+    "approvalRequired": false,
+    "allowlistRequired": true,
+    "routeBlockedNow": true
+  },
+  "executionEligibilityAfterDryRun": {
+    "executionEligible": false,
+    "executionBlocked": true,
+    "reason": "Dry-run preview is complete as metadata, but actual execution remains unavailable in this build."
+  },
+  "dryRunOnly": true,
+  "executionPerformed": false,
+  "dryRunDoesNotEqualExecution": true
+}

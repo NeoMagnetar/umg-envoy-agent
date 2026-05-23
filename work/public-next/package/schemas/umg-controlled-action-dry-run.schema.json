@@ -1,0 +1,192 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "umg.controlled_action_dry_run.v1",
+  "title": "UMG Controlled Action Dry Run",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "dryRunId",
+    "dryRunVersion",
+    "baselineVersion",
+    "linkedActionId",
+    "linkedPolicyId",
+    "linkedApprovalId",
+    "linkedCheckpointId",
+    "linkedDecisionSimulationId",
+    "dryRunState",
+    "dryRunRequest",
+    "dryRunResult",
+    "requiredPreconditions",
+    "blockedPreconditions",
+    "scopePreview",
+    "targetPreview",
+    "expectedSideEffects",
+    "rollbackPreview",
+    "backupPreview",
+    "auditPreview",
+    "riskConfirmation",
+    "executionEligibilityAfterDryRun",
+    "dryRunOnly",
+    "executionPerformed",
+    "dryRunDoesNotEqualExecution"
+  ],
+  "properties": {
+    "dryRunId": { "type": "string", "minLength": 1 },
+    "dryRunVersion": { "const": "umg.controlled_action_dry_run.v1" },
+    "baselineVersion": { "type": "string", "minLength": 1 },
+    "linkedActionId": { "type": "string", "minLength": 1 },
+    "linkedPolicyId": { "type": "string", "minLength": 1 },
+    "linkedApprovalId": { "type": "string", "minLength": 1 },
+    "linkedCheckpointId": { "type": "string", "minLength": 1 },
+    "linkedDecisionSimulationId": { "type": "string", "minLength": 1 },
+    "dryRunState": {
+      "enum": [
+        "requested",
+        "ready_for_preview",
+        "preview_generated",
+        "blocked",
+        "failed_validation",
+        "dry_run_complete",
+        "execution_eligible_after_dry_run",
+        "execution_blocked_after_dry_run"
+      ]
+    },
+    "dryRunRequest": { "$ref": "#/$defs/dryRunRequest" },
+    "dryRunResult": { "$ref": "#/$defs/dryRunResult" },
+    "requiredPreconditions": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "blockedPreconditions": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "scopePreview": { "$ref": "#/$defs/scopePreview" },
+    "targetPreview": { "$ref": "#/$defs/targetPreview" },
+    "expectedSideEffects": { "$ref": "#/$defs/expectedSideEffects" },
+    "rollbackPreview": { "$ref": "#/$defs/rollbackPreview" },
+    "backupPreview": { "$ref": "#/$defs/backupPreview" },
+    "auditPreview": { "$ref": "#/$defs/auditPreview" },
+    "riskConfirmation": { "$ref": "#/$defs/riskConfirmation" },
+    "executionEligibilityAfterDryRun": { "$ref": "#/$defs/executionEligibilityAfterDryRun" },
+    "dryRunOnly": { "const": true },
+    "executionPerformed": { "const": false },
+    "dryRunDoesNotEqualExecution": { "const": true }
+  },
+  "$defs": {
+    "dryRunRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requestedAt", "requestedBy", "requestedScope", "requestedTargets"],
+      "properties": {
+        "requestedAt": { "type": "string", "minLength": 1 },
+        "requestedBy": { "type": "string", "minLength": 1 },
+        "requestedScope": { "$ref": "#/$defs/scopePreview" },
+        "requestedTargets": { "$ref": "#/$defs/targetPreview" }
+      }
+    },
+    "dryRunResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["resultState", "wouldExecuteLater", "currentlyBlocked", "actualExecutionUnavailableInThisBuild"],
+      "properties": {
+        "resultState": { "type": "string", "minLength": 1 },
+        "wouldExecuteLater": { "type": "boolean" },
+        "currentlyBlocked": { "type": "boolean" },
+        "actualExecutionUnavailableInThisBuild": { "const": true }
+      }
+    },
+    "scopePreview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scopeKind", "scopeTarget", "scopeBounded"],
+      "properties": {
+        "scopeKind": { "type": "string", "minLength": 1 },
+        "scopeTarget": { "type": "string", "minLength": 1 },
+        "scopeBounded": { "type": "boolean" },
+        "deniedOperationFamilies": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "blastRadius": { "type": "string", "minLength": 1 }
+      }
+    },
+    "targetPreview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["targetKind", "targets"],
+      "properties": {
+        "targetKind": { "type": "string", "minLength": 1 },
+        "targets": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "expectedSideEffects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["wouldTouchExternalState", "currentlyBlocked", "description"],
+      "properties": {
+        "wouldTouchExternalState": { "type": "boolean" },
+        "currentlyBlocked": { "type": "boolean" },
+        "description": { "type": "string", "minLength": 1 }
+      }
+    },
+    "rollbackPreview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rollbackRequired", "reversibility"],
+      "properties": {
+        "rollbackRequired": { "type": "boolean" },
+        "reversibility": { "type": "string", "minLength": 1 }
+      }
+    },
+    "backupPreview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["backupRequired", "backupTargetDescription"],
+      "properties": {
+        "backupRequired": { "type": "boolean" },
+        "backupTargetDescription": { "type": "string", "minLength": 1 }
+      }
+    },
+    "auditPreview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["auditRequired", "wouldRecord"],
+      "properties": {
+        "auditRequired": { "type": "boolean" },
+        "wouldRecord": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "riskConfirmation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actionClass", "riskLevel", "approvalRequired", "allowlistRequired", "routeBlockedNow"],
+      "properties": {
+        "actionClass": { "type": "string", "minLength": 1 },
+        "riskLevel": { "type": "string", "minLength": 1 },
+        "approvalRequired": { "type": "boolean" },
+        "allowlistRequired": { "type": "boolean" },
+        "routeBlockedNow": { "type": "boolean" }
+      }
+    },
+    "executionEligibilityAfterDryRun": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["executionEligible", "executionBlocked", "reason"],
+      "properties": {
+        "executionEligible": { "type": "boolean" },
+        "executionBlocked": { "type": "boolean" },
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}
