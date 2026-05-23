@@ -39,6 +39,7 @@
                     "src/controlled-action-review-decision-packet-recording-audit-summary.ts",
                     "src/controlled-action-review-decision-packet-recording-review-export.ts",
                     "src/controlled-action-review-decision-packet-recording-handoff-bundle.ts",
+                    "src/controlled-action-review-decision-packet-recording-phase-summary.ts",
                     "src/compiler/**/*.ts"
                 ]
 }
