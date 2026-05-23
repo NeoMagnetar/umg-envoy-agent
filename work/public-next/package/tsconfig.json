@@ -27,6 +27,7 @@
     "src/action-gate-approval-checkpoint-projection.ts",
     "src/action-gate-approval-decision-simulation.ts",
     "src/controlled-action-dry-run-projection.ts",
+    "src/controlled-action-blocked-route-summary.ts",
     "src/compiler/**/*.ts"
   ]
 }
