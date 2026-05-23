@@ -1,0 +1,317 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "umg.controlled_action_review_decision_packet_recording.v1",
+  "title": "UMG Controlled Action Review Decision Packet Recording",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "recordingId",
+    "recordingType",
+    "schemaVersion",
+    "status",
+    "createdAt",
+    "sourceReviewDecisionPacket",
+    "sourceProjection",
+    "recordingRequest",
+    "recordingResult",
+    "evidenceRequirements",
+    "hardBoundaries",
+    "blockedRecordingActions",
+    "recordingImplemented",
+    "recordingPerformed",
+    "reviewDecisionRecorded",
+    "approvalGranted",
+    "executionPerformed",
+    "recordingDesignDoesNotEqualRecording",
+    "recordingDoesNotEqualApproval",
+    "recordingDoesNotEqualExecution"
+  ],
+  "properties": {
+    "recordingId": { "type": "string", "minLength": 1 },
+    "recordingType": { "const": "controlled_action_review_decision_packet_recording" },
+    "schemaVersion": { "const": "1.0.0" },
+    "status": { "enum": ["design_only", "metadata_only"] },
+    "createdAt": { "type": "string", "minLength": 1 },
+    "sourceReviewDecisionPacket": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reviewDecisionPacketId", "schemaVersion"],
+      "properties": {
+        "reviewDecisionPacketId": { "type": "string", "minLength": 1 },
+        "schemaVersion": { "type": "string", "minLength": 1 }
+      }
+    },
+    "sourceProjection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reviewDecisionPacketProjectionId", "projectionStatus"],
+      "properties": {
+        "reviewDecisionPacketProjectionId": { "type": "string", "minLength": 1 },
+        "projectionStatus": { "type": "string", "minLength": 1 }
+      }
+    },
+    "recordingRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recordingRequestId", "reviewDecisionPacketId", "reviewDecisionPacketProjectionId", "requestedRecordingAction", "requestedBy", "requestedAt", "recordingReason", "executionPerformed", "approvalGranted", "recordingPerformed"],
+      "properties": {
+        "recordingRequestId": { "type": "string", "minLength": 1 },
+        "reviewDecisionPacketId": { "type": "string", "minLength": 1 },
+        "reviewDecisionPacketProjectionId": { "type": "string", "minLength": 1 },
+        "requestedRecordingAction": { "$ref": "#/$defs/allowedRecordingAction" },
+        "requestedBy": { "type": "string", "minLength": 1 },
+        "requestedAt": { "type": "string", "minLength": 1 },
+        "recordingReason": { "type": "string", "minLength": 1 },
+        "executionPerformed": { "const": false },
+        "approvalGranted": { "const": false },
+        "recordingPerformed": { "const": false }
+      }
+    },
+    "recordingResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recordingResultId", "recordingRequestId", "recordingState", "recordingAccepted", "recordingPerformed", "liveDecisionRecorded", "approvalGranted", "executionPerformed", "recordingDoesNotEqualApproval", "recordingDoesNotEqualExecution"],
+      "properties": {
+        "recordingResultId": { "type": "string", "minLength": 1 },
+        "recordingRequestId": { "type": "string", "minLength": 1 },
+        "recordingState": { "$ref": "#/$defs/allowedRecordingState" },
+        "recordingAccepted": { "type": "boolean" },
+        "recordingPerformed": { "const": false },
+        "liveDecisionRecorded": { "const": false },
+        "approvalGranted": { "const": false },
+        "executionPerformed": { "const": false },
+        "recordingDoesNotEqualApproval": { "const": true },
+        "recordingDoesNotEqualExecution": { "const": true }
+      }
+    },
+    "evidenceRequirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reviewDecisionPacketDesign",
+        "reviewDecisionPacketSchema",
+        "reviewDecisionPacketRuntimeProjection",
+        "auditPacketReviewBundle",
+        "auditPacketExport",
+        "auditPacket",
+        "policyTraceReport",
+        "policyToReadinessIntegration",
+        "readinessMatrix",
+        "blockedRouteSummary",
+        "dryRunProjection",
+        "approvalCheckpoint",
+        "approvalFlowProjection",
+        "policyProjection"
+      ],
+      "properties": {
+        "reviewDecisionPacketDesign": { "$ref": "#/$defs/evidenceItem" },
+        "reviewDecisionPacketSchema": { "$ref": "#/$defs/evidenceItem" },
+        "reviewDecisionPacketRuntimeProjection": { "$ref": "#/$defs/evidenceItem" },
+        "auditPacketReviewBundle": { "$ref": "#/$defs/evidenceItem" },
+        "auditPacketExport": { "$ref": "#/$defs/evidenceItem" },
+        "auditPacket": { "$ref": "#/$defs/evidenceItem" },
+        "policyTraceReport": { "$ref": "#/$defs/evidenceItem" },
+        "policyToReadinessIntegration": { "$ref": "#/$defs/evidenceItem" },
+        "readinessMatrix": { "$ref": "#/$defs/evidenceItem" },
+        "blockedRouteSummary": { "$ref": "#/$defs/evidenceItem" },
+        "dryRunProjection": { "$ref": "#/$defs/evidenceItem" },
+        "approvalCheckpoint": { "$ref": "#/$defs/evidenceItem" },
+        "approvalFlowProjection": { "$ref": "#/$defs/evidenceItem" },
+        "policyProjection": { "$ref": "#/$defs/evidenceItem" }
+      }
+    },
+    "idempotencyPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stableRequestIdRequired", "duplicateRequestMustNotCreateLiveSideEffects", "futureImplementationMustBeIdempotent", "duplicateMetadataRecordingReturnsExistingOrSupersedesExplicitly", "recordingPerformed"],
+      "properties": {
+        "stableRequestIdRequired": { "const": true },
+        "duplicateRequestMustNotCreateLiveSideEffects": { "const": true },
+        "futureImplementationMustBeIdempotent": { "const": true },
+        "duplicateMetadataRecordingReturnsExistingOrSupersedesExplicitly": { "const": true },
+        "recordingPerformed": { "const": false }
+      }
+    },
+    "supersessionPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["supported", "preserveHistory", "doesNotGrantApproval", "doesNotGrantExecution"],
+      "properties": {
+        "supported": { "const": true },
+        "preserveHistory": { "const": true },
+        "doesNotGrantApproval": { "const": true },
+        "doesNotGrantExecution": { "const": true }
+      }
+    },
+    "revocationPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["supported", "doesNotExecuteRollback", "doesNotMutateExternalSystems"],
+      "properties": {
+        "supported": { "const": true },
+        "doesNotExecuteRollback": { "const": true },
+        "doesNotMutateExternalSystems": { "const": true }
+      }
+    },
+    "expirationPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["supported", "doesNotExecuteAnything", "doesNotDeleteHistory"],
+      "properties": {
+        "supported": { "const": true },
+        "doesNotExecuteAnything": { "const": true },
+        "doesNotDeleteHistory": { "const": true }
+      }
+    },
+    "auditTrail": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "preservesRequestAndResultMetadata", "recordsHardBoundariesReviewed"],
+      "properties": {
+        "required": { "const": true },
+        "preservesRequestAndResultMetadata": { "const": true },
+        "recordsHardBoundariesReviewed": { "const": true }
+      }
+    },
+    "retentionPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["metadataRetentionRequired", "historyDeletionNotAllowedInThisDesign"],
+      "properties": {
+        "metadataRetentionRequired": { "const": true },
+        "historyDeletionNotAllowedInThisDesign": { "const": true }
+      }
+    },
+    "hardBoundaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recordingImplemented",
+        "recordingPerformed",
+        "liveDecisionRecorded",
+        "approvalGranted",
+        "executionPerformed",
+        "writeActionPerformed",
+        "bridgeActionPerformed",
+        "fileWritten",
+        "externalTransmissionPerformed",
+        "packagePublished",
+        "directSourceEnabled",
+        "automaticResponseTakeoverEnabled"
+      ],
+      "properties": {
+        "recordingImplemented": { "const": false },
+        "recordingPerformed": { "const": false },
+        "liveDecisionRecorded": { "const": false },
+        "approvalGranted": { "const": false },
+        "executionPerformed": { "const": false },
+        "writeActionPerformed": { "const": false },
+        "bridgeActionPerformed": { "const": false },
+        "fileWritten": { "const": false },
+        "externalTransmissionPerformed": { "const": false },
+        "packagePublished": { "const": false },
+        "directSourceEnabled": { "const": false },
+        "automaticResponseTakeoverEnabled": { "const": false }
+      }
+    },
+    "blockedRecordingActions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_live_decision_now",
+        "grant_approval",
+        "approve_for_execution",
+        "execute_action",
+        "authorize_write_action",
+        "authorize_bridge_action",
+        "enable_direct_source",
+        "enable_automatic_response_takeover",
+        "write_recording_file",
+        "transmit_recording",
+        "publish_package",
+        "restart_openclaw",
+        "mutate_block_library",
+        "touch_resleever"
+      ],
+      "properties": {
+        "record_live_decision_now": { "$ref": "#/$defs/blockedActionItem" },
+        "grant_approval": { "$ref": "#/$defs/blockedActionItem" },
+        "approve_for_execution": { "$ref": "#/$defs/blockedActionItem" },
+        "execute_action": { "$ref": "#/$defs/blockedActionItem" },
+        "authorize_write_action": { "$ref": "#/$defs/blockedActionItem" },
+        "authorize_bridge_action": { "$ref": "#/$defs/blockedActionItem" },
+        "enable_direct_source": { "$ref": "#/$defs/blockedActionItem" },
+        "enable_automatic_response_takeover": { "$ref": "#/$defs/blockedActionItem" },
+        "write_recording_file": { "$ref": "#/$defs/blockedActionItem" },
+        "transmit_recording": { "$ref": "#/$defs/blockedActionItem" },
+        "publish_package": { "$ref": "#/$defs/blockedActionItem" },
+        "restart_openclaw": { "$ref": "#/$defs/blockedActionItem" },
+        "mutate_block_library": { "$ref": "#/$defs/blockedActionItem" },
+        "touch_resleever": { "$ref": "#/$defs/blockedActionItem" }
+      }
+    },
+    "recordingImplemented": { "const": false },
+    "recordingPerformed": { "const": false },
+    "reviewDecisionRecorded": { "const": false },
+    "approvalGranted": { "const": false },
+    "executionPerformed": { "const": false },
+    "recordingDesignDoesNotEqualRecording": { "const": true },
+    "recordingDoesNotEqualApproval": { "const": true },
+    "recordingDoesNotEqualExecution": { "const": true }
+  },
+  "$defs": {
+    "allowedRecordingState": {
+      "type": "string",
+      "enum": [
+        "recording_design_only",
+        "recording_not_started",
+        "recording_requested_metadata_only",
+        "recording_validated_metadata_only",
+        "recording_rejected_invalid",
+        "recording_rejected_missing_evidence",
+        "recording_recorded_metadata_only_future_lane",
+        "recording_superseded_metadata_only",
+        "recording_revoked_metadata_only",
+        "recording_expired_metadata_only"
+      ]
+    },
+    "allowedRecordingAction": {
+      "type": "string",
+      "enum": [
+        "validate_recording_request",
+        "reject_invalid_recording_request",
+        "reject_missing_evidence",
+        "record_metadata_only_future_lane",
+        "supersede_recorded_metadata",
+        "revoke_recorded_metadata",
+        "expire_recorded_metadata",
+        "no_recording_action"
+      ]
+    },
+    "evidenceItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "present", "referenceId", "notes"],
+      "properties": {
+        "required": { "type": "boolean" },
+        "present": { "type": "boolean" },
+        "referenceId": { "type": "string", "minLength": 1 },
+        "notes": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "blockedActionItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reason", "requiresFutureLane", "requiresExplicitApproval", "requiresImplementation"],
+      "properties": {
+        "reason": { "type": "string", "minLength": 1 },
+        "requiresFutureLane": { "const": true },
+        "requiresExplicitApproval": { "const": true },
+        "requiresImplementation": { "const": true }
+      }
+    }
+  }
+}
