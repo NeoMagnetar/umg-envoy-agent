@@ -1,0 +1,101 @@
+{
+  "designId": "controlled-action-runtime-report-tool-surface-v1",
+  "designType": "controlled_action_runtime_report_tool_surface_design",
+  "status": "design_only",
+  "toolName": "umg_envoy_controlled_action_runtime_report",
+  "toolNamespace": "umg_envoy",
+  "toolType": "read_only_report_preview",
+  "toolImplemented": false,
+  "toolRegistered": false,
+  "executionPerformed": false,
+  "approvalGranted": false,
+  "recordingPerformed": false,
+  "liveDecisionRecorded": false,
+  "fileWritten": false,
+  "externalTransmissionPerformed": false,
+  "packagePublished": false,
+  "openClawRestarted": false,
+  "supportedOutputModes": [
+    "summary",
+    "full",
+    "ascii_only",
+    "structured_only",
+    "panel",
+    "navigation_only"
+  ],
+  "supportedNavigationTargets": [
+    "overview",
+    "active_route",
+    "safety_evidence_chain",
+    "blocked_capabilities",
+    "readiness",
+    "audit_and_review",
+    "recording_metadata",
+    "hard_boundaries",
+    "next_safe_step"
+  ],
+  "inputSchemaPreview": {
+    "sleeveId": "optional string",
+    "routeId": "optional string",
+    "reportMode": "summary | full | ascii_only | structured_only | panel",
+    "panel": "overview | active_route | safety_evidence_chain | blocked_capabilities | readiness | audit_and_review | recording_metadata | hard_boundaries | next_safe_step",
+    "includeAscii": true,
+    "includeNavigation": true,
+    "includeStructuredReport": true
+  },
+  "outputSchemaPreview": {
+    "toolName": "umg_envoy_controlled_action_runtime_report",
+    "toolSurfaceStatus": "design_only",
+    "runtimeReportReturned": true,
+    "runtimeReportOnly": true,
+    "executionPerformed": false,
+    "approvalGranted": false,
+    "recordingPerformed": false,
+    "liveDecisionRecorded": false,
+    "fileWritten": false,
+    "externalTransmissionPerformed": false,
+    "packagePublished": false,
+    "openClawRestarted": false,
+    "selectedMode": "full",
+    "selectedPanel": null,
+    "navigation": [],
+    "structuredReport": {},
+    "asciiReport": "...",
+    "hardBoundaries": {
+      "runtimeReportDoesNotEqualExecution": true,
+      "toolSurfaceDoesNotEqualExecution": true,
+      "toolSurfaceDoesNotEqualApproval": true,
+      "toolSurfaceDoesNotEqualRecording": true
+    }
+  },
+  "blockedOperations": [
+    { "operation": "execute_action", "reason": "execution is out of scope for this read-only report surface", "blockedInThisDesign": true, "requiresFutureLane": true, "requiresExplicitApproval": true },
+    { "operation": "approve_action", "reason": "approval authority is not part of the report surface", "blockedInThisDesign": true, "requiresFutureLane": true, "requiresExplicitApproval": true },
+    { "operation": "blocked_grant_approval", "reason": "granting approval is explicitly blocked in this design lane", "blockedInThisDesign": true, "requiresFutureLane": true, "requiresExplicitApproval": true },
+    { "operation": "record_live_decision", "reason": "live decision recording is not part of a read-only report surface", "blockedInThisDesign": true, "requiresFutureLane": true, "requiresExplicitApproval": true },
+    { "operation": "perform_write_action", "reason": "write actions are out of scope for the report surface", "blockedInThisDesign": true, "requiresFutureLane": true, "requiresExplicitApproval": true },
+    { "operation": "write_report_file", "reason": "tool calls must not write report files as runtime behavior", "blockedInThisDesign": true, "requiresFutureLane": true, "requiresExplicitApproval": true },
+    { "operation": "transmit_report", "reason": "external transmission is not allowed in this design", "blockedInThisDesign": true, "requiresFutureLane": true, "requiresExplicitApproval": true },
+    { "operation": "send_report", "reason": "sending reports externally is not part of this lane", "blockedInThisDesign": true, "requiresFutureLane": true, "requiresExplicitApproval": true },
+    { "operation": "publish_package", "reason": "package publishing is unrelated to report preview", "blockedInThisDesign": true, "requiresFutureLane": true, "requiresExplicitApproval": true },
+    { "operation": "restart_openclaw", "reason": "restart behavior must remain blocked", "blockedInThisDesign": true, "requiresFutureLane": true, "requiresExplicitApproval": true },
+    { "operation": "enable_bridge_action", "reason": "bridge actions must remain disabled", "blockedInThisDesign": true, "requiresFutureLane": true, "requiresExplicitApproval": true },
+    { "operation": "enable_direct_source", "reason": "direct_source must remain disabled", "blockedInThisDesign": true, "requiresFutureLane": true, "requiresExplicitApproval": true },
+    { "operation": "enable_automatic_response_takeover", "reason": "automatic response takeover must remain disabled", "blockedInThisDesign": true, "requiresFutureLane": true, "requiresExplicitApproval": true },
+    { "operation": "mutate_block_library", "reason": "UMG-Block-Library mutation is blocked", "blockedInThisDesign": true, "requiresFutureLane": true, "requiresExplicitApproval": true },
+    { "operation": "touch_resleever", "reason": "Resleever remains out of scope", "blockedInThisDesign": true, "requiresFutureLane": true, "requiresExplicitApproval": true }
+  ],
+  "hardBoundaries": {
+    "runtimeReportDoesNotEqualExecution": true,
+    "toolSurfaceDoesNotEqualExecution": true,
+    "toolSurfaceDoesNotEqualApproval": true,
+    "toolSurfaceDoesNotEqualRecording": true
+  },
+  "futureImplementationNotes": [
+    "do not register the tool in this lane",
+    "do not modify plugin-entry in this lane",
+    "do not modify openclaw.plugin.json in this lane",
+    "tool surface implementation should follow a separate explicit implementation-plan lane",
+    "future implementation should remain read-only and reuse projectControlledActionRuntimeReport and renderControlledActionRuntimeReportAscii"
+  ]
+}
