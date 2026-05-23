@@ -1,0 +1,225 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "umg.action_gate_approval_flow.v1",
+  "title": "UMG Action Gate Approval Flow",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "approvalId",
+    "approvalFlowVersion",
+    "baselineVersion",
+    "linkedActionId",
+    "linkedActionGatePolicyId",
+    "approvalState",
+    "approvalRequest",
+    "approvalDecision",
+    "allowedDecisions",
+    "approverMetadata",
+    "previewRequirement",
+    "dryRunRequirement",
+    "approvalScope",
+    "expiration",
+    "revocation",
+    "supersession",
+    "auditTrail",
+    "executionEligibilityProjection",
+    "approvalDoesNotEqualExecution"
+  ],
+  "properties": {
+    "approvalId": { "type": "string", "minLength": 1 },
+    "approvalFlowVersion": { "const": "umg.action_gate_approval_flow.v1" },
+    "baselineVersion": { "type": "string", "minLength": 1 },
+    "linkedActionId": { "type": "string", "minLength": 1 },
+    "linkedActionGatePolicyId": { "type": "string", "minLength": 1 },
+    "approvalState": {
+      "enum": [
+        "requested",
+        "preview_required",
+        "waiting_for_approval",
+        "approved",
+        "denied",
+        "expired",
+        "revoked",
+        "superseded",
+        "execution_eligible",
+        "execution_blocked"
+      ]
+    },
+    "approvalRequest": { "$ref": "#/$defs/approvalRequest" },
+    "approvalDecision": { "$ref": "#/$defs/approvalDecision" },
+    "allowedDecisions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "enum": [
+          "approve",
+          "deny",
+          "edit",
+          "revoke",
+          "expire",
+          "supersede",
+          "dry_run_only"
+        ]
+      }
+    },
+    "approverMetadata": { "$ref": "#/$defs/approverMetadata" },
+    "previewRequirement": { "$ref": "#/$defs/requirementToggle" },
+    "dryRunRequirement": { "$ref": "#/$defs/requirementToggle" },
+    "approvalScope": { "$ref": "#/$defs/approvalScope" },
+    "expiration": { "$ref": "#/$defs/expiration" },
+    "revocation": { "$ref": "#/$defs/revocation" },
+    "supersession": { "$ref": "#/$defs/supersession" },
+    "denialReason": { "type": "string" },
+    "auditTrail": { "$ref": "#/$defs/auditTrail" },
+    "executionEligibilityProjection": { "$ref": "#/$defs/executionEligibilityProjection" },
+    "approvalDoesNotEqualExecution": { "const": true }
+  },
+  "$defs": {
+    "approvalRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "approvalRequestId",
+        "requestedAt",
+        "requestedBy",
+        "previewRef",
+        "requestedScope"
+      ],
+      "properties": {
+        "approvalRequestId": { "type": "string", "minLength": 1 },
+        "requestedAt": { "type": "string", "minLength": 1 },
+        "requestedBy": { "type": "string", "minLength": 1 },
+        "previewRef": { "type": "string", "minLength": 1 },
+        "requestedScope": { "$ref": "#/$defs/approvalScope" },
+        "notes": { "type": "string" }
+      }
+    },
+    "approvalDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision",
+        "decidedAt",
+        "decidedBy"
+      ],
+      "properties": {
+        "decision": {
+          "enum": [
+            "approve",
+            "deny",
+            "edit",
+            "revoke",
+            "expire",
+            "supersede",
+            "dry_run_only"
+          ]
+        },
+        "decidedAt": { "type": "string", "minLength": 1 },
+        "decidedBy": { "type": "string", "minLength": 1 },
+        "reason": { "type": "string" }
+      }
+    },
+    "approverMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approverType", "approverId", "policySource"],
+      "properties": {
+        "approverType": {
+          "enum": ["human_user", "future_gate_service", "system_metadata_only"]
+        },
+        "approverId": { "type": "string", "minLength": 1 },
+        "policySource": { "type": "string", "minLength": 1 }
+      }
+    },
+    "requirementToggle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "reason"],
+      "properties": {
+        "required": { "type": "boolean" },
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    },
+    "approvalScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scopeKind", "scopeTarget", "scopeBounded", "nonTransferable"],
+      "properties": {
+        "scopeKind": {
+          "enum": ["metadata_only", "bridge_capability_route", "workflow_lane_segment", "file_path_allowlist", "session_state_only"]
+        },
+        "scopeTarget": { "type": "string", "minLength": 1 },
+        "scopeBounded": { "type": "boolean" },
+        "nonTransferable": { "const": true }
+      }
+    },
+    "expiration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["expires", "expiresAt"],
+      "properties": {
+        "expires": { "type": "boolean" },
+        "expiresAt": { "type": "string", "minLength": 1 }
+      }
+    },
+    "revocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["revocable", "revokedNow"],
+      "properties": {
+        "revocable": { "type": "boolean" },
+        "revokedNow": { "type": "boolean" },
+        "revokedAt": { "type": "string" },
+        "revokedBy": { "type": "string" }
+      }
+    },
+    "supersession": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["supersededNow", "supersededByNewApproval"],
+      "properties": {
+        "supersededNow": { "type": "boolean" },
+        "supersededByNewApproval": { "type": "boolean" },
+        "supersedingApprovalId": { "type": "string" }
+      }
+    },
+    "auditTrail": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "auditRequired",
+        "auditRef",
+        "requestLogged",
+        "decisionLogged",
+        "previewRefLogged",
+        "executionPerformed"
+      ],
+      "properties": {
+        "auditRequired": { "const": true },
+        "auditRef": { "type": "string", "minLength": 1 },
+        "requestLogged": { "type": "boolean" },
+        "decisionLogged": { "type": "boolean" },
+        "previewRefLogged": { "type": "boolean" },
+        "executionPerformed": { "const": false }
+      }
+    },
+    "executionEligibilityProjection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "executionEligible",
+        "executionBlocked",
+        "policyAllowsExecutionClass",
+        "bridgeImplementationPresent",
+        "reason"
+      ],
+      "properties": {
+        "executionEligible": { "type": "boolean" },
+        "executionBlocked": { "type": "boolean" },
+        "policyAllowsExecutionClass": { "type": "boolean" },
+        "bridgeImplementationPresent": { "type": "boolean" },
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

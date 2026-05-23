@@ -1,0 +1,79 @@
+{
+  "designStatus": "approval_flow_design_only",
+  "designId": "umg-action-gate-approval-flow-v1",
+  "baselineVersion": "0.3.0-alpha.12",
+  "executionAuthorityExpanded": false,
+  "hardBoundaries": {
+    "approvedOnly": true,
+    "allowlistedOnly": true,
+    "readOnlyOnly": true,
+    "directSourceEnabled": false,
+    "automaticResponseTakeover": false,
+    "desktopBridgeActionsEnabled": false,
+    "phaseBridgeActionsEnabled": false,
+    "fileWritesEnabled": false,
+    "commandExecutionEnabled": false,
+    "executionEnabled": false
+  },
+  "approvalStates": [
+    "not_requested",
+    "preview_ready",
+    "approval_requested",
+    "approved_pending_execution_capability",
+    "denied",
+    "expired",
+    "superseded",
+    "revoked"
+  ],
+  "allowedDecisions": [
+    "approve",
+    "deny",
+    "revoke",
+    "supersede",
+    "expire"
+  ],
+  "previewBeforeApprovalRequired": true,
+  "approvalDoesNotEqualExecution": true,
+  "bridgeExecutionStillBlocked": true,
+  "requestShape": {
+    "requiredFields": [
+      "approvalRequestId",
+      "actionId",
+      "actionClass",
+      "riskLevel",
+      "routePolicyRef",
+      "previewRef",
+      "requestedScope",
+      "requestedAt",
+      "requestedBy",
+      "expiresAt"
+    ]
+  },
+  "decisionShape": {
+    "requiredFields": [
+      "approvalDecisionId",
+      "approvalRequestId",
+      "decision",
+      "decisionAt",
+      "decidedBy",
+      "approvedScope",
+      "approvalExpiry",
+      "auditRef",
+      "executionStillBlocked"
+    ]
+  },
+  "scopeRules": {
+    "scopeSpecific": true,
+    "nonTransferable": true,
+    "mustBindActionId": true,
+    "mustBindScopeKind": true,
+    "mustBindTargetScope": true
+  },
+  "auditRequirements": {
+    "requestAuditRequired": true,
+    "decisionAuditRequired": true,
+    "previewRefRequired": true,
+    "approverIdentityRequired": true,
+    "expiryStateTracked": true
+  }
+}

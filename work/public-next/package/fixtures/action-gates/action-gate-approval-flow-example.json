@@ -1,0 +1,84 @@
+{
+  "approvalId": "approval.desktop-click.preview.v1",
+  "approvalFlowVersion": "umg.action_gate_approval_flow.v1",
+  "baselineVersion": "0.3.0-alpha.12",
+  "linkedActionId": "desktop.click.preview_only",
+  "linkedActionGatePolicyId": "umg-controlled-action-gate-example-v1",
+  "approvalState": "execution_blocked",
+  "approvalRequest": {
+    "approvalRequestId": "approval-request.desktop-click.preview.v1",
+    "requestedAt": "2026-05-22T00:00:00Z",
+    "requestedBy": "human_user:example",
+    "previewRef": "preview.desktop-click.preview.v1",
+    "requestedScope": {
+      "scopeKind": "bridge_capability_route",
+      "scopeTarget": "desktop.click_route",
+      "scopeBounded": true,
+      "nonTransferable": true
+    },
+    "notes": "Preview-only route visible for future controlled action policy discussion."
+  },
+  "approvalDecision": {
+    "decision": "approve",
+    "decidedAt": "2026-05-22T00:05:00Z",
+    "decidedBy": "human_user:example",
+    "reason": "Approved as metadata-only future route; execution still blocked."
+  },
+  "allowedDecisions": [
+    "approve",
+    "deny",
+    "edit",
+    "revoke",
+    "expire",
+    "supersede",
+    "dry_run_only"
+  ],
+  "approverMetadata": {
+    "approverType": "human_user",
+    "approverId": "example-user",
+    "policySource": "umg-controlled-action-gate-example-v1"
+  },
+  "previewRequirement": {
+    "required": true,
+    "reason": "Routes above metadata-only require preview visibility before approval."
+  },
+  "dryRunRequirement": {
+    "required": true,
+    "reason": "Dry-run/preview is required before future executable routes could be considered."
+  },
+  "approvalScope": {
+    "scopeKind": "bridge_capability_route",
+    "scopeTarget": "desktop.click_route",
+    "scopeBounded": true,
+    "nonTransferable": true
+  },
+  "expiration": {
+    "expires": true,
+    "expiresAt": "2026-05-23T00:00:00Z"
+  },
+  "revocation": {
+    "revocable": true,
+    "revokedNow": false
+  },
+  "supersession": {
+    "supersededNow": false,
+    "supersededByNewApproval": false
+  },
+  "denialReason": "",
+  "auditTrail": {
+    "auditRequired": true,
+    "auditRef": "audit.approval.desktop-click.preview.v1",
+    "requestLogged": true,
+    "decisionLogged": true,
+    "previewRefLogged": true,
+    "executionPerformed": false
+  },
+  "executionEligibilityProjection": {
+    "executionEligible": false,
+    "executionBlocked": true,
+    "policyAllowsExecutionClass": true,
+    "bridgeImplementationPresent": false,
+    "reason": "Approval exists, but bridge execution remains blocked until future implementation explicitly enables it."
+  },
+  "approvalDoesNotEqualExecution": true
+}
