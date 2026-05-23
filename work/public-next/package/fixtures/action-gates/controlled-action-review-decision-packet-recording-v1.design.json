@@ -1,0 +1,244 @@
+{
+  "designId": "controlled-action-review-decision-packet-recording-v1",
+  "designType": "controlled_action_review_decision_packet_recording_design",
+  "version": "1.0.0",
+  "status": "design_only",
+  "recordingImplemented": false,
+  "recordingPerformed": false,
+  "reviewDecisionRecorded": false,
+  "approvalGranted": false,
+  "executionPerformed": false,
+  "recordingDesignDoesNotEqualRecording": true,
+  "recordingDoesNotEqualApproval": true,
+  "recordingDoesNotEqualExecution": true,
+  "identity": {
+    "recordingKind": "review_decision_packet_recording",
+    "recordingRole": "future_metadata_only_design"
+  },
+  "sourceReviewDecisionPacket": {
+    "reviewDecisionPacketId": "review-decision-packet-example",
+    "schemaVersion": "1.0.0"
+  },
+  "sourceProjection": {
+    "reviewDecisionPacketProjectionId": "review-decision-packet-projection-example",
+    "projectionStatus": "runtime_projection_input"
+  },
+  "recordingRequestShape": {
+    "recordingRequestId": "recording-request-example",
+    "reviewDecisionPacketId": "review-decision-packet-example",
+    "reviewDecisionPacketProjectionId": "review-decision-packet-projection-example",
+    "requestedRecordingAction": "record_metadata_only_future_lane",
+    "requestedBy": "reviewer_or_agent",
+    "requestedAt": "2026-05-22T00:00:00.000Z",
+    "recordingReason": "Reviewer wants to preserve decision metadata for later audit.",
+    "executionPerformed": false,
+    "approvalGranted": false,
+    "recordingPerformed": false
+  },
+  "recordingResultShape": {
+    "recordingResultId": "recording-result-example",
+    "recordingRequestId": "recording-request-example",
+    "recordingState": "recording_validated_metadata_only",
+    "recordingAccepted": true,
+    "recordingPerformed": false,
+    "liveDecisionRecorded": false,
+    "approvalGranted": false,
+    "executionPerformed": false,
+    "recordingDoesNotEqualApproval": true,
+    "recordingDoesNotEqualExecution": true
+  },
+  "allowedRecordingStates": [
+    "recording_design_only",
+    "recording_not_started",
+    "recording_requested_metadata_only",
+    "recording_validated_metadata_only",
+    "recording_rejected_invalid",
+    "recording_rejected_missing_evidence",
+    "recording_recorded_metadata_only_future_lane",
+    "recording_superseded_metadata_only",
+    "recording_revoked_metadata_only",
+    "recording_expired_metadata_only"
+  ],
+  "allowedRecordingActions": [
+    "validate_recording_request",
+    "reject_invalid_recording_request",
+    "reject_missing_evidence",
+    "record_metadata_only_future_lane",
+    "supersede_recorded_metadata",
+    "revoke_recorded_metadata",
+    "expire_recorded_metadata",
+    "no_recording_action"
+  ],
+  "blockedRecordingActions": {
+    "record_live_decision_now": {
+      "reason": "not allowed in this design",
+      "requiresFutureLane": true,
+      "requiresExplicitApproval": true,
+      "requiresImplementation": true
+    },
+    "grant_approval": {
+      "reason": "not allowed in this design",
+      "requiresFutureLane": true,
+      "requiresExplicitApproval": true,
+      "requiresImplementation": true
+    },
+    "approve_for_execution": {
+      "reason": "not allowed in this design",
+      "requiresFutureLane": true,
+      "requiresExplicitApproval": true,
+      "requiresImplementation": true
+    },
+    "execute_action": {
+      "reason": "not allowed in this design",
+      "requiresFutureLane": true,
+      "requiresExplicitApproval": true,
+      "requiresImplementation": true
+    },
+    "authorize_write_action": {
+      "reason": "not allowed in this design",
+      "requiresFutureLane": true,
+      "requiresExplicitApproval": true,
+      "requiresImplementation": true
+    },
+    "authorize_bridge_action": {
+      "reason": "not allowed in this design",
+      "requiresFutureLane": true,
+      "requiresExplicitApproval": true,
+      "requiresImplementation": true
+    },
+    "enable_direct_source": {
+      "reason": "not allowed in this design",
+      "requiresFutureLane": true,
+      "requiresExplicitApproval": true,
+      "requiresImplementation": true
+    },
+    "enable_automatic_response_takeover": {
+      "reason": "not allowed in this design",
+      "requiresFutureLane": true,
+      "requiresExplicitApproval": true,
+      "requiresImplementation": true
+    },
+    "write_recording_file": {
+      "reason": "not allowed in this design",
+      "requiresFutureLane": true,
+      "requiresExplicitApproval": true,
+      "requiresImplementation": true
+    },
+    "transmit_recording": {
+      "reason": "not allowed in this design",
+      "requiresFutureLane": true,
+      "requiresExplicitApproval": true,
+      "requiresImplementation": true
+    },
+    "publish_package": {
+      "reason": "not allowed in this design",
+      "requiresFutureLane": true,
+      "requiresExplicitApproval": true,
+      "requiresImplementation": true
+    },
+    "restart_openclaw": {
+      "reason": "not allowed in this design",
+      "requiresFutureLane": true,
+      "requiresExplicitApproval": true,
+      "requiresImplementation": true
+    },
+    "mutate_block_library": {
+      "reason": "not allowed in this design",
+      "requiresFutureLane": true,
+      "requiresExplicitApproval": true,
+      "requiresImplementation": true
+    },
+    "touch_resleever": {
+      "reason": "not allowed in this design",
+      "requiresFutureLane": true,
+      "requiresExplicitApproval": true,
+      "requiresImplementation": true
+    }
+  },
+  "evidenceRequirements": {
+    "reviewDecisionPacketDesign": { "required": true, "present": true, "referenceId": "design-example", "notes": ["present"] },
+    "reviewDecisionPacketSchema": { "required": true, "present": true, "referenceId": "schema-example", "notes": ["present"] },
+    "reviewDecisionPacketRuntimeProjection": { "required": true, "present": true, "referenceId": "projection-example", "notes": ["present"] },
+    "auditPacketReviewBundle": { "required": true, "present": true, "referenceId": "review-bundle-example", "notes": ["present"] },
+    "auditPacketExport": { "required": true, "present": true, "referenceId": "export-example", "notes": ["present"] },
+    "auditPacket": { "required": true, "present": true, "referenceId": "packet-example", "notes": ["present"] },
+    "policyTraceReport": { "required": true, "present": true, "referenceId": "trace-example", "notes": ["present"] },
+    "policyToReadinessIntegration": { "required": true, "present": true, "referenceId": "integration-example", "notes": ["present"] },
+    "readinessMatrix": { "required": true, "present": true, "referenceId": "readiness-example", "notes": ["present"] },
+    "blockedRouteSummary": { "required": true, "present": true, "referenceId": "blocked-example", "notes": ["present"] },
+    "dryRunProjection": { "required": true, "present": true, "referenceId": "dryrun-example", "notes": ["present"] },
+    "approvalCheckpoint": { "required": true, "present": true, "referenceId": "checkpoint-example", "notes": ["present"] },
+    "approvalFlowProjection": { "required": true, "present": true, "referenceId": "approvalflow-example", "notes": ["present"] },
+    "policyProjection": { "required": true, "present": true, "referenceId": "policy-example", "notes": ["present"] }
+  },
+  "idempotencyPolicy": {
+    "stableRequestIdRequired": true,
+    "duplicateRequestMustNotCreateLiveSideEffects": true,
+    "futureImplementationMustBeIdempotent": true,
+    "duplicateMetadataRecordingReturnsExistingOrSupersedesExplicitly": true,
+    "recordingPerformed": false
+  },
+  "supersessionPolicy": {
+    "supported": true,
+    "preserveHistory": true,
+    "doesNotGrantApproval": true,
+    "doesNotGrantExecution": true
+  },
+  "revocationPolicy": {
+    "supported": true,
+    "doesNotExecuteRollback": true,
+    "doesNotMutateExternalSystems": true
+  },
+  "expirationPolicy": {
+    "supported": true,
+    "doesNotExecuteAnything": true,
+    "doesNotDeleteHistory": true
+  },
+  "auditTrail": {
+    "required": true,
+    "preservesRequestAndResultMetadata": true,
+    "recordsHardBoundariesReviewed": true
+  },
+  "retentionPolicy": {
+    "metadataRetentionRequired": true,
+    "historyDeletionNotAllowedInThisDesign": true
+  },
+  "hardBoundaries": {
+    "principles": [
+      "Policy does not equal execution.",
+      "Approval does not equal execution.",
+      "Checkpoint does not equal execution.",
+      "Dry-run does not equal execution.",
+      "Decision simulation does not equal execution.",
+      "Readiness does not equal execution.",
+      "Trace report does not equal execution.",
+      "Audit packet does not equal execution.",
+      "Audit packet export does not equal execution.",
+      "Review bundle does not equal approval.",
+      "Review bundle does not equal execution.",
+      "Review decision packet does not equal approval.",
+      "Review decision packet does not equal execution.",
+      "Review decision packet projection does not equal approval.",
+      "Review decision packet projection does not equal execution.",
+      "Recording design does not equal recording.",
+      "Recording does not equal approval.",
+      "Recording does not equal execution."
+    ],
+    "recordingImplemented": false,
+    "recordingPerformed": false,
+    "liveDecisionRecorded": false,
+    "approvalGranted": false,
+    "executionPerformed": false,
+    "writeActionPerformed": false,
+    "bridgeActionPerformed": false,
+    "fileWritten": false,
+    "externalTransmissionPerformed": false,
+    "packagePublished": false,
+    "directSourceEnabled": false,
+    "automaticResponseTakeoverEnabled": false
+  },
+  "futureImplementationNotes": [
+    "Later schema lane should formalize recording request/result shapes.",
+    "Later runtime lanes must keep recording separate from approval and execution."
+  ]
+}
