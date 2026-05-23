@@ -24,6 +24,7 @@
     "src/umg-path-validator.ts",
     "src/action-gate-policy-projection.ts",
     "src/action-gate-approval-flow-projection.ts",
+    "src/action-gate-approval-checkpoint-projection.ts",
     "src/compiler/**/*.ts"
   ]
 }
