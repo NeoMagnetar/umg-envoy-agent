@@ -33,6 +33,7 @@
     "src/controlled-action-policy-trace-report.ts",
     "src/controlled-action-audit-packet.ts",
     "src/controlled-action-audit-packet-export.ts",
+    "src/controlled-action-audit-packet-review-bundle.ts",
     "src/compiler/**/*.ts"
   ]
 }
