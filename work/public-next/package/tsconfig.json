@@ -28,6 +28,7 @@
     "src/action-gate-approval-decision-simulation.ts",
     "src/controlled-action-dry-run-projection.ts",
     "src/controlled-action-blocked-route-summary.ts",
+    "src/controlled-action-execution-readiness-matrix.ts",
     "src/compiler/**/*.ts"
   ]
 }
