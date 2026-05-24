@@ -1,0 +1,89 @@
+{
+  "stageId": "alpha9-version-package-publication-stage-package-v1",
+  "stageType": "alpha9_version_package_publication_stage_package",
+  "status": "package_staged",
+  "baselineCommit": "731a6f748af75d5532ae0d52789c90d93ad76339",
+  "packageVersion": "0.3.0-alpha.13",
+  "featureSet": "controlled_action_runtime_report_plugin_owned_access_ui_model",
+  "stageRoot": "C:\\.openclaw\\workspace\\umg-envoy-agent-publish-stage\\umg-envoy-agent-0.3.0-alpha.13",
+  "artifactName": "umg-envoy-agent-0.3.0-alpha.13.tgz",
+  "artifactPath": "C:\\.openclaw\\workspace\\umg-envoy-agent-publish-stage\\umg-envoy-agent-0.3.0-alpha.13\\umg-envoy-agent-0.3.0-alpha.13.tgz",
+  "artifactSha256": "C659660742CB0DB82524C2DCEADE4C759CE2954D992743728474CB873624D502",
+  "npmPackPassed": true,
+  "artifactContentAuditPassed": true,
+  "extractedPackageMetadataVerified": true,
+  "forbiddenFilesExcluded": true,
+  "liveCallProof": "not_available_from_current_cli_surface",
+  "packagePublished": false,
+  "clawHubPublished": false,
+  "releaseTagCreated": false,
+  "runtimeModified": false,
+  "installedPluginModified": false,
+  "gatewayRestarted": false,
+  "liveToolCalled": false,
+  "executionPerformed": false,
+  "approvalGranted": false,
+  "recordingPerformed": false,
+  "liveDecisionRecorded": false,
+  "externalTransmissionPerformed": false,
+  "recommendedNextLane": "ALPHA9_VERSION_PACKAGE_PUBLICATION_LOCAL_PACKAGE_INSTALL_VERIFY_SOURCE",
+  "requiredFilesPresent": [
+    "package/package.json",
+    "package/openclaw.plugin.json",
+    "package/README.md",
+    "package/dist/plugin-entry.js",
+    "package/dist/plugin-entry.d.ts",
+    "package/dist/controlled-action-runtime-report-integration.js",
+    "package/dist/controlled-action-runtime-report-tool-surface.js",
+    "package/dist/controlled-action-runtime-report-plugin-owned-access.js",
+    "package/dist/ui/ControlledActionRuntimeReportDashboard.js",
+    "package/dist/ui/runtime-report-status-model.js",
+    "package/dist/ui/runtime-report-view-model.js",
+    "package/dist/ui/runtime-report-demo-data.js",
+    "package/dist/ui/runtime-report-components.js"
+  ],
+  "forbiddenFilesChecked": [
+    "node_modules/",
+    ".env",
+    "artifacts/",
+    "../../../artifacts/",
+    "installed plugin copies",
+    "*.tgz"
+  ],
+  "packageContentSummary": {
+    "requiredPackageMetadataPresent": true,
+    "requiredDistFilesPresent": true,
+    "uiRenderModelDistFilesPresent": true,
+    "docsIncluded": true,
+    "fixturesIncluded": true,
+    "scriptsIncluded": false,
+    "contentAuditPassed": true
+  },
+  "extractedMetadataSummary": {
+    "packageJsonVersion": "0.3.0-alpha.13",
+    "openclawPluginVersion": "0.3.0-alpha.13",
+    "readmePresent": true,
+    "distPresent": true,
+    "pluginEntryPresent": true,
+    "uiRenderModelPresent": true
+  },
+  "publicClaimBoundaries": {
+    "allowed": [
+      "read-only controlled-action runtime report",
+      "plugin-owned access surface",
+      "local verification artifacts",
+      "demo/preview/UI render-model materials"
+    ],
+    "disallowed": [
+      "live CLI invocation proven",
+      "generic plugin.tools.call implemented",
+      "live mounted UI",
+      "execution enabled",
+      "approval-gated writes enabled",
+      "bridge actions enabled"
+    ]
+  },
+  "knownCaveats": [
+    "Direct live CLI invocation proof remains not_available_from_current_cli_surface."
+  ]
+}
