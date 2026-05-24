@@ -1,0 +1,103 @@
+{
+  "escalationId": "openclaw-plugin-tool-call-protocol-implementation-escalation-v1",
+  "escalationType": "alpha9_openclaw_plugin_tool_call_protocol_implementation_escalation",
+  "status": "implementation_target_still_unclear",
+  "implementationPlanCommit": "ddb5af261c2db6a958489546d38c9cbf87a95f40",
+  "targetPluginId": "umg-envoy-agent",
+  "targetToolName": "umg_envoy_controlled_action_runtime_report",
+  "openClawRoot": "C:\\Users\\Magne\\AppData\\Roaming\\npm\\node_modules\\openclaw",
+  "runtimeFilesModified": false,
+  "protocolImplemented": false,
+  "liveToolCalled": false,
+  "blockedReason": "OpenClaw runtime implementation target is not sufficiently isolated for safe minimal mutation.",
+  "executionPerformed": false,
+  "approvalGranted": false,
+  "recordingPerformed": false,
+  "fileWritten": false,
+  "externalTransmissionPerformed": false,
+  "packagePublished": false,
+  "recommendedNextLane": "ALPHA9_OPENCLAW_RUNTIME_SOURCE_MAP_EXTRACTION_SOURCE",
+  "candidateFiles": [
+    "C:\\Users\\Magne\\AppData\\Roaming\\npm\\node_modules\\openclaw\\openclaw.mjs",
+    "C:\\Users\\Magne\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\routes-B2QX_8fI.js",
+    "C:\\Users\\Magne\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\plugins-cli-Cr_hFfbg.js",
+    "C:\\Users\\Magne\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\manifest-registry-B5JNQdOM.js",
+    "C:\\Users\\Magne\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\utils-CS0Ikux6.js"
+  ],
+  "patchPointMatrix": [
+    {
+      "kind": "gateway call dispatch",
+      "file": "openclaw.mjs",
+      "handler": "gateway subcommand entrypoint",
+      "confidence": "medium",
+      "risk": "medium"
+    },
+    {
+      "kind": "RPC method registry",
+      "file": "dist/routes-B2QX_8fI.js",
+      "handler": "gateway/control RPC route registrations",
+      "confidence": "medium",
+      "risk": "medium"
+    },
+    {
+      "kind": "plugin registry access",
+      "file": "dist/manifest-registry-B5JNQdOM.js",
+      "handler": "plugin manifest and source-root resolver",
+      "confidence": "high",
+      "risk": "low"
+    },
+    {
+      "kind": "tool metadata extraction",
+      "file": "dist/plugins-cli-Cr_hFfbg.js",
+      "handler": "plugin list/format surfaces",
+      "confidence": "medium",
+      "risk": "low"
+    },
+    {
+      "kind": "tool invocation route",
+      "file": "dist/routes-B2QX_8fI.js",
+      "handler": "likely RPC dispatch helper",
+      "confidence": "low",
+      "risk": "high"
+    },
+    {
+      "kind": "read-only enforcement hook",
+      "file": "dist/routes-B2QX_8fI.js",
+      "handler": "pre-call validation hook",
+      "confidence": "low",
+      "risk": "high"
+    }
+  ],
+  "futureBackupList": [
+    "C:\\Users\\Magne\\AppData\\Roaming\\npm\\node_modules\\openclaw\\openclaw.mjs",
+    "C:\\Users\\Magne\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\routes-B2QX_8fI.js",
+    "C:\\Users\\Magne\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\routes-B2QX_8fI.js.map",
+    "C:\\Users\\Magne\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\plugins-cli-Cr_hFfbg.js",
+    "C:\\Users\\Magne\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\manifest-registry-B5JNQdOM.js"
+  ],
+  "futurePatchPlan": [
+    "add plugin.tools.list handler in gateway RPC layer",
+    "add plugin.tools.inspect handler in gateway RPC layer",
+    "add plugin.tools.call handler in gateway RPC layer",
+    "limit first call implementation to allowlisted read-only tool only",
+    "enforce rejection of action/write/bridge/approval tools before dispatch"
+  ],
+  "goNoGoDecision": {
+    "decision": "implementation_target_still_unclear",
+    "reason": "gateway dispatch and invocation/enforcement insertion points are not high-confidence enough for safe minimal mutation"
+  },
+  "boundaries": [
+    "no protocol implemented",
+    "no runtime modified",
+    "no live tool called",
+    "no execution",
+    "no approval",
+    "no live recording",
+    "no writes",
+    "no bridge enablement",
+    "no direct_source",
+    "no automatic takeover",
+    "no package publish",
+    "no runtime mutation"
+  ]
+}
