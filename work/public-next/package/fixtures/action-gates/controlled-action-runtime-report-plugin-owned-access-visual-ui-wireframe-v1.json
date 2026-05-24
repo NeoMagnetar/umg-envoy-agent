@@ -1,0 +1,120 @@
+{
+  "wireframeId": "controlled-action-runtime-report-plugin-owned-access-visual-ui-wireframe-v1",
+  "wireframeType": "alpha9_controlled_action_runtime_report_plugin_owned_access_visual_ui_wireframe",
+  "status": "wireframe_ready",
+  "baselineCommit": "566f3533d1519e18a5a1cedd90d17da1b0a2d478",
+  "targetPluginId": "umg-envoy-agent",
+  "targetAccessSurface": "plugin_owned_runtime_report_access",
+  "installedPluginPath": "C:\\Users\\Magne\\.openclaw\\extensions\\umg-envoy-agent",
+  "liveCallProof": "not_available_from_current_cli_surface",
+  "wireframePrepared": true,
+  "runtimeModified": false,
+  "installedPluginModified": false,
+  "gatewayRestarted": false,
+  "liveToolCalled": false,
+  "packagePublished": false,
+  "executionPerformed": false,
+  "approvalGranted": false,
+  "recordingPerformed": false,
+  "liveDecisionRecorded": false,
+  "fileWrittenOutsideRepoArtifact": false,
+  "externalTransmissionPerformed": false,
+  "recommendedNextLane": "ALPHA9_CONTROLLED_ACTION_RUNTIME_REPORT_PLUGIN_OWNED_ACCESS_UI_COMPONENT_DESIGN_SOURCE",
+  "layoutRegions": [
+    "header",
+    "active_route",
+    "safety_evidence_chain",
+    "blocked_capabilities",
+    "next_safe_step"
+  ],
+  "navigationTargets": [
+    "overview",
+    "active_route",
+    "safety_evidence_chain",
+    "blocked_capabilities",
+    "readiness",
+    "audit_and_review",
+    "recording_metadata",
+    "hard_boundaries",
+    "next_safe_step"
+  ],
+  "statusColorSemantics": [
+    "complete/green",
+    "warning/yellow",
+    "blocked/red",
+    "disabled/gray",
+    "active_metadata/blue",
+    "policy_metadata/purple",
+    "review_evidence/orange"
+  ],
+  "panelDrilldowns": [
+    {
+      "panel": "blocked_capabilities",
+      "rows": [
+        {
+          "capability": "execute_action",
+          "status": "blocked",
+          "reason": "No execution lane active."
+        },
+        {
+          "capability": "write_files",
+          "status": "blocked",
+          "reason": "Write actions disabled."
+        },
+        {
+          "capability": "bridge_actions",
+          "status": "blocked",
+          "reason": "Bridge actions disabled."
+        },
+        {
+          "capability": "direct_source",
+          "status": "off",
+          "reason": "direct_source remains disabled."
+        },
+        {
+          "capability": "automatic_takeover",
+          "status": "off",
+          "reason": "automatic response takeover remains disabled."
+        },
+        {
+          "capability": "package_publish",
+          "status": "blocked",
+          "reason": "Package publish not performed."
+        }
+      ]
+    }
+  ],
+  "asciiToVisualMapping": [
+    "ASCII Header -> Dashboard Header",
+    "ACTIVE ROUTE -> Left Route Card",
+    "SAFETY EVIDENCE CHAIN -> Center Evidence Card",
+    "BLOCKED CAPABILITIES -> Right Blocked Card",
+    "NEXT SAFE STEP -> Bottom Action/Guidance Bar"
+  ],
+  "compactModeLayout": [
+    "Header",
+    "Status summary strip",
+    "Accordion: Active Route",
+    "Accordion: Safety Evidence Chain",
+    "Accordion: Blocked Capabilities",
+    "Accordion: Next Safe Step",
+    "Accordion: Hard Boundaries"
+  ],
+  "safetyBoundaries": [
+    "no runtime mutation",
+    "no installed plugin changes",
+    "no gateway restart",
+    "no live tool call",
+    "no execution",
+    "no approval",
+    "no live recording",
+    "no writes outside repo artifact",
+    "no external transmission",
+    "no package publish"
+  ],
+  "liveProofCaveats": [
+    "wireframe is based on source-validated and locally installed plugin-owned access behavior",
+    "direct live CLI invocation proof remains not_available_from_current_cli_surface",
+    "do not claim live OpenClaw CLI invocation proof from this wireframe"
+  ]
+}
