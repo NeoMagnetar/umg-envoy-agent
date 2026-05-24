@@ -1,0 +1,78 @@
+{
+  "demoPacketId": "controlled-action-runtime-report-plugin-owned-access-demo-packet-v1",
+  "demoPacketType": "alpha9_controlled_action_runtime_report_plugin_owned_access_demo_packet",
+  "status": "demo_packet_ready",
+  "baselineCommit": "4e2625551cb59045e17c62427bb06c8778f9cbc3",
+  "targetPluginId": "umg-envoy-agent",
+  "targetAccessSurface": "plugin_owned_runtime_report_access",
+  "installedPluginPath": "C:\\Users\\Magne\\.openclaw\\extensions\\umg-envoy-agent",
+  "liveCallProof": "not_available_from_current_cli_surface",
+  "demoScenario": "desktop_write_candidate_blocked_route",
+  "demoPacketPrepared": true,
+  "runtimeModified": false,
+  "installedPluginModified": false,
+  "gatewayRestarted": false,
+  "liveToolCalled": false,
+  "packagePublished": false,
+  "executionPerformed": false,
+  "approvalGranted": false,
+  "recordingPerformed": false,
+  "liveDecisionRecorded": false,
+  "fileWrittenOutsideRepoArtifact": false,
+  "externalTransmissionPerformed": false,
+  "recommendedNextLane": "ALPHA9_CONTROLLED_ACTION_RUNTIME_REPORT_PLUGIN_OWNED_ACCESS_PRESENTATION_HANDOFF_SOURCE",
+  "demoFlow": [
+    "User asks to inspect controlled-action runtime state.",
+    "Envoy generates read-only runtime report.",
+    "Report shows active route.",
+    "Report shows safety evidence chain.",
+    "Report shows blocked capabilities.",
+    "Report shows next safe step.",
+    "Report confirms no execution / approval / recording occurred."
+  ],
+  "demoModes": [
+    "full",
+    "summary",
+    "ascii_only",
+    "structured_only",
+    "navigation_only",
+    "panel"
+  ],
+  "demoPanels": [
+    "overview",
+    "active_route",
+    "safety_evidence_chain",
+    "blocked_capabilities",
+    "readiness",
+    "audit_and_review",
+    "recording_metadata",
+    "hard_boundaries",
+    "next_safe_step"
+  ],
+  "asciiDashboard": "┌──────────────────────────────────────────────────────────────────────┐\n│ UMG ENVOY RUNTIME REPORT                                            │\n│ Mode: READ-ONLY | Approval: FALSE | Execution: FALSE                │\n└──────────────────────────────────────────────────────────────────────┘\n\nACTIVE ROUTE\n- Route: desktop_write_candidate\n- Class: bridge_action_candidate\n- Risk: high\n- Status: blocked\n\nSAFETY EVIDENCE CHAIN\n✓ Policy Projection\n✓ Dry-run Projection\n✓ Readiness Matrix\n✓ Audit Packet\n✓ Review Bundle\n✓ Recording Metadata\n\nBLOCKED CAPABILITIES\n✗ Execute Action\n✗ Write Files\n✗ Bridge Actions\n✗ direct_source\n✗ Automatic Takeover\n✗ Package Publish\n\nNEXT SAFE STEP\nDesign / inspect only. No approval. No execution. No live recording.",
+  "blockedCapabilities": [
+    "execute_action",
+    "write_files",
+    "bridge_actions",
+    "direct_source",
+    "automatic_takeover",
+    "package_publish"
+  ],
+  "safetyBoundaries": [
+    "no runtime mutation",
+    "no installed plugin changes",
+    "no gateway restart",
+    "no live tool call",
+    "no execution",
+    "no approval",
+    "no live recording",
+    "no writes outside repo artifact",
+    "no external transmission",
+    "no package publish"
+  ],
+  "liveProofCaveats": [
+    "demo packet is presentation-facing only",
+    "live CLI invocation proof remains unavailable from current CLI surface",
+    "demo content is based on validated source behavior and prior install verification"
+  ]
+}
