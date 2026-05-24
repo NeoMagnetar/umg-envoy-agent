@@ -1,0 +1,23 @@
+{
+  "discoveryId": "controlled-action-runtime-report-live-call-path-discovery-v1",
+  "discoveryType": "alpha9_controlled_action_runtime_report_live_call_path_discovery",
+  "status": "live_call_path_blocked",
+  "sourceCommit": "0b4442125ebe3a9d4e818c0bc92ec4d8ca6d0743",
+  "blockedVerifyCommit": "e3b9e47f4e50ef0f28dc7006ba1d3dd6a4d9d8e7",
+  "toolName": "umg_envoy_controlled_action_runtime_report",
+  "gatewayRunning": true,
+  "gatewayEndpoint": "ws://127.0.0.1:18789",
+  "activeInstalledPluginPath": "C:\\Users\\Magne\\.openclaw\\extensions\\umg-envoy-agent",
+  "cliToolListPathFound": false,
+  "rpcMethodFound": false,
+  "toolFoundInLiveRuntime": false,
+  "toolCallableInLiveRuntime": false,
+  "blockedReason": "No supported noninteractive live plugin-tool discovery/call path was proven from installed CLI help, gateway call surface, or bundled runtime code inspection.",
+  "executionPerformed": false,
+  "approvalGranted": false,
+  "recordingPerformed": false,
+  "liveDecisionRecorded": false,
+  "fileWritten": false,
+  "externalTransmissionPerformed": false,
+  "packagePublished": false
+}
