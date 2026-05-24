@@ -1,0 +1,80 @@
+{
+  "requestId": "openclaw-runtime-external-source-request-v1",
+  "requestType": "alpha9_openclaw_runtime_external_source_request",
+  "status": "request_ready",
+  "baselineCommit": "94711a3660bf89bf4850bea4ce6da0dd2c7eb4cb",
+  "targetPluginId": "umg-envoy-agent",
+  "targetToolName": "umg_envoy_controlled_action_runtime_report",
+  "activeInstalledPluginPath": "C:\\Users\\Magne\\.openclaw\\extensions\\umg-envoy-agent",
+  "gatewayEndpoint": "ws://127.0.0.1:18789",
+  "sourceToolCommit": "0b4442125ebe3a9d4e818c0bc92ec4d8ca6d0743",
+  "sourceMapStatus": "source_map_insufficient_for_runtime_mutation",
+  "requestPreparedOnly": true,
+  "externalContactPerformed": false,
+  "runtimeModified": false,
+  "protocolImplemented": false,
+  "liveToolCalled": false,
+  "executionPerformed": false,
+  "approvalGranted": false,
+  "recordingPerformed": false,
+  "fileWritten": false,
+  "externalTransmissionPerformed": false,
+  "packagePublished": false,
+  "recommendedNextLane": "ALPHA9_OPENCLAW_RUNTIME_EXTERNAL_SOURCE_RESPONSE_REVIEW_SOURCE",
+  "knownFacts": [
+    "target plugin: umg-envoy-agent",
+    "target tool: umg_envoy_controlled_action_runtime_report",
+    "source tool commit: 0b4442125ebe3a9d4e818c0bc92ec4d8ca6d0743",
+    "active installed plugin path: C:\\Users\\Magne\\.openclaw\\extensions\\umg-envoy-agent",
+    "gateway endpoint: ws://127.0.0.1:18789",
+    "gateway process: node.exe running openclaw.mjs gateway",
+    "plugin is listed as loaded",
+    "source implementation validates",
+    "active installed plugin path was promoted"
+  ],
+  "currentBlockers": [
+    "The remaining blocker is not Envoy source code, installed plugin files, or gateway availability. The remaining blocker is absence of a proven supported noninteractive OpenClaw protocol for listing and invoking loaded plugin tools."
+  ],
+  "maintainerQuestions": [
+    "What is the supported noninteractive command or RPC method to list loaded plugin tools?",
+    "What is the supported noninteractive command or RPC method to invoke a loaded plugin tool?",
+    "Does openclaw gateway call support plugin tool invocation? If yes, what method name and payload shape?",
+    "Is there an internal JSON-RPC method equivalent to plugin.tools.list, plugin.tools.inspect, or plugin.tools.call?",
+    "Where in source are gateway RPC methods registered?",
+    "Where in source are plugin manifests loaded into runtime state?",
+    "Where in source are plugin tools exposed to the model/UI?",
+    "Are plugin tools callable outside the model loop?",
+    "Is there a read-only tool metadata flag or safety classification already supported?",
+    "What is the intended way to verify a plugin tool is callable after local install?"
+  ],
+  "requestedSourceModules": [
+    "gateway call dispatch",
+    "WebSocket JSON-RPC method registry",
+    "plugin registry / manifest registry",
+    "plugin loader",
+    "model-visible tool registry",
+    "tool invocation dispatch",
+    "read-only / approval / permission enforcement",
+    "CLI command definitions for plugins/gateway call"
+  ],
+  "safeAcceptanceCriteria": [
+    "documented command/RPC for tool listing",
+    "documented command/RPC for tool invocation",
+    "request/response shape",
+    "safety metadata path",
+    "clear read-only enforcement behavior",
+    "enough source mapping to patch safely if no protocol exists"
+  ],
+  "boundaries": [
+    "no execution",
+    "no approval",
+    "no live recording",
+    "no writes",
+    "no bridge enablement",
+    "no direct_source",
+    "no automatic takeover",
+    "no package publish",
+    "no runtime mutation",
+    "no external contact performed"
+  ]
+}
