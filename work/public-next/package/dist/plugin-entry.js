@@ -11,6 +11,7 @@ import { validateUMGPath } from "./umg-path-validator.js";
 import { buildPublicPath } from "./public-path-builder.js";
 import { classifyRuntimeToolRequests, clearRuntimeSleeveSession, compileRuntimeSleeve, createRuntimeApprovalCheckpoints, createRuntimeExecutionGatePlan, defaultBlockLibraryRoot, executeApprovedAllowlistedRuntimeAction, getBlockLibraryActiveStackProjection, getBlockLibraryManifestEntryLookup, getBlockLibraryManifestIndex, getBlockLibraryMoltMapCompose, getBlockLibraryMoltMapFragment, getBlockLibraryMoltblockVisibleExtract, getBlockLibraryNeoblockInspect, getBlockLibraryResponseEnvelopeFragment, getBlockLibrarySleeveGraphDrilldown, getBlockLibrarySleeveGraphIndex, getBlockLibraryStatus, getBlockLibraryTargetShallowLoadGate, getBlockLibraryTargetShallowLoadSingle, getBlockLibraryTargetShallowSummaryNormalize, getCurrentRuntimeSleeveSession, inspectRuntimeActiveSleeveIrMatrixEnvelope, inspectRuntimeSleeveGraphRichness, inspectRuntimeSleeveSession, previewRuntimeSleeve, resumeRuntimeApprovalCheckpoint, resolveRuntimeSleeveGraph, runBoundedReadOnlyOrchestration, runRuntimeExecutionChainE2EApprovedReadOnly, selectRuntimeSleeve, selectRuntimeSleeveSession } from "./block-library-resolver.js";
 import { ControlledActionRuntimeReportToolInputSchema, executeControlledActionRuntimeReportTool } from "./controlled-action-runtime-report-tool-surface.js";
+import { ControlledActionRuntimeReportPluginOwnedAccessInputSchema, executeControlledActionRuntimeReportPluginOwnedAccess } from "./controlled-action-runtime-report-plugin-owned-access.js";
 const UMG_ENVOY_RUNTIME_VERSION = "0.3.0-alpha.12";
 function effectiveConfig(config) {
     return {
@@ -68,7 +69,8 @@ function statusPayload(config) {
             "umg_envoy_runtime_compile",
             "umg_envoy_runtime_preview",
             "umg_envoy_runtime_bounded_read_only_orchestrate",
-            "umg_envoy_controlled_action_runtime_report"
+            "umg_envoy_controlled_action_runtime_report",
+            "umg_envoy_controlled_action_runtime_report_access"
         ]
     };
 }
@@ -354,6 +356,17 @@ function registerCliBridge(api, config) {
             .action(async (opts) => {
             console.log(JSON.stringify(previewRuntimeSleeve(UMG_ENVOY_RUNTIME_VERSION, "dist/plugin-entry.js", opts.root ?? defaultBlockLibraryRoot(), { sleeveId: opts.sleeveId, runtimeSessionId: opts.runtimeSessionId, previewFormat: opts.previewFormat, includeActiveStack: opts.includeActiveStack !== false, includeMoltMap: opts.includeMoltMap !== false, includeEnvelope: opts.includeEnvelope !== false, includeToolRequests: opts.includeToolRequests !== false }), null, 2));
         });
+        root.command("runtime-report")
+            .option("--mode <mode>")
+            .option("--panel <panel>")
+            .option("--sleeve-id <id>")
+            .option("--route-id <id>")
+            .option("--include-ascii")
+            .option("--include-navigation")
+            .option("--include-structured-report")
+            .action(async (opts) => {
+            console.log(JSON.stringify(executeControlledActionRuntimeReportPluginOwnedAccess({ reportMode: opts.mode, panel: opts.panel, sleeveId: opts.sleeveId, routeId: opts.routeId, includeAscii: opts.includeAscii, includeNavigation: opts.includeNavigation, includeStructuredReport: opts.includeStructuredReport }), null, 2));
+        });
     }, { commands: ["umg-envoy"] });
 }
 const entry = {
@@ -406,6 +419,7 @@ const entry = {
         api.registerTool({ name: "umg_envoy_runtime_sleeve_graph_richness_inspect", description: "Inspect sleeve-native graph richness across NeoStacks, NeoBlocks, visible MOLT fragments, RuntimeSpec, IR Matrix, envelope preview, and tool-request route visibility without executing tools.", parameters: Type.Object({ sleeveId: Type.Optional(Type.String()), useActiveSessionSleeve: Type.Optional(Type.Boolean()), includeNeoStacks: Type.Optional(Type.Boolean()), includeNeoBlocks: Type.Optional(Type.Boolean()), includeMoltFragments: Type.Optional(Type.Boolean()), includeToolRequests: Type.Optional(Type.Boolean()), includeRuntimeSpec: Type.Optional(Type.Boolean()), includeIrMatrix: Type.Optional(Type.Boolean()), includeEnvelope: Type.Optional(Type.Boolean()), includeDiagnostics: Type.Optional(Type.Boolean()), includeTrace: Type.Optional(Type.Boolean()), root: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input) { return { content: [{ type: "text", text: JSON.stringify(inspectRuntimeSleeveGraphRichness("0.3.0-alpha.10", "dist/plugin-entry.js", input.root ?? defaultBlockLibraryRoot(), { sleeveId: input.sleeveId, useActiveSessionSleeve: input.useActiveSessionSleeve !== false, includeNeoStacks: input.includeNeoStacks !== false, includeNeoBlocks: input.includeNeoBlocks !== false, includeMoltFragments: input.includeMoltFragments !== false, includeToolRequests: input.includeToolRequests !== false, includeRuntimeSpec: input.includeRuntimeSpec !== false, includeIrMatrix: input.includeIrMatrix !== false, includeEnvelope: input.includeEnvelope !== false, includeDiagnostics: input.includeDiagnostics !== false, includeTrace: input.includeTrace !== false }), null, 2) }] }; } }, { optional: true });
         api.registerTool({ name: "umg_envoy_runtime_bounded_read_only_orchestrate", description: "Compose the proven Alpha7 inspector, preview, classification, gate, checkpoint, and tiny allowlisted read-only execution path into one bounded orchestration report.", parameters: Type.Object({ sleeveId: Type.Optional(Type.String()), useActiveSessionSleeve: Type.Optional(Type.Boolean()), selectSession: Type.Optional(Type.Boolean()), requestedToolName: Type.Optional(Type.String()), requestedAction: Type.Optional(Type.String()), approvalDecision: Type.Optional(Type.String()), mode: Type.Optional(Type.String()), includeInspector: Type.Optional(Type.Boolean()), includeRuntimePreview: Type.Optional(Type.Boolean()), includeIrMatrix: Type.Optional(Type.Boolean()), includeEnvelope: Type.Optional(Type.Boolean()), includeExecutionGateState: Type.Optional(Type.Boolean()), includeTrace: Type.Optional(Type.Boolean()), root: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input) { return { content: [{ type: "text", text: JSON.stringify(runBoundedReadOnlyOrchestration("0.3.0-alpha.10", "dist/plugin-entry.js", input.root ?? defaultBlockLibraryRoot(), { sleeveId: input.sleeveId, useActiveSessionSleeve: input.useActiveSessionSleeve !== false, selectSession: input.selectSession === true, requestedToolName: input.requestedToolName, requestedAction: input.requestedAction, approvalDecision: input.approvalDecision, mode: input.mode, includeInspector: input.includeInspector !== false, includeRuntimePreview: input.includeRuntimePreview !== false, includeIrMatrix: input.includeIrMatrix !== false, includeEnvelope: input.includeEnvelope !== false, includeExecutionGateState: input.includeExecutionGateState !== false, includeTrace: input.includeTrace !== false }), null, 2) }] }; } }, { optional: true });
         api.registerTool({ name: "umg_envoy_controlled_action_runtime_report", description: "Return a read-only controlled-action runtime report preview with structured report, ASCII dashboard, navigation, or selected panel output.", parameters: ControlledActionRuntimeReportToolInputSchema, async execute(input) { return { content: [{ type: "text", text: JSON.stringify(executeControlledActionRuntimeReportTool(input), null, 2) }] }; } }, { optional: true });
+        api.registerTool({ name: "umg_envoy_controlled_action_runtime_report_access", description: "Expose an Envoy-owned read-only access surface for controlled-action runtime report verification without execution, approval, recording, writes, or external transmission.", parameters: ControlledActionRuntimeReportPluginOwnedAccessInputSchema, async execute(input) { return { content: [{ type: "text", text: JSON.stringify(executeControlledActionRuntimeReportPluginOwnedAccess(input), null, 2) }] }; } }, { optional: true });
     }
 };
 if (process.argv.includes("--smoke")) {

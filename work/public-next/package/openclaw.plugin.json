@@ -71,7 +71,8 @@
     "umg_envoy_sleeve_session_clear",
     "umg_envoy_sleeve_session_inspect",
     "umg_envoy_runtime_sleeve_graph_richness_inspect",
-    "umg_envoy_controlled_action_runtime_report"
+    "umg_envoy_controlled_action_runtime_report",
+    "umg_envoy_controlled_action_runtime_report_access"
   ],
   "toolMetadata": {
     "umg_envoy_runtime_bounded_read_only_orchestrate": {
