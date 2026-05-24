@@ -1,27 +1,26 @@
-# UMG Envoy Agent 0.3.0-alpha.12
+# UMG Envoy Agent 0.3.0-alpha.13
 
-UMG Envoy Agent 0.3.0-alpha.12 lets you run Universal Modular Generation as a modular cognitive architectural runtime inside OpenClaw, with sleeve-aware orchestration, active sleeve session state, runtime inspection, IR Matrix visibility, and approved read-only tool gating.
+UMG Envoy Agent runs Universal Modular Generation as a modular cognitive architectural runtime inside OpenClaw. This alpha adds read-only controlled-action runtime report visibility, plugin-owned access, local install verification artifacts, user-facing examples, demo/preview packets, and a TypeScript UI render-model for inspecting active routes, safety evidence, blocked capabilities, and next safe steps.
 
-It is not a broad execution agent package.
+This release does not enable action execution, approval grants, write actions, bridge actions, direct_source, or automatic response takeover.
 
-- `0.3.0-alpha.7` may be referenced historically as the public package baseline.
-- `0.3.0-alpha.8` is the previous verified public release.
-- `0.3.0-alpha.9` is the previous verified public release.
-- `0.3.0-alpha.10` is the previous verified public release.
-- `0.3.0-alpha.11` is the previous public release.
-- `0.3.0-alpha.12` is the current clean native graph fixture/runtime integration package.
+## Current alpha.13 feature summary
 
-## alpha.12 capability summary
-
-alpha.12 includes:
+alpha.13 includes:
 - bounded read-only orchestration
 - active sleeve session state
 - sleeve graph richness
 - native route provenance cleanup
 - clean native graph fixture/runtime integration
-- native graph schema/types/adapter
-- runtimeCodeIdentity diagnostics
-- nativeFixtureResolution diagnostics
+- controlled-action runtime report integration
+- read-only controlled-action runtime report tool surface
+- plugin-owned runtime report access surface
+- local install verification artifacts
+- user-facing examples
+- demo packet and presentation handoff
+- visual UI wireframe
+- TypeScript UI render-model
+- UI component demo render and preview packet
 - packaged `fixtures/native-sleeves`
 - packaged `schemas`
 
@@ -33,57 +32,41 @@ It also preserves the broader Alpha6/Alpha7/Alpha8 runtime surfaces, including:
 - end-to-end approved read-only execution chain
 - active sleeve / IR Matrix / envelope inspector
 
-## alpha.12 proof caveat
+## alpha.13 proof caveat
 
-Direct custom live graph probe was not callable from the chat harness during final alpha.12 proof.
+Direct live CLI invocation proof for the plugin-owned controlled-action runtime report surface remains unavailable from the current OpenClaw CLI surface.
 
-Accepted proof chain:
-- artifact verification
+Accepted proof chain includes:
+- source implementation verification
 - local install verification
-- runtime identity proof
-- installed fixture/schema presence
-- installed runtime smoke result
+- deterministic demo/preview packet chain
+- TypeScript UI render-model validation
+- package build and validation coverage
 
-## alpha.12 safety posture
+## alpha.13 safety posture
 
-alpha.12 preserves strict safety boundaries:
-- approved only
+alpha.13 preserves strict safety boundaries:
+- approved only where approval lanes already existed historically
 - allowlisted only
-- read-only only
+- read-only controlled-action runtime report visibility
 - no broad autonomous execution
 - no trigger evaluation as execution authority
 - no external MOLT block file loading
 - no full library scan
 - no unbounded recursive traversal
 - no UMG-Block-Library mutation
-- no restart / publish / package execution
+- no restart / publish / package execution in this feature chain
 - no automatic response takeover
 - direct_source remains disabled
 
-## Live-capable tool surface
+## Controlled-action runtime report surfaces
 
-### Alpha6 / block-library runtime path tools
+### Read-only runtime report tools / access
 
-- `umg_envoy_block_library_status`
-- `umg_envoy_block_library_manifest_index`
-- `umg_envoy_block_library_manifest_entry_lookup`
-- `umg_envoy_block_library_target_shallow_load_gate`
-- `umg_envoy_block_library_target_shallow_load_single`
-- `umg_envoy_block_library_target_shallow_summary_normalize`
-- `umg_envoy_block_library_neoblock_inspect`
-- `umg_envoy_block_library_moltblock_visible_extract`
-- `umg_envoy_block_library_molt_map_fragment`
-- `umg_envoy_block_library_molt_map_compose`
-- `umg_envoy_block_library_response_envelope_fragment`
-- `umg_envoy_block_library_active_stack_projection`
-- `umg_envoy_block_library_sleeve_graph_index`
-- `umg_envoy_block_library_sleeve_graph_drilldown`
-- `umg_envoy_sleeve_select`
-- `umg_envoy_sleeve_resolve`
-- `umg_envoy_runtime_compile`
-- `umg_envoy_runtime_preview`
+- `umg_envoy_controlled_action_runtime_report`
+- `umg_envoy_controlled_action_runtime_report_access`
 
-### Alpha7/Alpha8/Alpha10+ runtime control / visibility tools
+### Existing runtime control / visibility tools
 
 - `umg_envoy_runtime_tool_request_classify`
 - `umg_envoy_runtime_execution_gate_plan`
@@ -99,75 +82,36 @@ alpha.12 preserves strict safety boundaries:
 - `umg_envoy_sleeve_session_inspect`
 - `umg_envoy_runtime_sleeve_graph_richness_inspect`
 
-### Existing utility tools
+## What alpha.13 does
 
-- `umg_envoy_status`
-- `umg_envoy_compiler_smoke_test`
-- `umg_envoy_list_sleeves`
-- `umg_envoy_list_block_libraries`
-- `umg_envoy_compile_sleeve`
-- `umg_envoy_validate_runtime_output`
-- `umg_envoy_compare_sleeves`
-- `umg_envoy_parse_path`
-- `umg_envoy_validate_path`
-- `umg_envoy_render_path`
-- `umg_envoy_build_path`
-- `umg_envoy_matrix_status`
+- inspects controlled-action runtime safety state through a read-only report surface
+- shows active route, safety evidence, blocked capabilities, and next safe steps
+- preserves non-execution / non-approval / non-recording posture in report and UI model outputs
+- exposes plugin-owned access for runtime report inspection
+- provides deterministic demo/preview artifacts for human and agent review
+- provides a TypeScript UI render-model without requiring React/TSX
 
-## What alpha.12 does
+## What alpha.13 does not do
 
-- inspects the real block-library through bounded approved lanes
-- resolves a real sleeve into a bounded dry-run graph
-- shallow-loads approved NeoBlocks within limits
-- extracts visible MOLT fragments
-- composes a full or partial MOLT Map
-- compiles a dry-run RuntimeSpecV0
-- classifies declared tool requests without executing them
-- creates execution gate plans and approval checkpoint projections
-- can execute approved allowlisted read-only actions only
-- renders Active Stack and response-envelope previews
-- selects and remembers an explicit active sleeve for the session
-- reports current active sleeve session state
-- clears active sleeve session state without hidden fallback
-- inspects active sleeve, NeoStacks, NeoBlocks, MOLT blocks, RuntimeSpec, IR Matrix, envelope preview, and execution gate state
-
-## What alpha.12 does not do
-
-- broad execution
-- unapproved execution
-- non-allowlisted execution
-- write/mutate runtime actions through the Alpha7 chain
-- trigger evaluation as independent execution authority
-- external MOLT block loading
-- full-graph recursion
-- mutation of the UMG-Block-Library
-- package / publish / restart execution
-
-## Known stabilization notes
-
-- `validate:alpha-current` exists but requires dependencies/bootstrap before `npm run check` can pass in a clean worktree.
-- current failure mode: `tsc` missing.
-- no tracked `node_modules`.
-- legacy tracked publish-stage/artifact debt remains and should be cleaned in a dedicated repo hygiene lane.
-
-## Default posture
-
-- allowRuntimeWrites: false
-- contentMode: bundled-public or configured packaged mode
-- compilerMode: compiler-backed dry-run preview
-- debug: false
+- prove live CLI invocation of the plugin-owned report surface
+- implement a generic OpenClaw `plugin.tools.call` protocol
+- mount a live OpenClaw UI
+- enable action execution
+- enable approval-gated writes
+- enable bridge actions
+- enable direct_source
+- enable automatic response takeover
 
 ## Docs
 
-- Quickstart: `docs/ALPHA8-QUICKSTART.md`
-- Demo runtime flow: `docs/ALPHA8-DEMO-RUNTIME-FLOW.md`
-- Public alpha.12 notes: `docs/ALPHA12-PUBLIC-STATUS.md`
+- Public alpha.13 alignment notes: `docs/ALPHA9-VERSION-PACKAGE-PUBLICATION-ALIGNMENT.md`
+- Release readiness: `docs/ALPHA9-CONTROLLED-ACTION-RUNTIME-REPORT-RELEASE-READINESS.md`
+- UI preview packet: `docs/ALPHA9-CONTROLLED-ACTION-RUNTIME-REPORT-PLUGIN-OWNED-ACCESS-UI-COMPONENT-PREVIEW-PACKET.md`
 - Release ledger: `../RELEASE_LEDGER.md`
 
 ## Install
 
-- current public release: `openclaw plugins install clawhub:umg-envoy-agent@0.3.0-alpha.12`
-- current source/package target: `umg-envoy-agent@0.3.0-alpha.12`
+- next source/package target: `umg-envoy-agent@0.3.0-alpha.13`
 
 ## Build and test
 

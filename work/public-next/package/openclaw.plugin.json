@@ -1,8 +1,8 @@
 {
   "id": "umg-envoy-agent",
   "name": "UMG Envoy Agent",
-  "version": "0.3.0-alpha.12",
-  "description": "Run Universal Modular Generation as a modular cognitive architectural runtime inside OpenClaw, with sleeve-aware orchestration, active sleeve session state, runtime inspection, IR Matrix visibility, and approved read-only tool gating.",
+  "version": "0.3.0-alpha.13",
+  "description": "Run UMG as a modular cognitive architectural runtime in OpenClaw, now with read-only controlled-action runtime report visibility, plugin-owned access, and UI render-model preview.",
   "entry": "dist/plugin-entry.js",
   "apiVersion": 1,
   "configSchema": {

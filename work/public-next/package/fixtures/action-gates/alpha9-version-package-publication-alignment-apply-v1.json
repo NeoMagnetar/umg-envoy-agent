@@ -1,0 +1,77 @@
+{
+  "applyId": "alpha9-version-package-publication-alignment-apply-v1",
+  "applyType": "alpha9_version_package_publication_alignment_apply",
+  "status": "alignment_applied",
+  "baselineCommit": "1a0367bf2cad52f73dc8f8bb5fb2c8d5368d8c27",
+  "previousVersion": "0.3.0-alpha.12",
+  "appliedVersion": "0.3.0-alpha.13",
+  "featureSet": "controlled_action_runtime_report_plugin_owned_access_ui_model",
+  "packageJsonModified": true,
+  "openclawPluginManifestModified": true,
+  "readmeModified": true,
+  "distModified": true,
+  "validationScriptsUpdated": true,
+  "versionBumped": true,
+  "packagePublished": false,
+  "clawHubPublished": false,
+  "releaseTagCreated": false,
+  "runtimeModified": false,
+  "installedPluginModified": false,
+  "gatewayRestarted": false,
+  "liveToolCalled": false,
+  "executionPerformed": false,
+  "approvalGranted": false,
+  "recordingPerformed": false,
+  "liveDecisionRecorded": false,
+  "externalTransmissionPerformed": false,
+  "recommendedNextLane": "ALPHA9_VERSION_PACKAGE_PUBLICATION_PREPUBLISH_VALIDATION_SOURCE",
+  "updatedFiles": [
+    "package.json",
+    "openclaw.plugin.json",
+    "README.md",
+    "dist/*",
+    "docs/ALPHA9-VERSION-PACKAGE-PUBLICATION-ALIGNMENT-APPLY.md",
+    "fixtures/action-gates/alpha9-version-package-publication-alignment-apply-v1.json",
+    "scripts/alpha9-version-package-publication-alignment-apply-smoke.mjs"
+  ],
+  "versionSurfacesAligned": [
+    "package.json version",
+    "openclaw.plugin.json version",
+    "README public summary",
+    "rebuilt dist outputs"
+  ],
+  "historicalReferencesPreserved": [
+    "historical Alpha6/Alpha7/Alpha8/Alpha9 lane records remain in docs/scripts/fixtures where clearly historical",
+    "historical alpha.12 references remain in older audit/checkpoint artifacts where they describe the prior baseline"
+  ],
+  "allowedPublicClaims": [
+    "read-only controlled-action runtime report source implemented",
+    "plugin-owned runtime report access surface implemented",
+    "local installed plugin file verification completed",
+    "user-facing examples included",
+    "demo packet included",
+    "presentation handoff included",
+    "visual UI wireframe included",
+    "TypeScript UI render-model implemented",
+    "UI demo render validated",
+    "UI preview packet included",
+    "safety flags preserve non-execution / non-approval / non-recording posture"
+  ],
+  "disallowedPublicClaims": [
+    "live CLI invocation proven",
+    "generic OpenClaw plugin tool call protocol implemented",
+    "live mounted UI",
+    "execution tools enabled",
+    "approval-gated writes enabled",
+    "business automation actions enabled",
+    "bridge actions enabled",
+    "direct_source enabled",
+    "automatic takeover enabled"
+  ],
+  "remainingPublishPrerequisites": [
+    "run final prepublish validation",
+    "review package staging metadata",
+    "confirm public description surfaces stay within allowed claims",
+    "prepare optional release-note/changelog packaging if desired"
+  ]
+}
