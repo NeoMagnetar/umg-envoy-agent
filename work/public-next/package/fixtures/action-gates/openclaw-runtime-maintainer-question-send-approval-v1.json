@@ -1,0 +1,42 @@
+{
+  "approvalId": "openclaw-runtime-maintainer-question-send-approval-v1",
+  "approvalType": "alpha9_openclaw_runtime_maintainer_question_send_approval",
+  "status": "send_approval_recorded",
+  "baselineCommit": "714c1c803f5bbd31b0f9769e44cf521421cb238c",
+  "reviewOutcome": "approve_with_edits",
+  "questionApprovedForFutureSend": true,
+  "externalContactPerformed": false,
+  "issueCreated": false,
+  "runtimeModified": false,
+  "protocolImplemented": false,
+  "liveToolCalled": false,
+  "executionPerformed": false,
+  "approvalGranted": false,
+  "recordingPerformed": false,
+  "fileWritten": false,
+  "externalTransmissionPerformed": false,
+  "packagePublished": false,
+  "recommendedNextLane": "ALPHA9_OPENCLAW_RUNTIME_MAINTAINER_QUESTION_DELIVERY_METHOD_SOURCE",
+  "approvedQuestionText": "Hello — we are trying to verify a read-only OpenClaw plugin tool noninteractively.\n\nPlugin:\numg-envoy-agent\n\nTool:\numg_envoy_controlled_action_runtime_report\n\nThe plugin is installed and loaded, and the gateway is running, but we cannot find a documented noninteractive way to list, inspect, or invoke loaded plugin tools from the OpenClaw CLI/runtime surface.\n\nWhat is the supported way to:\n\nlist loaded plugin tools\ninspect a plugin tool’s metadata/capability classification without invoking it\ninvoke a read-only plugin tool with JSON input\ncapture JSON output from that invocation\n\nIf available, please also provide:\n\ncommand name or RPC method\nrequest envelope shape\nexample payload\nexample response\nauth/session requirements\nsource file/module names\nwhether the path is public/supported or internal/unsupported\n\nRelevant environment details:\n\nsource tool commit: 0b4442125ebe3a9d4e818c0bc92ec4d8ca6d0743\nactive installed plugin path: C:\\Users\\Magne\\.openclaw\\extensions\\umg-envoy-agent\ngateway endpoint: ws://127.0.0.1:18789\ngateway process: openclaw.mjs gateway\n\nIf there is no supported public path, the most useful fallback would be the exact source modules responsible for:\n\ngateway RPC registration\nplugin manifest/runtime loading\nmodel/UI tool exposure\nplugin tool metadata/capability classification\nplugin tool invocation dispatch\nread-only / approval / permission enforcement",
+  "reviewChoices": [
+    "approve_as_written",
+    "approve_with_edits",
+    "needs_more_context",
+    "defer_external_contact",
+    "reject_question"
+  ],
+  "selectedReviewChoice": "approve_with_edits",
+  "safetyConstraints": [
+    "no external contact",
+    "no issue creation",
+    "no runtime mutation",
+    "no protocol implementation",
+    "no live tool call",
+    "no execution",
+    "no approval of tool execution",
+    "no live recording",
+    "no writes outside repo artifacts",
+    "no package publish"
+  ],
+  "deliveryMethodNotSelected": true
+}
