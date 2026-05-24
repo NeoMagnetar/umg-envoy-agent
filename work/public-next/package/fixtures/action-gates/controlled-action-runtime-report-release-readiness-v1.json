@@ -1,0 +1,109 @@
+{
+  "readinessId": "controlled-action-runtime-report-release-readiness-v1",
+  "readinessType": "alpha9_controlled_action_runtime_report_release_readiness",
+  "status": "release_alignment_ready",
+  "baselineCommit": "27b60077a0fd66b81484401b7591bc5fdd4527d6",
+  "targetPluginId": "umg-envoy-agent",
+  "featureSet": "controlled_action_runtime_report_plugin_owned_access_ui_model",
+  "currentPackageVersion": "0.3.0-alpha.12",
+  "recommendedNextVersion": "0.3.0-alpha.13",
+  "sourceImplementationReady": true,
+  "pluginOwnedAccessReady": true,
+  "localInstallFileVerificationReady": true,
+  "uiRenderModelReady": true,
+  "demoPacketReady": true,
+  "previewPacketReady": true,
+  "liveCallProof": "not_available_from_current_cli_surface",
+  "releaseAlignmentRequired": true,
+  "versionBumped": false,
+  "packagePublished": false,
+  "runtimeModified": false,
+  "installedPluginModified": false,
+  "gatewayRestarted": false,
+  "liveToolCalled": false,
+  "executionPerformed": false,
+  "approvalGranted": false,
+  "recordingPerformed": false,
+  "liveDecisionRecorded": false,
+  "fileWrittenOutsideRepoArtifact": false,
+  "externalTransmissionPerformed": false,
+  "recommendedNextLane": "ALPHA9_VERSION_PACKAGE_PUBLICATION_ALIGNMENT_SOURCE",
+  "completedFeatureChain": [
+    "controlled-action runtime report integration",
+    "runtime report tool surface implementation",
+    "plugin-owned access design",
+    "plugin-owned access implementation",
+    "local install verification",
+    "user-facing examples",
+    "demo packet",
+    "presentation handoff",
+    "visual UI wireframe",
+    "UI component design",
+    "UI component implementation plan",
+    "UI component implementation",
+    "UI component demo render",
+    "UI component preview packet"
+  ],
+  "sourceValidationSummary": {
+    "build": "PASS",
+    "validateAlphaCurrent": "PASS",
+    "sourceImplementation": "ready",
+    "smokeCoverage": "present"
+  },
+  "localInstallSummary": {
+    "installedPathVerified": true,
+    "pluginOwnedAccessPromoted": true,
+    "pluginEntryReferenceVerified": true,
+    "manifestReferenceVerified": true,
+    "pluginLoadedAfterRestartDuringVerification": true
+  },
+  "uiPreviewSummary": {
+    "implementationStyle": "typescript_render_spec",
+    "demoRenderValidated": true,
+    "previewPacketReady": true,
+    "liveUiMounted": false
+  },
+  "knownCaveats": [
+    "Direct live CLI invocation proof remains not_available_from_current_cli_surface.",
+    "The next alpha publish must not claim generic OpenClaw plugin-tool invocation through CLI unless that path is later proven."
+  ],
+  "allowedPublicClaims": [
+    "read-only controlled-action runtime report source implemented",
+    "plugin-owned access surface implemented",
+    "local installed plugin file verification completed",
+    "user-facing examples included",
+    "demo packet included",
+    "UI render-model implemented",
+    "UI preview packet included",
+    "safety flags preserve non-execution / non-approval / non-recording posture"
+  ],
+  "disallowedPublicClaims": [
+    "live CLI invocation proven",
+    "generic OpenClaw plugin tool call protocol implemented",
+    "live mounted UI",
+    "execution tools enabled",
+    "approval-gated writes enabled",
+    "business automation actions enabled",
+    "bridge actions enabled"
+  ],
+  "versionAlignmentRequirements": [
+    "package.json",
+    "openclaw.plugin.json",
+    "README.md",
+    "docs/public summary",
+    "dist outputs",
+    "validation scripts",
+    "package staging metadata",
+    "installed local plugin metadata",
+    "ClawHub/public-facing description"
+  ],
+  "noGoBeforePublish": [
+    "do not claim live CLI tool invocation proven",
+    "do not claim generic plugin.tools.call protocol exists",
+    "do not claim live UI mounted",
+    "do not claim action execution available",
+    "do not claim approval grants enabled",
+    "do not claim write actions enabled",
+    "do not claim bridge actions enabled"
+  ]
+}
