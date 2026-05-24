@@ -1,0 +1,138 @@
+import type {
+  ControlledActionRuntimeReportViewModel,
+  RuntimeReportPanelId,
+} from './runtime-report-view-model.js';
+
+const panelOrder: RuntimeReportPanelId[] = [
+  'overview',
+  'active_route',
+  'safety_evidence_chain',
+  'blocked_capabilities',
+  'readiness',
+  'audit_and_review',
+  'recording_metadata',
+  'hard_boundaries',
+  'next_safe_step',
+];
+
+export const controlledActionRuntimeReportDemoViewModel: ControlledActionRuntimeReportViewModel = {
+  reportId: 'demo-controlled-action-runtime-report-001',
+  mode: 'read_only',
+  approvalGranted: false,
+  executionPerformed: false,
+  recordingPerformed: false,
+  liveDecisionRecorded: false,
+  activeRoute: {
+    routeId: 'desktop_write_candidate',
+    routeClass: 'bridge_action_candidate',
+    riskLevel: 'high',
+    status: 'blocked',
+  },
+  safetyEvidenceChain: [
+    { id: 'policy_projection', label: 'Policy Projection', status: 'complete', marker: '✓' },
+    { id: 'dry_run_projection', label: 'Dry-run Projection', status: 'complete', marker: '✓' },
+    { id: 'readiness_matrix', label: 'Readiness Matrix', status: 'complete', marker: '✓' },
+    { id: 'audit_packet', label: 'Audit Packet', status: 'complete', marker: '✓' },
+    { id: 'review_bundle', label: 'Review Bundle', status: 'complete', marker: '✓' },
+    { id: 'recording_metadata', label: 'Recording Metadata', status: 'complete', marker: '✓' },
+  ],
+  blockedCapabilities: [
+    { id: 'execute_action', label: 'Execute Action', status: 'blocked', reason: 'No execution lane active.' },
+    { id: 'write_files', label: 'Write Files', status: 'blocked', reason: 'Write actions disabled.' },
+    { id: 'bridge_actions', label: 'Bridge Actions', status: 'blocked', reason: 'Bridge actions disabled.' },
+    { id: 'direct_source', label: 'direct_source', status: 'off', reason: 'direct_source remains disabled.' },
+    { id: 'automatic_takeover', label: 'Automatic Takeover', status: 'off', reason: 'automatic response takeover remains disabled.' },
+    { id: 'package_publish', label: 'Package Publish', status: 'blocked', reason: 'Package publish not performed.' },
+  ],
+  navigation: panelOrder.map((id) => ({
+    id,
+    label: id,
+    status: id === 'blocked_capabilities' ? 'blocked' : id === 'active_route' ? 'info' : 'complete',
+    marker: id === 'blocked_capabilities' ? '✗' : id === 'active_route' ? 'i' : '✓',
+    description: `Navigate to ${id.replaceAll('_', ' ')} panel.`,
+  })),
+  panels: {
+    overview: {
+      id: 'overview',
+      title: 'Overview',
+      description: 'High-level runtime report summary.',
+      rows: [
+        { id: 'route', label: 'Route', value: 'desktop_write_candidate', status: 'info', marker: 'i' },
+        { id: 'status', label: 'Status', value: 'blocked', status: 'blocked', marker: '✗' },
+      ],
+    },
+    active_route: {
+      id: 'active_route',
+      title: 'Active Route',
+      description: 'Current controlled-action candidate route metadata.',
+      rows: [
+        { id: 'routeId', label: 'Route ID', value: 'desktop_write_candidate', status: 'info', marker: 'i' },
+        { id: 'routeClass', label: 'Route Class', value: 'bridge_action_candidate', status: 'info', marker: 'i' },
+        { id: 'risk', label: 'Risk', value: 'high', status: 'blocked', marker: '✗' },
+        { id: 'status', label: 'Status', value: 'blocked', status: 'blocked', marker: '✗' },
+      ],
+    },
+    safety_evidence_chain: {
+      id: 'safety_evidence_chain',
+      title: 'Safety Evidence Chain',
+      description: 'Read-only evidence projections supporting the blocked route state.',
+      rows: [
+        { id: 'policy_projection', label: 'Policy Projection', status: 'complete', marker: '✓' },
+        { id: 'dry_run_projection', label: 'Dry-run Projection', status: 'complete', marker: '✓' },
+        { id: 'readiness_matrix', label: 'Readiness Matrix', status: 'complete', marker: '✓' },
+        { id: 'audit_packet', label: 'Audit Packet', status: 'complete', marker: '✓' },
+        { id: 'review_bundle', label: 'Review Bundle', status: 'complete', marker: '✓' },
+        { id: 'recording_metadata', label: 'Recording Metadata', status: 'complete', marker: '✓' },
+      ],
+    },
+    blocked_capabilities: {
+      id: 'blocked_capabilities',
+      title: 'Blocked Capabilities',
+      description: 'Capabilities intentionally kept blocked or off.',
+      rows: [
+        { id: 'execute_action', label: 'Execute Action', status: 'blocked', marker: '✗', reason: 'No execution lane active.' },
+        { id: 'write_files', label: 'Write Files', status: 'blocked', marker: '✗', reason: 'Write actions disabled.' },
+        { id: 'bridge_actions', label: 'Bridge Actions', status: 'blocked', marker: '✗', reason: 'Bridge actions disabled.' },
+        { id: 'direct_source', label: 'direct_source', status: 'off', marker: 'OFF', reason: 'direct_source remains disabled.' },
+        { id: 'automatic_takeover', label: 'Automatic Takeover', status: 'off', marker: 'OFF', reason: 'automatic response takeover remains disabled.' },
+        { id: 'package_publish', label: 'Package Publish', status: 'blocked', marker: '✗', reason: 'Package publish not performed.' },
+      ],
+    },
+    readiness: {
+      id: 'readiness',
+      title: 'Readiness',
+      description: 'Execution readiness remains metadata-only in this lane.',
+      rows: [{ id: 'readiness_state', label: 'Readiness', value: 'metadata_only', status: 'warning', marker: '!' }],
+    },
+    audit_and_review: {
+      id: 'audit_and_review',
+      title: 'Audit and Review',
+      description: 'Audit and review evidence bundle summary.',
+      rows: [{ id: 'review_bundle', label: 'Review Bundle', status: 'complete', marker: '✓' }],
+    },
+    recording_metadata: {
+      id: 'recording_metadata',
+      title: 'Recording Metadata',
+      description: 'Recording metadata available without recording authority.',
+      rows: [{ id: 'recording_state', label: 'Recording', value: 'off', status: 'off', marker: 'OFF' }],
+    },
+    hard_boundaries: {
+      id: 'hard_boundaries',
+      title: 'Hard Boundaries',
+      description: 'Non-execution boundaries preserved in the report surface.',
+      rows: [
+        { id: 'execution', label: 'Execution', value: 'false', status: 'off', marker: 'OFF' },
+        { id: 'approval', label: 'Approval', value: 'false', status: 'off', marker: 'OFF' },
+        { id: 'recording', label: 'Recording', value: 'false', status: 'off', marker: 'OFF' },
+      ],
+    },
+    next_safe_step: {
+      id: 'next_safe_step',
+      title: 'Next Safe Step',
+      description: 'Operator guidance for the current blocked route state.',
+      rows: [{ id: 'guidance', label: 'Guidance', value: 'Design / inspect only. No approval. No execution. No live recording.', status: 'info', marker: 'i' }],
+    },
+  },
+  asciiReport: `┌──────────────────────────────────────────────────────────────────────┐\n│ UMG ENVOY RUNTIME REPORT                                            │\n│ Mode: READ-ONLY | Approval: FALSE | Execution: FALSE                │\n└──────────────────────────────────────────────────────────────────────┘\n\nACTIVE ROUTE\n- Route: desktop_write_candidate\n- Class: bridge_action_candidate\n- Risk: high\n- Status: blocked\n\nSAFETY EVIDENCE CHAIN\n✓ Policy Projection\n✓ Dry-run Projection\n✓ Readiness Matrix\n✓ Audit Packet\n✓ Review Bundle\n✓ Recording Metadata\n\nBLOCKED CAPABILITIES\n✗ Execute Action\n✗ Write Files\n✗ Bridge Actions\n✗ direct_source\n✗ Automatic Takeover\n✗ Package Publish\n\nNEXT SAFE STEP\nDesign / inspect only. No approval. No execution. No live recording.`,
+  liveCallProof: 'not_available_from_current_cli_surface',
+};
