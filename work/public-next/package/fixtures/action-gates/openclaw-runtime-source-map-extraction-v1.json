@@ -1,0 +1,78 @@
+{
+  "extractionId": "openclaw-runtime-source-map-extraction-v1",
+  "extractionType": "alpha9_openclaw_runtime_source_map_extraction",
+  "status": "source_map_insufficient_for_runtime_mutation",
+  "openClawRoot": "C:\\Users\\Magne\\AppData\\Roaming\\npm\\node_modules\\openclaw",
+  "runtimeFilesModified": false,
+  "protocolImplemented": false,
+  "liveToolCalled": false,
+  "blockedReason": "OpenClaw bundled runtime source map did not isolate gateway/RPC/plugin-tool invocation/read-only enforcement targets with enough confidence for safe mutation.",
+  "executionPerformed": false,
+  "approvalGranted": false,
+  "recordingPerformed": false,
+  "fileWritten": false,
+  "externalTransmissionPerformed": false,
+  "packagePublished": false,
+  "recommendedNextLane": "ALPHA9_OPENCLAW_RUNTIME_EXTERNAL_SOURCE_REQUEST_SOURCE",
+  "runtimeSourceMapTable": [
+    {
+      "bundledFile": "openclaw.mjs",
+      "sourceMapOriginal": "n/a",
+      "role": "CLI entry/gateway command",
+      "confidence": "medium",
+      "notes": "confirms gateway command surface but not final RPC insertion point"
+    },
+    {
+      "bundledFile": "dist/routes-B2QX_8fI.js",
+      "sourceMapOriginal": "mapped sources present",
+      "role": "route/RPC handlers",
+      "confidence": "medium",
+      "notes": "known gateway-callable methods visible by pattern, plugin-tool route still unclear"
+    },
+    {
+      "bundledFile": "dist/manifest-registry-B5JNQdOM.js",
+      "sourceMapOriginal": "mapped sources present",
+      "role": "plugin manifest registry",
+      "confidence": "high",
+      "notes": "confirmed resolver logic for global plugin roots"
+    },
+    {
+      "bundledFile": "dist/plugins-cli-Cr_hFfbg.js",
+      "sourceMapOriginal": "mapped sources present",
+      "role": "plugin CLI commands",
+      "confidence": "medium",
+      "notes": "useful for plugin/source display, not enough for runtime invocation hook"
+    },
+    {
+      "bundledFile": "dist/utils-CS0Ikux6.js",
+      "sourceMapOriginal": "mapped sources present",
+      "role": "config/global path helpers",
+      "confidence": "high",
+      "notes": "confirmed config dir and extension root resolution"
+    }
+  ],
+  "gatewayDispatchTarget": {
+    "file": "openclaw.mjs and dist/routes-B2QX_8fI.js",
+    "confidence": "medium"
+  },
+  "rpcRegistryTarget": {
+    "file": "dist/routes-B2QX_8fI.js",
+    "confidence": "medium"
+  },
+  "pluginRegistryTarget": {
+    "file": "dist/manifest-registry-B5JNQdOM.js",
+    "confidence": "high"
+  },
+  "toolInvocationTarget": {
+    "file": "dist/routes-B2QX_8fI.js",
+    "confidence": "low"
+  },
+  "readOnlyEnforcementTarget": {
+    "file": "likely dist/routes-B2QX_8fI.js or nearby dispatch helper",
+    "confidence": "low"
+  },
+  "goNoGoDecision": {
+    "decision": "source_map_insufficient_for_runtime_mutation",
+    "reason": "gateway dispatch and invocation/enforcement targets remain below safe confidence threshold"
+  }
+}
