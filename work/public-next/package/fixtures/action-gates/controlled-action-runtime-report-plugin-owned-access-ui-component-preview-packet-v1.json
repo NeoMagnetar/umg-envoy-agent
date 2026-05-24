@@ -1,0 +1,59 @@
+{
+  "previewPacketId": "controlled-action-runtime-report-plugin-owned-access-ui-component-preview-packet-v1",
+  "previewPacketType": "alpha9_controlled_action_runtime_report_plugin_owned_access_ui_component_preview_packet",
+  "status": "preview_packet_ready",
+  "baselineCommit": "84f84392c89c555d13e5fc2eb7aa8a9bda4ef873",
+  "targetPluginId": "umg-envoy-agent",
+  "topLevelComponent": "ControlledActionRuntimeReportDashboard",
+  "implementationStyle": "typescript_render_spec",
+  "liveCallProof": "not_available_from_current_cli_surface",
+  "previewPacketPrepared": true,
+  "liveUiMounted": false,
+  "runtimeModified": false,
+  "installedPluginModified": false,
+  "gatewayRestarted": false,
+  "liveToolCalled": false,
+  "packagePublished": false,
+  "executionPerformed": false,
+  "approvalGranted": false,
+  "recordingPerformed": false,
+  "liveDecisionRecorded": false,
+  "fileWrittenOutsideRepoArtifact": false,
+  "externalTransmissionPerformed": false,
+  "recommendedNextLane": "ALPHA9_CONTROLLED_ACTION_RUNTIME_REPORT_RELEASE_READINESS_SOURCE",
+  "componentPreviewTree": "ControlledActionRuntimeReportDashboard -> RuntimeReportHeader -> RuntimeReportStatusStrip -> RuntimeReportNavigation -> RuntimeReportMainGrid -> ActiveRouteCard/SafetyEvidenceChainCard/BlockedCapabilitiesCard/NextSafeStepCard -> RuntimeReportPanelDrawer -> RuntimeReportAsciiFallback -> RuntimeReportBoundaryFooter",
+  "previewModes": [
+    "full",
+    "compact",
+    "ascii_fallback"
+  ],
+  "previewPanels": [
+    "blocked_capabilities",
+    "next_safe_step"
+  ],
+  "asciiFallbackPreview": "┌──────────────────────────────────────────────────────────────────────┐\n│ UMG ENVOY RUNTIME REPORT                                            │\n│ Mode: READ-ONLY | Approval: FALSE | Execution: FALSE                │\n└──────────────────────────────────────────────────────────────────────┘\n\nACTIVE ROUTE\n- Route: desktop_write_candidate\n- Class: bridge_action_candidate\n- Risk: high\n- Status: blocked\n\nSAFETY EVIDENCE CHAIN\n✓ Policy Projection\n✓ Dry-run Projection\n✓ Readiness Matrix\n✓ Audit Packet\n✓ Review Bundle\n✓ Recording Metadata\n\nBLOCKED CAPABILITIES\n✗ Execute Action\n✗ Write Files\n✗ Bridge Actions\n✗ direct_source\n✗ Automatic Takeover\n✗ Package Publish\n\nNEXT SAFE STEP\nDesign / inspect only. No approval. No execution. No live recording.",
+  "safetyFlagPreview": {
+    "executionPerformed": false,
+    "approvalGranted": false,
+    "recordingPerformed": false,
+    "liveDecisionRecorded": false
+  },
+  "accessibilityPreview": [
+    "text + marker status communication",
+    "no color-only reliance",
+    "blocked/off states remain screen-reader readable",
+    "ASCII fallback preserved for terminal/log contexts"
+  ],
+  "releaseReadinessNotes": [
+    "source-level UI model exists",
+    "deterministic demo render exists",
+    "no frontend runtime dependency was added",
+    "no runtime or installed-plugin mutation occurred in this lane",
+    "preview is suitable for review, not for claiming live UI exposure"
+  ],
+  "liveProofCaveats": [
+    "liveCallProof remains not_available_from_current_cli_surface",
+    "do not claim live OpenClaw CLI invocation proof",
+    "do not claim mounted OpenClaw UI proof from this preview packet"
+  ]
+}
