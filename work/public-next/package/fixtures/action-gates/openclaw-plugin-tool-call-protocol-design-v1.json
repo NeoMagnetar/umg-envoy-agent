@@ -1,0 +1,149 @@
+{
+  "designId": "openclaw-plugin-tool-call-protocol-design-v1",
+  "designType": "alpha9_openclaw_plugin_tool_call_protocol_design",
+  "status": "design_ready",
+  "targetPluginId": "umg-envoy-agent",
+  "targetToolName": "umg_envoy_controlled_action_runtime_report",
+  "sourceToolCommit": "0b4442125ebe3a9d4e818c0bc92ec4d8ca6d0743",
+  "priorResearchCommit": "1760d444a12e09393e156a532e4f64043756a7e0",
+  "priorEscalationCommit": "5414646c67b5a85a0befbe25c4fda888ccb1947e",
+  "protocolImplemented": false,
+  "liveToolCalled": false,
+  "executionPerformed": false,
+  "approvalGranted": false,
+  "recordingPerformed": false,
+  "fileWritten": false,
+  "externalTransmissionPerformed": false,
+  "packagePublished": false,
+  "recommendedNextLane": "ALPHA9_OPENCLAW_PLUGIN_TOOL_CALL_PROTOCOL_IMPLEMENTATION_PLAN_SOURCE",
+  "proposedMethods": [
+    "plugin.tools.list",
+    "plugin.tools.inspect",
+    "plugin.tools.call"
+  ],
+  "requestShapes": {
+    "plugin.tools.list": {
+      "id": "req-001",
+      "method": "plugin.tools.list",
+      "params": {
+        "pluginId": "umg-envoy-agent",
+        "includeMetadata": true
+      }
+    },
+    "plugin.tools.inspect": {
+      "id": "req-002",
+      "method": "plugin.tools.inspect",
+      "params": {
+        "pluginId": "umg-envoy-agent",
+        "toolName": "umg_envoy_controlled_action_runtime_report"
+      }
+    },
+    "plugin.tools.call": {
+      "id": "req-003",
+      "method": "plugin.tools.call",
+      "params": {
+        "pluginId": "umg-envoy-agent",
+        "toolName": "umg_envoy_controlled_action_runtime_report",
+        "input": {
+          "reportMode": "navigation_only",
+          "includeAscii": false,
+          "includeNavigation": true,
+          "includeStructuredReport": false
+        }
+      }
+    }
+  },
+  "responseShapes": {
+    "plugin.tools.list": {
+      "ok": true,
+      "result": {
+        "pluginId": "umg-envoy-agent",
+        "pluginVersion": "0.3.0-alpha.12",
+        "tools": []
+      }
+    },
+    "plugin.tools.inspect": {
+      "ok": true,
+      "result": {
+        "pluginId": "umg-envoy-agent",
+        "toolName": "umg_envoy_controlled_action_runtime_report",
+        "mode": "read_only_report_preview",
+        "readOnly": true
+      }
+    },
+    "plugin.tools.call": {
+      "ok": true,
+      "result": {
+        "toolName": "umg_envoy_controlled_action_runtime_report",
+        "toolMode": "read_only_report_preview",
+        "runtimeReportReturned": true,
+        "executionPerformed": false,
+        "approvalGranted": false,
+        "recordingPerformed": false,
+        "fileWritten": false,
+        "externalTransmissionPerformed": false,
+        "packagePublished": false
+      }
+    }
+  },
+  "errorCodes": [
+    "plugin_not_found",
+    "tool_not_found",
+    "invalid_tool_input",
+    "invalid_report_mode",
+    "invalid_panel",
+    "tool_not_read_only",
+    "tool_call_not_supported",
+    "tool_protocol_disabled",
+    "permission_denied",
+    "internal_error"
+  ],
+  "safetyMetadata": {
+    "readOnly": true,
+    "actionCapable": false,
+    "requiresApproval": false,
+    "mayWriteFiles": false,
+    "mayExecuteCommands": false,
+    "mayUseBridgeActions": false,
+    "mayTransmitExternally": false,
+    "mayMutateBlockLibrary": false,
+    "executionPerformed": false,
+    "approvalGranted": false,
+    "recordingPerformed": false,
+    "liveDecisionRecorded": false,
+    "fileWritten": false,
+    "externalTransmissionPerformed": false,
+    "packagePublished": false,
+    "directSourceEnabled": false,
+    "automaticResponseTakeoverEnabled": false
+  },
+  "cliWrappers": [
+    "openclaw plugin-tools list --plugin umg-envoy-agent --json",
+    "openclaw plugin-tools inspect --plugin umg-envoy-agent --tool umg_envoy_controlled_action_runtime_report --json",
+    "openclaw plugin-tools call --plugin umg-envoy-agent --tool umg_envoy_controlled_action_runtime_report --input-json '{...}'",
+    "openclaw gateway call plugin.tools.list --json '{...}'",
+    "openclaw gateway call plugin.tools.inspect --json '{...}'",
+    "openclaw gateway call plugin.tools.call --json '{...}'"
+  ],
+  "blockedOperations": [
+    { "operation": "execute_action", "blockedInThisProtocol": true, "requiresFutureDesign": true, "requiresExplicitApproval": true },
+    { "operation": "blocked_grant_approval", "blockedInThisProtocol": true, "requiresFutureDesign": true, "requiresExplicitApproval": true },
+    { "operation": "record_live_decision", "blockedInThisProtocol": true, "requiresFutureDesign": true, "requiresExplicitApproval": true },
+    { "operation": "perform_write_action", "blockedInThisProtocol": true, "requiresFutureDesign": true, "requiresExplicitApproval": true },
+    { "operation": "enable_bridge_action", "blockedInThisProtocol": true, "requiresFutureDesign": true, "requiresExplicitApproval": true },
+    { "operation": "enable_direct_source", "blockedInThisProtocol": true, "requiresFutureDesign": true, "requiresExplicitApproval": true },
+    { "operation": "enable_automatic_response_takeover", "blockedInThisProtocol": true, "requiresFutureDesign": true, "requiresExplicitApproval": true },
+    { "operation": "mutate_block_library", "blockedInThisProtocol": true, "requiresFutureDesign": true, "requiresExplicitApproval": true },
+    { "operation": "touch_resleever", "blockedInThisProtocol": true, "requiresFutureDesign": true, "requiresExplicitApproval": true },
+    { "operation": "publish_package", "blockedInThisProtocol": true, "requiresFutureDesign": true, "requiresExplicitApproval": true },
+    { "operation": "restart_openclaw_from_tool_call", "blockedInThisProtocol": true, "requiresFutureDesign": true, "requiresExplicitApproval": true },
+    { "operation": "external_transmission", "blockedInThisProtocol": true, "requiresFutureDesign": true, "requiresExplicitApproval": true }
+  ],
+  "futureImplementationNotes": [
+    "implement list, inspect, and call as separate explicit methods",
+    "restrict initial call support to read-only tools only",
+    "return structured JSON with explicit safety metadata",
+    "return safe validation errors without side effects",
+    "do not infer action-capable permissions from plugin load state"
+  ]
+}
