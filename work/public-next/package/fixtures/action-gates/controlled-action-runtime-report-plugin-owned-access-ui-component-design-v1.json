@@ -1,0 +1,145 @@
+{
+  "componentDesignId": "controlled-action-runtime-report-plugin-owned-access-ui-component-design-v1",
+  "componentDesignType": "alpha9_controlled_action_runtime_report_plugin_owned_access_ui_component_design",
+  "status": "component_design_ready",
+  "baselineCommit": "4684a5e5558bd5cd9b2cabd2b030809cb9b706f7",
+  "targetPluginId": "umg-envoy-agent",
+  "targetAccessSurface": "plugin_owned_runtime_report_access",
+  "topLevelComponent": "ControlledActionRuntimeReportDashboard",
+  "liveCallProof": "not_available_from_current_cli_surface",
+  "componentDesignPrepared": true,
+  "componentImplemented": false,
+  "runtimeModified": false,
+  "installedPluginModified": false,
+  "gatewayRestarted": false,
+  "liveToolCalled": false,
+  "packagePublished": false,
+  "executionPerformed": false,
+  "approvalGranted": false,
+  "recordingPerformed": false,
+  "liveDecisionRecorded": false,
+  "fileWrittenOutsideRepoArtifact": false,
+  "externalTransmissionPerformed": false,
+  "recommendedNextLane": "ALPHA9_CONTROLLED_ACTION_RUNTIME_REPORT_PLUGIN_OWNED_ACCESS_UI_COMPONENT_IMPLEMENTATION_PLAN_SOURCE",
+  "componentHierarchy": [
+    "ControlledActionRuntimeReportDashboard",
+    "RuntimeReportHeader",
+    "RuntimeReportStatusStrip",
+    "RuntimeReportNavigation",
+    "RuntimeReportMainGrid",
+    "ActiveRouteCard",
+    "SafetyEvidenceChainCard",
+    "BlockedCapabilitiesCard",
+    "NextSafeStepCard",
+    "RuntimeReportPanelDrawer",
+    "ReadinessPanel",
+    "AuditAndReviewPanel",
+    "RecordingMetadataPanel",
+    "HardBoundariesPanel",
+    "RuntimeReportAsciiFallback",
+    "RuntimeReportBoundaryFooter"
+  ],
+  "layoutRegions": [
+    "header",
+    "status_strip",
+    "navigation",
+    "active_route",
+    "safety_evidence_chain",
+    "blocked_capabilities",
+    "next_safe_step",
+    "panel_drawer",
+    "ascii_fallback",
+    "boundary_footer"
+  ],
+  "propsModel": {
+    "component": "ControlledActionRuntimeReportDashboardProps",
+    "fields": [
+      "report",
+      "selectedPanel?",
+      "displayMode?",
+      "showAsciiFallback?",
+      "onPanelSelect?"
+    ]
+  },
+  "viewModelShape": {
+    "component": "ControlledActionRuntimeReportViewModel",
+    "fields": [
+      "reportId",
+      "mode",
+      "approvalGranted",
+      "executionPerformed",
+      "recordingPerformed",
+      "liveDecisionRecorded",
+      "activeRoute",
+      "safetyEvidenceChain",
+      "blockedCapabilities",
+      "navigation",
+      "panels",
+      "asciiReport?",
+      "liveCallProof"
+    ]
+  },
+  "panelComponents": [
+    "OverviewPanel",
+    "ActiveRoutePanel",
+    "SafetyEvidenceChainPanel",
+    "BlockedCapabilitiesPanel",
+    "ReadinessPanel",
+    "AuditAndReviewPanel",
+    "RecordingMetadataPanel",
+    "HardBoundariesPanel",
+    "NextSafeStepPanel"
+  ],
+  "statusColorSemantics": [
+    "complete/green",
+    "warning/yellow",
+    "blocked/red",
+    "off/gray",
+    "active_route/blue",
+    "policy_governance/purple",
+    "audit_review_evidence/orange"
+  ],
+  "compactModeLayout": [
+    "Header",
+    "Status strip",
+    "Accordion: Active Route",
+    "Accordion: Safety Evidence Chain",
+    "Accordion: Blocked Capabilities",
+    "Accordion: Next Safe Step",
+    "Accordion: Hard Boundaries",
+    "ASCII fallback toggle"
+  ],
+  "accessibilityNotes": [
+    "Do not rely on color alone.",
+    "Every status must include text label and icon/marker.",
+    "Blocked/off states must be readable by screen readers.",
+    "ASCII fallback should remain available for terminal/log contexts.",
+    "Panel navigation should be keyboard-addressable in future UI."
+  ],
+  "futureImplementationFiles": [
+    "src/ui/ControlledActionRuntimeReportDashboard.tsx",
+    "src/ui/runtime-report-view-model.ts",
+    "src/ui/runtime-report-components.tsx",
+    "src/ui/runtime-report-status-model.ts",
+    "docs/ALPHA9-CONTROLLED-ACTION-RUNTIME-REPORT-PLUGIN-OWNED-ACCESS-UI-COMPONENT-IMPLEMENTATION.md",
+    "scripts/alpha9-controlled-action-runtime-report-plugin-owned-access-ui-component-implementation-smoke.mjs"
+  ],
+  "safetyBoundaries": [
+    "no UI implementation",
+    "no runtime mutation",
+    "no installed plugin changes",
+    "no gateway restart",
+    "no live tool call",
+    "no execution",
+    "no approval",
+    "no live recording",
+    "no writes outside repo artifact",
+    "no external transmission",
+    "no package publish"
+  ],
+  "liveProofCaveats": [
+    "component design is based on source-validated and locally installed plugin-owned access behavior",
+    "direct live CLI invocation proof remains not_available_from_current_cli_surface",
+    "the design must not claim that live OpenClaw CLI invocation has been proven"
+  ]
+}
