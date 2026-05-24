@@ -1,0 +1,62 @@
+{
+  "reviewId": "openclaw-runtime-maintainer-question-user-review-v1",
+  "reviewType": "alpha9_openclaw_runtime_maintainer_question_user_review",
+  "status": "awaiting_user_review",
+  "baselineCommit": "67b8e608588ec2e6d067cb8f72f6903b5eb5fb66",
+  "targetPluginId": "umg-envoy-agent",
+  "targetToolName": "umg_envoy_controlled_action_runtime_report",
+  "draftReady": true,
+  "userReviewed": false,
+  "userApproved": false,
+  "externalContactPerformed": false,
+  "issueCreated": false,
+  "runtimeModified": false,
+  "protocolImplemented": false,
+  "liveToolCalled": false,
+  "executionPerformed": false,
+  "approvalGranted": false,
+  "recordingPerformed": false,
+  "fileWritten": false,
+  "externalTransmissionPerformed": false,
+  "packagePublished": false,
+  "recommendedNextLane": "ALPHA9_OPENCLAW_RUNTIME_MAINTAINER_QUESTION_SEND_APPROVAL_SOURCE",
+  "reviewChoices": [
+    "approve_as_written",
+    "approve_with_edits",
+    "needs_more_context",
+    "defer_external_contact",
+    "reject_question"
+  ],
+  "copyReadyQuestion": "Hello — we are trying to verify a read-only OpenClaw plugin tool noninteractively.\n\nPlugin:\n`umg-envoy-agent`\n\nTool:\n`umg_envoy_controlled_action_runtime_report`\n\nThe plugin is installed and loaded, and the gateway is running, but we cannot find a documented noninteractive way to list or invoke loaded plugin tools from the OpenClaw CLI/runtime surface.\n\nWhat is the supported way to:\n1. list loaded plugin tools\n2. inspect a plugin tool\n3. invoke a read-only plugin tool with JSON input\n4. capture JSON output\n\nIf available, please also provide:\n- command name or RPC method\n- request envelope shape\n- example payload\n- example response\n- auth/session requirements\n- source file/module names\n- whether the path is public/supported or internal/unsupported",
+  "technicalFacts": [
+    "target plugin: umg-envoy-agent",
+    "target tool: umg_envoy_controlled_action_runtime_report",
+    "source tool commit: 0b4442125ebe3a9d4e818c0bc92ec4d8ca6d0743",
+    "active installed plugin path: C:\\Users\\Magne\\.openclaw\\extensions\\umg-envoy-agent",
+    "gateway endpoint: ws://127.0.0.1:18789",
+    "gateway process: openclaw.mjs gateway",
+    "plugin is installed and loaded",
+    "blocker is runtime protocol discoverability, not plugin source implementation"
+  ],
+  "desiredResponseFields": [
+    "command name or RPC method",
+    "request envelope shape",
+    "example payload",
+    "example response",
+    "auth/session requirements",
+    "source file/module names",
+    "whether the path is public/supported or internal/unsupported"
+  ],
+  "safetyConstraints": [
+    "no external contact performed",
+    "no issue created",
+    "no runtime mutation",
+    "no protocol implemented",
+    "no live tool called",
+    "no execution",
+    "no approval",
+    "no live recording",
+    "no writes outside repo artifact",
+    "no package publish"
+  ]
+}
