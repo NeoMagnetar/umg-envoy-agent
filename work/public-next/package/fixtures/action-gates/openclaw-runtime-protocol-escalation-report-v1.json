@@ -1,0 +1,72 @@
+{
+  "reportId": "openclaw-runtime-protocol-escalation-report-v1",
+  "reportType": "alpha9_openclaw_runtime_protocol_escalation_report",
+  "status": "protocol_escalation_ready",
+  "sourceToolCommit": "0b4442125ebe3a9d4e818c0bc92ec4d8ca6d0743",
+  "protocolResearchCommit": "1760d444a12e09393e156a532e4f64043756a7e0",
+  "targetToolName": "umg_envoy_controlled_action_runtime_report",
+  "activeInstalledPluginPath": "C:\\Users\\Magne\\.openclaw\\extensions\\umg-envoy-agent",
+  "gatewayRunning": true,
+  "pluginLoaded": true,
+  "toolFoundInLiveRuntime": false,
+  "toolCallableInLiveRuntime": false,
+  "blockerType": "protocol",
+  "blockedReason": "No supported documented noninteractive plugin-tool discovery/invocation path was proven from the installed OpenClaw CLI/runtime surface.",
+  "recommendedNextLane": "ALPHA9_OPENCLAW_PLUGIN_TOOL_CALL_PROTOCOL_DESIGN_SOURCE",
+  "executionPerformed": false,
+  "approvalGranted": false,
+  "recordingPerformed": false,
+  "liveDecisionRecorded": false,
+  "fileWritten": false,
+  "externalTransmissionPerformed": false,
+  "packagePublished": false,
+  "directSourceEnabled": false,
+  "automaticResponseTakeoverEnabled": false,
+  "provenFacts": [
+    "source tool exists",
+    "source validation passes",
+    "active installed path resolved",
+    "active installed path promoted",
+    "gateway running",
+    "plugin loaded"
+  ],
+  "unprovenItems": [
+    "live runtime tool list containing umg_envoy_controlled_action_runtime_report",
+    "live invocation of umg_envoy_controlled_action_runtime_report",
+    "navigation_only live probe",
+    "ascii_only live probe",
+    "structured_only live probe",
+    "panel live probes",
+    "invalid panel live probe"
+  ],
+  "resolutionOptions": [
+    "ask or inspect OpenClaw supported protocol",
+    "add a dedicated OpenClaw plugin tool call protocol",
+    "add Envoy self-test tool surface",
+    "stop at source-level verification temporarily"
+  ],
+  "requiredFutureProtocolCapabilities": [
+    "list loaded plugins",
+    "list loaded plugin tools",
+    "identify tool namespace and plugin owner",
+    "call read-only plugin tool by name",
+    "pass JSON input",
+    "receive JSON output",
+    "return validation errors safely",
+    "expose no execution authority by default",
+    "distinguish read-only tools from action-capable tools"
+  ],
+  "boundaries": [
+    "no execution",
+    "no approval",
+    "no live recording",
+    "no write actions",
+    "no bridge enablement",
+    "no direct_source enablement",
+    "no automatic takeover",
+    "no package publish",
+    "no UMG-Block-Library mutation",
+    "no Resleever touch",
+    "no MCP changes"
+  ]
+}
