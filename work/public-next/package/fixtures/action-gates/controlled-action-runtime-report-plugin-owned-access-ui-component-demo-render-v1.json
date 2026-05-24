@@ -1,0 +1,75 @@
+{
+  "demoRenderId": "controlled-action-runtime-report-plugin-owned-access-ui-component-demo-render-v1",
+  "demoRenderType": "alpha9_controlled_action_runtime_report_plugin_owned_access_ui_component_demo_render",
+  "status": "demo_render_ready",
+  "baselineCommit": "f5cbabe44dc78c19d7d53d3cf1bfd1b7c15e0e5f",
+  "targetPluginId": "umg-envoy-agent",
+  "topLevelComponent": "ControlledActionRuntimeReportDashboard",
+  "implementationStyle": "typescript_render_spec",
+  "liveCallProof": "not_available_from_current_cli_surface",
+  "demoRenderPrepared": true,
+  "liveUiMounted": false,
+  "runtimeModified": false,
+  "installedPluginModified": false,
+  "gatewayRestarted": false,
+  "liveToolCalled": false,
+  "packagePublished": false,
+  "executionPerformed": false,
+  "approvalGranted": false,
+  "recordingPerformed": false,
+  "liveDecisionRecorded": false,
+  "fileWrittenOutsideRepoArtifact": false,
+  "externalTransmissionPerformed": false,
+  "recommendedNextLane": "ALPHA9_CONTROLLED_ACTION_RUNTIME_REPORT_PLUGIN_OWNED_ACCESS_UI_COMPONENT_PREVIEW_PACKET_SOURCE",
+  "renderModes": [
+    "full",
+    "compact",
+    "ascii_fallback"
+  ],
+  "selectedPanelDemos": [
+    "blocked_capabilities",
+    "next_safe_step"
+  ],
+  "requiredRegions": [
+    "header",
+    "status_strip",
+    "navigation",
+    "active_route",
+    "safety_evidence_chain",
+    "blocked_capabilities",
+    "next_safe_step",
+    "panel_drawer",
+    "ascii_fallback",
+    "boundary_footer"
+  ],
+  "requiredComponentDescriptors": [
+    "RuntimeReportHeader",
+    "RuntimeReportStatusStrip",
+    "RuntimeReportNavigation",
+    "RuntimeReportMainGrid",
+    "ActiveRouteCard",
+    "SafetyEvidenceChainCard",
+    "BlockedCapabilitiesCard",
+    "NextSafeStepCard",
+    "RuntimeReportPanelDrawer",
+    "RuntimeReportAsciiFallback",
+    "RuntimeReportBoundaryFooter"
+  ],
+  "demoRoute": {
+    "routeId": "desktop_write_candidate",
+    "routeClass": "bridge_action_candidate",
+    "riskLevel": "high",
+    "status": "blocked"
+  },
+  "safetyFlags": {
+    "executionPerformed": false,
+    "approvalGranted": false,
+    "recordingPerformed": false,
+    "liveDecisionRecorded": false
+  },
+  "liveProofCaveats": [
+    "demo render validates deterministic source-level render-model output only",
+    "liveCallProof remains not_available_from_current_cli_surface",
+    "do not claim live UI mount or live CLI invocation proof"
+  ]
+}
