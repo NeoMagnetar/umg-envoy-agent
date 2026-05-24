@@ -1,0 +1,122 @@
+{
+  "planId": "controlled-action-runtime-report-plugin-owned-access-implementation-plan-v1",
+  "planType": "alpha9_controlled_action_runtime_report_plugin_owned_access_implementation_plan",
+  "status": "planning_ready",
+  "baselineCommit": "1f5968c5382bd8502f331ef501d29ad4f7112108",
+  "targetPluginId": "umg-envoy-agent",
+  "targetToolName": "umg_envoy_controlled_action_runtime_report",
+  "selectedAccessStrategy": "plugin_owned_gateway_method_first",
+  "proposedGatewayMethod": "umg.envoy.controlledActionRuntimeReport",
+  "proposedCliCommand": "openclaw umg-envoy runtime-report",
+  "implementationStarted": false,
+  "gatewayMethodImplemented": false,
+  "cliCommandImplemented": false,
+  "runtimeModified": false,
+  "protocolImplemented": false,
+  "liveToolCalled": false,
+  "executionPerformed": false,
+  "approvalGranted": false,
+  "recordingPerformed": false,
+  "fileWritten": false,
+  "externalTransmissionPerformed": false,
+  "packagePublished": false,
+  "recommendedNextLane": "ALPHA9_CONTROLLED_ACTION_RUNTIME_REPORT_PLUGIN_OWNED_ACCESS_IMPLEMENTATION_SOURCE",
+  "implementationStages": [
+    "Stage 1: implement Envoy-owned Gateway method umg.envoy.controlledActionRuntimeReport",
+    "Stage 2: verify method through openclaw gateway call if available",
+    "Stage 3: add plugin-owned CLI wrapper only if Gateway method works",
+    "Stage 4: create user-facing examples"
+  ],
+  "futureGatewayMethodShape": {
+    "method": "umg.envoy.controlledActionRuntimeReport",
+    "request": {
+      "id": "req-001",
+      "method": "umg.envoy.controlledActionRuntimeReport",
+      "params": {
+        "reportMode": "ascii_only",
+        "panel": null,
+        "includeAscii": true,
+        "includeNavigation": false,
+        "includeStructuredReport": false
+      }
+    },
+    "response": {
+      "toolName": "umg_envoy_controlled_action_runtime_report",
+      "toolMode": "read_only_report_preview",
+      "runtimeReportOnly": true,
+      "executionPerformed": false,
+      "approvalGranted": false,
+      "recordingPerformed": false,
+      "liveDecisionRecorded": false,
+      "fileWritten": false,
+      "externalTransmissionPerformed": false,
+      "packagePublished": false
+    }
+  },
+  "futureCliCommandShape": {
+    "command": "openclaw umg-envoy runtime-report",
+    "stagedAfterGatewayMethod": true
+  },
+  "futureFilesToModify": [
+    "src/plugin-entry.ts",
+    "src/controlled-action-runtime-report-tool-surface.ts",
+    "src/controlled-action-runtime-report-integration.ts",
+    "docs/ALPHA9-CONTROLLED-ACTION-RUNTIME-REPORT-PLUGIN-OWNED-ACCESS-IMPLEMENTATION.md",
+    "scripts/alpha9-controlled-action-runtime-report-plugin-owned-access-implementation-smoke.mjs",
+    "dist/plugin-entry.js",
+    "dist/plugin-entry.d.ts",
+    "openclaw.plugin.json only if method metadata must be declared",
+    "src/controlled-action-runtime-report-plugin-owned-access.ts if needed",
+    "dist/controlled-action-runtime-report-plugin-owned-access.js if needed",
+    "dist/controlled-action-runtime-report-plugin-owned-access.d.ts if needed"
+  ],
+  "futureValidationRequirements": [
+    "Gateway method is registered or exposed as Envoy-owned read-only method",
+    "summary mode works",
+    "full mode works",
+    "ascii_only mode works",
+    "structured_only mode works",
+    "navigation_only mode works",
+    "panel mode works for every supported panel",
+    "invalid panel returns safe validation error",
+    "missing input returns safe incomplete/report-preview metadata",
+    "executionPerformed=false",
+    "approvalGranted=false",
+    "recordingPerformed=false",
+    "liveDecisionRecorded=false",
+    "fileWritten=false",
+    "externalTransmissionPerformed=false",
+    "packagePublished=false"
+  ],
+  "futureInstallVerifyPlan": [
+    "build source",
+    "back up installed files first",
+    "promote only required dist files to C:\\Users\\Magne\\.openclaw\\extensions\\umg-envoy-agent",
+    "restart OpenClaw gateway",
+    "call Envoy-owned Gateway method",
+    "verify read-only outputs"
+  ],
+  "deferredWork": [
+    "generic plugin.tools.call protocol",
+    "OpenClaw core runtime patching",
+    "action-capable tool invocation",
+    "approval protocol",
+    "live recording",
+    "write actions",
+    "bridge actions",
+    "package publish",
+    "ClawHub publish"
+  ],
+  "readOnlyGuarantees": [
+    "no execution",
+    "no approval",
+    "no live recording",
+    "no live decision recording",
+    "no file writes from the runtime report surface",
+    "no external transmission",
+    "no package publish",
+    "no bridge actions",
+    "no direct_source",
+    "no automatic takeover"
+  ]
+}
