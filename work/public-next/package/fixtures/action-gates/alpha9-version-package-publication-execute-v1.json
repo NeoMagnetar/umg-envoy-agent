@@ -1,0 +1,57 @@
+{
+  "executeId": "alpha9-version-package-publication-execute-v1",
+  "executeType": "alpha9_version_package_publication_execute",
+  "status": "package_published",
+  "baselineCommit": "8d2d6d5ea0655cd463830af6f9a7ca6c451f1023",
+  "packageName": "umg-envoy-agent",
+  "packageVersion": "0.3.0-alpha.13",
+  "artifactPath": "C:\\.openclaw\\workspace\\umg-envoy-agent-publish-stage\\umg-envoy-agent-0.3.0-alpha.13\\umg-envoy-agent-0.3.0-alpha.13.tgz",
+  "artifactSha256": "C659660742CB0DB82524C2DCEADE4C759CE2954D992743728474CB873624D502",
+  "artifactHashVerifiedBeforePublish": true,
+  "userApprovedPublish": true,
+  "npmAuthenticated": true,
+  "npmPublishExecuted": true,
+  "npmPublishSucceeded": true,
+  "npmRegistryVersionVerified": true,
+  "packagePublished": true,
+  "clawHubPublished": false,
+  "clawHubStatus": "not_verified_or_separate_flow",
+  "releaseTagCreated": false,
+  "githubReleaseCreated": false,
+  "runtimeModified": false,
+  "installedPluginModified": false,
+  "gatewayRestarted": false,
+  "liveToolCalled": false,
+  "executionPerformed": false,
+  "approvalGranted": false,
+  "recordingPerformed": false,
+  "liveDecisionRecorded": false,
+  "externalTransmissionPerformed": true,
+  "externalTransmissionType": "npm_publish",
+  "knownCaveat": "liveCallProof=not_available_from_current_cli_surface",
+  "recommendedNextLane": "ALPHA9_VERSION_PACKAGE_PUBLICATION_POST_PUBLISH_VERIFY_SOURCE",
+  "publishCommand": "npm publish C:\\.openclaw\\workspace\\umg-envoy-agent-publish-stage\\umg-envoy-agent-0.3.0-alpha.13\\umg-envoy-agent-0.3.0-alpha.13.tgz --access public",
+  "publishOutputSummary": "npm publish executed successfully for umg-envoy-agent@0.3.0-alpha.13",
+  "registryVerification": {
+    "version": "0.3.0-alpha.13",
+    "verified": true
+  },
+  "clawHubStatusDetail": {
+    "separateCommandFound": false,
+    "executed": false
+  },
+  "knownCaveats": [
+    "Direct live CLI invocation proof remains not_available_from_current_cli_surface."
+  ],
+  "boundaries": [
+    "no release tag",
+    "no GitHub release",
+    "no runtime mutation",
+    "no installed plugin changes",
+    "no gateway restart",
+    "no live tool call",
+    "no execution",
+    "no approval",
+    "no live recording"
+  ]
+}
