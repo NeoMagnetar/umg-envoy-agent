@@ -1,42 +1,34 @@
 # UMG Envoy Agent 0.3.0-alpha.13
 
-UMG Envoy Agent runs Universal Modular Generation as a modular cognitive architectural runtime inside OpenClaw. This alpha adds read-only controlled-action runtime report visibility, plugin-owned access, local install verification artifacts, user-facing examples, demo/preview packets, and a TypeScript UI render-model for inspecting active routes, safety evidence, blocked capabilities, and next safe steps.
+UMG Envoy Agent runs Universal Modular Generation as a modular cognitive architectural runtime inside OpenClaw.
 
-This release does not enable action execution, approval grants, write actions, bridge actions, direct_source, or automatic response takeover.
+Version 0.3.0-alpha.13 adds read-only controlled-action runtime report visibility, plugin-owned report access, local install verification artifacts, user-facing examples, demo/preview packets, and a TypeScript UI render-model for active routes, safety evidence, blocked capabilities, and next safe steps.
 
-## Current alpha.13 feature summary
+This is a code plugin, but alpha.13 is inspection-focused. It does not enable write actions, bridge actions, approval-granted execution, direct_source, or automatic response takeover.
 
-alpha.13 includes:
-- bounded read-only orchestration
-- active sleeve session state
-- sleeve graph richness
+## Current alpha.13 capabilities
+
+- runtime visibility
+- active sleeve/session state
 - native route provenance cleanup
-- clean native graph fixture/runtime integration
-- controlled-action runtime report integration
-- read-only controlled-action runtime report tool surface
-- plugin-owned runtime report access surface
-- local install verification artifacts
-- user-facing examples
-- demo packet and presentation handoff
-- visual UI wireframe
-- TypeScript UI render-model
-- UI component demo render and preview packet
-- packaged `fixtures/native-sleeves`
-- packaged `schemas`
+- controlled-action runtime report visibility
+- plugin-owned report access
+- TypeScript UI render-model preview
+- packaged native sleeve fixtures and schemas
 
-It also preserves the broader Alpha6/Alpha7/Alpha8 runtime surfaces, including:
+It also preserves broader bounded runtime inspection surfaces, including:
 - runtime tool request classifier
 - execution gate plan
 - approval checkpoint create/resume
-- approved allowlisted read-only execution
-- end-to-end approved read-only execution chain
+- approved allowlisted read-only validation chain
+- end-to-end approved read-only inspection chain
 - active sleeve / IR Matrix / envelope inspector
 
-## alpha.13 proof caveat
+## Known alpha.13 caveat
 
 Direct live CLI invocation proof for the plugin-owned controlled-action runtime report surface remains unavailable from the current OpenClaw CLI surface.
 
-Accepted proof chain includes:
+Accepted proof includes:
 - source implementation verification
 - local install verification
 - deterministic demo/preview packet chain
@@ -107,11 +99,11 @@ alpha.13 preserves strict safety boundaries:
 - Public alpha.13 alignment notes: `docs/ALPHA9-VERSION-PACKAGE-PUBLICATION-ALIGNMENT.md`
 - Release readiness: `docs/ALPHA9-CONTROLLED-ACTION-RUNTIME-REPORT-RELEASE-READINESS.md`
 - UI preview packet: `docs/ALPHA9-CONTROLLED-ACTION-RUNTIME-REPORT-PLUGIN-OWNED-ACCESS-UI-COMPONENT-PREVIEW-PACKET.md`
-- Release ledger: `../RELEASE_LEDGER.md`
+- Release ledger: `RELEASE_LEDGER.md`
 
 ## Install
 
-- next source/package target: `umg-envoy-agent@0.3.0-alpha.13`
+- current package target: `umg-envoy-agent@0.3.0-alpha.13`
 
 ## Build and test
 
