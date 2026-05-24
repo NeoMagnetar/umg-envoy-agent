@@ -1,0 +1,91 @@
+{
+  "handoffId": "controlled-action-runtime-report-plugin-owned-access-presentation-handoff-v1",
+  "handoffType": "alpha9_controlled_action_runtime_report_plugin_owned_access_presentation_handoff",
+  "status": "presentation_handoff_ready",
+  "baselineCommit": "db89242894e0baad96d31c82c69ca322bbcfd93a",
+  "targetPluginId": "umg-envoy-agent",
+  "targetAccessSurface": "plugin_owned_runtime_report_access",
+  "installedPluginPath": "C:\\Users\\Magne\\.openclaw\\extensions\\umg-envoy-agent",
+  "liveCallProof": "not_available_from_current_cli_surface",
+  "presentationHandoffPrepared": true,
+  "runtimeModified": false,
+  "installedPluginModified": false,
+  "gatewayRestarted": false,
+  "liveToolCalled": false,
+  "packagePublished": false,
+  "executionPerformed": false,
+  "approvalGranted": false,
+  "recordingPerformed": false,
+  "liveDecisionRecorded": false,
+  "fileWrittenOutsideRepoArtifact": false,
+  "externalTransmissionPerformed": false,
+  "recommendedNextLane": "ALPHA9_CONTROLLED_ACTION_RUNTIME_REPORT_PLUGIN_OWNED_ACCESS_VISUAL_UI_WIREFRAME_SOURCE",
+  "completedWork": [
+    "controlled-action runtime report integration",
+    "runtime report tool surface",
+    "plugin-owned access design",
+    "plugin-owned access implementation",
+    "local install verification",
+    "user-facing examples",
+    "demo packet"
+  ],
+  "proofState": {
+    "sourceImplementation": "READY",
+    "localInstallVerification": "READY at file/install level",
+    "gateway": "previously restarted and plugin loaded during install verification",
+    "liveCliCallProof": "not_available_from_current_cli_surface",
+    "runtimeMutationInThisLane": "none",
+    "packagePublish": "not performed"
+  },
+  "runtimeReportModes": [
+    "full",
+    "summary",
+    "ascii_only",
+    "structured_only",
+    "navigation_only",
+    "panel"
+  ],
+  "panelTargets": [
+    "overview",
+    "active_route",
+    "safety_evidence_chain",
+    "blocked_capabilities",
+    "readiness",
+    "audit_and_review",
+    "recording_metadata",
+    "hard_boundaries",
+    "next_safe_step"
+  ],
+  "demoScenario": "desktop_write_candidate_blocked_route",
+  "asciiDashboard": "┌──────────────────────────────────────────────────────────────────────┐\n│ UMG ENVOY RUNTIME REPORT                                            │\n│ Mode: READ-ONLY | Approval: FALSE | Execution: FALSE                │\n└──────────────────────────────────────────────────────────────────────┘\n\nACTIVE ROUTE\n- Route: desktop_write_candidate\n- Class: bridge_action_candidate\n- Risk: high\n- Status: blocked\n\nSAFETY EVIDENCE CHAIN\n✓ Policy Projection\n✓ Dry-run Projection\n✓ Readiness Matrix\n✓ Audit Packet\n✓ Review Bundle\n✓ Recording Metadata\n\nBLOCKED CAPABILITIES\n✗ Execute Action\n✗ Write Files\n✗ Bridge Actions\n✗ direct_source\n✗ Automatic Takeover\n✗ Package Publish\n\nNEXT SAFE STEP\nDesign / inspect only. No approval. No execution. No live recording.",
+  "recommendedNextPaths": [
+    {
+      "lane": "ALPHA9_CONTROLLED_ACTION_RUNTIME_REPORT_PLUGIN_OWNED_ACCESS_VISUAL_UI_WIREFRAME_SOURCE",
+      "purpose": "Design a UI/wireframe version of the ASCII report so the runtime report can become an OpenClaw-visible visual workspace later.",
+      "recommended": true
+    },
+    {
+      "lane": "ALPHA9_CONTROLLED_ACTION_RUNTIME_REPORT_PLUGIN_OWNED_ACCESS_CALL_PATH_REVISIT_SOURCE",
+      "purpose": "Revisit live invocation proof if OpenClaw exposes a call path later or if the plugin-owned method becomes callable through an available gateway surface.",
+      "recommended": false
+    }
+  ],
+  "newChatHandoffSummary": "Current UMG Envoy Alpha9 status:\n- Controlled-action runtime report is implemented in source.\n- Plugin-owned access surface is implemented.\n- Local installed plugin path was verified and promoted: C:\\Users\\Magne\\.openclaw\\extensions\\umg-envoy-agent\n- User-facing examples and demo packet exist.\n- Runtime report modes: full, summary, ascii_only, structured_only, navigation_only, panel\n- Key panel: blocked_capabilities\n- Live CLI call proof remains unavailable from current OpenClaw CLI surface.\n- Do not claim live tool invocation proof.\n- Do not patch OpenClaw core.\n- Recommended next lane: ALPHA9_CONTROLLED_ACTION_RUNTIME_REPORT_PLUGIN_OWNED_ACCESS_VISUAL_UI_WIREFRAME_SOURCE",
+  "safetyBoundaries": [
+    "no runtime mutation",
+    "no installed plugin changes",
+    "no gateway restart",
+    "no live tool call",
+    "no execution",
+    "no approval",
+    "no live recording",
+    "no writes outside repo artifact",
+    "no external transmission",
+    "no package publish"
+  ],
+  "liveProofCaveats": [
+    "do not claim live CLI invocation proof",
+    "do not claim generic OpenClaw plugin.tools.call proof",
+    "current proof is source-level plus installed file/install verification"
+  ]
+}
