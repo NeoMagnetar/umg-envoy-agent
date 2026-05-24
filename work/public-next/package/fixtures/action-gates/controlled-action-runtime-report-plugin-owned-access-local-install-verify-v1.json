@@ -1,0 +1,23 @@
+{
+  "verifyId": "controlled-action-runtime-report-plugin-owned-access-local-install-verify-v1",
+  "verifyType": "alpha9_controlled_action_runtime_report_plugin_owned_access_local_install_verify",
+  "status": "local_install_verified",
+  "sourceCommit": "d08ea3bc42c5b3e46f97c62ea880acf03ddb0e1f",
+  "installedPluginPath": "C:\\Users\\Magne\\.openclaw\\extensions\\umg-envoy-agent",
+  "backupCreated": true,
+  "localPromotionPerformed": true,
+  "gatewayRestarted": true,
+  "pluginLoaded": true,
+  "installedAccessFilePresent": true,
+  "installedPluginEntryReferencesAccess": true,
+  "installedManifestReferencesAccess": true,
+  "liveCallProof": "not_available_from_current_cli_surface",
+  "executionPerformed": false,
+  "approvalGranted": false,
+  "recordingPerformed": false,
+  "liveDecisionRecorded": false,
+  "fileWrittenOutsideInstallPromotion": false,
+  "externalTransmissionPerformed": false,
+  "packagePublished": false,
+  "recommendedNextLane": "ALPHA9_CONTROLLED_ACTION_RUNTIME_REPORT_PLUGIN_OWNED_ACCESS_USER_FACING_EXAMPLES_SOURCE"
+}
