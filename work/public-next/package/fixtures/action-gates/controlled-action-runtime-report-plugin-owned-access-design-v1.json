@@ -1,0 +1,86 @@
+{
+  "designId": "controlled-action-runtime-report-plugin-owned-access-design-v1",
+  "designType": "alpha9_controlled_action_runtime_report_plugin_owned_access_design",
+  "status": "design_ready",
+  "baselineCommit": "e7e81a20f37471572e5a0ba480f50ed9659652f9",
+  "targetPluginId": "umg-envoy-agent",
+  "targetToolName": "umg_envoy_controlled_action_runtime_report",
+  "genericPluginToolProtocolBlocked": true,
+  "selectedAccessStrategy": "plugin_owned_gateway_method_first",
+  "proposedGatewayMethod": "umg.envoy.controlledActionRuntimeReport",
+  "proposedCliCommand": "openclaw umg-envoy runtime-report",
+  "designOnly": true,
+  "implementationStarted": false,
+  "runtimeModified": false,
+  "protocolImplemented": false,
+  "externalContactPerformed": false,
+  "issueCreated": false,
+  "executionPerformed": false,
+  "approvalGranted": false,
+  "recordingPerformed": false,
+  "fileWritten": false,
+  "externalTransmissionPerformed": false,
+  "packagePublished": false,
+  "recommendedNextLane": "ALPHA9_CONTROLLED_ACTION_RUNTIME_REPORT_PLUGIN_OWNED_ACCESS_IMPLEMENTATION_PLAN_SOURCE",
+  "accessOptions": [
+    "plugin_owned_gateway_method",
+    "plugin_owned_cli_command",
+    "staged_gateway_then_cli"
+  ],
+  "futureGatewayMethodShape": {
+    "method": "umg.envoy.controlledActionRuntimeReport",
+    "requestParams": {
+      "reportMode": "ascii_only | full | panel",
+      "includeAscii": true,
+      "includeNavigation": false,
+      "includeStructuredReport": false,
+      "panel": "optional"
+    },
+    "responseFlags": {
+      "executionPerformed": false,
+      "approvalGranted": false,
+      "recordingPerformed": false,
+      "fileWritten": false,
+      "externalTransmissionPerformed": false,
+      "packagePublished": false
+    }
+  },
+  "futureCliCommandShape": {
+    "command": "openclaw umg-envoy runtime-report",
+    "examples": [
+      "openclaw umg-envoy runtime-report --mode ascii_only",
+      "openclaw umg-envoy runtime-report --mode full",
+      "openclaw umg-envoy runtime-report --panel blocked_capabilities",
+      "openclaw umg-envoy runtime-report --navigation"
+    ]
+  },
+  "futureFilesToChange": [
+    "src/plugin-entry.ts",
+    "src/controlled-action-runtime-report-tool-surface.ts",
+    "src/controlled-action-runtime-report-integration.ts",
+    "docs/ALPHA9-CONTROLLED-ACTION-RUNTIME-REPORT-PLUGIN-OWNED-ACCESS-IMPLEMENTATION.md",
+    "scripts/alpha9-controlled-action-runtime-report-plugin-owned-access-implementation-smoke.mjs",
+    "dist/plugin-entry.js",
+    "dist/plugin-entry.d.ts",
+    "openclaw.plugin.json if Gateway method / CLI command metadata requires manifest declaration"
+  ],
+  "readOnlyGuarantees": [
+    "no generic OpenClaw core patch",
+    "no execution",
+    "no approval",
+    "no live recording",
+    "no write actions",
+    "no bridge actions",
+    "no direct_source",
+    "no automatic takeover",
+    "no package publish",
+    "no external contact"
+  ],
+  "deferredWork": [
+    "generic plugin.tools.call protocol",
+    "any OpenClaw core bundled runtime patching",
+    "maintainer outreach or GitHub issue workflow",
+    "automated send path",
+    "non-read-only expansion of this surface"
+  ]
+}
