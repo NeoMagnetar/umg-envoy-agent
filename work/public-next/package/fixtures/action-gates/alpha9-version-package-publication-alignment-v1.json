@@ -1,0 +1,97 @@
+{
+  "alignmentId": "alpha9-version-package-publication-alignment-v1",
+  "alignmentType": "alpha9_version_package_publication_alignment",
+  "status": "alignment_audit_ready",
+  "baselineCommit": "474c11a219dd65b4cdc5bc1d95d0fd3d57e4e5f1",
+  "currentPackageVersion": "0.3.0-alpha.12",
+  "recommendedNextVersion": "0.3.0-alpha.13",
+  "featureSet": "controlled_action_runtime_report_plugin_owned_access_ui_model",
+  "releaseAlignmentRequired": true,
+  "versionBumped": false,
+  "packageJsonModified": false,
+  "openclawPluginManifestModified": false,
+  "readmeModified": false,
+  "distModified": false,
+  "packagePublished": false,
+  "clawHubPublished": false,
+  "runtimeModified": false,
+  "installedPluginModified": false,
+  "gatewayRestarted": false,
+  "liveToolCalled": false,
+  "executionPerformed": false,
+  "approvalGranted": false,
+  "recordingPerformed": false,
+  "liveDecisionRecorded": false,
+  "externalTransmissionPerformed": false,
+  "recommendedNextLane": "ALPHA9_VERSION_PACKAGE_PUBLICATION_ALIGNMENT_APPLY_SOURCE",
+  "versionSurfaces": [
+    "package.json",
+    "openclaw.plugin.json",
+    "README.md",
+    "docs",
+    "dist",
+    "validation scripts",
+    "package staging metadata",
+    "installed local plugin metadata",
+    "ClawHub/public-facing description"
+  ],
+  "staleVersionReferences": [
+    "historical alpha.6 references present in repo artifacts",
+    "historical alpha.7 branch naming remains in current branch",
+    "historical alpha.8/alpha.9 feature-lane references remain in docs/scripts/fixtures",
+    "current package/manfiest version remains 0.3.0-alpha.12 while next publish target is 0.3.0-alpha.13"
+  ],
+  "allowedPublicClaims": [
+    "read-only controlled-action runtime report source implemented",
+    "plugin-owned runtime report access surface implemented",
+    "local installed plugin file verification completed",
+    "user-facing examples included",
+    "demo packet included",
+    "presentation handoff included",
+    "visual UI wireframe included",
+    "TypeScript UI render-model implemented",
+    "UI demo render validated",
+    "UI preview packet included",
+    "safety flags preserve non-execution / non-approval / non-recording posture"
+  ],
+  "disallowedPublicClaims": [
+    "live CLI invocation proven",
+    "generic OpenClaw plugin tool call protocol implemented",
+    "OpenClaw core patch implemented",
+    "live mounted UI",
+    "execution tools enabled",
+    "approval-gated writes enabled",
+    "business automation actions enabled",
+    "bridge actions enabled",
+    "direct_source enabled",
+    "automatic takeover enabled"
+  ],
+  "alignmentRequirements": [
+    "align package.json to 0.3.0-alpha.13",
+    "align openclaw.plugin.json to 0.3.0-alpha.13",
+    "align README/public summary wording to allowed claims only",
+    "review docs/dist/script version references for stale current-version messaging",
+    "rebuild dist after metadata alignment",
+    "align staging metadata and public description surfaces"
+  ],
+  "recommendedMetadataChanges": [
+    "bump package version to 0.3.0-alpha.13 in package.json",
+    "bump plugin manifest version to 0.3.0-alpha.13 in openclaw.plugin.json",
+    "update README/public summary to featureSet controlled_action_runtime_report_plugin_owned_access_ui_model",
+    "ensure public-facing description avoids claims about live CLI invocation or mounted UI",
+    "update package staging metadata to alpha.13"
+  ],
+  "nextVersionPlan": {
+    "currentVersion": "0.3.0-alpha.12",
+    "nextVersion": "0.3.0-alpha.13",
+    "applyInNextLane": true
+  },
+  "publishReadinessPrerequisites": [
+    "consistent version bump applied",
+    "public/package-facing text aligned",
+    "dist rebuilt",
+    "validation chain re-run",
+    "staging metadata reviewed",
+    "no disallowed public claims remain in release-facing surfaces"
+  ]
+}
