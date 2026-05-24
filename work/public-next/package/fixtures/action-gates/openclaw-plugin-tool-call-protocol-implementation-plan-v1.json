@@ -1,0 +1,149 @@
+{
+  "planId": "openclaw-plugin-tool-call-protocol-implementation-plan-v1",
+  "planType": "alpha9_openclaw_plugin_tool_call_protocol_implementation_plan",
+  "status": "planning_ready",
+  "protocolDesignCommit": "cd667c924b1f8c6f6140bd12cb76c39a2d4c9bd9",
+  "correctedEscalationCommit": "5414646c67b5a85a0befbe25c4fda888ccb1947e",
+  "sourceToolCommit": "0b4442125ebe3a9d4e818c0bc92ec4d8ca6d0743",
+  "targetPluginId": "umg-envoy-agent",
+  "targetToolName": "umg_envoy_controlled_action_runtime_report",
+  "protocolImplemented": false,
+  "runtimeModified": false,
+  "liveToolCalled": false,
+  "executionPerformed": false,
+  "approvalGranted": false,
+  "recordingPerformed": false,
+  "fileWritten": false,
+  "externalTransmissionPerformed": false,
+  "packagePublished": false,
+  "recommendedNextLane": "ALPHA9_OPENCLAW_PLUGIN_TOOL_CALL_PROTOCOL_IMPLEMENTATION_SOURCE",
+  "methodsToImplement": [
+    "plugin.tools.list",
+    "plugin.tools.inspect",
+    "plugin.tools.call"
+  ],
+  "candidateImplementationAreas": [
+    "CLI gateway call path",
+    "gateway RPC method registry",
+    "plugin registry / manifest registry",
+    "tool routing layer",
+    "control UI RPC layer if relevant"
+  ],
+  "futureRequestEnvelope": {
+    "id": "req-001",
+    "method": "plugin.tools.call",
+    "params": {
+      "pluginId": "umg-envoy-agent",
+      "toolName": "umg_envoy_controlled_action_runtime_report",
+      "input": {
+        "reportMode": "navigation_only"
+      }
+    }
+  },
+  "futureResponseEnvelope": {
+    "success": {
+      "id": "req-001",
+      "ok": true,
+      "result": {
+        "toolName": "umg_envoy_controlled_action_runtime_report",
+        "toolMode": "read_only_report_preview",
+        "executionPerformed": false,
+        "approvalGranted": false,
+        "recordingPerformed": false
+      }
+    },
+    "error": {
+      "id": "req-001",
+      "ok": false,
+      "error": {
+        "code": "tool_not_found",
+        "message": "Tool was not found for plugin."
+      },
+      "safety": {
+        "executionPerformed": false,
+        "approvalGranted": false,
+        "recordingPerformed": false
+      }
+    }
+  },
+  "errorCodes": [
+    "plugin_not_found",
+    "tool_not_found",
+    "invalid_tool_input",
+    "invalid_report_mode",
+    "invalid_panel",
+    "tool_not_read_only",
+    "requires_approval_not_supported",
+    "action_tool_blocked",
+    "write_tool_blocked",
+    "bridge_tool_blocked",
+    "external_transmission_blocked"
+  ],
+  "readOnlyEnforcementRules": [
+    "plugin.tools.call can only call readOnly=true tools by default",
+    "actionCapable tools must be rejected unless future approval protocol exists",
+    "write-capable tools must be rejected",
+    "bridge-capable tools must be rejected",
+    "external-transmission tools must be rejected"
+  ],
+  "metadataRequirements": {
+    "name": "umg_envoy_controlled_action_runtime_report",
+    "pluginId": "umg-envoy-agent",
+    "mode": "read_only_report_preview",
+    "readOnly": true,
+    "actionCapable": false,
+    "requiresApproval": false,
+    "mayWriteFiles": false,
+    "mayExecuteCommands": false,
+    "mayUseBridgeActions": false,
+    "mayTransmitExternally": false,
+    "mayMutateBlockLibrary": false
+  },
+  "cliWrapperPlan": [
+    "openclaw plugin-tools list --plugin umg-envoy-agent --json",
+    "openclaw plugin-tools inspect --plugin umg-envoy-agent --tool umg_envoy_controlled_action_runtime_report --json",
+    "openclaw plugin-tools call --plugin umg-envoy-agent --tool umg_envoy_controlled_action_runtime_report --input-json '{...}'",
+    "openclaw gateway call plugin.tools.list --json '{...}'",
+    "openclaw gateway call plugin.tools.inspect --json '{...}'",
+    "openclaw gateway call plugin.tools.call --json '{...}'"
+  ],
+  "futureTestRequirements": [
+    "plugin.tools.list returns loaded tools",
+    "plugin.tools.inspect returns target tool metadata",
+    "plugin.tools.call can invoke read-only target tool",
+    "navigation_only call works",
+    "ascii_only call works",
+    "structured_only call works",
+    "panel call works",
+    "invalid panel returns safe error",
+    "action-capable dummy tool is rejected",
+    "write-capable dummy tool is rejected",
+    "no execution, approval, recording, or writes occur"
+  ],
+  "deferredWork": [
+    "implementing protocol in this lane",
+    "changing OpenClaw runtime",
+    "changing Envoy runtime",
+    "live tool invocation",
+    "approval protocol",
+    "action execution",
+    "write actions",
+    "bridge actions",
+    "package publish",
+    "OpenClaw restart"
+  ],
+  "blockedOperations": [
+    "execute_action",
+    "grant_approval",
+    "record_live_decision",
+    "perform_write_action",
+    "enable_bridge_action",
+    "enable_direct_source",
+    "enable_automatic_response_takeover",
+    "mutate_block_library",
+    "touch_resleever",
+    "publish_package",
+    "restart_openclaw_from_tool_call",
+    "external_transmission"
+  ]
+}
