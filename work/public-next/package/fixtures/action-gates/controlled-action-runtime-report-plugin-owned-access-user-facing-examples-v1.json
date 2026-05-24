@@ -1,0 +1,72 @@
+{
+  "examplesId": "controlled-action-runtime-report-plugin-owned-access-user-facing-examples-v1",
+  "examplesType": "alpha9_controlled_action_runtime_report_plugin_owned_access_user_facing_examples",
+  "status": "examples_ready",
+  "baselineCommit": "86a20131a7dad242b1f752a93202a28682145ef4",
+  "sourceCommit": "d08ea3bc42c5b3e46f97c62ea880acf03ddb0e1f",
+  "targetPluginId": "umg-envoy-agent",
+  "targetAccessSurface": "plugin_owned_runtime_report_access",
+  "installedPluginPath": "C:\\Users\\Magne\\.openclaw\\extensions\\umg-envoy-agent",
+  "liveCallProof": "not_available_from_current_cli_surface",
+  "examplesPrepared": true,
+  "runtimeModified": false,
+  "installedPluginModified": false,
+  "gatewayRestarted": false,
+  "packagePublished": false,
+  "executionPerformed": false,
+  "approvalGranted": false,
+  "recordingPerformed": false,
+  "liveDecisionRecorded": false,
+  "fileWrittenOutsideRepoArtifact": false,
+  "externalTransmissionPerformed": false,
+  "recommendedNextLane": "ALPHA9_CONTROLLED_ACTION_RUNTIME_REPORT_PLUGIN_OWNED_ACCESS_DEMO_PACKET_SOURCE",
+  "exampleModes": [
+    "full",
+    "summary",
+    "ascii_only",
+    "structured_only",
+    "navigation_only",
+    "panel"
+  ],
+  "examplePanels": [
+    "overview",
+    "active_route",
+    "safety_evidence_chain",
+    "blocked_capabilities",
+    "readiness",
+    "audit_and_review",
+    "recording_metadata",
+    "hard_boundaries",
+    "next_safe_step"
+  ],
+  "asciiExample": "┌──────────────────────────────────────────────────────────────────────┐\n│ UMG ENVOY RUNTIME REPORT                                            │\n│ Mode: READ-ONLY | Approval: FALSE | Execution: FALSE                │\n└──────────────────────────────────────────────────────────────────────┘\n\nACTIVE ROUTE\n- Route: desktop_write_candidate\n- Class: bridge_action_candidate\n- Risk: high\n- Status: blocked\n\nSAFETY EVIDENCE CHAIN\n✓ Policy Projection\n✓ Dry-run Projection\n✓ Readiness Matrix\n✓ Audit Packet\n✓ Review Bundle\n✓ Recording Metadata\n\nBLOCKED CAPABILITIES\n✗ Execute Action\n✗ Write Files\n✗ Bridge Actions\n✗ direct_source\n✗ Automatic Takeover\n✗ Package Publish\n\nNEXT SAFE STEP\nDesign / inspect only. No approval. No execution. No live recording.",
+  "invalidPanelExample": {
+    "request": {
+      "reportMode": "panel",
+      "panel": "invalid_panel_name"
+    },
+    "expected": {
+      "validationError": true,
+      "executionPerformed": false,
+      "approvalGranted": false,
+      "recordingPerformed": false
+    }
+  },
+  "safetyBoundaries": [
+    "no runtime mutation",
+    "no installed plugin changes",
+    "no gateway restart",
+    "no live tool call",
+    "no execution",
+    "no approval",
+    "no live recording",
+    "no writes outside repo artifact",
+    "no external transmission",
+    "no package publish"
+  ],
+  "liveProofCaveats": [
+    "examples are source-level and documentation-facing",
+    "installed file-level verification passed previously",
+    "direct live CLI invocation proof remains not_available_from_current_cli_surface"
+  ]
+}
