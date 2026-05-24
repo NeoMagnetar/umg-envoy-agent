@@ -1,0 +1,57 @@
+{
+  "verifyId": "alpha9-version-package-publication-local-package-install-verify-v1",
+  "verifyType": "alpha9_version_package_publication_local_package_install_verify",
+  "status": "local_package_install_verified",
+  "baselineCommit": "f6ed2963538fa9db8f82406527d41722c62e1738",
+  "packageVersion": "0.3.0-alpha.13",
+  "artifactPath": "C:\\.openclaw\\workspace\\umg-envoy-agent-publish-stage\\umg-envoy-agent-0.3.0-alpha.13\\umg-envoy-agent-0.3.0-alpha.13.tgz",
+  "artifactSha256": "C659660742CB0DB82524C2DCEADE4C759CE2954D992743728474CB873624D502",
+  "artifactHashVerified": true,
+  "installedPluginPath": "C:\\Users\\Magne\\.openclaw\\extensions\\umg-envoy-agent",
+  "backupCreated": true,
+  "localInstallPerformed": true,
+  "installedPackageJsonVersionConfirmed": true,
+  "installedOpenclawPluginVersionConfirmed": true,
+  "installedPluginEntryPresent": true,
+  "installedPluginOwnedAccessPresent": true,
+  "installedUiRenderModelPresent": true,
+  "gatewayRestartedForVerification": true,
+  "pluginListedAfterInstall": true,
+  "sourceValidationAfterInstallPassed": true,
+  "liveCallProof": "not_available_from_current_cli_surface",
+  "packagePublished": false,
+  "clawHubPublished": false,
+  "releaseTagCreated": false,
+  "runtimeModifiedOutsideInstalledPlugin": false,
+  "openClawCoreModified": false,
+  "liveToolCalled": false,
+  "executionPerformed": false,
+  "approvalGranted": false,
+  "recordingPerformed": false,
+  "liveDecisionRecorded": false,
+  "externalTransmissionPerformed": false,
+  "recommendedNextLane": "ALPHA9_VERSION_PACKAGE_PUBLICATION_PUBLISH_READINESS_SOURCE",
+  "installMethod": "manual extract promote",
+  "backupPath": "C:\\.openclaw\\workspace\\alpha13-local-package-install-verify-backups",
+  "filesVerified": [
+    "package.json",
+    "openclaw.plugin.json",
+    "dist/plugin-entry.js",
+    "dist/controlled-action-runtime-report-plugin-owned-access.js",
+    "dist/ui/ControlledActionRuntimeReportDashboard.js"
+  ],
+  "gatewayVerification": {
+    "gatewayRestarted": true,
+    "pluginListChecked": true,
+    "installedFileMetadataPrimaryProof": true
+  },
+  "postInstallValidation": {
+    "buildPassed": true,
+    "validateAlphaCurrentPassed": true,
+    "stagePackageSmokePassed": true,
+    "prepublishValidationSmokePassed": true
+  },
+  "knownCaveats": [
+    "Direct live CLI invocation proof remains not_available_from_current_cli_surface."
+  ]
+}
