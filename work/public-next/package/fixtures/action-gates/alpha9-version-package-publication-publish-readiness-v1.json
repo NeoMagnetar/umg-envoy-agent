@@ -1,0 +1,72 @@
+{
+  "readinessId": "alpha9-version-package-publication-publish-readiness-v1",
+  "readinessType": "alpha9_version_package_publication_publish_readiness",
+  "status": "publish_readiness_ready",
+  "baselineCommit": "7735f947be51225f42a2d7a409595a328f13390a",
+  "packageVersion": "0.3.0-alpha.13",
+  "featureSet": "controlled_action_runtime_report_plugin_owned_access_ui_model",
+  "stagedArtifactVerified": true,
+  "localInstallVerified": true,
+  "packageMetadataAligned": true,
+  "readmeAligned": true,
+  "buildPassed": true,
+  "validateAlphaCurrentPassed": true,
+  "liveCallProof": "not_available_from_current_cli_surface",
+  "publishReady": true,
+  "packagePublished": false,
+  "clawHubPublished": false,
+  "releaseTagCreated": false,
+  "runtimeModified": false,
+  "installedPluginModified": false,
+  "gatewayRestarted": false,
+  "liveToolCalled": false,
+  "executionPerformed": false,
+  "approvalGranted": false,
+  "recordingPerformed": false,
+  "liveDecisionRecorded": false,
+  "externalTransmissionPerformed": false,
+  "recommendedNextLane": "ALPHA9_VERSION_PACKAGE_PUBLICATION_EXECUTE_SOURCE",
+  "stagedArtifact": {
+    "path": "C:\\.openclaw\\workspace\\umg-envoy-agent-publish-stage\\umg-envoy-agent-0.3.0-alpha.13\\umg-envoy-agent-0.3.0-alpha.13.tgz",
+    "sha256": "C659660742CB0DB82524C2DCEADE4C759CE2954D992743728474CB873624D502"
+  },
+  "installedPlugin": {
+    "path": "C:\\Users\\Magne\\.openclaw\\extensions\\umg-envoy-agent",
+    "packageJsonVersion": "0.3.0-alpha.13",
+    "pluginManifestVersion": "0.3.0-alpha.13"
+  },
+  "allowedPublicClaims": [
+    "read-only controlled-action runtime report source implemented",
+    "plugin-owned runtime report access surface implemented",
+    "local installed plugin file verification completed",
+    "user-facing examples included",
+    "demo packet included",
+    "presentation handoff included",
+    "visual UI wireframe included",
+    "TypeScript UI render-model implemented",
+    "UI demo render validated",
+    "UI preview packet included",
+    "safety flags preserve non-execution / non-approval / non-recording posture"
+  ],
+  "disallowedPublicClaims": [
+    "live CLI invocation proven",
+    "generic OpenClaw plugin tool call protocol implemented",
+    "OpenClaw core patch implemented",
+    "live mounted UI",
+    "execution tools enabled",
+    "approval-gated writes enabled",
+    "business automation actions enabled",
+    "bridge actions enabled",
+    "direct_source enabled",
+    "automatic takeover enabled"
+  ],
+  "remainingPublishPrerequisites": [
+    "final human decision to publish",
+    "choose publish target order",
+    "verify authentication/session state for chosen publish target",
+    "preserve current public-claim boundaries during publish"
+  ],
+  "knownCaveats": [
+    "Direct live CLI invocation proof remains not_available_from_current_cli_surface."
+  ]
+}
