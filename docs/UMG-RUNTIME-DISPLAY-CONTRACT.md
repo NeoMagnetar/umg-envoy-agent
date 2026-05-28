@@ -4,7 +4,7 @@
 Public runtime display contract for human-facing UMG Envoy output.
 
 ## Purpose
-The display contract defines how UMG Envoy runtime state is presented to humans without exposing hidden reasoning.
+The display contract defines how UMG Envoy runtime-facing inspection state is presented to humans without exposing hidden reasoning.
 
 Use terms like:
 - runtime state

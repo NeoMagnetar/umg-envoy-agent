@@ -2,7 +2,7 @@
   "id": "umg-envoy-agent",
   "name": "UMG Envoy Agent",
   "version": "0.3.0-alpha.3",
-  "description": "Run UMG workflows as a modular cognitive architecture runtime inside OpenClaw.",
+  "description": "Runtime-facing UMG cognition specification and inspection plugin for sleeves, RuntimeSpec projections, Trace artifacts, and library navigation inside OpenClaw.",
   "entry": "dist/plugin-entry-public.js",
   "apiVersion": 1,
   "config": {
@@ -31,7 +31,7 @@
       },
       "debug": {
         "type": "boolean",
-        "description": "Enable debug logging for the UMG modular cognitive runtime package."
+        "description": "Enable debug logging for the UMG runtime-facing cognition specification and inspection package."
       },
       "defaultSleeveId": {
         "type": "string",

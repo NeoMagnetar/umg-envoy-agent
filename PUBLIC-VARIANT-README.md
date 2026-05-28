@@ -7,7 +7,7 @@ For the `0.3.0-alpha.3` minimized public candidate, the public variant docs are 
 It bundles:
 - sample blocks
 - sample sleeves
-- runtime examples
+- runtime-facing examples
 - a public compiler adapter
 - public-safe OpenClaw tools
 
