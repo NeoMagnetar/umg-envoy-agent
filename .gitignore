@@ -2,3 +2,8 @@
 .git/
 *.zip
 artifacts/
+ARTIFACT-ARCHIVE/
+.compare-approved-tarball/
+META/
+.npm-pack-dry-run.txt
+*.tgz

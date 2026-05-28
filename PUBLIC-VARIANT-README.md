@@ -7,7 +7,7 @@ For the `0.2.3` publication-cleanup patch, the public variant docs are aligned t
 It bundles:
 - sample blocks
 - sample sleeves
-- runtime examples
+- runtime-facing examples
 - a public compiler adapter
 - public-safe OpenClaw tools
 

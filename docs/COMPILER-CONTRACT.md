@@ -1,6 +1,6 @@
 # Compiler Contract
 
-The public compiler adapter loads bundled JSON blocks and sleeves, resolves sleeve block references, removes disabled block refs, orders active blocks by authority, emits RuntimeSpec-like output, and validates the emitted shape.
+The public compiler adapter loads bundled JSON blocks and sleeves, resolves sleeve block references, removes disabled block refs, orders active blocks by authority, emits a dry-run RuntimeSpec projection, and validates the emitted shape. RuntimeSpec remains a non-executing artifact for downstream execution-preparation surfaces.
 
 Required RuntimeSpec fields:
 - runtimespec_id
