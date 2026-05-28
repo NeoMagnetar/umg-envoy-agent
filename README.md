@@ -254,7 +254,7 @@ Resolver behavior in this alpha may still use generated index and fallback index
 
 ## Compiler alignment note
 
-`umg-compiler` is an adjacent compiler package. This `0.3.0-alpha.2` correction release does not expose external compiler process execution as a public tool. Future compiler/runtime sync should align RuntimeSpecV0, Trace, MOLT Map, IR Matrix, and Runtime Display schemas.
+`umg-compiler` is an adjacent compiler package. This `0.3.0-alpha.3` minimized public artifact release does not expose external compiler process execution as a public tool. Future compiler/runtime sync should align RuntimeSpecV0, Trace, MOLT Map, IR Matrix, and Runtime Display schemas.
 
 ## Build and validation
 
