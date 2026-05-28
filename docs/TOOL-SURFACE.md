@@ -9,32 +9,30 @@ Public tool documentation should be read as a runtime-facing inspection, project
 The following tool ids are the current declared public tool surface for this package:
 
 - `umg_envoy_status`
-- `umg_envoy_library_status`
-- `umg_envoy_library_search`
-- `umg_envoy_runtime_spec_dry_run`
-- `umg_envoy_runtime_visibility_header`
-- `umg_envoy_runtime_molt_map`
-- `umg_envoy_runtime_dashboard`
-- `umg_envoy_runtime_ir_matrix`
-- `umg_envoy_runtime_inspect`
-- `umg_envoy_local_readonly_plan`
-- `umg_envoy_local_readonly_scan`
-- `umg_envoy_alpha_demo`
-- `umg_envoy_sleeve_list`
-- `umg_envoy_sleeve_inspect`
-- `umg_envoy_sleeve_demo`
+- `umg_envoy_compiler_smoke_test`
+- `umg_envoy_list_sleeves`
+- `umg_envoy_list_block_libraries`
+- `umg_envoy_compile_sleeve`
+- `umg_envoy_validate_runtime_output`
+- `umg_envoy_compare_sleeves`
+- `umg_envoy_parse_path`
+- `umg_envoy_validate_path`
+- `umg_envoy_render_path`
+- `umg_envoy_build_path`
+- `umg_envoy_matrix_status`
+- `umg_envoy_compile_ir_bridge`
+- `umg_envoy_emit_relation_matrix`
 
 ## 2. Capability-Level Mapping
 
 These are the capability-level public surfaces currently represented by the manifest-aligned tools above:
 
-- runtime-facing status and library visibility
-- library metadata search
-- dry-run RuntimeSpec projection
-- runtime-visible header, dashboard, MOLT Map, IR Matrix, and inspection views
-- local read-only planning and scan surfaces
-- alpha demo surface
-- governed sleeve list / inspect / demo surfaces
+- runtime-facing status and bundled public surface visibility
+- compiler smoke and runtime output validation surfaces
+- bundled sleeve and bundled block-library listing surfaces
+- bounded sleeve compilation and comparison surfaces
+- path parse / validate / render / build utilities
+- matrix status and explicit relation-matrix / IR bridge surfaces
 
 Boundary reminders:
 - RuntimeSpec is not execution.
@@ -49,27 +47,27 @@ Boundary reminders:
 These names appear in prior docs or staged planning language, but they are **not** currently declared public tools in `openclaw.plugin.json`.
 
 ### Staged or Deferred
-- `umg_envoy_load_sleeve`
-- `umg_envoy_compile_ir_bridge`
-- `umg_envoy_emit_relation_matrix`
-
-### Internal or Historical Reference
-- `umg_envoy_compiler_smoke_test`
-- `umg_envoy_compile_sleeve`
-- `umg_envoy_validate_runtime_output`
-- `umg_envoy_compare_sleeves`
-- `umg_envoy_parse_path`
-- `umg_envoy_validate_path`
-- `umg_envoy_render_path`
-- `umg_envoy_build_path`
+- `umg_envoy_library_status`
+- `umg_envoy_library_search`
+- `umg_envoy_runtime_spec_dry_run`
+- `umg_envoy_runtime_visibility_header`
+- `umg_envoy_runtime_molt_map`
+- `umg_envoy_runtime_dashboard`
+- `umg_envoy_runtime_ir_matrix`
+- `umg_envoy_runtime_inspect`
+- `umg_envoy_local_readonly_plan`
+- `umg_envoy_local_readonly_scan`
+- `umg_envoy_alpha_demo`
+- `umg_envoy_sleeve_inspect`
+- `umg_envoy_sleeve_demo`
 
 ## 4. Deprecated or Renamed Tool Names
 
-These names look like earlier or alternate naming forms and should not be treated as the current declared public surface:
+These names look like earlier or alternate naming forms and should not be treated as the current declared public surface unless they appear in `openclaw.plugin.json`.
 
-- `umg_envoy_list_sleeves`
-- `umg_envoy_list_block_libraries`
-- `umg_envoy_matrix_status`
+- `umg_envoy_runtime_spec_compile`
+- `umg_envoy_trace_inspect`
+- `umg_envoy_runtime_display`
 
 ## Notes
 
