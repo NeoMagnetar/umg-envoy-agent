@@ -22,6 +22,7 @@
     "smoke": "node dist/plugin-entry.js --smoke",
     "test:runtime-spec-boundary": "node dist/compiler/runtime-spec-boundary.test.js",
     "test:trace-boundary": "node dist/compiler/trace-boundary.test.js",
+    "test:action-gate-types": "node dist/action-gate-types.test.js",
     "validate:umg:e2e": "node scripts/validate-umg-e2e.mjs",
     "pack:dry": "npm pack --dry-run"
   },
