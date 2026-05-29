@@ -14,6 +14,7 @@ import { parseUMGPath } from "./umg-path-parser.js";
 import { renderUMGPath } from "./umg-path-renderer.js";
 import { validateUMGPath } from "./umg-path-validator.js";
 import { buildPublicPath } from "./public-path-builder.js";
+import { createActionGateRuntimeReport, createActionGateRuntimeReportToolResponse, createProposedActionGate, type ActionGateRuntimeReportViewMode, type ToolCapability } from "./action-gate-types.js";
 import type { CompilerInputPreview, PluginConfig, SleeveLoadResult } from "./types.js";
 
 function effectiveConfig(config?: PluginConfig) {
@@ -56,7 +57,8 @@ function statusPayload(config?: PluginConfig) {
       "umg_envoy_matrix_status",
       "umg_envoy_load_sleeve",
       "umg_envoy_compile_ir_bridge",
-      "umg_envoy_emit_relation_matrix"
+      "umg_envoy_emit_relation_matrix",
+      "umg_envoy_action_gate_runtime_report_view"
     ]
   };
 }
@@ -113,6 +115,45 @@ function buildCompilerInputPreview(result: SleeveLoadResult, libraryRoot: string
       runtimeOutputsWritten: false
     }
   };
+}
+
+function createRuntimeReportToolSurface(input: { toolId: string; toolName?: string; mode?: ActionGateRuntimeReportViewMode }) {
+  const capability: ToolCapability | null = input.toolId === "umg_envoy_status"
+    ? {
+        toolId: "umg_envoy_status",
+        toolName: "UMG Envoy Status",
+        toolCategory: "inspection",
+        allowedRiskClass: "read_only",
+        directExecutionAllowed: true,
+        approvalRequired: false,
+        previewRequired: false,
+        dryRunSupported: false,
+        dryRunRequired: false,
+        rollbackSupported: false,
+        backupRequired: false,
+        externalTransmissionAllowed: false,
+        blockedSurfaces: [],
+        auditRequirements: ["tool_result"],
+        requiresToolResultAudit: true,
+        allowlistTags: ["low-risk-direct"],
+        notes: ["Report-only seed capability for runtime report inspection."],
+      }
+    : null;
+
+  const actionGate = createProposedActionGate({
+    actionId: `runtime-report:${input.toolId}`,
+    proposedToolName: input.toolName ?? input.toolId,
+    proposedToolId: input.toolId,
+    actionKind: "inspect_runtime_report",
+    riskClass: capability?.allowedRiskClass ?? "blocked",
+    sourceRuntimeSpecBoundaryStatus: "valid_non_executing_artifact",
+    sourceRuntimeSpecNonExecuting: true,
+    sourceTraceBoundaryStatus: "valid_audit_artifact",
+    sourceTraceAuditOnly: true,
+  });
+
+  const report = createActionGateRuntimeReport({ actionGate, capability });
+  return createActionGateRuntimeReportToolResponse(report, input.mode ?? "compact");
 }
 
 function loadSleevePreview(sleevePath: string, libraryRoot: string): SleeveLoadResult {
@@ -279,6 +320,18 @@ const entry = {
     api.registerTool({ name: "umg_envoy_render_path", description: "Render a parsed UMG path string back to text.", parameters: Type.Object({ source: Type.String() }, { additionalProperties: false }), async execute(input: { source: string }) { return { content: [{ type: "text", text: renderUMGPath(parseUMGPath(input.source)) }] }; } }, { optional: true });
     api.registerTool({ name: "umg_envoy_build_path", description: "Build a public-safe UMG path document.", parameters: Type.Object({ message: Type.String(), sleeveId: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input: { message: string; sleeveId?: string }) { return { content: [{ type: "text", text: renderUMGPath(buildPublicPath(input.message, input.sleeveId ?? config?.defaultSleeveId ?? "public-basic-envoy")) }] }; } }, { optional: true });
     api.registerTool({ name: "umg_envoy_matrix_status", description: "Report bundled compiler matrix status.", parameters: Type.Object({}, { additionalProperties: false }), async execute() { return { content: [{ type: "text", text: JSON.stringify(getCompilerMatrixStatus(import.meta.url), null, 2) }] }; } }, { optional: true });
+    api.registerTool({
+      name: "umg_envoy_action_gate_runtime_report_view",
+      description: "Read-only/report-only ActionGate runtime report surface. Exposes gate/readiness/audit state for inspection only; it does not approve, authorize, or execute actions.",
+      parameters: Type.Object({
+        toolId: Type.String(),
+        toolName: Type.Optional(Type.String()),
+        mode: Type.Optional(Type.Union([Type.Literal("full"), Type.Literal("compact"), Type.Literal("public_redacted")]))
+      }, { additionalProperties: false }),
+      async execute(input: { toolId: string; toolName?: string; mode?: ActionGateRuntimeReportViewMode }) {
+        return { content: [{ type: "text", text: JSON.stringify(createRuntimeReportToolSurface(input), null, 2) }] };
+      }
+    }, { optional: true });
     api.registerTool({
       name: "umg_envoy_load_sleeve",
       description: "Read-only sleeve loader that validates sleeve structure, resolves artifacts, and previews canonical compiler preparation without invoking the compiler.",

@@ -219,6 +219,27 @@ export interface ActionGateRuntimeReport {
     finalReason: string;
     notes: string[];
 }
+export type ActionGateRuntimeReportViewMode = "full" | "compact" | "public_redacted";
+export interface ActionGateRuntimeReportView {
+    mode: ActionGateRuntimeReportViewMode;
+    actionId: string;
+    toolId: string;
+    toolName: string;
+    status: ActionGateRuntimeReportStatus;
+    riskClass: ToolRiskClass | null;
+    finalReason: string;
+    summaries: ActionGateRuntimeReportSummary[];
+    sections?: ActionGateRuntimeReportSection[];
+    notes: string[];
+    boundaries: {
+        inspectionOnly: true;
+        notApproval: true;
+        notExecution: true;
+        notPermission: true;
+        executedStatusDerivedOnlyFromToolResult: true;
+        currentLaneDoesNotRunTools: true;
+    };
+}
 export declare function getRiskClassPolicy(riskClass: ToolRiskClass): ToolRiskClassPolicy;
 export declare function classifyRiskClassPolicy(riskClass: ToolRiskClass): ToolRiskClassPolicy;
 export declare function createToolCapabilityRegistry(entries: ToolCapabilityRegistryEntry[]): ToolCapabilityRegistry;
@@ -270,6 +291,9 @@ export declare function createActionGateRuntimeReport(input: {
     approvalWriteDecision?: ApprovalGatedWriteDecision | null;
     toolResult?: ToolResult | null;
 }): ActionGateRuntimeReport;
+export declare function summarizeActionGateRuntimeReportForTool(report: ActionGateRuntimeReport): ActionGateRuntimeReportView;
+export declare function redactActionGateRuntimeReport(report: ActionGateRuntimeReport): ActionGateRuntimeReportView;
+export declare function createActionGateRuntimeReportToolResponse(report: ActionGateRuntimeReport, mode?: ActionGateRuntimeReportViewMode): ActionGateRuntimeReportView;
 export declare function createLowRiskAllowlistPolicy(): LowRiskAllowlistPolicy;
 export declare function createApprovalGatedWritePolicy(): ApprovalGatedWritePolicy;
 export declare function evaluateApprovalGatedWriteReadiness(actionGate: ActionGate, capability: ToolCapability | null, input?: {

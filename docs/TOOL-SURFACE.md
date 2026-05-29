@@ -22,6 +22,7 @@ The following tool ids are the current declared public tool surface for this pac
 - `umg_envoy_matrix_status`
 - `umg_envoy_compile_ir_bridge`
 - `umg_envoy_emit_relation_matrix`
+- `umg_envoy_action_gate_runtime_report_view`
 
 ## 2. Capability-Level Mapping
 
@@ -88,6 +89,7 @@ Envoy is intended to become tool-capable through explicit capability mapping, no
 - Ready-for-future-execution does not equal execution.
 - Blocked, denied, preview, and dry-run records must remain distinguishable from executed results.
 - Runtime report surfaces ActionGate/ToolResult readiness but is not approval and is not execution.
+- Runtime report tool surface is read-only and report-only.
 - Executed status only comes from `ToolResult.executionStatus`.
 - The registry itself does not execute tools and does not authorize execution by itself.
 

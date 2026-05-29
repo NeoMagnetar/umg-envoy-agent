@@ -354,6 +354,76 @@ export function createActionGateRuntimeReport(input) {
         notes,
     };
 }
+export function summarizeActionGateRuntimeReportForTool(report) {
+    return {
+        mode: "compact",
+        actionId: report.actionId,
+        toolId: report.toolId,
+        toolName: report.toolName,
+        status: report.status,
+        riskClass: report.riskClass,
+        finalReason: report.finalReason,
+        summaries: report.summaries,
+        notes: report.notes,
+        boundaries: {
+            inspectionOnly: true,
+            notApproval: true,
+            notExecution: true,
+            notPermission: true,
+            executedStatusDerivedOnlyFromToolResult: true,
+            currentLaneDoesNotRunTools: true,
+        },
+    };
+}
+export function redactActionGateRuntimeReport(report) {
+    return {
+        mode: "public_redacted",
+        actionId: report.actionId,
+        toolId: report.toolId,
+        toolName: report.toolName,
+        status: report.status,
+        riskClass: report.riskClass,
+        finalReason: report.finalReason,
+        summaries: report.summaries.filter((summary) => ["runtimeSpecBoundary", "traceBoundary", "capabilityKnown", "riskClass", "toolResultStatus"].includes(summary.label)),
+        notes: report.notes,
+        boundaries: {
+            inspectionOnly: true,
+            notApproval: true,
+            notExecution: true,
+            notPermission: true,
+            executedStatusDerivedOnlyFromToolResult: true,
+            currentLaneDoesNotRunTools: true,
+        },
+    };
+}
+export function createActionGateRuntimeReportToolResponse(report, mode = "full") {
+    if (mode === "compact") {
+        return summarizeActionGateRuntimeReportForTool(report);
+    }
+    if (mode === "public_redacted") {
+        return redactActionGateRuntimeReport(report);
+    }
+    return {
+        mode: "full",
+        actionId: report.actionId,
+        toolId: report.toolId,
+        toolName: report.toolName,
+        status: report.status,
+        riskClass: report.riskClass,
+        finalReason: report.finalReason,
+        summaries: report.summaries,
+        sections: report.sections,
+        notes: report.notes,
+        boundaries: {
+            inspectionOnly: true,
+            notApproval: true,
+            notExecution: true,
+            notPermission: true,
+            executedStatusDerivedOnlyFromToolResult: true,
+            currentLaneDoesNotRunTools: true,
+        },
+    };
+}
 export function createLowRiskAllowlistPolicy() {
     return {
         allowlistTag: "low-risk-direct",
