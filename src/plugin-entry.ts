@@ -18,7 +18,7 @@ import { createActionGateRuntimeReport, createActionGateRuntimeReportToolRespons
 import { resolveEnvoySeededToolCapability } from "./tool-capability-registry-seed.js";
 import type { CompilerInputPreview, PluginConfig, SleeveLoadResult } from "./types.js";
 
-function effectiveConfig(config?: PluginConfig) {
+export function effectiveConfig(config?: PluginConfig) {
   return {
     allowRuntimeWrites: false,
     contentMode: "bundled-public",
@@ -28,7 +28,7 @@ function effectiveConfig(config?: PluginConfig) {
   };
 }
 
-function statusPayload(config?: PluginConfig) {
+export function statusPayload(config?: PluginConfig) {
   const cfg = effectiveConfig(config);
   const root = publicContentRoot(import.meta.url);
   const sleeves = loadSleeves(root);
@@ -118,7 +118,7 @@ function buildCompilerInputPreview(result: SleeveLoadResult, libraryRoot: string
   };
 }
 
-function createRuntimeReportToolSurface(input: { toolId: string; toolName?: string; mode?: ActionGateRuntimeReportViewMode }) {
+export function createRuntimeReportToolSurface(input: { toolId: string; toolName?: string; mode?: ActionGateRuntimeReportViewMode }) {
   const capability = resolveEnvoySeededToolCapability(input.toolId);
 
   const actionGate = createProposedActionGate({

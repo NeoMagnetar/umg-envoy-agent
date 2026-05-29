@@ -16,7 +16,7 @@ import { validateUMGPath } from "./umg-path-validator.js";
 import { buildPublicPath } from "./public-path-builder.js";
 import { createActionGateRuntimeReport, createActionGateRuntimeReportToolResponse, createProposedActionGate } from "./action-gate-types.js";
 import { resolveEnvoySeededToolCapability } from "./tool-capability-registry-seed.js";
-function effectiveConfig(config) {
+export function effectiveConfig(config) {
     return {
         allowRuntimeWrites: false,
         contentMode: "bundled-public",
@@ -25,7 +25,7 @@ function effectiveConfig(config) {
         ...config
     };
 }
-function statusPayload(config) {
+export function statusPayload(config) {
     const cfg = effectiveConfig(config);
     const root = publicContentRoot(import.meta.url);
     const sleeves = loadSleeves(root);
@@ -110,7 +110,7 @@ function buildCompilerInputPreview(result, libraryRoot) {
         }
     };
 }
-function createRuntimeReportToolSurface(input) {
+export function createRuntimeReportToolSurface(input) {
     const capability = resolveEnvoySeededToolCapability(input.toolId);
     const actionGate = createProposedActionGate({
         actionId: `runtime-report:${input.toolId}`,

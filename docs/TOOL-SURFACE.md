@@ -100,6 +100,10 @@ Envoy is intended to become tool-capable through explicit capability mapping, no
 - Unknown tools remain blocked/review-required.
 - First seed pass does not mark any tool as `low_risk_direct`.
 - Blocked bridge/emission surfaces require later policy lanes.
+- The first low-risk direct adapter runs only six static safe tools.
+- `umg_envoy_load_sleeve` is intentionally excluded from that first direct adapter set.
+- Every direct run creates `ToolResult` audit output.
+- Writes, deletes, publishing, bridge, relation-matrix, compiler bridge, load-sleeve, and external actions are not part of this adapter.
 - Executed status only comes from `ToolResult.executionStatus`.
 - The registry itself does not execute tools and does not authorize execution by itself.
 
