@@ -23,6 +23,7 @@ The following tool ids are the current declared public tool surface for this pac
 - `umg_envoy_compile_ir_bridge`
 - `umg_envoy_emit_relation_matrix`
 - `umg_envoy_action_gate_runtime_report_view`
+- `umg_envoy_low_risk_direct_tool_run`
 
 ## 2. Capability-Level Mapping
 
@@ -101,6 +102,7 @@ Envoy is intended to become tool-capable through explicit capability mapping, no
 - First seed pass does not mark any tool as `low_risk_direct`.
 - Blocked bridge/emission surfaces require later policy lanes.
 - The first low-risk direct adapter runs only six static safe tools.
+- `umg_envoy_low_risk_direct_tool_run` is the narrow runtime surface for that adapter.
 - `umg_envoy_load_sleeve` is intentionally excluded from that first direct adapter set.
 - Every direct run creates `ToolResult` audit output.
 - Writes, deletes, publishing, bridge, relation-matrix, compiler bridge, load-sleeve, and external actions are not part of this adapter.

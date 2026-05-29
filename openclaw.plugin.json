@@ -147,6 +147,7 @@
     "umg_envoy_matrix_status",
     "umg_envoy_compile_ir_bridge",
     "umg_envoy_emit_relation_matrix",
-    "umg_envoy_action_gate_runtime_report_view"
+    "umg_envoy_action_gate_runtime_report_view",
+    "umg_envoy_low_risk_direct_tool_run"
   ]
 }

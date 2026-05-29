@@ -30,7 +30,7 @@ assert("umg_envoy_load_sleeve is not direct-executable by default", loadSleeveSe
 assert("umg_envoy_load_sleeve is not in first low-risk direct adapter candidate set", candidateLowRiskDirectSet.has("umg_envoy_load_sleeve") === false);
 assert("unknown tools remain blocked/null through seed resolver", resolveEnvoySeededToolCapability("unknown.tool") === null);
 assert("seed still contains internal-only/conservative load sleeve policy note", (loadSleeveSeed?.notes ?? []).some((note) => note.includes("not declared in openclaw.plugin.json")));
-assert("seed still contains all manifest tools even with load sleeve internal-only policy", pluginManifest.tools?.every((toolId) => Boolean(resolveEnvoySeededToolCapability(toolId))) === true);
+assert("all manifest-declared tools except the runtime runner itself are present in the seed", pluginManifest.tools?.filter((toolId) => toolId !== "umg_envoy_low_risk_direct_tool_run").every((toolId) => Boolean(resolveEnvoySeededToolCapability(toolId))) === true);
 assert("no low_risk_direct entries are introduced by manifest alignment lane", ENVOY_TOOL_CAPABILITY_REGISTRY_SEED.every((entry) => entry.allowedRiskClass !== "low_risk_direct"));
 console.log(`=== Tool Manifest Alignment Tests Complete: ${passed} passed, ${failed} failed ===`);
 if (failed > 0)

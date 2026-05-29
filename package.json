@@ -33,6 +33,7 @@
     "test:tool-capability-registry-seed": "node dist/tool-capability-registry-seed.test.js",
     "test:tool-manifest-alignment": "node dist/tool-manifest-alignment.test.js",
     "test:low-risk-direct-execution-adapter": "node dist/low-risk-direct-execution-adapter.test.js",
+    "test:low-risk-direct-runtime-tool-surface": "node dist/low-risk-direct-runtime-tool-surface.test.js",
     "validate:umg:e2e": "node scripts/validate-umg-e2e.mjs",
     "pack:dry": "npm pack --dry-run"
   },

@@ -16,6 +16,7 @@ import { validateUMGPath } from "./umg-path-validator.js";
 import { buildPublicPath } from "./public-path-builder.js";
 import { createActionGateRuntimeReport, createActionGateRuntimeReportToolResponse, createProposedActionGate } from "./action-gate-types.js";
 import { resolveEnvoySeededToolCapability } from "./tool-capability-registry-seed.js";
+import { executeLowRiskDirectTool } from "./low-risk-direct-execution-adapter.js";
 export function effectiveConfig(config) {
     return {
         allowRuntimeWrites: false,
@@ -56,7 +57,8 @@ export function statusPayload(config) {
             "umg_envoy_load_sleeve",
             "umg_envoy_compile_ir_bridge",
             "umg_envoy_emit_relation_matrix",
-            "umg_envoy_action_gate_runtime_report_view"
+            "umg_envoy_action_gate_runtime_report_view",
+            "umg_envoy_low_risk_direct_tool_run"
         ]
     };
 }
@@ -280,6 +282,17 @@ const entry = {
             }, { additionalProperties: false }),
             async execute(input) {
                 return { content: [{ type: "text", text: JSON.stringify(createRuntimeReportToolSurface(input), null, 2) }] };
+            }
+        }, { optional: true });
+        api.registerTool({
+            name: "umg_envoy_low_risk_direct_tool_run",
+            description: "Low-risk direct tool runner for exactly six approved read-only tools only. No writes, no external transmission, no arbitrary dispatch. Returns handler output plus ToolResult audit record.",
+            parameters: Type.Object({
+                toolId: Type.String(),
+                input: Type.Optional(Type.Record(Type.String(), Type.Any()))
+            }, { additionalProperties: false }),
+            async execute(input) {
+                return { content: [{ type: "text", text: JSON.stringify(executeLowRiskDirectTool(input), null, 2) }] };
             }
         }, { optional: true });
         api.registerTool({
