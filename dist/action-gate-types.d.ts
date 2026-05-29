@@ -137,6 +137,36 @@ export interface LowRiskAllowlistDecision {
     requiresToolResultAuditLater: boolean;
     notes: string[];
 }
+export type ApprovalRequirementStatus = "approval_not_required" | "approval_required" | "approval_missing" | "approval_present" | "approval_invalid";
+export type RollbackBackupRequirementStatus = "not_required" | "rollback_required" | "backup_required" | "rollback_and_backup_required" | "ready";
+export type ApprovalGatedWriteStatus = "approval_not_required" | "approval_required" | "approval_missing" | "approval_present" | "approval_invalid" | "preview_required_before_approval" | "dry_run_required_before_approval" | "rollback_required" | "backup_required" | "ready_for_future_write_execution" | "blocked_boundary_violation" | "blocked_not_write_capability" | "blocked_external_transmission" | "blocked_destructive_or_sensitive" | "blocked_unknown_tool";
+export interface ApprovalRecord {
+    approvalId: string;
+    approver: string;
+    approvedAt: string;
+    scope: string;
+    valid: boolean;
+    note?: string;
+}
+export interface ApprovalGatedWritePolicy {
+    notes: string[];
+}
+export interface ApprovalGatedWriteDecision {
+    actionId: string;
+    toolId: string;
+    toolName: string;
+    status: ApprovalGatedWriteStatus;
+    eligibleForFutureWriteExecution: boolean;
+    reasonCode: string;
+    reason: string;
+    approvalStatus: ApprovalRequirementStatus;
+    rollbackBackupStatus: RollbackBackupRequirementStatus;
+    previewRequiredBeforeApproval: boolean;
+    dryRunRequiredBeforeApproval: boolean;
+    approvalRecord: ApprovalRecord | null;
+    requiresToolResultAuditLater: boolean;
+    notes: string[];
+}
 export interface ToolResult {
     actionId: string;
     toolName: string;
@@ -167,6 +197,13 @@ export declare function requiresPreviewForCapability(capability: ToolCapability 
 export declare function requiresDryRunForCapability(capability: ToolCapability | null): boolean;
 export declare function requiresBackupForCapability(capability: ToolCapability | null): boolean;
 export declare function createLowRiskAllowlistPolicy(): LowRiskAllowlistPolicy;
+export declare function createApprovalGatedWritePolicy(): ApprovalGatedWritePolicy;
+export declare function evaluateApprovalGatedWriteReadiness(actionGate: ActionGate, capability: ToolCapability | null, input?: {
+    approvalRecord?: ApprovalRecord | null;
+}, policy?: ApprovalGatedWritePolicy): ApprovalGatedWriteDecision;
+export declare function canProceedApprovalGatedWrite(actionGate: ActionGate, capability: ToolCapability | null, input?: {
+    approvalRecord?: ApprovalRecord | null;
+}, policy?: ApprovalGatedWritePolicy): boolean;
 export declare function evaluateLowRiskDirectEligibility(actionGate: ActionGate, capability: ToolCapability | null, policy?: LowRiskAllowlistPolicy): LowRiskAllowlistDecision;
 export declare function canProceedLowRiskDirect(actionGate: ActionGate, capability: ToolCapability | null, policy?: LowRiskAllowlistPolicy): boolean;
 export declare function planActionGatePreviewDryRun(actionGate: ActionGate, capability: ToolCapability | null): ActionGatePreExecutionPlan;

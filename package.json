@@ -26,6 +26,7 @@
     "test:tool-capability-registry": "node dist/tool-capability-registry.test.js",
     "test:action-gate-preview-dry-run": "node dist/action-gate-preview-dry-run.test.js",
     "test:low-risk-allowlisted-tool-flow": "node dist/low-risk-allowlisted-tool-flow.test.js",
+    "test:approval-gated-write-tool-flow": "node dist/approval-gated-write-tool-flow.test.js",
     "validate:umg:e2e": "node scripts/validate-umg-e2e.mjs",
     "pack:dry": "npm pack --dry-run"
   },

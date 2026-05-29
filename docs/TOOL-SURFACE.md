@@ -80,6 +80,9 @@ Envoy is intended to become tool-capable through explicit capability mapping, no
 - Preview and dry-run do not equal approval or execution.
 - Low-risk direct does not mean unrestricted execution; it requires a known registry entry and explicit allowlist policy.
 - Unknown tools, writes, deletes, publishing, plugin mutation, and external transmission are not low-risk direct.
+- Approval-gated write flow is pre-execution only; approval is required for durable mutation and does not equal execution.
+- Preview and dry-run do not equal execution.
+- Destructive/sensitive and external-transmission flows remain separate lanes.
 - `ToolResult` records actual execution later.
 - The registry itself does not execute tools and does not authorize execution by itself.
 

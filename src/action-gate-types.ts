@@ -204,6 +204,67 @@ export interface LowRiskAllowlistDecision {
   notes: string[];
 }
 
+export type ApprovalRequirementStatus =
+  | "approval_not_required"
+  | "approval_required"
+  | "approval_missing"
+  | "approval_present"
+  | "approval_invalid";
+
+export type RollbackBackupRequirementStatus =
+  | "not_required"
+  | "rollback_required"
+  | "backup_required"
+  | "rollback_and_backup_required"
+  | "ready";
+
+export type ApprovalGatedWriteStatus =
+  | "approval_not_required"
+  | "approval_required"
+  | "approval_missing"
+  | "approval_present"
+  | "approval_invalid"
+  | "preview_required_before_approval"
+  | "dry_run_required_before_approval"
+  | "rollback_required"
+  | "backup_required"
+  | "ready_for_future_write_execution"
+  | "blocked_boundary_violation"
+  | "blocked_not_write_capability"
+  | "blocked_external_transmission"
+  | "blocked_destructive_or_sensitive"
+  | "blocked_unknown_tool";
+
+export interface ApprovalRecord {
+  approvalId: string;
+  approver: string;
+  approvedAt: string;
+  scope: string;
+  valid: boolean;
+  note?: string;
+}
+
+export interface ApprovalGatedWritePolicy {
+  notes: string[];
+}
+
+export interface ApprovalGatedWriteDecision {
+  actionId: string;
+  toolId: string;
+  toolName: string;
+  status: ApprovalGatedWriteStatus;
+  eligibleForFutureWriteExecution: boolean;
+  reasonCode: string;
+  reason: string;
+  approvalStatus: ApprovalRequirementStatus;
+  rollbackBackupStatus: RollbackBackupRequirementStatus;
+  previewRequiredBeforeApproval: boolean;
+  dryRunRequiredBeforeApproval: boolean;
+  approvalRecord: ApprovalRecord | null;
+  requiresToolResultAuditLater: boolean;
+  notes: string[];
+}
+
 export interface ToolResult {
   actionId: string;
   toolName: string;
@@ -376,6 +437,295 @@ export function createLowRiskAllowlistPolicy(): LowRiskAllowlistPolicy {
       "Writes, deletes, publishing, plugin mutation, and external transmission are not low-risk direct.",
     ],
   };
+}
+
+export function createApprovalGatedWritePolicy(): ApprovalGatedWritePolicy {
+  return {
+    notes: [
+      "Approval-gated write flow is pre-execution only.",
+      "Approval is required for durable mutation and does not equal execution.",
+      "Preview and dry-run do not equal execution.",
+      "Destructive/sensitive and external-transmission flows remain separate from this lane.",
+    ],
+  };
+}
+
+export function evaluateApprovalGatedWriteReadiness(
+  actionGate: ActionGate,
+  capability: ToolCapability | null,
+  input?: { approvalRecord?: ApprovalRecord | null },
+  policy: ApprovalGatedWritePolicy = createApprovalGatedWritePolicy(),
+): ApprovalGatedWriteDecision {
+  const approvalRecord = input?.approvalRecord ?? null;
+  const previewPlan = planActionGatePreviewDryRun(actionGate, capability);
+  const notes = [
+    ...policy.notes,
+    "Approval readiness is a pre-execution artifact only and does not execute the write.",
+    "ToolResult must be created later by an actual execution lane, not by approval readiness evaluation.",
+    "RuntimeSpec and Trace may inform planning but do not authorize execution by themselves.",
+  ];
+
+  if (!capability) {
+    return {
+      actionId: actionGate.actionId,
+      toolId: actionGate.proposedToolId,
+      toolName: actionGate.proposedToolName,
+      status: "blocked_unknown_tool",
+      eligibleForFutureWriteExecution: false,
+      reasonCode: "unknown_tool",
+      reason: "Unknown tools cannot enter approval-gated write readiness.",
+      approvalStatus: "approval_missing",
+      rollbackBackupStatus: "not_required",
+      previewRequiredBeforeApproval: false,
+      dryRunRequiredBeforeApproval: false,
+      approvalRecord,
+      requiresToolResultAuditLater: false,
+      notes,
+    };
+  }
+
+  if (!actionGate.requiredChecks.runtimeSpecBoundaryValid || !actionGate.requiredChecks.traceBoundaryValid) {
+    return {
+      actionId: actionGate.actionId,
+      toolId: capability.toolId,
+      toolName: capability.toolName,
+      status: "blocked_boundary_violation",
+      eligibleForFutureWriteExecution: false,
+      reasonCode: "boundary_violation",
+      reason: "Boundary validation failed or is incomplete; approval-gated write readiness is blocked.",
+      approvalStatus: "approval_missing",
+      rollbackBackupStatus: "not_required",
+      previewRequiredBeforeApproval: false,
+      dryRunRequiredBeforeApproval: false,
+      approvalRecord,
+      requiresToolResultAuditLater: capability.requiresToolResultAudit,
+      notes,
+    };
+  }
+
+  if (capability.allowedRiskClass === "external_transmission" || capability.externalTransmissionAllowed) {
+    return {
+      actionId: actionGate.actionId,
+      toolId: capability.toolId,
+      toolName: capability.toolName,
+      status: "blocked_external_transmission",
+      eligibleForFutureWriteExecution: false,
+      reasonCode: "external_transmission_separate_lane",
+      reason: "External transmission requires a separate gated lane and is not handled by approval-gated write readiness.",
+      approvalStatus: "approval_required",
+      rollbackBackupStatus: "not_required",
+      previewRequiredBeforeApproval: capability.previewRequired,
+      dryRunRequiredBeforeApproval: capability.dryRunRequired,
+      approvalRecord,
+      requiresToolResultAuditLater: capability.requiresToolResultAudit,
+      notes,
+    };
+  }
+
+  if (capability.allowedRiskClass === "destructive_or_sensitive") {
+    return {
+      actionId: actionGate.actionId,
+      toolId: capability.toolId,
+      toolName: capability.toolName,
+      status: "blocked_destructive_or_sensitive",
+      eligibleForFutureWriteExecution: false,
+      reasonCode: "destructive_or_sensitive_separate_lane",
+      reason: "Destructive or sensitive actions require a stronger dedicated lane and are not handled by approval-gated write readiness.",
+      approvalStatus: "approval_required",
+      rollbackBackupStatus: capability.backupRequired ? "backup_required" : (capability.rollbackSupported ? "rollback_required" : "not_required"),
+      previewRequiredBeforeApproval: capability.previewRequired,
+      dryRunRequiredBeforeApproval: capability.dryRunRequired,
+      approvalRecord,
+      requiresToolResultAuditLater: capability.requiresToolResultAudit,
+      notes,
+    };
+  }
+
+  if (capability.allowedRiskClass !== "approval_gated_write") {
+    return {
+      actionId: actionGate.actionId,
+      toolId: capability.toolId,
+      toolName: capability.toolName,
+      status: "blocked_not_write_capability",
+      eligibleForFutureWriteExecution: false,
+      reasonCode: "not_approval_gated_write",
+      reason: "Only approval_gated_write capabilities are eligible for this readiness lane.",
+      approvalStatus: capability.approvalRequired ? "approval_required" : "approval_not_required",
+      rollbackBackupStatus: "not_required",
+      previewRequiredBeforeApproval: capability.previewRequired,
+      dryRunRequiredBeforeApproval: capability.dryRunRequired,
+      approvalRecord,
+      requiresToolResultAuditLater: capability.requiresToolResultAudit,
+      notes,
+    };
+  }
+
+  if (capability.directExecutionAllowed) {
+    return {
+      actionId: actionGate.actionId,
+      toolId: capability.toolId,
+      toolName: capability.toolName,
+      status: "blocked_not_write_capability",
+      eligibleForFutureWriteExecution: false,
+      reasonCode: "write_capability_must_not_be_direct",
+      reason: "Approval-gated write capability must not be directly executable.",
+      approvalStatus: "approval_required",
+      rollbackBackupStatus: "not_required",
+      previewRequiredBeforeApproval: false,
+      dryRunRequiredBeforeApproval: false,
+      approvalRecord,
+      requiresToolResultAuditLater: capability.requiresToolResultAudit,
+      notes,
+    };
+  }
+
+  if (previewPlan.previewPlan.required) {
+    return {
+      actionId: actionGate.actionId,
+      toolId: capability.toolId,
+      toolName: capability.toolName,
+      status: "preview_required_before_approval",
+      eligibleForFutureWriteExecution: false,
+      reasonCode: "preview_required_before_approval",
+      reason: "Preview must be completed before approval-gated write readiness can advance.",
+      approvalStatus: "approval_required",
+      rollbackBackupStatus: capability.backupRequired ? "backup_required" : (capability.rollbackSupported ? "rollback_required" : "not_required"),
+      previewRequiredBeforeApproval: true,
+      dryRunRequiredBeforeApproval: capability.dryRunRequired,
+      approvalRecord,
+      requiresToolResultAuditLater: capability.requiresToolResultAudit,
+      notes,
+    };
+  }
+
+  if (previewPlan.dryRunPlan.required) {
+    return {
+      actionId: actionGate.actionId,
+      toolId: capability.toolId,
+      toolName: capability.toolName,
+      status: "dry_run_required_before_approval",
+      eligibleForFutureWriteExecution: false,
+      reasonCode: "dry_run_required_before_approval",
+      reason: "Dry-run must be completed before approval-gated write readiness can advance.",
+      approvalStatus: "approval_required",
+      rollbackBackupStatus: capability.backupRequired ? "backup_required" : (capability.rollbackSupported ? "rollback_required" : "not_required"),
+      previewRequiredBeforeApproval: false,
+      dryRunRequiredBeforeApproval: true,
+      approvalRecord,
+      requiresToolResultAuditLater: capability.requiresToolResultAudit,
+      notes,
+    };
+  }
+
+  const rollbackBackupStatus: RollbackBackupRequirementStatus = capability.backupRequired && capability.rollbackSupported
+    ? "rollback_and_backup_required"
+    : capability.backupRequired
+      ? "backup_required"
+      : capability.rollbackSupported
+        ? "rollback_required"
+        : "not_required";
+
+  if (!approvalRecord) {
+    return {
+      actionId: actionGate.actionId,
+      toolId: capability.toolId,
+      toolName: capability.toolName,
+      status: "approval_missing",
+      eligibleForFutureWriteExecution: false,
+      reasonCode: "approval_missing",
+      reason: "Approval record is required before future write execution can become ready.",
+      approvalStatus: "approval_missing",
+      rollbackBackupStatus,
+      previewRequiredBeforeApproval: false,
+      dryRunRequiredBeforeApproval: false,
+      approvalRecord,
+      requiresToolResultAuditLater: capability.requiresToolResultAudit,
+      notes,
+    };
+  }
+
+  if (!approvalRecord.valid) {
+    return {
+      actionId: actionGate.actionId,
+      toolId: capability.toolId,
+      toolName: capability.toolName,
+      status: "approval_invalid",
+      eligibleForFutureWriteExecution: false,
+      reasonCode: "approval_invalid",
+      reason: "Approval record is present but invalid for this approval-gated write action.",
+      approvalStatus: "approval_invalid",
+      rollbackBackupStatus,
+      previewRequiredBeforeApproval: false,
+      dryRunRequiredBeforeApproval: false,
+      approvalRecord,
+      requiresToolResultAuditLater: capability.requiresToolResultAudit,
+      notes,
+    };
+  }
+
+  if (rollbackBackupStatus === "rollback_required") {
+    return {
+      actionId: actionGate.actionId,
+      toolId: capability.toolId,
+      toolName: capability.toolName,
+      status: "rollback_required",
+      eligibleForFutureWriteExecution: false,
+      reasonCode: "rollback_required",
+      reason: "Rollback planning is still required before future write execution can become ready.",
+      approvalStatus: "approval_present",
+      rollbackBackupStatus,
+      previewRequiredBeforeApproval: false,
+      dryRunRequiredBeforeApproval: false,
+      approvalRecord,
+      requiresToolResultAuditLater: capability.requiresToolResultAudit,
+      notes,
+    };
+  }
+
+  if (rollbackBackupStatus === "backup_required" || rollbackBackupStatus === "rollback_and_backup_required") {
+    return {
+      actionId: actionGate.actionId,
+      toolId: capability.toolId,
+      toolName: capability.toolName,
+      status: "backup_required",
+      eligibleForFutureWriteExecution: false,
+      reasonCode: "backup_required",
+      reason: "Backup preparation is still required before future write execution can become ready.",
+      approvalStatus: "approval_present",
+      rollbackBackupStatus,
+      previewRequiredBeforeApproval: false,
+      dryRunRequiredBeforeApproval: false,
+      approvalRecord,
+      requiresToolResultAuditLater: capability.requiresToolResultAudit,
+      notes,
+    };
+  }
+
+  return {
+    actionId: actionGate.actionId,
+    toolId: capability.toolId,
+    toolName: capability.toolName,
+    status: "ready_for_future_write_execution",
+    eligibleForFutureWriteExecution: true,
+    reasonCode: "ready_for_future_write_execution",
+    reason: "Approval-gated write prerequisites are modeled as satisfied; future execution still requires a later execution lane.",
+    approvalStatus: "approval_present",
+    rollbackBackupStatus: "ready",
+    previewRequiredBeforeApproval: false,
+    dryRunRequiredBeforeApproval: false,
+    approvalRecord,
+    requiresToolResultAuditLater: capability.requiresToolResultAudit,
+    notes,
+  };
+}
+
+export function canProceedApprovalGatedWrite(
+  actionGate: ActionGate,
+  capability: ToolCapability | null,
+  input?: { approvalRecord?: ApprovalRecord | null },
+  policy?: ApprovalGatedWritePolicy,
+): boolean {
+  return evaluateApprovalGatedWriteReadiness(actionGate, capability, input, policy).eligibleForFutureWriteExecution;
 }
 
 export function evaluateLowRiskDirectEligibility(
