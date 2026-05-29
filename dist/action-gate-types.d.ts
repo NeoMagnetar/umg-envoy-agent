@@ -198,6 +198,27 @@ export interface ToolResult {
     warnings: string[];
     errors: string[];
 }
+export type ActionGateRuntimeReportStatus = "inspection_only" | "planning_ready" | "preview_required" | "dry_run_required" | "approval_required" | "ready_for_future_execution" | "blocked" | "denied" | "executed_result_present" | "invalid_boundary" | "unknown_tool";
+export interface ActionGateRuntimeReportSummary {
+    label: string;
+    value: string;
+}
+export interface ActionGateRuntimeReportSection {
+    title: string;
+    status: string;
+    details: string[];
+}
+export interface ActionGateRuntimeReport {
+    actionId: string;
+    toolId: string;
+    toolName: string;
+    status: ActionGateRuntimeReportStatus;
+    riskClass: ToolRiskClass | null;
+    summaries: ActionGateRuntimeReportSummary[];
+    sections: ActionGateRuntimeReportSection[];
+    finalReason: string;
+    notes: string[];
+}
 export declare function getRiskClassPolicy(riskClass: ToolRiskClass): ToolRiskClassPolicy;
 export declare function classifyRiskClassPolicy(riskClass: ToolRiskClass): ToolRiskClassPolicy;
 export declare function createToolCapabilityRegistry(entries: ToolCapabilityRegistryEntry[]): ToolCapabilityRegistry;
@@ -225,6 +246,30 @@ export declare function createToolResultAuditDraft(input: {
     warnings?: string[];
     errors?: string[];
 }): ToolResult;
+export declare function classifyActionGateRuntimeReportStatus(input: {
+    capability?: ToolCapability | null;
+    actionGate: ActionGate;
+    preExecutionPlan?: ActionGatePreExecutionPlan | null;
+    lowRiskDecision?: LowRiskAllowlistDecision | null;
+    approvalWriteDecision?: ApprovalGatedWriteDecision | null;
+    toolResult?: ToolResult | null;
+}): ActionGateRuntimeReportStatus;
+export declare function summarizeActionGateRuntimeState(input: {
+    capability?: ToolCapability | null;
+    actionGate: ActionGate;
+    preExecutionPlan?: ActionGatePreExecutionPlan | null;
+    lowRiskDecision?: LowRiskAllowlistDecision | null;
+    approvalWriteDecision?: ApprovalGatedWriteDecision | null;
+    toolResult?: ToolResult | null;
+}): ActionGateRuntimeReportSummary[];
+export declare function createActionGateRuntimeReport(input: {
+    capability?: ToolCapability | null;
+    actionGate: ActionGate;
+    preExecutionPlan?: ActionGatePreExecutionPlan | null;
+    lowRiskDecision?: LowRiskAllowlistDecision | null;
+    approvalWriteDecision?: ApprovalGatedWriteDecision | null;
+    toolResult?: ToolResult | null;
+}): ActionGateRuntimeReport;
 export declare function createLowRiskAllowlistPolicy(): LowRiskAllowlistPolicy;
 export declare function createApprovalGatedWritePolicy(): ApprovalGatedWritePolicy;
 export declare function evaluateApprovalGatedWriteReadiness(actionGate: ActionGate, capability: ToolCapability | null, input?: {

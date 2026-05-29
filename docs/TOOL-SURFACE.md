@@ -87,6 +87,8 @@ Envoy is intended to become tool-capable through explicit capability mapping, no
 - `ToolResult` is not compiler Trace.
 - Ready-for-future-execution does not equal execution.
 - Blocked, denied, preview, and dry-run records must remain distinguishable from executed results.
+- Runtime report surfaces ActionGate/ToolResult readiness but is not approval and is not execution.
+- Executed status only comes from `ToolResult.executionStatus`.
 - The registry itself does not execute tools and does not authorize execution by itself.
 
 ## Notes

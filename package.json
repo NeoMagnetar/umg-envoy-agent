@@ -28,6 +28,7 @@
     "test:low-risk-allowlisted-tool-flow": "node dist/low-risk-allowlisted-tool-flow.test.js",
     "test:approval-gated-write-tool-flow": "node dist/approval-gated-write-tool-flow.test.js",
     "test:tool-result-audit-record": "node dist/tool-result-audit-record.test.js",
+    "test:action-gate-runtime-report-surface": "node dist/action-gate-runtime-report-surface.test.js",
     "validate:umg:e2e": "node scripts/validate-umg-e2e.mjs",
     "pack:dry": "npm pack --dry-run"
   },

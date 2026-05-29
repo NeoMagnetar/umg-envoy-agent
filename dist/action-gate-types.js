@@ -204,6 +204,156 @@ export function createToolResultAuditDraft(input) {
         errors: input.errors ?? [],
     };
 }
+export function classifyActionGateRuntimeReportStatus(input) {
+    const { capability, actionGate, preExecutionPlan, lowRiskDecision, approvalWriteDecision, toolResult } = input;
+    if (!actionGate.requiredChecks.runtimeSpecBoundaryValid || !actionGate.requiredChecks.traceBoundaryValid) {
+        return "invalid_boundary";
+    }
+    if (!capability) {
+        return "unknown_tool";
+    }
+    if (toolResult) {
+        if (toolResult.executionStatus === "executed_success" || toolResult.executionStatus === "executed_failure") {
+            return "executed_result_present";
+        }
+        if (toolResult.executionStatus === "execution_denied") {
+            return "denied";
+        }
+        if (toolResult.executionStatus === "execution_blocked" || toolResult.executionStatus === "execution_cancelled" || toolResult.executionStatus === "execution_error") {
+            return "blocked";
+        }
+    }
+    if (approvalWriteDecision) {
+        if (approvalWriteDecision.status === "ready_for_future_write_execution") {
+            return "ready_for_future_execution";
+        }
+        if (approvalWriteDecision.status === "preview_required_before_approval") {
+            return "preview_required";
+        }
+        if (approvalWriteDecision.status === "dry_run_required_before_approval") {
+            return "dry_run_required";
+        }
+        if (approvalWriteDecision.status === "approval_missing" || approvalWriteDecision.status === "approval_invalid") {
+            return "approval_required";
+        }
+        if (approvalWriteDecision.status.startsWith("blocked_")) {
+            return "blocked";
+        }
+    }
+    if (preExecutionPlan) {
+        if (preExecutionPlan.blocked) {
+            return "blocked";
+        }
+        if (preExecutionPlan.previewPlan.required) {
+            return "preview_required";
+        }
+        if (preExecutionPlan.dryRunPlan.required) {
+            return "dry_run_required";
+        }
+    }
+    if (lowRiskDecision) {
+        return lowRiskDecision.eligible ? "planning_ready" : "blocked";
+    }
+    if (actionGate.finalDecision === "allow_after_approval") {
+        return "approval_required";
+    }
+    if (actionGate.finalDecision === "allow_direct") {
+        return "planning_ready";
+    }
+    if (actionGate.finalDecision === "deny") {
+        return "denied";
+    }
+    if (actionGate.finalDecision === "block" || actionGate.finalDecision === "review_required") {
+        return "blocked";
+    }
+    return "inspection_only";
+}
+export function summarizeActionGateRuntimeState(input) {
+    return [
+        { label: "runtimeSpecBoundary", value: String(input.actionGate.sourceRuntimeSpecBoundaryStatus ?? "null") },
+        { label: "traceBoundary", value: String(input.actionGate.sourceTraceBoundaryStatus ?? "null") },
+        { label: "capabilityKnown", value: String(Boolean(input.capability)) },
+        { label: "riskClass", value: String(input.capability?.allowedRiskClass ?? input.actionGate.riskClass) },
+        { label: "gateState", value: input.actionGate.gateState },
+        { label: "finalDecision", value: input.actionGate.finalDecision },
+        { label: "previewRequired", value: String(input.preExecutionPlan?.previewPlan.required ?? input.actionGate.previewRequirement.required) },
+        { label: "dryRunRequired", value: String(input.preExecutionPlan?.dryRunPlan.required ?? input.actionGate.dryRunRequirement.required) },
+        { label: "lowRiskEligible", value: String(input.lowRiskDecision?.eligible ?? false) },
+        { label: "approvalReady", value: String(input.approvalWriteDecision?.eligibleForFutureWriteExecution ?? false) },
+        { label: "toolResultStatus", value: String(input.toolResult?.executionStatus ?? "none") },
+    ];
+}
+export function createActionGateRuntimeReport(input) {
+    const status = classifyActionGateRuntimeReportStatus(input);
+    const summaries = summarizeActionGateRuntimeState(input);
+    const sections = [
+        {
+            title: "Boundaries",
+            status: input.actionGate.requiredChecks.runtimeSpecBoundaryValid && input.actionGate.requiredChecks.traceBoundaryValid ? "valid" : "invalid",
+            details: [
+                `RuntimeSpecBoundary: ${String(input.actionGate.sourceRuntimeSpecBoundaryStatus ?? "null")}`,
+                `TraceBoundary: ${String(input.actionGate.sourceTraceBoundaryStatus ?? "null")}`,
+            ],
+        },
+        {
+            title: "Capability",
+            status: input.capability ? "known" : "unknown",
+            details: [
+                `toolId: ${input.capability?.toolId ?? input.actionGate.proposedToolId}`,
+                `riskClass: ${input.capability?.allowedRiskClass ?? input.actionGate.riskClass}`,
+            ],
+        },
+        {
+            title: "Gate",
+            status: input.actionGate.gateState,
+            details: [
+                `finalDecision: ${input.actionGate.finalDecision}`,
+                `reason: ${input.actionGate.auditMeta.decisionReason}`,
+            ],
+        },
+        {
+            title: "PreExecution",
+            status: input.preExecutionPlan?.status ?? "not_provided",
+            details: [
+                `previewRequired: ${String(input.preExecutionPlan?.previewPlan.required ?? false)}`,
+                `dryRunRequired: ${String(input.preExecutionPlan?.dryRunPlan.required ?? false)}`,
+            ],
+        },
+        {
+            title: "Readiness",
+            status: input.approvalWriteDecision?.status ?? input.lowRiskDecision?.status ?? "not_provided",
+            details: [
+                `lowRiskEligible: ${String(input.lowRiskDecision?.eligible ?? false)}`,
+                `approvalReady: ${String(input.approvalWriteDecision?.eligibleForFutureWriteExecution ?? false)}`,
+            ],
+        },
+        {
+            title: "ToolResult",
+            status: input.toolResult?.executionStatus ?? "none",
+            details: [
+                `auditReference: ${String(input.toolResult?.auditReference ?? null)}`,
+                `approvalReference: ${String(input.toolResult?.approvalReference ?? null)}`,
+            ],
+        },
+    ];
+    const notes = [
+        "Runtime report is an inspectable state surface only.",
+        "Runtime report is not approval and is not execution.",
+        "Executed status only comes from ToolResult executionStatus.",
+        "Tool execution remains a future/later lane.",
+    ];
+    return {
+        actionId: input.actionGate.actionId,
+        toolId: input.capability?.toolId ?? input.actionGate.proposedToolId,
+        toolName: input.capability?.toolName ?? input.actionGate.proposedToolName,
+        status,
+        riskClass: input.capability?.allowedRiskClass ?? input.actionGate.riskClass,
+        summaries,
+        sections,
+        finalReason: input.toolResult?.outputSummary || input.actionGate.auditMeta.decisionReason,
+        notes,
+    };
+}
 export function createLowRiskAllowlistPolicy() {
     return {
         allowlistTag: "low-risk-direct",
