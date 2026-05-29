@@ -130,6 +130,197 @@ export function requiresDryRunForCapability(capability) {
 export function requiresBackupForCapability(capability) {
     return capability?.backupRequired === true;
 }
+export function planActionGatePreviewDryRun(actionGate, capability) {
+    const runtimeBoundaryValid = actionGate.requiredChecks.runtimeSpecBoundaryValid;
+    const traceBoundaryValid = actionGate.requiredChecks.traceBoundaryValid;
+    const fallbackPolicy = getRiskClassPolicy(actionGate.riskClass);
+    const previewRequired = capability?.previewRequired ?? fallbackPolicy.previewRequired;
+    const dryRunRequired = capability?.dryRunRequired ?? fallbackPolicy.dryRunRequired;
+    const dryRunSupported = capability?.dryRunSupported ?? fallbackPolicy.dryRunSupported;
+    const approvalRequired = capability?.approvalRequired ?? fallbackPolicy.approvalRequired;
+    const backupRequired = capability?.backupRequired ?? fallbackPolicy.backupRequired;
+    const rollbackRequired = fallbackPolicy.rollbackRequired;
+    const externalTransmission = capability?.externalTransmissionAllowed ?? fallbackPolicy.externalTransmissionAllowed;
+    const notes = [
+        "Preview and dry-run planning do not execute tools.",
+        "Preview and dry-run do not equal approval or execution.",
+        "RuntimeSpec and Trace may inform planning but do not authorize execution by themselves.",
+    ];
+    if (!runtimeBoundaryValid || !traceBoundaryValid) {
+        return {
+            actionId: actionGate.actionId,
+            toolId: actionGate.proposedToolId,
+            toolName: actionGate.proposedToolName,
+            riskClass: actionGate.riskClass,
+            status: previewRequired ? "blocked_before_preview" : "blocked_before_dry_run",
+            blocked: true,
+            approvalRequiredLater: approvalRequired,
+            previewPlan: {
+                required: previewRequired,
+                status: "blocked",
+                reasonCode: "boundary_blocked",
+                reason: "Boundary validation failed or is incomplete; pre-execution planning cannot authorize or advance execution.",
+            },
+            dryRunPlan: {
+                required: dryRunRequired,
+                supported: dryRunSupported,
+                status: "blocked",
+                reasonCode: "boundary_blocked",
+                reason: "Boundary validation failed or is incomplete; dry-run planning cannot proceed.",
+            },
+            backupRequired,
+            rollbackRequired,
+            externalTransmission,
+            notes,
+        };
+    }
+    if (actionGate.riskClass === "blocked" || actionGate.gateState === "blocked" || actionGate.finalDecision === "block") {
+        return {
+            actionId: actionGate.actionId,
+            toolId: actionGate.proposedToolId,
+            toolName: actionGate.proposedToolName,
+            riskClass: actionGate.riskClass,
+            status: previewRequired ? "blocked_before_preview" : "blocked_before_dry_run",
+            blocked: true,
+            approvalRequiredLater: false,
+            previewPlan: {
+                required: previewRequired,
+                status: "blocked",
+                reasonCode: "policy_blocked",
+                reason: "Capability is blocked by policy and does not become executable through preview.",
+            },
+            dryRunPlan: {
+                required: dryRunRequired,
+                supported: dryRunSupported,
+                status: "blocked",
+                reasonCode: "policy_blocked",
+                reason: "Capability is blocked by policy and does not become executable through dry-run.",
+            },
+            backupRequired,
+            rollbackRequired,
+            externalTransmission,
+            notes,
+        };
+    }
+    if (actionGate.finalDecision === "review_required") {
+        return {
+            actionId: actionGate.actionId,
+            toolId: actionGate.proposedToolId,
+            toolName: actionGate.proposedToolName,
+            riskClass: actionGate.riskClass,
+            status: previewRequired ? "blocked_before_preview" : "blocked_before_dry_run",
+            blocked: true,
+            approvalRequiredLater: approvalRequired,
+            previewPlan: {
+                required: previewRequired,
+                status: "blocked",
+                reasonCode: "review_required",
+                reason: "Capability remains review-required and does not advance through preview planning alone.",
+            },
+            dryRunPlan: {
+                required: dryRunRequired,
+                supported: dryRunSupported,
+                status: "blocked",
+                reasonCode: "review_required",
+                reason: "Capability remains review-required and does not advance through dry-run planning alone.",
+            },
+            backupRequired,
+            rollbackRequired,
+            externalTransmission,
+            notes,
+        };
+    }
+    if (previewRequired) {
+        return {
+            actionId: actionGate.actionId,
+            toolId: actionGate.proposedToolId,
+            toolName: actionGate.proposedToolName,
+            riskClass: actionGate.riskClass,
+            status: approvalRequired ? "approval_required_after_preview" : "preview_required",
+            blocked: false,
+            approvalRequiredLater: approvalRequired,
+            previewPlan: {
+                required: true,
+                status: "required",
+                reasonCode: "preview_required_by_policy",
+                reason: "Capability policy requires preview before any later execution lane can proceed.",
+            },
+            dryRunPlan: {
+                required: dryRunRequired,
+                supported: dryRunSupported,
+                status: dryRunRequired ? (dryRunSupported ? "ready" : "blocked") : "not_required",
+                reasonCode: dryRunRequired
+                    ? (dryRunSupported ? "dry_run_supported_after_preview" : "dry_run_required_but_unsupported")
+                    : "dry_run_not_required",
+                reason: dryRunRequired
+                    ? (dryRunSupported
+                        ? "Dry-run is also required and appears supportable after preview planning."
+                        : "Dry-run is required by policy but not marked as supported by this capability.")
+                    : "Dry-run is not required by current capability policy.",
+            },
+            backupRequired,
+            rollbackRequired,
+            externalTransmission,
+            notes,
+        };
+    }
+    if (dryRunRequired) {
+        return {
+            actionId: actionGate.actionId,
+            toolId: actionGate.proposedToolId,
+            toolName: actionGate.proposedToolName,
+            riskClass: actionGate.riskClass,
+            status: dryRunSupported ? (approvalRequired ? "approval_required_after_preview" : "dry_run_required") : "blocked_before_dry_run",
+            blocked: !dryRunSupported,
+            approvalRequiredLater: approvalRequired,
+            previewPlan: {
+                required: false,
+                status: "not_required",
+                reasonCode: "preview_not_required",
+                reason: "Preview is not required by current capability policy.",
+            },
+            dryRunPlan: {
+                required: true,
+                supported: dryRunSupported,
+                status: dryRunSupported ? "required" : "blocked",
+                reasonCode: dryRunSupported ? "dry_run_required_by_policy" : "dry_run_required_but_unsupported",
+                reason: dryRunSupported
+                    ? "Capability policy requires a non-mutating dry-run before any later execution lane can proceed."
+                    : "Dry-run is required by policy but this capability is not marked as dry-run supportable.",
+            },
+            backupRequired,
+            rollbackRequired,
+            externalTransmission,
+            notes,
+        };
+    }
+    return {
+        actionId: actionGate.actionId,
+        toolId: actionGate.proposedToolId,
+        toolName: actionGate.proposedToolName,
+        riskClass: actionGate.riskClass,
+        status: "preview_not_required",
+        blocked: false,
+        approvalRequiredLater: approvalRequired,
+        previewPlan: {
+            required: false,
+            status: "not_required",
+            reasonCode: "preview_not_required",
+            reason: "Preview is not required by current capability policy.",
+        },
+        dryRunPlan: {
+            required: false,
+            supported: dryRunSupported,
+            status: "not_required",
+            reasonCode: "dry_run_not_required",
+            reason: "Dry-run is not required by current capability policy.",
+        },
+        backupRequired,
+        rollbackRequired,
+        externalTransmission,
+        notes,
+    };
+}
 export function canProceedDirectly(actionGate) {
     return actionGate.finalDecision === "allow_direct" && actionGate.gateState === "allowed_direct";
 }

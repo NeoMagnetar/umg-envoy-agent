@@ -76,6 +76,8 @@ Envoy is intended to become tool-capable through explicit capability mapping, no
 - `ToolCapabilityRegistry` defines what Envoy knows how to do.
 - Unknown tools are blocked or review-required by default.
 - `ActionGate` decides whether a known capability may proceed.
+- Preview and dry-run are pre-execution planning layers only.
+- Preview and dry-run do not equal approval or execution.
 - `ToolResult` records actual execution later.
 - The registry itself does not execute tools and does not authorize execution by itself.
 

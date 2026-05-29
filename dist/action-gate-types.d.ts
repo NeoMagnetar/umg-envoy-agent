@@ -91,6 +91,35 @@ export interface ToolRiskClassPolicy {
 export interface ToolCapabilityRegistry {
     entriesByToolId: Record<string, ToolCapabilityRegistryEntry>;
 }
+export type ActionGatePreExecutionStatus = "preview_not_required" | "preview_required" | "dry_run_required" | "preview_ready" | "dry_run_ready" | "approval_required_after_preview" | "blocked_before_preview" | "blocked_before_dry_run";
+export interface ActionGatePreviewPlan {
+    required: boolean;
+    status: "not_required" | "required" | "ready" | "blocked";
+    reasonCode: string;
+    reason: string;
+}
+export interface ActionGateDryRunPlan {
+    required: boolean;
+    supported: boolean;
+    status: "not_required" | "required" | "ready" | "blocked";
+    reasonCode: string;
+    reason: string;
+}
+export interface ActionGatePreExecutionPlan {
+    actionId: string;
+    toolId: string;
+    toolName: string;
+    riskClass: ToolRiskClass;
+    status: ActionGatePreExecutionStatus;
+    blocked: boolean;
+    approvalRequiredLater: boolean;
+    previewPlan: ActionGatePreviewPlan;
+    dryRunPlan: ActionGateDryRunPlan;
+    backupRequired: boolean;
+    rollbackRequired: boolean;
+    externalTransmission: boolean;
+    notes: string[];
+}
 export interface ToolResult {
     actionId: string;
     toolName: string;
@@ -120,6 +149,7 @@ export declare function requiresApprovalForCapability(capability: ToolCapability
 export declare function requiresPreviewForCapability(capability: ToolCapability | null): boolean;
 export declare function requiresDryRunForCapability(capability: ToolCapability | null): boolean;
 export declare function requiresBackupForCapability(capability: ToolCapability | null): boolean;
+export declare function planActionGatePreviewDryRun(actionGate: ActionGate, capability: ToolCapability | null): ActionGatePreExecutionPlan;
 export declare function canProceedDirectly(actionGate: ActionGate): boolean;
 export declare function requiresApproval(actionGate: ActionGate): boolean;
 export declare function requiresPreview(actionGate: ActionGate): boolean;
