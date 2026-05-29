@@ -5,9 +5,8 @@ import {
   evaluateLowRiskDirectEligibility,
   type ActionGate,
   type ToolResult,
-  type RuntimeSpecBoundaryStatus,
-  type TraceBoundaryStatus,
 } from "./action-gate-types.js";
+import type { RuntimeSpecBoundaryStatus, TraceBoundaryStatus } from "./types.js";
 import { resolveEnvoySeededToolCapability } from "./tool-capability-registry-seed.js";
 import { statusPayload, createRuntimeReportToolSurface } from "./plugin-entry.js";
 import { validateRuntimeOutput } from "./compiler/runtime-validator.js";

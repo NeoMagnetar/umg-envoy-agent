@@ -1,4 +1,4 @@
-# UMG Envoy Agent v0.2.8
+# UMG Envoy Agent v0.3.0-alpha.14
 
 UMG Envoy Agent is an OpenClaw plugin that exposes a runtime-facing UMG cognition specification and inspection layer. It loads governed UMG sleeves and related artifacts, supports inspection and library navigation, and emits dry-run runtime projections such as RuntimeSpec, Trace, diagnostics, and related runtime-visible views without making UMG itself an execution engine.
 
@@ -12,7 +12,7 @@ In UMG terminology, an Envoy is a carrier surface for moving selected governed a
 
 ## Publication status
 
-- Current package version in this repo is `0.2.8`.
+- Current package version in this repo is `0.3.0-alpha.14`.
 - ClawHub/public release publication remains a separate explicit operation after metadata alignment, validation review, and release-note audit.
 - Raw npm publication is not the primary documented user path for this package at this stage.
 - This repo now contains bounded runtime-facing capability work; that does **not** imply broad arbitrary execution support.
@@ -246,7 +246,7 @@ ClawHub publication is the intended first public plugin path for this package li
 Future maintainer reference only, not to run during Stage 14D:
 
 ```text
-clawhub package publish <path> --family code-plugin --name umg-envoy-agent --display-name "UMG Envoy Agent" --version 0.2.8 ...
+clawhub package publish <path> --family code-plugin --name umg-envoy-agent --display-name "UMG Envoy Agent" --version 0.3.0-alpha.14 ...
 ```
 
 For exact declared public tool ids, see `openclaw.plugin.json` and `docs/TOOL-SURFACE.md`.

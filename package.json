@@ -1,6 +1,6 @@
 {
   "name": "umg-envoy-agent",
-  "version": "0.2.8",
+  "version": "0.3.0-alpha.14",
   "description": "OpenClaw plugin for bounded UMG runtime inspection, ActionGate capability control, ToolResult auditing, runtime report surfaces, and a six-tool low-risk direct runner with no arbitrary dispatch, writes, or external transmission.",
   "type": "module",
   "main": "dist/plugin-entry.js",

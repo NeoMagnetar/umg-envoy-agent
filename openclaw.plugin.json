@@ -1,7 +1,7 @@
 {
   "id": "umg-envoy-agent",
   "name": "UMG Envoy Agent",
-  "version": "0.2.8",
+  "version": "0.3.0-alpha.14",
   "description": "Runtime-facing UMG cognition specification and inspection plugin with ActionGate-bound runtime reports, ToolResult audit records, and a six-tool low-risk direct runner. It does not provide arbitrary dispatch, writes, deletes, or external transmission.",
   "entry": "dist/plugin-entry.js",
   "apiVersion": 1,

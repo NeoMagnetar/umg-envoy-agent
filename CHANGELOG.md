@@ -2,6 +2,41 @@
 
 ## Unreleased
 
+## 0.3.0-alpha.14 - 2026-05-29
+
+Alpha release continuing the public alpha-track line already used for current public latest.
+
+### Changed
+
+- Adds the bounded runtime-facing capability story built around RuntimeSpecBoundary, TraceBoundary, ActionGate modeling, conservative ToolCapabilityRegistry seed policy, ToolResult audit records, and runtime report inspection.
+- Keeps `umg_envoy_low_risk_direct_tool_run` bounded to exactly six static safe tools:
+  - `umg_envoy_status`
+  - `umg_envoy_validate_runtime_output`
+  - `umg_envoy_parse_path`
+  - `umg_envoy_validate_path`
+  - `umg_envoy_render_path`
+  - `umg_envoy_action_gate_runtime_report_view`
+- Preserves explicit direct-execution exclusions for:
+  - `umg_envoy_load_sleeve`
+  - `umg_envoy_compile_ir_bridge`
+  - `umg_envoy_emit_relation_matrix`
+  - `umg_envoy_compile_sleeve`
+  - `umg_envoy_build_path`
+  - unknown tools
+  - arbitrary dispatch
+  - writes / deletes
+  - package or plugin mutation
+  - external/network transmission
+- Keeps approval-gated writes modeled but not executable in the runtime surface.
+- Keeps bridge/emission paths blocked from direct execution in this release.
+
+### Notes
+
+- This is an alpha release and follows the existing public alpha-track latest story.
+- RuntimeSpec remains non-executing and Trace remains non-permission.
+- `umg_envoy_load_sleeve` remains registered and conservatively seeded, but stays internal-only / blocked-public under current policy and is excluded from the first direct adapter set.
+- `validate:umg:e2e` still requires external input (`sleevePath` / `UMG_E2E_SLEEVE_PATH`).
+
 ### Changed
 
 - Added ActionGate execution-control modeling, conservative ToolCapabilityRegistry seed policy, ToolResult audit record alignment, and ActionGate runtime report surfaces to the current capability story.
