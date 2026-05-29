@@ -65,12 +65,31 @@ export interface ToolCapability {
     approvalRequired: boolean;
     previewRequired: boolean;
     dryRunSupported: boolean;
+    dryRunRequired: boolean;
     rollbackSupported: boolean;
+    backupRequired: boolean;
     externalTransmissionAllowed: boolean;
     blockedSurfaces: string[];
     auditRequirements: string[];
+    requiresToolResultAudit: boolean;
+    allowlistTags?: string[];
+    notes?: string[];
 }
 export interface ToolCapabilityRegistryEntry extends ToolCapability {
+}
+export interface ToolRiskClassPolicy {
+    directExecutionAllowed: boolean;
+    approvalRequired: boolean;
+    previewRequired: boolean;
+    dryRunRequired: boolean;
+    dryRunSupported: boolean;
+    rollbackRequired: boolean;
+    backupRequired: boolean;
+    externalTransmissionAllowed: boolean;
+    requiresToolResultAudit: boolean;
+}
+export interface ToolCapabilityRegistry {
+    entriesByToolId: Record<string, ToolCapabilityRegistryEntry>;
 }
 export interface ToolResult {
     actionId: string;
@@ -91,23 +110,37 @@ export interface ToolResult {
     warnings: string[];
     errors: string[];
 }
-export declare function classifyRiskClassPolicy(riskClass: ToolRiskClass): {
-    directExecutionAllowed: boolean;
-    requiresApproval: boolean;
-    requiresPreview: boolean;
-    requiresDryRun: boolean;
-    requiresRollback: boolean;
-};
+export declare function getRiskClassPolicy(riskClass: ToolRiskClass): ToolRiskClassPolicy;
+export declare function classifyRiskClassPolicy(riskClass: ToolRiskClass): ToolRiskClassPolicy;
+export declare function createToolCapabilityRegistry(entries: ToolCapabilityRegistryEntry[]): ToolCapabilityRegistry;
+export declare function resolveToolCapability(registry: ToolCapabilityRegistry, toolId: string): ToolCapabilityRegistryEntry | null;
+export declare function isToolCapabilityKnown(registry: ToolCapabilityRegistry, toolId: string): boolean;
+export declare function canToolRunDirectly(capability: ToolCapability | null): boolean;
+export declare function requiresApprovalForCapability(capability: ToolCapability | null): boolean;
+export declare function requiresPreviewForCapability(capability: ToolCapability | null): boolean;
+export declare function requiresDryRunForCapability(capability: ToolCapability | null): boolean;
+export declare function requiresBackupForCapability(capability: ToolCapability | null): boolean;
 export declare function canProceedDirectly(actionGate: ActionGate): boolean;
 export declare function requiresApproval(actionGate: ActionGate): boolean;
 export declare function requiresPreview(actionGate: ActionGate): boolean;
 export declare function requiresRollback(actionGate: ActionGate): boolean;
+export declare function createBlockedUnknownToolGate(input: UnknownToolIntent): ActionGate;
 export interface ProposedActionGateInput {
     actionId: string;
     proposedToolName: string;
     proposedToolId: string;
     actionKind: string;
     riskClass: ToolRiskClass;
+    sourceRuntimeSpecBoundaryStatus: RuntimeSpecBoundaryStatus | null;
+    sourceRuntimeSpecNonExecuting: boolean | null;
+    sourceTraceBoundaryStatus: TraceBoundaryStatus | null;
+    sourceTraceAuditOnly: boolean | null;
+}
+export interface UnknownToolIntent {
+    actionId: string;
+    proposedToolName: string;
+    proposedToolId: string;
+    actionKind: string;
     sourceRuntimeSpecBoundaryStatus: RuntimeSpecBoundaryStatus | null;
     sourceRuntimeSpecNonExecuting: boolean | null;
     sourceTraceBoundaryStatus: TraceBoundaryStatus | null;

@@ -22,19 +22,23 @@ const lowRiskPolicy = classifyRiskClassPolicy("low_risk_direct");
 assert("low_risk_direct allows direct policy", lowRiskPolicy.directExecutionAllowed === true);
 
 const approvalWritePolicy = classifyRiskClassPolicy("approval_gated_write");
-assert("approval_gated_write requires approval", approvalWritePolicy.requiresApproval === true);
-assert("approval_gated_write requires rollback", approvalWritePolicy.requiresRollback === true);
+assert("approval_gated_write requires approval", approvalWritePolicy.approvalRequired === true);
+assert("approval_gated_write requires backup", approvalWritePolicy.backupRequired === true);
+assert("approval_gated_write supports dry run", approvalWritePolicy.dryRunSupported === true);
 
 const destructivePolicy = classifyRiskClassPolicy("destructive_or_sensitive");
 assert("destructive_or_sensitive does not allow direct execution", destructivePolicy.directExecutionAllowed === false);
-assert("destructive_or_sensitive requires preview", destructivePolicy.requiresPreview === true);
+assert("destructive_or_sensitive requires preview", destructivePolicy.previewRequired === true);
+assert("destructive_or_sensitive requires dry run", destructivePolicy.dryRunRequired === true);
 
 const transmissionPolicy = classifyRiskClassPolicy("external_transmission");
-assert("external_transmission requires approval", transmissionPolicy.requiresApproval === true);
-assert("external_transmission requires preview", transmissionPolicy.requiresPreview === true);
+assert("external_transmission requires approval", transmissionPolicy.approvalRequired === true);
+assert("external_transmission requires preview", transmissionPolicy.previewRequired === true);
+assert("external_transmission allows external transmission", transmissionPolicy.externalTransmissionAllowed === true);
 
 const blockedPolicy = classifyRiskClassPolicy("blocked");
 assert("blocked never allows direct execution", blockedPolicy.directExecutionAllowed === false);
+assert("blocked does not require ToolResult audit", blockedPolicy.requiresToolResultAudit === false);
 
 const validReadOnlyGate = createProposedActionGate({
   actionId: "act-1",

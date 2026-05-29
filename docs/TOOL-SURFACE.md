@@ -69,6 +69,16 @@ These names look like earlier or alternate naming forms and should not be treate
 - `umg_envoy_trace_inspect`
 - `umg_envoy_runtime_display`
 
+## Registry and ActionGate Note
+
+Envoy is intended to become tool-capable through explicit capability mapping, not through implicit execution authority.
+
+- `ToolCapabilityRegistry` defines what Envoy knows how to do.
+- Unknown tools are blocked or review-required by default.
+- `ActionGate` decides whether a known capability may proceed.
+- `ToolResult` records actual execution later.
+- The registry itself does not execute tools and does not authorize execution by itself.
+
 ## Notes
 
 - README should remain capability-oriented.
