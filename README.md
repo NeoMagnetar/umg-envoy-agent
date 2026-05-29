@@ -12,19 +12,21 @@ In UMG terminology, an Envoy is a carrier surface for moving selected governed a
 
 ## Publication status
 
-- `v0.2.2` was the GitHub proof milestone and release-hardening checkpoint.
-- `v0.2.3` is a publication-cleanup patch focused on docs, packaging clarity, and fresh-tester onboarding.
-- ClawHub publication is intentionally handled as a separate final release operation after cleanup, validation, re-audit, and explicit publish authorization.
+- Current package version in this repo is `0.2.8`.
+- ClawHub/public release publication remains a separate explicit operation after metadata alignment, validation review, and release-note audit.
 - Raw npm publication is not the primary documented user path for this package at this stage.
+- This repo now contains bounded runtime-facing capability work; that does **not** imply broad arbitrary execution support.
 
 ## What it does
 
 - exposes runtime-facing inspection surfaces for governed UMG artifacts
-- supports library metadata search and governed sleeve navigation
 - emits dry-run RuntimeSpec projections for downstream execution planning
-- exposes Trace, runtime-visible display, MOLT Map, diagnostics, and related inspection views
-- supports bounded demo and exact-scope read-only planning/inspection flows
-- keeps execution downstream and approval-gated
+- exposes Trace, diagnostics, and related inspection views without treating them as permission
+- provides ActionGate runtime report inspection
+- seeds a conservative ToolCapabilityRegistry policy for known Envoy tools
+- emits ToolResult audit records for bounded direct runtime execution
+- provides a six-tool low-risk direct runtime runner for static safe read-only tools only
+- keeps write, bridge, destructive, external, and arbitrary execution paths out of the current direct runner
 
 ## Default posture
 
@@ -152,6 +154,39 @@ Important notes:
 
 If you do not already have the expected local UMG dependency layout, stop at `check`, `build`, `smoke`, and `pack:dry`.
 
+## Current bounded direct runner
+
+Envoy now exposes:
+- `umg_envoy_low_risk_direct_tool_run`
+
+It is limited to exactly these six static safe tools:
+- `umg_envoy_status`
+- `umg_envoy_validate_runtime_output`
+- `umg_envoy_parse_path`
+- `umg_envoy_validate_path`
+- `umg_envoy_render_path`
+- `umg_envoy_action_gate_runtime_report_view`
+
+Every successful direct run returns `ToolResult` audit data.
+
+Explicit exclusions from this first direct runner:
+- `umg_envoy_load_sleeve`
+- `umg_envoy_compile_ir_bridge`
+- `umg_envoy_emit_relation_matrix`
+- `umg_envoy_compile_sleeve`
+- `umg_envoy_build_path`
+- unknown tools
+- arbitrary dispatch
+- writes / deletes
+- network or external transmission
+- package or plugin mutation
+
+Boundary rules remain strict:
+- RuntimeSpec is not execution authority.
+- Trace is not permission.
+- ActionGate and ToolCapabilityRegistry govern execution eligibility.
+- Approval-gated writes and external transmission are not enabled yet.
+
 ### Plain-English output guide
 
 - **Runtime Spec**: a dry-run runtime projection for downstream execution planning
@@ -211,7 +246,7 @@ ClawHub publication is the intended first public plugin path for this package li
 Future maintainer reference only, not to run during Stage 14D:
 
 ```text
-clawhub package publish <path> --family code-plugin --name umg-envoy-agent --display-name "UMG Envoy Agent" --version 0.2.3 ...
+clawhub package publish <path> --family code-plugin --name umg-envoy-agent --display-name "UMG Envoy Agent" --version 0.2.8 ...
 ```
 
 For exact declared public tool ids, see `openclaw.plugin.json` and `docs/TOOL-SURFACE.md`.

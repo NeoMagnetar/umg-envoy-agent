@@ -1,4 +1,36 @@
-﻿# Changelog
+# Changelog
+
+## Unreleased
+
+### Changed
+
+- Added ActionGate execution-control modeling, conservative ToolCapabilityRegistry seed policy, ToolResult audit record alignment, and ActionGate runtime report surfaces to the current capability story.
+- Added `umg_envoy_low_risk_direct_tool_run` as a bounded low-risk direct runtime runner.
+- Restricted direct runtime execution to exactly six static safe read-only tools:
+  - `umg_envoy_status`
+  - `umg_envoy_validate_runtime_output`
+  - `umg_envoy_parse_path`
+  - `umg_envoy_validate_path`
+  - `umg_envoy_render_path`
+  - `umg_envoy_action_gate_runtime_report_view`
+- Preserved strict exclusions from the direct runner for:
+  - `umg_envoy_load_sleeve`
+  - `umg_envoy_compile_ir_bridge`
+  - `umg_envoy_emit_relation_matrix`
+  - `umg_envoy_compile_sleeve`
+  - `umg_envoy_build_path`
+  - unknown tools
+  - arbitrary dispatch
+  - writes / deletes
+  - package or plugin mutation
+  - external/network transmission
+
+### Notes
+
+- RuntimeSpec remains non-executing and Trace remains non-permission.
+- Direct runtime execution now produces ToolResult audit records for bounded safe tools only.
+- `umg_envoy_load_sleeve` remains registered and conservatively seeded, but stays internal-only / blocked-public under current policy and is excluded from the first direct adapter set.
+- `validate:umg:e2e` still requires external input (`sleevePath` / `UMG_E2E_SLEEVE_PATH`).
 
 ## 0.2.8
 
@@ -118,51 +150,7 @@ UMG Envoy Agent 0.2.0 upgrades the public plugin from a path/planner-focused pac
 ### Added
 
 - bundled public compiler adapter
-- bundled public sample sleeves
-- bundled public sample blocks
-- runtime validation
-- sleeve compilation
-- compiler smoke test
-- compiler matrix/status reporting
-- `public-content/` folder
-- compiler contract docs
-- public content model docs
-
-### Changed
-
-- upgraded package and manifest version to `0.2.0`
-- simplified public documentation
-- aligned tool surface with compiler-backed behavior
-- preserved path/planner utilities
-
-### Removed
-
-- legacy public sleeve builder files
-- stale 0.1.2-era docs
-- legacy package leftovers
-- contaminated nested output structures
-
-### Validation
-
-- `npm install` passed
-- `npm run check` passed
-- `npm run build` passed
-- `npm run smoke` passed
-- `npm run pack:dry` passed
-- pack output clean: 49 files, 12.8 kB package, 51.1 kB unpacked
-
-### Safety
-
-- no `node_modules` in package output
-- no `dist/dist`
-- no `dist/src`
-- no `docs/docs`
-- no private runtime roots
-- no personal absolute path config
-- no dirty workspace release
-
-### Known Scope
-
-- public-safe bundled compiler adapter
-- not full private personal runtime
-- runtime mutation remains disabled by default
+- bounded public sleeve compilation into RuntimeSpec output
+- runtime output validation and diagnostics surfaces
+- trace and relation matrix support surfaces
+- public-safe runtime-facing plugin registration

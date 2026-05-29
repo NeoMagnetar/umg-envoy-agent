@@ -1,7 +1,7 @@
 {
   "name": "umg-envoy-agent",
   "version": "0.2.8",
-  "description": "OpenClaw plugin for runtime-facing inspection and dry-run projection of governed UMG cognition artifacts.",
+  "description": "OpenClaw plugin for bounded UMG runtime inspection, ActionGate capability control, ToolResult auditing, runtime report surfaces, and a six-tool low-risk direct runner with no arbitrary dispatch, writes, or external transmission.",
   "type": "module",
   "main": "dist/plugin-entry.js",
   "types": "dist/index.d.ts",
@@ -39,19 +39,19 @@
   },
   "keywords": [
     "umg",
-    "universal-modular-generation",
     "openclaw",
+    "envoy",
     "plugin",
-    "runtime-facing",
-    "inspection",
-    "dry-run",
+    "actiongate",
+    "tool-capability",
     "runtimespec",
     "trace",
-    "molt",
-    "cognition-specification",
-    "governed-artifacts",
-    "sleeve-inspection",
-    "diagnostics"
+    "toolresult",
+    "modular-ai",
+    "cognitive-runtime",
+    "validation",
+    "runtime-inspection",
+    "low-risk-direct"
   ],
   "engines": {
     "node": ">=22"
