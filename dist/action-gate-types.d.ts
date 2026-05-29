@@ -167,11 +167,22 @@ export interface ApprovalGatedWriteDecision {
     requiresToolResultAuditLater: boolean;
     notes: string[];
 }
+export type ToolResultExecutionStatus = "not_executed" | "preview_recorded" | "dry_run_recorded" | "executed_success" | "executed_failure" | "execution_blocked" | "execution_denied" | "execution_cancelled" | "execution_error";
+export interface ToolResultAuditLink {
+    runtimeSpecBoundaryStatus: RuntimeSpecBoundaryStatus | null;
+    runtimeSpecBoundarySummary: string | null;
+    traceBoundaryStatus: TraceBoundaryStatus | null;
+    traceBoundarySummary: string | null;
+    actionGateActionId: string | null;
+    actionGateDecision: ActionGateDecision | null;
+    approvalId: string | null;
+    toolRiskClass: ToolRiskClass | null;
+}
 export interface ToolResult {
     actionId: string;
     toolName: string;
     toolId: string;
-    executionStatus: "proposed" | "executed" | "failed" | "blocked" | "denied";
+    executionStatus: ToolResultExecutionStatus;
     inputSummary: string;
     outputSummary: string;
     sideEffects: string[];
@@ -183,6 +194,7 @@ export interface ToolResult {
     finishedAt: string | null;
     approvalReference: string | null;
     auditReference: string | null;
+    auditLink: ToolResultAuditLink;
     warnings: string[];
     errors: string[];
 }
@@ -196,6 +208,23 @@ export declare function requiresApprovalForCapability(capability: ToolCapability
 export declare function requiresPreviewForCapability(capability: ToolCapability | null): boolean;
 export declare function requiresDryRunForCapability(capability: ToolCapability | null): boolean;
 export declare function requiresBackupForCapability(capability: ToolCapability | null): boolean;
+export declare function assertToolResultNotCompilerTrace(toolResult: ToolResult): boolean;
+export declare function validateToolResultAuditRecord(toolResult: ToolResult): {
+    ok: boolean;
+    issues: string[];
+};
+export declare function linkToolResultToActionGate(toolResult: ToolResult, actionGate: ActionGate, capability?: ToolCapability | null, approvalRecord?: ApprovalRecord | null): ToolResult;
+export declare function createToolResultAuditDraft(input: {
+    actionGate: ActionGate;
+    capability?: ToolCapability | null;
+    approvalRecord?: ApprovalRecord | null;
+    executionStatus: ToolResultExecutionStatus;
+    inputSummary: string;
+    outputSummary?: string;
+    auditReference?: string | null;
+    warnings?: string[];
+    errors?: string[];
+}): ToolResult;
 export declare function createLowRiskAllowlistPolicy(): LowRiskAllowlistPolicy;
 export declare function createApprovalGatedWritePolicy(): ApprovalGatedWritePolicy;
 export declare function evaluateApprovalGatedWriteReadiness(actionGate: ActionGate, capability: ToolCapability | null, input?: {

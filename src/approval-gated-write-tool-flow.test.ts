@@ -67,14 +67,14 @@ const writeGate = createProposedActionGate({
   sourceTraceBoundaryStatus: "valid_audit_artifact",
   sourceTraceAuditOnly: true,
 });
-const missingApprovalDecision = evaluateApprovalGatedWriteReadiness(writeGate, capability(), undefined, policy);
+const missingApprovalDecision = evaluateApprovalGatedWriteReadiness(writeGate, capability({}), undefined, policy);
 assert("approval_gated_write requires approval", missingApprovalDecision.approvalStatus === "approval_missing");
-assert("approval_gated_write cannot run direct", canProceedApprovalGatedWrite(writeGate, capability(), undefined, policy) === false);
+assert("approval_gated_write cannot run direct", canProceedApprovalGatedWrite(writeGate, capability({}), undefined, policy) === false);
 assert("missing approval blocks readiness", missingApprovalDecision.status === "approval_missing");
 
 const readyDecision = evaluateApprovalGatedWriteReadiness(
   writeGate,
-  capability(),
+  capability({}),
   { approvalRecord: validApproval },
   policy,
 );
@@ -83,7 +83,7 @@ assert("approval present allows future write readiness only", readyDecision.elig
 
 const invalidApprovalDecision = evaluateApprovalGatedWriteReadiness(
   writeGate,
-  capability(),
+  capability({}),
   { approvalRecord: { ...validApproval, valid: false } },
   policy,
 );
@@ -283,7 +283,7 @@ const toolResult: ToolResult = {
   actionId: "aw-result-1",
   toolName: "Approval Test Tool",
   toolId: "approval.test.tool",
-  executionStatus: "proposed",
+  executionStatus: "not_executed",
   inputSummary: "summary",
   outputSummary: "output",
   sideEffects: [],
@@ -295,10 +295,20 @@ const toolResult: ToolResult = {
   finishedAt: null,
   approvalReference: null,
   auditReference: null,
+  auditLink: {
+    runtimeSpecBoundaryStatus: null,
+    runtimeSpecBoundarySummary: null,
+    traceBoundaryStatus: null,
+    traceBoundarySummary: null,
+    actionGateActionId: null,
+    actionGateDecision: null,
+    approvalId: null,
+    toolRiskClass: null,
+  },
   warnings: [],
   errors: [],
 };
-assert("approval does not create ToolResult", toolResult.executionStatus === "proposed");
+assert("approval does not create ToolResult", toolResult.executionStatus === "not_executed");
 assert("helper does not execute anything", !readyDecision.notes.some((note) => /executed tool/i.test(note)));
 
 console.log(`=== Approval-Gated Write Tool Flow Tests Complete: ${passed} passed, ${failed} failed ===`);

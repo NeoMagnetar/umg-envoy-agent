@@ -128,7 +128,7 @@ const toolResult = {
     actionId: "result-1",
     toolName: "Registry Test Tool",
     toolId: "registry.test.tool",
-    executionStatus: "proposed",
+    executionStatus: "not_executed",
     inputSummary: "summary",
     outputSummary: "output",
     sideEffects: [],
@@ -140,10 +140,20 @@ const toolResult = {
     finishedAt: null,
     approvalReference: null,
     auditReference: null,
+    auditLink: {
+        runtimeSpecBoundaryStatus: null,
+        runtimeSpecBoundarySummary: null,
+        traceBoundaryStatus: null,
+        traceBoundarySummary: null,
+        actionGateActionId: null,
+        actionGateDecision: null,
+        approvalId: null,
+        toolRiskClass: null,
+    },
     warnings: [],
     errors: [],
 };
-assert("registry does not create ToolResult", toolResult.executionStatus === "proposed");
+assert("registry does not create ToolResult", toolResult.executionStatus === "not_executed");
 assert("registry helpers do not execute tools", typeof resolvedStatus?.toolId === "string" && !("execute" in resolvedStatus));
 console.log(`=== Tool Capability Registry Tests Complete: ${passed} passed, ${failed} failed ===`);
 if (failed > 0)

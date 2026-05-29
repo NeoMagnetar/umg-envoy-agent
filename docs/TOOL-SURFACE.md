@@ -84,6 +84,9 @@ Envoy is intended to become tool-capable through explicit capability mapping, no
 - Preview and dry-run do not equal execution.
 - Destructive/sensitive and external-transmission flows remain separate lanes.
 - `ToolResult` records actual execution later.
+- `ToolResult` is not compiler Trace.
+- Ready-for-future-execution does not equal execution.
+- Blocked, denied, preview, and dry-run records must remain distinguishable from executed results.
 - The registry itself does not execute tools and does not authorize execution by itself.
 
 ## Notes

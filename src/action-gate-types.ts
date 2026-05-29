@@ -265,11 +265,33 @@ export interface ApprovalGatedWriteDecision {
   notes: string[];
 }
 
+export type ToolResultExecutionStatus =
+  | "not_executed"
+  | "preview_recorded"
+  | "dry_run_recorded"
+  | "executed_success"
+  | "executed_failure"
+  | "execution_blocked"
+  | "execution_denied"
+  | "execution_cancelled"
+  | "execution_error";
+
+export interface ToolResultAuditLink {
+  runtimeSpecBoundaryStatus: RuntimeSpecBoundaryStatus | null;
+  runtimeSpecBoundarySummary: string | null;
+  traceBoundaryStatus: TraceBoundaryStatus | null;
+  traceBoundarySummary: string | null;
+  actionGateActionId: string | null;
+  actionGateDecision: ActionGateDecision | null;
+  approvalId: string | null;
+  toolRiskClass: ToolRiskClass | null;
+}
+
 export interface ToolResult {
   actionId: string;
   toolName: string;
   toolId: string;
-  executionStatus: "proposed" | "executed" | "failed" | "blocked" | "denied";
+  executionStatus: ToolResultExecutionStatus;
   inputSummary: string;
   outputSummary: string;
   sideEffects: string[];
@@ -281,6 +303,7 @@ export interface ToolResult {
   finishedAt: string | null;
   approvalReference: string | null;
   auditReference: string | null;
+  auditLink: ToolResultAuditLink;
   warnings: string[];
   errors: string[];
 }
@@ -425,6 +448,100 @@ export function requiresDryRunForCapability(capability: ToolCapability | null): 
 
 export function requiresBackupForCapability(capability: ToolCapability | null): boolean {
   return capability?.backupRequired === true;
+}
+
+export function assertToolResultNotCompilerTrace(toolResult: ToolResult): boolean {
+  return toolResult.auditLink.traceBoundarySummary !== "compiler_trace_as_execution";
+}
+
+export function validateToolResultAuditRecord(toolResult: ToolResult): { ok: boolean; issues: string[] } {
+  const issues: string[] = [];
+
+  if (!toolResult.actionId) issues.push("missing actionId");
+  if (!toolResult.toolId) issues.push("missing toolId");
+  if (!toolResult.toolName) issues.push("missing toolName");
+  if (!assertToolResultNotCompilerTrace(toolResult)) issues.push("tool result must not be treated as compiler trace");
+
+  if (toolResult.executionStatus === "executed_success" && !toolResult.finishedAt) {
+    issues.push("executed_success should include finishedAt");
+  }
+
+  if (toolResult.executionStatus === "not_executed" && toolResult.finishedAt && toolResult.startedAt) {
+    issues.push("not_executed record should not look like completed execution");
+  }
+
+  if ((toolResult.executionStatus === "execution_blocked" || toolResult.executionStatus === "execution_denied") && toolResult.sideEffects.length > 0) {
+    issues.push("blocked/denied records should not report side effects as executed outputs");
+  }
+
+  return { ok: issues.length === 0, issues };
+}
+
+export function linkToolResultToActionGate(
+  toolResult: ToolResult,
+  actionGate: ActionGate,
+  capability?: ToolCapability | null,
+  approvalRecord?: ApprovalRecord | null,
+): ToolResult {
+  return {
+    ...toolResult,
+    actionId: actionGate.actionId,
+    toolId: capability?.toolId ?? actionGate.proposedToolId,
+    toolName: capability?.toolName ?? actionGate.proposedToolName,
+    approvalReference: approvalRecord?.approvalId ?? toolResult.approvalReference,
+    auditLink: {
+      runtimeSpecBoundaryStatus: actionGate.sourceRuntimeSpecBoundaryStatus,
+      runtimeSpecBoundarySummary: actionGate.sourceRuntimeSpecBoundaryStatus,
+      traceBoundaryStatus: actionGate.sourceTraceBoundaryStatus,
+      traceBoundarySummary: actionGate.sourceTraceBoundaryStatus,
+      actionGateActionId: actionGate.actionId,
+      actionGateDecision: actionGate.finalDecision,
+      approvalId: approvalRecord?.approvalId ?? null,
+      toolRiskClass: capability?.allowedRiskClass ?? actionGate.riskClass,
+    },
+  };
+}
+
+export function createToolResultAuditDraft(input: {
+  actionGate: ActionGate;
+  capability?: ToolCapability | null;
+  approvalRecord?: ApprovalRecord | null;
+  executionStatus: ToolResultExecutionStatus;
+  inputSummary: string;
+  outputSummary?: string;
+  auditReference?: string | null;
+  warnings?: string[];
+  errors?: string[];
+}): ToolResult {
+  return {
+    actionId: input.actionGate.actionId,
+    toolId: input.capability?.toolId ?? input.actionGate.proposedToolId,
+    toolName: input.capability?.toolName ?? input.actionGate.proposedToolName,
+    executionStatus: input.executionStatus,
+    inputSummary: input.inputSummary,
+    outputSummary: input.outputSummary ?? "",
+    sideEffects: [],
+    filesChanged: [],
+    externalCallsMade: [],
+    rollbackArtifacts: [],
+    backupArtifacts: [],
+    startedAt: null,
+    finishedAt: null,
+    approvalReference: input.approvalRecord?.approvalId ?? null,
+    auditReference: input.auditReference ?? null,
+    auditLink: {
+      runtimeSpecBoundaryStatus: input.actionGate.sourceRuntimeSpecBoundaryStatus,
+      runtimeSpecBoundarySummary: input.actionGate.sourceRuntimeSpecBoundaryStatus,
+      traceBoundaryStatus: input.actionGate.sourceTraceBoundaryStatus,
+      traceBoundarySummary: input.actionGate.sourceTraceBoundaryStatus,
+      actionGateActionId: input.actionGate.actionId,
+      actionGateDecision: input.actionGate.finalDecision,
+      approvalId: input.approvalRecord?.approvalId ?? null,
+      toolRiskClass: input.capability?.allowedRiskClass ?? input.actionGate.riskClass,
+    },
+    warnings: input.warnings ?? [],
+    errors: input.errors ?? [],
+  };
 }
 
 export function createLowRiskAllowlistPolicy(): LowRiskAllowlistPolicy {

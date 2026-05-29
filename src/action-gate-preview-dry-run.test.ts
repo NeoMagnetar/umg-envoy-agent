@@ -251,7 +251,7 @@ const toolResult: ToolResult = {
   actionId: "preview-result-1",
   toolName: "Preview Test Tool",
   toolId: "preview.test.tool",
-  executionStatus: "proposed",
+  executionStatus: "not_executed",
   inputSummary: "summary",
   outputSummary: "output",
   sideEffects: [],
@@ -263,10 +263,20 @@ const toolResult: ToolResult = {
   finishedAt: null,
   approvalReference: null,
   auditReference: null,
+  auditLink: {
+    runtimeSpecBoundaryStatus: null,
+    runtimeSpecBoundarySummary: null,
+    traceBoundaryStatus: null,
+    traceBoundarySummary: null,
+    actionGateActionId: null,
+    actionGateDecision: null,
+    approvalId: null,
+    toolRiskClass: null,
+  },
   warnings: [],
   errors: [],
 };
-assert("preview/dry-run plan does not create ToolResult", toolResult.executionStatus === "proposed");
+assert("preview/dry-run plan does not create ToolResult", toolResult.executionStatus === "not_executed");
 assert("planner helper does not execute tools", !unknownPlan.notes.some((note) => /executed tool/i.test(note)));
 
 console.log(`=== ActionGate Preview/Dry-Run Flow Tests Complete: ${passed} passed, ${failed} failed ===`);

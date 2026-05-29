@@ -266,7 +266,7 @@ const toolResult: ToolResult = {
   actionId: "lr-result-1",
   toolName: "Low Risk Test Tool",
   toolId: "lowrisk.test.tool",
-  executionStatus: "proposed",
+  executionStatus: "not_executed",
   inputSummary: "summary",
   outputSummary: "output",
   sideEffects: [],
@@ -278,10 +278,20 @@ const toolResult: ToolResult = {
   finishedAt: null,
   approvalReference: null,
   auditReference: null,
+  auditLink: {
+    runtimeSpecBoundaryStatus: null,
+    runtimeSpecBoundarySummary: null,
+    traceBoundaryStatus: null,
+    traceBoundarySummary: null,
+    actionGateActionId: null,
+    actionGateDecision: null,
+    approvalId: null,
+    toolRiskClass: null,
+  },
   warnings: [],
   errors: [],
 };
-assert("helper does not create ToolResult", toolResult.executionStatus === "proposed");
+assert("helper does not create ToolResult", toolResult.executionStatus === "not_executed");
 assert("helper does not execute anything", !readOnlyDecision.notes.some((note) => /executed tool/i.test(note)));
 
 console.log(`=== Low-Risk Allowlisted Tool Flow Tests Complete: ${passed} passed, ${failed} failed ===`);
