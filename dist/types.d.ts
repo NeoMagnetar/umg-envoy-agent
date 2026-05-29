@@ -65,6 +65,17 @@ export interface RuntimeSpecBoundary {
     warnings: string[];
     status: RuntimeSpecBoundaryStatus;
 }
+export type TraceBoundarySourceKind = "external_trace" | "local_trace" | "unknown";
+export type TraceBoundaryStatus = "valid_audit_artifact" | "missing_boundary_metadata" | "boundary_violation" | "unknown";
+export interface TraceBoundary {
+    sourceKind: TraceBoundarySourceKind;
+    artifactKind: string | null;
+    auditOnly: boolean | null;
+    boundaryNote: string | null;
+    originalPayload: unknown;
+    warnings: string[];
+    status: TraceBoundaryStatus;
+}
 export interface RuntimeValidationResult {
     ok: boolean;
     valid: boolean;
@@ -259,6 +270,7 @@ export interface CompilerBridgeResult {
     runtimeSpec?: unknown;
     runtimeSpecBoundary?: RuntimeSpecBoundary;
     trace?: unknown;
+    traceBoundary?: TraceBoundary;
     diagnostics?: unknown;
     outputFiles?: {
         canonicalIrPath: string;
@@ -312,6 +324,7 @@ export interface RelationMatrixResult {
     runtimeSpec?: unknown;
     runtimeSpecBoundary?: RuntimeSpecBoundary;
     trace?: unknown;
+    traceBoundary?: TraceBoundary;
     diagnostics?: unknown;
     relationMatrixText?: string;
     relationMatrix?: {

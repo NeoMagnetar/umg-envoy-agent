@@ -8,6 +8,7 @@ import { runCompilerProcess } from "./compiler-process.js";
 import { loadSleeveFile } from "./sleeve-loader.js";
 import { validateSleeveStructure } from "./sleeve-schema-validator.js";
 import { normalizeRuntimeSpecBoundary } from "./runtime-spec-boundary.js";
+import { normalizeTraceBoundary } from "./trace-boundary.js";
 import type { CompilerBridgeRequest, CompilerBridgeResult } from "../types.js";
 
 function stripBom(raw: string): string {
@@ -118,6 +119,9 @@ export async function runCompilerBridge(request: CompilerBridgeRequest): Promise
   const runtimeSpecBoundary = runtimeSpec
     ? normalizeRuntimeSpecBoundary(runtimeSpec, "external_ir_runtime_spec")
     : undefined;
+  const traceBoundary = trace
+    ? normalizeTraceBoundary(trace, "external_trace")
+    : undefined;
 
   const loadedSleeveSummary = summarizeLoadedSleeve({
     artifactId: loaded.loadedSleeve.identity?.artifact_id ?? null,
@@ -147,6 +151,7 @@ export async function runCompilerBridge(request: CompilerBridgeRequest): Promise
     runtimeSpec,
     runtimeSpecBoundary,
     trace,
+    traceBoundary,
     diagnostics,
     outputFiles: {
       canonicalIrPath,

@@ -40,13 +40,17 @@ export interface RelationMatrixRequest {
   relationMatrixTempRoot?: string;
 }
 
+import type { RuntimeSpecBoundary, TraceBoundary } from "../types.js";
+
 export interface RelationMatrixResult {
   ok: boolean;
   sleevePath: string;
   libraryRoot: string;
   bridgeResult?: Record<string, unknown>;
   runtimeSpec?: unknown;
+  runtimeSpecBoundary?: RuntimeSpecBoundary;
   trace?: unknown;
+  traceBoundary?: TraceBoundary;
   diagnostics?: unknown;
   relationMatrixText?: string;
   relationMatrix?: {
