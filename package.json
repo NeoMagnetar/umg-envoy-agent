@@ -25,6 +25,7 @@
     "test:action-gate-types": "node dist/action-gate-types.test.js",
     "test:tool-capability-registry": "node dist/tool-capability-registry.test.js",
     "test:action-gate-preview-dry-run": "node dist/action-gate-preview-dry-run.test.js",
+    "test:low-risk-allowlisted-tool-flow": "node dist/low-risk-allowlisted-tool-flow.test.js",
     "validate:umg:e2e": "node scripts/validate-umg-e2e.mjs",
     "pack:dry": "npm pack --dry-run"
   },

@@ -174,6 +174,36 @@ export interface ActionGatePreExecutionPlan {
   notes: string[];
 }
 
+export type LowRiskAllowlistStatus =
+  | "allowed_low_risk_direct"
+  | "blocked_unknown_tool"
+  | "blocked_boundary_violation"
+  | "blocked_requires_preview"
+  | "blocked_requires_dry_run"
+  | "blocked_requires_approval"
+  | "blocked_external_transmission"
+  | "blocked_mutation_risk"
+  | "blocked_not_allowlisted"
+  | "blocked_risk_class";
+
+export interface LowRiskAllowlistPolicy {
+  allowlistTag: string;
+  allowedRiskClasses: Array<"read_only" | "low_risk_direct">;
+  notes: string[];
+}
+
+export interface LowRiskAllowlistDecision {
+  actionId: string;
+  toolId: string;
+  toolName: string;
+  status: LowRiskAllowlistStatus;
+  eligible: boolean;
+  reasonCode: string;
+  reason: string;
+  requiresToolResultAuditLater: boolean;
+  notes: string[];
+}
+
 export interface ToolResult {
   actionId: string;
   toolName: string;
@@ -334,6 +364,187 @@ export function requiresDryRunForCapability(capability: ToolCapability | null): 
 
 export function requiresBackupForCapability(capability: ToolCapability | null): boolean {
   return capability?.backupRequired === true;
+}
+
+export function createLowRiskAllowlistPolicy(): LowRiskAllowlistPolicy {
+  return {
+    allowlistTag: "low-risk-direct",
+    allowedRiskClasses: ["read_only", "low_risk_direct"],
+    notes: [
+      "Low-risk direct does not mean unrestricted execution.",
+      "Eligibility requires a known capability, valid boundaries, and explicit allowlist policy.",
+      "Writes, deletes, publishing, plugin mutation, and external transmission are not low-risk direct.",
+    ],
+  };
+}
+
+export function evaluateLowRiskDirectEligibility(
+  actionGate: ActionGate,
+  capability: ToolCapability | null,
+  policy: LowRiskAllowlistPolicy = createLowRiskAllowlistPolicy(),
+): LowRiskAllowlistDecision {
+  const baseNotes = [
+    ...policy.notes,
+    "This decision is an eligibility artifact only and does not execute a tool.",
+    "ToolResult must be created later by an actual execution lane, not by allowlist evaluation.",
+    "RuntimeSpec and Trace may inform planning but do not authorize execution by themselves.",
+  ];
+
+  if (!capability) {
+    return {
+      actionId: actionGate.actionId,
+      toolId: actionGate.proposedToolId,
+      toolName: actionGate.proposedToolName,
+      status: "blocked_unknown_tool",
+      eligible: false,
+      reasonCode: "unknown_tool",
+      reason: "Unknown tools are not eligible for low-risk direct execution.",
+      requiresToolResultAuditLater: false,
+      notes: baseNotes,
+    };
+  }
+
+  if (!actionGate.requiredChecks.runtimeSpecBoundaryValid || !actionGate.requiredChecks.traceBoundaryValid) {
+    return {
+      actionId: actionGate.actionId,
+      toolId: capability.toolId,
+      toolName: capability.toolName,
+      status: "blocked_boundary_violation",
+      eligible: false,
+      reasonCode: "boundary_violation",
+      reason: "Boundary validation failed or is incomplete; direct execution eligibility is blocked.",
+      requiresToolResultAuditLater: capability.requiresToolResultAudit,
+      notes: baseNotes,
+    };
+  }
+
+  if (!policy.allowedRiskClasses.includes(capability.allowedRiskClass as "read_only" | "low_risk_direct")) {
+    return {
+      actionId: actionGate.actionId,
+      toolId: capability.toolId,
+      toolName: capability.toolName,
+      status: "blocked_risk_class",
+      eligible: false,
+      reasonCode: "risk_class_not_allowed",
+      reason: "Only read_only and low_risk_direct capabilities may be considered for low-risk direct eligibility.",
+      requiresToolResultAuditLater: capability.requiresToolResultAudit,
+      notes: baseNotes,
+    };
+  }
+
+  if (capability.previewRequired || actionGate.previewRequirement.required) {
+    return {
+      actionId: actionGate.actionId,
+      toolId: capability.toolId,
+      toolName: capability.toolName,
+      status: "blocked_requires_preview",
+      eligible: false,
+      reasonCode: "preview_required",
+      reason: "Capabilities that require preview are not eligible for low-risk direct execution.",
+      requiresToolResultAuditLater: capability.requiresToolResultAudit,
+      notes: baseNotes,
+    };
+  }
+
+  if (capability.dryRunRequired || actionGate.dryRunRequirement.required) {
+    return {
+      actionId: actionGate.actionId,
+      toolId: capability.toolId,
+      toolName: capability.toolName,
+      status: "blocked_requires_dry_run",
+      eligible: false,
+      reasonCode: "dry_run_required",
+      reason: "Capabilities that require dry-run are not eligible for low-risk direct execution.",
+      requiresToolResultAuditLater: capability.requiresToolResultAudit,
+      notes: baseNotes,
+    };
+  }
+
+  if (capability.approvalRequired || actionGate.approvalRequirement.required) {
+    return {
+      actionId: actionGate.actionId,
+      toolId: capability.toolId,
+      toolName: capability.toolName,
+      status: "blocked_requires_approval",
+      eligible: false,
+      reasonCode: "approval_required",
+      reason: "Capabilities that require approval are not eligible for low-risk direct execution.",
+      requiresToolResultAuditLater: capability.requiresToolResultAudit,
+      notes: baseNotes,
+    };
+  }
+
+  if (capability.externalTransmissionAllowed) {
+    return {
+      actionId: actionGate.actionId,
+      toolId: capability.toolId,
+      toolName: capability.toolName,
+      status: "blocked_external_transmission",
+      eligible: false,
+      reasonCode: "external_transmission",
+      reason: "External transmission is not eligible for low-risk direct execution.",
+      requiresToolResultAuditLater: capability.requiresToolResultAudit,
+      notes: baseNotes,
+    };
+  }
+
+  if (capability.backupRequired || capability.rollbackSupported) {
+    return {
+      actionId: actionGate.actionId,
+      toolId: capability.toolId,
+      toolName: capability.toolName,
+      status: "blocked_mutation_risk",
+      eligible: false,
+      reasonCode: "mutation_or_rollback_risk",
+      reason: "Capabilities with backup or rollback posture are treated as mutation-risk and not eligible for low-risk direct execution.",
+      requiresToolResultAuditLater: capability.requiresToolResultAudit,
+      notes: baseNotes,
+    };
+  }
+
+  if (!capability.directExecutionAllowed) {
+    return {
+      actionId: actionGate.actionId,
+      toolId: capability.toolId,
+      toolName: capability.toolName,
+      status: "blocked_risk_class",
+      eligible: false,
+      reasonCode: "direct_execution_not_allowed",
+      reason: "Capability policy does not allow direct execution.",
+      requiresToolResultAuditLater: capability.requiresToolResultAudit,
+      notes: baseNotes,
+    };
+  }
+
+  if (!(capability.allowlistTags ?? []).includes(policy.allowlistTag)) {
+    return {
+      actionId: actionGate.actionId,
+      toolId: capability.toolId,
+      toolName: capability.toolName,
+      status: "blocked_not_allowlisted",
+      eligible: false,
+      reasonCode: "missing_allowlist_tag",
+      reason: "Capability is not explicitly allowlisted for low-risk direct execution.",
+      requiresToolResultAuditLater: capability.requiresToolResultAudit,
+      notes: baseNotes,
+    };
+  }
+
+  return {
+    actionId: actionGate.actionId,
+    toolId: capability.toolId,
+    toolName: capability.toolName,
+    status: "allowed_low_risk_direct",
+    eligible: true,
+    reasonCode: "eligible_low_risk_direct",
+    reason: "Capability is known, bounded, local-only, non-mutating, and explicitly allowlisted for low-risk direct execution.",
+    requiresToolResultAuditLater: capability.requiresToolResultAudit,
+    notes: baseNotes,
+  };
+}
+
+export function canProceedLowRiskDirect(actionGate: ActionGate, capability: ToolCapability | null, policy?: LowRiskAllowlistPolicy): boolean {
+  return evaluateLowRiskDirectEligibility(actionGate, capability, policy).eligible;
 }
 
 export function planActionGatePreviewDryRun(actionGate: ActionGate, capability: ToolCapability | null): ActionGatePreExecutionPlan {

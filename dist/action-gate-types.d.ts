@@ -120,6 +120,23 @@ export interface ActionGatePreExecutionPlan {
     externalTransmission: boolean;
     notes: string[];
 }
+export type LowRiskAllowlistStatus = "allowed_low_risk_direct" | "blocked_unknown_tool" | "blocked_boundary_violation" | "blocked_requires_preview" | "blocked_requires_dry_run" | "blocked_requires_approval" | "blocked_external_transmission" | "blocked_mutation_risk" | "blocked_not_allowlisted" | "blocked_risk_class";
+export interface LowRiskAllowlistPolicy {
+    allowlistTag: string;
+    allowedRiskClasses: Array<"read_only" | "low_risk_direct">;
+    notes: string[];
+}
+export interface LowRiskAllowlistDecision {
+    actionId: string;
+    toolId: string;
+    toolName: string;
+    status: LowRiskAllowlistStatus;
+    eligible: boolean;
+    reasonCode: string;
+    reason: string;
+    requiresToolResultAuditLater: boolean;
+    notes: string[];
+}
 export interface ToolResult {
     actionId: string;
     toolName: string;
@@ -149,6 +166,9 @@ export declare function requiresApprovalForCapability(capability: ToolCapability
 export declare function requiresPreviewForCapability(capability: ToolCapability | null): boolean;
 export declare function requiresDryRunForCapability(capability: ToolCapability | null): boolean;
 export declare function requiresBackupForCapability(capability: ToolCapability | null): boolean;
+export declare function createLowRiskAllowlistPolicy(): LowRiskAllowlistPolicy;
+export declare function evaluateLowRiskDirectEligibility(actionGate: ActionGate, capability: ToolCapability | null, policy?: LowRiskAllowlistPolicy): LowRiskAllowlistDecision;
+export declare function canProceedLowRiskDirect(actionGate: ActionGate, capability: ToolCapability | null, policy?: LowRiskAllowlistPolicy): boolean;
 export declare function planActionGatePreviewDryRun(actionGate: ActionGate, capability: ToolCapability | null): ActionGatePreExecutionPlan;
 export declare function canProceedDirectly(actionGate: ActionGate): boolean;
 export declare function requiresApproval(actionGate: ActionGate): boolean;
