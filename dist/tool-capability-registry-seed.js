@@ -283,7 +283,7 @@ export const ENVOY_TOOL_CAPABILITY_REGISTRY_SEED = [
         blockedSurfaces: [],
         auditRequirements: ["tool_result"],
         requiresToolResultAudit: true,
-        notes: ["read-only sleeve/artifact preview without compiler invocation; seeded conservatively as read_only in first pass.", "currently registered in plugin-entry but not declared in openclaw.plugin.json."],
+        notes: ["read-only sleeve/artifact preview without compiler invocation; seeded conservatively as read_only in first pass.", "currently registered in plugin-entry but not declared in openclaw.plugin.json.", "internal-only / blocked-public policy during current manifest alignment lane.", "excluded from first low-risk direct adapter set until separate public-surface review."],
     },
 ];
 export function createEnvoyToolCapabilityRegistrySeed() {

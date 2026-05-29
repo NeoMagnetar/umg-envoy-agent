@@ -62,6 +62,11 @@ These names appear in prior docs or staged planning language, but they are **not
 - `umg_envoy_sleeve_inspect`
 - `umg_envoy_sleeve_demo`
 
+### Internal-Only / Non-Manifest-Aligned During Current Policy Lane
+- `umg_envoy_load_sleeve`
+
+`umg_envoy_load_sleeve` is currently registered as a conservative read-only/internal inspection surface, but it is not part of the manifest-aligned declared public tool surface and is excluded from the first low-risk direct adapter candidate set until a separate manifest-alignment or public-surface decision lane says otherwise.
+
 ## 4. Deprecated or Renamed Tool Names
 
 These names look like earlier or alternate naming forms and should not be treated as the current declared public surface unless they appear in `openclaw.plugin.json`.
