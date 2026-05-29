@@ -54,6 +54,17 @@ export interface RuntimeSpec {
     errors: string[];
     warnings: string[];
 }
+export type RuntimeSpecBoundarySourceKind = "local_adapter" | "external_sleeve_runtime" | "external_ir_runtime_spec" | "unknown";
+export type RuntimeSpecBoundaryStatus = "valid_non_executing_artifact" | "missing_boundary_metadata" | "boundary_violation" | "unknown";
+export interface RuntimeSpecBoundary {
+    sourceKind: RuntimeSpecBoundarySourceKind;
+    artifactKind: string | null;
+    nonExecuting: boolean | null;
+    boundaryNote: string | null;
+    originalPayload: unknown;
+    warnings: string[];
+    status: RuntimeSpecBoundaryStatus;
+}
 export interface RuntimeValidationResult {
     ok: boolean;
     valid: boolean;
@@ -64,6 +75,7 @@ export interface CompileSleeveResult {
     ok: boolean;
     sleeveId: string;
     runtimeSpec: RuntimeSpec;
+    runtimeSpecBoundary?: RuntimeSpecBoundary;
 }
 export interface BlockLibrarySummary {
     totalBlocks: number;
@@ -245,6 +257,7 @@ export interface CompilerBridgeResult {
     canonicalIr?: Record<string, unknown>;
     compilerInvocation?: CompilerInvocationResult;
     runtimeSpec?: unknown;
+    runtimeSpecBoundary?: RuntimeSpecBoundary;
     trace?: unknown;
     diagnostics?: unknown;
     outputFiles?: {
@@ -297,6 +310,7 @@ export interface RelationMatrixResult {
     libraryRoot: string;
     bridgeResult?: Record<string, unknown>;
     runtimeSpec?: unknown;
+    runtimeSpecBoundary?: RuntimeSpecBoundary;
     trace?: unknown;
     diagnostics?: unknown;
     relationMatrixText?: string;

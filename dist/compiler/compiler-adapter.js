@@ -1,5 +1,6 @@
 import { loadBlockMap, loadSleeveById, publicContentRoot } from "./content-loader.js";
 import { validateRuntimeOutput } from "./runtime-validator.js";
+import { normalizeRuntimeSpecBoundary } from "./runtime-spec-boundary.js";
 const KIND_ORDER = {
     primary: 0,
     directive: 1,
@@ -66,6 +67,7 @@ export function compileSleeveById(sleeveId, config, metaUrl = import.meta.url) {
     return {
         ok: runtimeSpec.errors.length === 0,
         sleeveId: sleeve.sleeve_id,
-        runtimeSpec
+        runtimeSpec,
+        runtimeSpecBoundary: normalizeRuntimeSpecBoundary(runtimeSpec, "local_adapter")
     };
 }

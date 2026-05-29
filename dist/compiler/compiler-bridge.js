@@ -6,6 +6,7 @@ import { buildCanonicalIr } from "./canonical-ir-builder.js";
 import { runCompilerProcess } from "./compiler-process.js";
 import { loadSleeveFile } from "./sleeve-loader.js";
 import { validateSleeveStructure } from "./sleeve-schema-validator.js";
+import { normalizeRuntimeSpecBoundary } from "./runtime-spec-boundary.js";
 function stripBom(raw) {
     return raw.charCodeAt(0) === 0xfeff ? raw.slice(1) : raw;
 }
@@ -99,6 +100,9 @@ export async function runCompilerBridge(request) {
     const trace = fs.existsSync(tracePath) ? readJson(tracePath) : undefined;
     const diagnostics = fs.existsSync(diagnosticsPath) ? readJson(diagnosticsPath) : undefined;
     const relationMatrixEmitted = fs.existsSync(relationMatrixPath);
+    const runtimeSpecBoundary = runtimeSpec
+        ? normalizeRuntimeSpecBoundary(runtimeSpec, "external_ir_runtime_spec")
+        : undefined;
     const loadedSleeveSummary = summarizeLoadedSleeve({
         artifactId: loaded.loadedSleeve.identity?.artifact_id ?? null,
         routeCount: Array.isArray(loaded.loadedSleeve.sleeve?.routes) ? loaded.loadedSleeve.sleeve.routes.length : 0,
@@ -124,6 +128,7 @@ export async function runCompilerBridge(request) {
             stderrSummary: invocation.stderr.trim().slice(0, 500)
         },
         runtimeSpec,
+        runtimeSpecBoundary,
         trace,
         diagnostics,
         outputFiles: {

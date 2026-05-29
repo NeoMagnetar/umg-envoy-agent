@@ -1,6 +1,7 @@
 import type { CompileSleeveResult, PluginConfig, PublicBlock, PublicSleeve, RuntimeSpec } from "../types.js";
 import { loadBlockMap, loadSleeveById, publicContentRoot } from "./content-loader.js";
 import { validateRuntimeOutput } from "./runtime-validator.js";
+import { normalizeRuntimeSpecBoundary } from "./runtime-spec-boundary.js";
 
 const KIND_ORDER: Record<PublicBlock["kind"], number> = {
   primary: 0,
@@ -76,6 +77,7 @@ export function compileSleeveById(sleeveId: string, config?: PluginConfig, metaU
   return {
     ok: runtimeSpec.errors.length === 0,
     sleeveId: sleeve.sleeve_id,
-    runtimeSpec
+    runtimeSpec,
+    runtimeSpecBoundary: normalizeRuntimeSpecBoundary(runtimeSpec, "local_adapter")
   };
 }
