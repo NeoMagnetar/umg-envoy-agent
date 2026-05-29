@@ -14,7 +14,8 @@ import { parseUMGPath } from "./umg-path-parser.js";
 import { renderUMGPath } from "./umg-path-renderer.js";
 import { validateUMGPath } from "./umg-path-validator.js";
 import { buildPublicPath } from "./public-path-builder.js";
-import { createActionGateRuntimeReport, createActionGateRuntimeReportToolResponse, createProposedActionGate, type ActionGateRuntimeReportViewMode, type ToolCapability } from "./action-gate-types.js";
+import { createActionGateRuntimeReport, createActionGateRuntimeReportToolResponse, createProposedActionGate, type ActionGateRuntimeReportViewMode } from "./action-gate-types.js";
+import { resolveEnvoySeededToolCapability } from "./tool-capability-registry-seed.js";
 import type { CompilerInputPreview, PluginConfig, SleeveLoadResult } from "./types.js";
 
 function effectiveConfig(config?: PluginConfig) {
@@ -118,27 +119,7 @@ function buildCompilerInputPreview(result: SleeveLoadResult, libraryRoot: string
 }
 
 function createRuntimeReportToolSurface(input: { toolId: string; toolName?: string; mode?: ActionGateRuntimeReportViewMode }) {
-  const capability: ToolCapability | null = input.toolId === "umg_envoy_status"
-    ? {
-        toolId: "umg_envoy_status",
-        toolName: "UMG Envoy Status",
-        toolCategory: "inspection",
-        allowedRiskClass: "read_only",
-        directExecutionAllowed: true,
-        approvalRequired: false,
-        previewRequired: false,
-        dryRunSupported: false,
-        dryRunRequired: false,
-        rollbackSupported: false,
-        backupRequired: false,
-        externalTransmissionAllowed: false,
-        blockedSurfaces: [],
-        auditRequirements: ["tool_result"],
-        requiresToolResultAudit: true,
-        allowlistTags: ["low-risk-direct"],
-        notes: ["Report-only seed capability for runtime report inspection."],
-      }
-    : null;
+  const capability = resolveEnvoySeededToolCapability(input.toolId);
 
   const actionGate = createProposedActionGate({
     actionId: `runtime-report:${input.toolId}`,

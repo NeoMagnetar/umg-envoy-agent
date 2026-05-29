@@ -90,6 +90,11 @@ Envoy is intended to become tool-capable through explicit capability mapping, no
 - Blocked, denied, preview, and dry-run records must remain distinguishable from executed results.
 - Runtime report surfaces ActionGate/ToolResult readiness but is not approval and is not execution.
 - Runtime report tool surface is read-only and report-only.
+- ToolCapabilityRegistry seed classifies known Envoy tools.
+- Known tool does not equal authorized execution.
+- Unknown tools remain blocked/review-required.
+- First seed pass does not mark any tool as `low_risk_direct`.
+- Blocked bridge/emission surfaces require later policy lanes.
 - Executed status only comes from `ToolResult.executionStatus`.
 - The registry itself does not execute tools and does not authorize execution by itself.
 

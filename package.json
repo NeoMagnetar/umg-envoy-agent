@@ -30,6 +30,7 @@
     "test:tool-result-audit-record": "node dist/tool-result-audit-record.test.js",
     "test:action-gate-runtime-report-surface": "node dist/action-gate-runtime-report-surface.test.js",
     "test:action-gate-runtime-report-tool-surface": "node dist/action-gate-runtime-report-tool-surface.test.js",
+    "test:tool-capability-registry-seed": "node dist/tool-capability-registry-seed.test.js",
     "validate:umg:e2e": "node scripts/validate-umg-e2e.mjs",
     "pack:dry": "npm pack --dry-run"
   },
