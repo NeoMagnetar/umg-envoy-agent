@@ -65,14 +65,35 @@ The explainer returns:
 - warnings and errors
 - RuntimeSpec boundary metadata
 - optional full RuntimeSpec when requested
-- matrix summary placeholder when requested
+- lightweight response-only matrix preview showing sleeve/block/prompt/tool/boundary relationships
 
-If matrix summary is requested in this lane, the response is:
+The matrix preview is deterministic and non-executing. It is not the gated relation-matrix emitter and does not invoke the external compiler bridge.
+
+The matrix summary shape is:
 
 ```json
 {
-  "available": false,
-  "reason": "matrix summary helper not implemented in this lane"
+  "available": true,
+  "matrix_kind": "sleeve_relation_preview",
+  "source": "explain_sleeve",
+  "non_executing": true,
+  "sleeve_id": "public-coder-envoy",
+  "node_counts": {
+    "sleeves": 1,
+    "blocks": 7,
+    "active_blocks": 7,
+    "disabled_blocks": 0,
+    "skipped_blocks": 0,
+    "prompt_parts": 7,
+    "tool_requests": 1,
+    "boundaries": 1,
+    "runtime_specs": 1,
+    "skipped_reasons": 0
+  },
+  "nodes": [],
+  "edges": [],
+  "warnings": [],
+  "errors": []
 }
 ```
 
@@ -89,6 +110,10 @@ Package-level proof from the compiled helper:
 - warning includes `disabled block skipped: trigger.sample`
 - prompt authority order is `10, 20, 30, 40, 50, 55`
 - RuntimeSpec boundary is `nonExecuting=true`, `status=valid_non_executing_artifact`
+- matrix preview is available
+- matrix preview block count is 7
+- matrix preview prompt part count is 6
+- `trigger.sample` has a `skipped_from_runtime` relationship and skipped reason
 
 ## Public Coder Envoy Proof
 
@@ -102,6 +127,10 @@ Package-level proof from the compiled helper:
 - warnings are empty
 - prompt authority order is `10, 20, 30, 40, 50, 55, 60`
 - RuntimeSpec boundary is `nonExecuting=true`, `status=valid_non_executing_artifact`
+- matrix preview is available
+- matrix preview block count is 7
+- matrix preview prompt part count is 7
+- matrix preview represents the `inspect` tool request
 
 ## Validation
 
@@ -117,6 +146,7 @@ Additional repo boundary tests:
 - `npm run test:tool-manifest-alignment`: pass
 - `npm run test:low-risk-direct-execution-adapter`: pass
 - `npm run test:low-risk-direct-runtime-tool-surface`: pass
+- `node dist/compiler/sleeve-explainer.test.js`: pass
 
 Live OpenClaw CLI validation:
 

@@ -1,4 +1,11 @@
-import type { PluginConfig, PublicBlock, PublicSleeve, SleeveExplanationResult } from "../types.js";
+import type {
+  PluginConfig,
+  PublicBlock,
+  RuntimeSpecBoundary,
+  SleeveExplanationBlockRef,
+  SleeveExplanationResult,
+  SleeveRelationMatrixPreview,
+} from "../types.js";
 import { compileSleeveById } from "./compiler-adapter.js";
 import { loadBlockMap, loadSleeveById, publicContentRoot } from "./content-loader.js";
 
@@ -27,17 +34,198 @@ function skippedReason(refEnabled: boolean, block?: PublicBlock): string | null 
   return null;
 }
 
-function matrixSummary(includeMatrixSummary: boolean): SleeveExplanationResult["matrix_summary"] {
-  if (!includeMatrixSummary) {
-    return {
-      available: false,
-      reason: "matrix summary not requested"
-    };
-  }
-
+function unavailableMatrixSummary(reason: string): SleeveRelationMatrixPreview {
   return {
     available: false,
-    reason: "matrix summary helper not implemented in this lane"
+    reason,
+    warnings: [],
+    errors: []
+  };
+}
+
+function runtimeBoundaryNonExecuting(boundary: SleeveExplanationResult["runtime_spec_boundary"]): boolean {
+  return boundary.nonExecuting === true;
+}
+
+function toolRequestName(request: Record<string, unknown>, index: number): string {
+  const candidate = request.name;
+  return typeof candidate === "string" && candidate.trim().length > 0 ? candidate : `tool_request_${index + 1}`;
+}
+
+function buildMatrixSummary(input: {
+  sleeveId: string;
+  blockRefs: SleeveExplanationBlockRef[];
+  activeBlocks: string[];
+  promptParts: SleeveExplanationResult["prompt_parts"];
+  toolRequests: Array<Record<string, unknown>>;
+  skippedBlocks: SleeveExplanationResult["skipped_blocks"];
+  runtimeSpecBoundary: RuntimeSpecBoundary | { nonExecuting: true; status: "valid_non_executing_artifact" };
+  warnings: string[];
+  errors: string[];
+}): SleeveRelationMatrixPreview {
+  const nodes: NonNullable<SleeveRelationMatrixPreview["nodes"]> = [];
+  const edges: NonNullable<SleeveRelationMatrixPreview["edges"]> = [];
+  const sleeveNodeId = `sleeve:${input.sleeveId}`;
+  const runtimeSpecNodeId = "runtime_spec";
+  const boundaryNodeId = "boundary:runtime_spec";
+  const promptPartSet = new Set(input.promptParts.map((part) => part.block_id));
+  const skippedReasonByBlock = new Map(input.skippedBlocks.map((entry) => [entry.block_id, entry.reason]));
+
+  nodes.push({
+    id: sleeveNodeId,
+    type: "sleeve",
+    label: input.sleeveId,
+    sleeve_id: input.sleeveId
+  });
+
+  nodes.push({
+    id: runtimeSpecNodeId,
+    type: "runtime_spec",
+    label: `runtime:${input.sleeveId}`,
+    sleeve_id: input.sleeveId,
+    non_executing: true
+  });
+
+  nodes.push({
+    id: boundaryNodeId,
+    type: "boundary",
+    label: "RuntimeSpecBoundary",
+    non_executing: runtimeBoundaryNonExecuting(input.runtimeSpecBoundary),
+    status: input.runtimeSpecBoundary.status
+  });
+
+  edges.push({
+    from: runtimeSpecNodeId,
+    to: boundaryNodeId,
+    type: "guarded_by"
+  });
+
+  for (const ref of input.blockRefs) {
+    const blockNodeId = `block:${ref.block_id}`;
+    nodes.push({
+      id: blockNodeId,
+      type: "block",
+      label: ref.block_id,
+      block_id: ref.block_id,
+      kind: ref.kind,
+      authority: ref.authority,
+      enabled: ref.enabled,
+      active: ref.active
+    });
+
+    edges.push({
+      from: sleeveNodeId,
+      to: blockNodeId,
+      type: "references_block"
+    });
+
+    if (ref.active) {
+      edges.push({
+        from: blockNodeId,
+        to: runtimeSpecNodeId,
+        type: "active_in_runtime"
+      });
+    } else {
+      edges.push({
+        from: blockNodeId,
+        to: runtimeSpecNodeId,
+        type: "skipped_from_runtime",
+        reason: ref.skipped_reason ?? "not active in runtime"
+      });
+    }
+
+    const skippedReason = skippedReasonByBlock.get(ref.block_id);
+    if (skippedReason) {
+      const reasonNodeId = `skipped_reason:${ref.block_id}`;
+      nodes.push({
+        id: reasonNodeId,
+        type: "skipped_reason",
+        label: skippedReason,
+        block_id: ref.block_id,
+        reason: skippedReason
+      });
+      edges.push({
+        from: blockNodeId,
+        to: reasonNodeId,
+        type: "has_skipped_reason",
+        reason: skippedReason
+      });
+    }
+
+    if (promptPartSet.has(ref.block_id)) {
+      edges.push({
+        from: blockNodeId,
+        to: `prompt_part:${ref.block_id}`,
+        type: "emits_prompt_part"
+      });
+    }
+  }
+
+  input.promptParts.forEach((part, index) => {
+    const promptPartNodeId = `prompt_part:${part.block_id}`;
+    nodes.push({
+      id: promptPartNodeId,
+      type: "prompt_part",
+      label: part.block_id,
+      block_id: part.block_id,
+      kind: part.kind,
+      authority: part.authority,
+      order: index + 1
+    });
+    edges.push({
+      from: promptPartNodeId,
+      to: runtimeSpecNodeId,
+      type: "contained_in_runtime_spec",
+      order: index + 1
+    });
+    edges.push({
+      from: promptPartNodeId,
+      to: runtimeSpecNodeId,
+      type: "ordered_by_authority",
+      order: index + 1
+    });
+  });
+
+  input.toolRequests.forEach((request, index) => {
+    const name = toolRequestName(request, index);
+    const toolRequestNodeId = `tool_request:${index + 1}:${name}`;
+    nodes.push({
+      id: toolRequestNodeId,
+      type: "tool_request",
+      label: name,
+      name,
+      order: index + 1
+    });
+    edges.push({
+      from: runtimeSpecNodeId,
+      to: toolRequestNodeId,
+      type: "requests_tool",
+      order: index + 1
+    });
+  });
+
+  return {
+    available: true,
+    matrix_kind: "sleeve_relation_preview",
+    source: "explain_sleeve",
+    non_executing: true,
+    sleeve_id: input.sleeveId,
+    node_counts: {
+      sleeves: 1,
+      blocks: input.blockRefs.length,
+      active_blocks: input.activeBlocks.length,
+      disabled_blocks: input.blockRefs.filter((ref) => !ref.enabled).length,
+      skipped_blocks: input.skippedBlocks.length,
+      prompt_parts: input.promptParts.length,
+      tool_requests: input.toolRequests.length,
+      boundaries: 1,
+      runtime_specs: 1,
+      skipped_reasons: input.skippedBlocks.length
+    },
+    nodes,
+    edges,
+    warnings: input.warnings,
+    errors: input.errors
   };
 }
 
@@ -45,7 +233,6 @@ function invalidSleeveResult(input: {
   sleeveId: string;
   config: ReturnType<typeof effectiveConfig>;
   error: string;
-  includeMatrixSummary: boolean;
 }): SleeveExplanationResult {
   return {
     ok: false,
@@ -73,7 +260,7 @@ function invalidSleeveResult(input: {
       nonExecuting: true,
       status: "valid_non_executing_artifact"
     },
-    matrix_summary: matrixSummary(input.includeMatrixSummary)
+    matrix_summary: unavailableMatrixSummary("cannot build matrix preview for unknown sleeve")
   };
 }
 
@@ -87,14 +274,11 @@ export function explainSleeveById(input: {
   const cfg = effectiveConfig(input.config);
   const root = publicContentRoot(input.metaUrl ?? import.meta.url);
   const sleeve = loadSleeveById(root, input.sleeveId);
-  const includeMatrixSummary = input.includeMatrixSummary === true;
-
   if (!sleeve) {
     return invalidSleeveResult({
       sleeveId: input.sleeveId,
       config: cfg,
-      error: `Unknown sleeve: ${input.sleeveId}`,
-      includeMatrixSummary
+      error: `Unknown sleeve: ${input.sleeveId}`
     });
   }
 
@@ -150,8 +334,20 @@ export function explainSleeveById(input: {
       nonExecuting: true,
       status: "valid_non_executing_artifact"
     },
-    matrix_summary: matrixSummary(includeMatrixSummary)
+    matrix_summary: unavailableMatrixSummary("matrix preview not initialized")
   };
+
+  result.matrix_summary = buildMatrixSummary({
+    sleeveId: sleeve.sleeve_id,
+    blockRefs,
+    activeBlocks: compiled.runtimeSpec.active_blocks,
+    promptParts: compiled.runtimeSpec.prompt_parts,
+    toolRequests: sleeve.tool_requests ?? [],
+    skippedBlocks,
+    runtimeSpecBoundary: result.runtime_spec_boundary,
+    warnings: result.warnings,
+    errors: result.errors
+  });
 
   if (input.includeRuntimeSpec === true) {
     result.runtime_spec = compiled.runtimeSpec;

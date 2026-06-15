@@ -71,7 +71,7 @@ These names appear in prior docs or staged planning language, but they are **not
 
 `umg_envoy_load_sleeve` is now part of the manifest-aligned declared public tool surface after runtime reconciliation in alpha.15. It remains a conservative read-only sleeve-loading and inspection surface, not arbitrary execution, and it is still excluded from the first low-risk direct adapter candidate set.
 
-`umg_envoy_explain_sleeve` is a manifest-declared read-only explanation surface added in the alpha16 lane. It explains one bundled sleeve compilation by showing sleeve metadata, all block refs, enabled/disabled state, skipped reasons, active block order, authority-ordered prompt parts, tool requests, warnings/errors, and the non-executing RuntimeSpec boundary. It does not execute tool requests, write outputs, invoke the external compiler bridge, or emit relation matrices.
+`umg_envoy_explain_sleeve` is a manifest-declared read-only explanation surface added in the alpha16 lane. It explains one bundled sleeve compilation by showing sleeve metadata, all block refs, enabled/disabled state, skipped reasons, active block order, authority-ordered prompt parts, tool requests, warnings/errors, the non-executing RuntimeSpec boundary, and a lightweight response-only sleeve relation preview. It does not execute tool requests, write outputs, invoke the external compiler bridge, or use the gated relation-matrix emitter.
 
 ## 4. Deprecated or Renamed Tool Names
 

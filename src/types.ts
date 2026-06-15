@@ -157,11 +157,66 @@ export interface SleeveExplanationResult {
     status: "valid_non_executing_artifact";
   };
   runtime_spec?: RuntimeSpec;
-  matrix_summary: {
-    available: boolean;
-    reason?: string;
-    relations?: unknown[];
+  matrix_summary: SleeveRelationMatrixPreview;
+}
+
+export interface SleeveRelationMatrixPreviewNode {
+  id: string;
+  type: "sleeve" | "block" | "prompt_part" | "tool_request" | "runtime_spec" | "boundary" | "skipped_reason";
+  label: string;
+  sleeve_id?: string;
+  block_id?: string;
+  kind?: PublicBlock["kind"] | string | null;
+  authority?: number | null;
+  enabled?: boolean;
+  active?: boolean;
+  order?: number;
+  name?: string | null;
+  non_executing?: boolean | null;
+  status?: RuntimeSpecBoundaryStatus;
+  reason?: string;
+}
+
+export interface SleeveRelationMatrixPreviewEdge {
+  from: string;
+  to: string;
+  type:
+    | "references_block"
+    | "active_in_runtime"
+    | "skipped_from_runtime"
+    | "has_skipped_reason"
+    | "emits_prompt_part"
+    | "ordered_by_authority"
+    | "contained_in_runtime_spec"
+    | "guarded_by"
+    | "requests_tool";
+  order?: number;
+  reason?: string;
+}
+
+export interface SleeveRelationMatrixPreview {
+  available: boolean;
+  reason?: string;
+  matrix_kind?: "sleeve_relation_preview";
+  source?: "explain_sleeve";
+  non_executing?: boolean;
+  sleeve_id?: string;
+  node_counts?: {
+    sleeves: number;
+    blocks: number;
+    active_blocks: number;
+    disabled_blocks: number;
+    skipped_blocks: number;
+    prompt_parts: number;
+    tool_requests: number;
+    boundaries: number;
+    runtime_specs: number;
+    skipped_reasons: number;
   };
+  nodes?: SleeveRelationMatrixPreviewNode[];
+  edges?: SleeveRelationMatrixPreviewEdge[];
+  warnings?: string[];
+  errors?: string[];
 }
 
 export interface BlockLibrarySummary {
