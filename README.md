@@ -28,6 +28,48 @@ In UMG terminology, an Envoy is a carrier surface for moving selected governed a
 - provides a six-tool low-risk direct runtime runner for static safe read-only tools only
 - keeps write, bridge, destructive, external, and arbitrary execution paths out of the current direct runner
 
+## Governance-layer positioning
+
+UMG Envoy Agent is packaged as an OpenClaw plugin, but its product role is broader: it is a runtime-facing governance, specification, inspection, and audit layer for AI-agent systems. For the strategic model-agnostic framing, see [`docs/FRONTIER-AGENT-GOVERNANCE-PACK-0.3.0-alpha.15.md`](docs/FRONTIER-AGENT-GOVERNANCE-PACK-0.3.0-alpha.15.md).
+
+This positioning does not claim live OpenClaw host readiness, ClawHub publication status, unrestricted execution, or replacement of model-safety controls. The execution boundary remains governed by [`docs/GOVERNANCE-EXECUTION-CONTRACT-0.3.0-alpha.15.md`](docs/GOVERNANCE-EXECUTION-CONTRACT-0.3.0-alpha.15.md).
+
+## Current surface status at 0.3.0-alpha.15
+
+### Manifest-declared public tools
+
+`openclaw.plugin.json` is the authoritative manifest-declared public surface for this repo line.
+
+For exact current tool-id status, use `openclaw.plugin.json`, `docs/TOOL-SURFACE.md`, and `docs/RELEASE-TRUTH-0.3.0-alpha.15.md` together.
+
+The manifest-declared surface includes bounded inspection, validation, comparison, path, runtime-report, and direct-runner tools. It also includes declared but governed bridge and relation-matrix-related surfaces.
+
+### Source-present but not manifest-declared
+
+`umg_envoy_load_sleeve` is source-present and discussed in policy or technical-surface context, but it is not manifest-declared in alpha.15.
+
+It should not be presented as part of the current public manifest surface or as part of the first low-risk direct runner.
+
+### Staged or historical names
+
+Some capability-oriented labels in docs are staged, deferred, historical, or shorthand names rather than current public tool ids.
+
+Staged/deferred names should not be read as current public tool ids. Historical names should not be read as current public tool ids.
+
+For exact tool-id status, use `docs/TOOL-SURFACE.md`.
+
+### Governance-gated declared tools
+
+`umg_envoy_compile_ir_bridge` and `umg_envoy_emit_relation_matrix` are manifest-declared, but they are gated and config-constrained surfaces rather than evidence of unrestricted runtime execution.
+
+The low-risk direct runner is narrow and should not be read as arbitrary execution.
+
+### Truth boundary
+
+These docs do not prove live OpenClaw host or CLI readiness.
+
+These docs do not prove current ClawHub or publication status.
+
 ## Default posture
 
 - allowRuntimeWrites: false
@@ -50,7 +92,10 @@ UMG Envoy Agent currently supports runtime-facing inspection, governed metadata 
 - Display does not create authority.
 - Governance remains binding and inspectable.
 
-Allowed alpha capabilities:
+Capability themes and bounded surface areas:
+
+The list below is capability-oriented shorthand, not a guarantee that each label corresponds to a current manifest-declared public tool id.
+
 - UMG library status
 - UMG library metadata search
 - RuntimeSpec dry-run
@@ -156,6 +201,8 @@ If you do not already have the expected local UMG dependency layout, stop at `ch
 
 ## Current bounded direct runner
 
+This adapter is narrower than the full manifest-declared surface and should not be read as a generic execution path.
+
 Envoy now exposes:
 - `umg_envoy_low_risk_direct_tool_run`
 
@@ -175,6 +222,8 @@ Explicit exclusions from this first direct runner:
 - `umg_envoy_emit_relation_matrix`
 - `umg_envoy_compile_sleeve`
 - `umg_envoy_build_path`
+
+`umg_envoy_load_sleeve` is also not manifest-declared in alpha.15.
 - unknown tools
 - arbitrary dispatch
 - writes / deletes
@@ -241,15 +290,17 @@ Runtime outputs remain temp-only and are not intended for commit.
 
 ## ClawHub-first publication note
 
-ClawHub publication is the intended first public plugin path for this package line. That publication step remains intentionally separate from this patch.
+ClawHub publication is the intended first public plugin path for this package line. That publication step remains intentionally separate from the current repo-truth and docs-only reconciliation lanes.
 
-Future maintainer reference only, not to run during Stage 14D:
+Future maintainer reference only, not to run as part of this documentation lane:
 
 ```text
 clawhub package publish <path> --family code-plugin --name umg-envoy-agent --display-name "UMG Envoy Agent" --version 0.3.0-alpha.15 ...
 ```
 
 For exact declared public tool ids, see `openclaw.plugin.json` and `docs/TOOL-SURFACE.md`.
+
+For exact current tool-id status, use `openclaw.plugin.json`, `docs/TOOL-SURFACE.md`, and `docs/RELEASE-TRUTH-0.3.0-alpha.15.md` together.
 
 ## Entry point
 

@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - "release/**"
+  pull_request:
+
+jobs:
+  check-build-pack:
+    name: Check, build, and package
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Version alignment
+        run: |
+          node -e "const fs=require('fs'); const pkg=JSON.parse(fs.readFileSync('./package.json','utf8')); const manifest=JSON.parse(fs.readFileSync('./openclaw.plugin.json','utf8')); if (pkg.version !== manifest.version) { console.error('version mismatch: package.json=' + pkg.version + ' manifest=' + manifest.version); process.exit(1); } console.log('version aligned: ' + pkg.version);"
+
+      - name: Required docs exist
+        run: |
+          test -f docs/TOOL-SURFACE.md
+          test -f docs/RELEASE-TRUTH-0.3.0-alpha.15.md
+          test -f docs/GOVERNANCE-EXECUTION-CONTRACT-0.3.0-alpha.15.md
+
+      - name: README current-version guard
+        run: |
+          grep -n "0.3.0-alpha.15" README.md
+
+      - name: Public docs stale-framing guard
+        run: |
+          ! grep -R -n -E "v0\.2\.2|v0\.2\.3|0\.2\.2|0\.2\.3|Stage 14D|this patch" README.md PUBLIC-VARIANT-OVERVIEW.md
+
+      - name: Phantom monorepo blocker guard
+        run: |
+          test ! -f src/infra/state-migrations.ts
+
+      - name: Type check
+        run: npm run check
+
+      - name: Build
+        run: npm run build
+
+      - name: Governance tests
+        run: |
+          npm run test:runtime-spec-boundary
+          npm run test:trace-boundary
+          npm run test:action-gate-types
+          npm run test:tool-capability-registry
+          npm run test:action-gate-preview-dry-run
+          npm run test:low-risk-allowlisted-tool-flow
+          npm run test:approval-gated-write-tool-flow
+          npm run test:tool-result-audit-record
+          npm run test:action-gate-runtime-report-surface
+          npm run test:action-gate-runtime-report-tool-surface
+          npm run test:tool-capability-registry-seed
+          npm run test:tool-manifest-alignment
+          npm run test:low-risk-direct-execution-adapter
+          npm run test:low-risk-direct-runtime-tool-surface
+
+      - name: Pack dry run
+        run: npm pack --dry-run
