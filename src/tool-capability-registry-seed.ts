@@ -95,6 +95,24 @@ export const ENVOY_TOOL_CAPABILITY_REGISTRY_SEED: ToolCapabilityRegistryEntry[] 
     notes: ["non-executing RuntimeSpec projection; dry-run only."],
   },
   {
+    toolId: "umg_envoy_explain_sleeve",
+    toolName: "UMG Envoy Explain Sleeve",
+    toolCategory: "inspection",
+    allowedRiskClass: "read_only",
+    directExecutionAllowed: false,
+    approvalRequired: false,
+    previewRequired: false,
+    dryRunSupported: true,
+    dryRunRequired: false,
+    rollbackSupported: false,
+    backupRequired: false,
+    externalTransmissionAllowed: false,
+    blockedSurfaces: [],
+    auditRequirements: ["tool_result"],
+    requiresToolResultAudit: true,
+    notes: ["read-only sleeve explanation surface; reuses bundled adapter compilation and does not execute tools or write outputs.", "excluded from first low-risk direct adapter set until separate public-surface review."],
+  },
+  {
     toolId: "umg_envoy_validate_runtime_output",
     toolName: "UMG Envoy Validate Runtime Output",
     toolCategory: "validation",
@@ -289,7 +307,7 @@ export const ENVOY_TOOL_CAPABILITY_REGISTRY_SEED: ToolCapabilityRegistryEntry[] 
     blockedSurfaces: [],
     auditRequirements: ["tool_result"],
     requiresToolResultAudit: true,
-    notes: ["read-only sleeve/artifact preview without compiler invocation; seeded conservatively as read_only in first pass.", "currently registered in plugin-entry but not declared in openclaw.plugin.json.", "internal-only / blocked-public policy during current manifest alignment lane.", "excluded from first low-risk direct adapter set until separate public-surface review."],
+    notes: ["read-only sleeve/artifact preview without compiler invocation; seeded conservatively as read_only in first pass.", "manifest-declared after alpha.15 runtime reconciliation.", "excluded from first low-risk direct adapter set until separate public-surface review."],
   },
 ];
 

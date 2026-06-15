@@ -72,6 +72,10 @@ const loadSleeveResult = executeLowRiskDirectTool({ toolId: "umg_envoy_load_slee
 assert("umg_envoy_load_sleeve is blocked and handler is not called", loadSleeveResult.status === "execution_blocked");
 assert("umg_envoy_load_sleeve is not in LOW_RISK_DIRECT_TOOL_IDS", LOW_RISK_DIRECT_TOOL_IDS.includes("umg_envoy_load_sleeve" as never) === false);
 
+const explainSleeveResult = executeLowRiskDirectTool({ toolId: "umg_envoy_explain_sleeve", input: { sleeveId: "public-basic-envoy" } });
+assert("umg_envoy_explain_sleeve is blocked and handler is not called", explainSleeveResult.status === "execution_blocked");
+assert("umg_envoy_explain_sleeve is not in LOW_RISK_DIRECT_TOOL_IDS", LOW_RISK_DIRECT_TOOL_IDS.includes("umg_envoy_explain_sleeve" as never) === false);
+
 const dryRunOnlyResult = executeLowRiskDirectTool({ toolId: "umg_envoy_compile_sleeve", input: { sleeveId: "public-basic-envoy" } });
 assert("dry_run_only tool is blocked", dryRunOnlyResult.status === "execution_blocked");
 

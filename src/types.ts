@@ -116,6 +116,54 @@ export interface CompileSleeveResult {
   runtimeSpecBoundary?: RuntimeSpecBoundary;
 }
 
+export interface SleeveExplanationBlockRef {
+  block_id: string;
+  enabled: boolean;
+  resolved: boolean;
+  active: boolean;
+  kind: PublicBlock["kind"] | null;
+  authority: number | null;
+  skipped_reason: string | null;
+  text_preview: string | null;
+}
+
+export interface SleeveExplanationResult {
+  ok: boolean;
+  sleeve_id: string;
+  title: string | null;
+  snap_id: string | null;
+  primary_shell_block_id: string | null;
+  content_mode: string;
+  compiler_mode: string;
+  block_refs: SleeveExplanationBlockRef[];
+  active_blocks: string[];
+  disabled_blocks: string[];
+  missing_blocks: string[];
+  skipped_blocks: Array<{
+    block_id: string;
+    reason: string;
+  }>;
+  prompt_parts: RuntimeSpec["prompt_parts"];
+  tool_requests: Array<Record<string, unknown>>;
+  strategy: Record<string, unknown>;
+  constraints: string[];
+  context: Record<string, unknown>;
+  values: Record<string, unknown>;
+  format: Record<string, unknown>;
+  warnings: string[];
+  errors: string[];
+  runtime_spec_boundary: RuntimeSpecBoundary | {
+    nonExecuting: true;
+    status: "valid_non_executing_artifact";
+  };
+  runtime_spec?: RuntimeSpec;
+  matrix_summary: {
+    available: boolean;
+    reason?: string;
+    relations?: unknown[];
+  };
+}
+
 export interface BlockLibrarySummary {
   totalBlocks: number;
   byKind: Record<string, number>;

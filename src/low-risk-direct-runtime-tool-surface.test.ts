@@ -45,6 +45,9 @@ assert("unknown tool is blocked", unknownResult.status === "execution_blocked");
 const loadSleeveResult = executeLowRiskDirectTool({ toolId: "umg_envoy_load_sleeve", input: { sleevePath: "x", libraryRoot: "y" } });
 assert("load_sleeve is blocked", loadSleeveResult.status === "execution_blocked");
 
+const explainSleeveResult = executeLowRiskDirectTool({ toolId: "umg_envoy_explain_sleeve", input: { sleeveId: "public-basic-envoy" } });
+assert("explain_sleeve is blocked", explainSleeveResult.status === "execution_blocked");
+
 const bridgeResult = executeLowRiskDirectTool({ toolId: "umg_envoy_compile_ir_bridge", input: {} });
 assert("bridge tool is blocked", bridgeResult.status === "execution_blocked");
 

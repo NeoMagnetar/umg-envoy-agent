@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import { Type } from "@sinclair/typebox";
 import { compileSleeveById } from "./compiler/compiler-adapter.js";
+import { explainSleeveById } from "./compiler/sleeve-explainer.js";
 import { runCompilerSmoke } from "./compiler/compiler-smoke.js";
 import { getCompilerMatrixStatus } from "./compiler/compiler-matrix.js";
 import { loadSleeves, publicContentRoot, summarizeBlockLibraries } from "./compiler/content-loader.js";
@@ -47,6 +48,7 @@ export function statusPayload(config) {
             "umg_envoy_list_sleeves",
             "umg_envoy_list_block_libraries",
             "umg_envoy_compile_sleeve",
+            "umg_envoy_explain_sleeve",
             "umg_envoy_validate_runtime_output",
             "umg_envoy_compare_sleeves",
             "umg_envoy_parse_path",
@@ -167,6 +169,20 @@ function registerCliBridge(api, config) {
             .action(async (opts) => {
             console.log(JSON.stringify(compileSleeveById(opts.sleeve, config, import.meta.url), null, 2));
         });
+        root.command("explain-sleeve")
+            .requiredOption("--sleeve <id>")
+            .option("--include-runtime-spec")
+            .option("--include-matrix-summary")
+            .option("--no-runtime-spec")
+            .action(async (opts) => {
+            console.log(JSON.stringify(explainSleeveById({
+                sleeveId: opts.sleeve,
+                config,
+                metaUrl: import.meta.url,
+                includeRuntimeSpec: opts.runtimeSpec !== false && opts.includeRuntimeSpec === true,
+                includeMatrixSummary: opts.includeMatrixSummary === true
+            }), null, 2));
+        });
         root.command("validate-runtime-output")
             .requiredOption("--file <path>")
             .action(async (opts) => {
@@ -265,6 +281,18 @@ const entry = {
         api.registerTool({ name: "umg_envoy_list_sleeves", description: "List bundled public sleeves.", parameters: Type.Object({}, { additionalProperties: false }), async execute() { return { content: [{ type: "text", text: JSON.stringify(loadSleeves(publicContentRoot(import.meta.url)), null, 2) }] }; } }, { optional: true });
         api.registerTool({ name: "umg_envoy_list_block_libraries", description: "Summarize bundled public block libraries.", parameters: Type.Object({}, { additionalProperties: false }), async execute() { return { content: [{ type: "text", text: JSON.stringify(summarizeBlockLibraries(publicContentRoot(import.meta.url)), null, 2) }] }; } }, { optional: true });
         api.registerTool({ name: "umg_envoy_compile_sleeve", description: "Compile a bundled public sleeve into a non-executing RuntimeSpec artifact.", parameters: Type.Object({ sleeveId: Type.String() }, { additionalProperties: false }), async execute(input) { return { content: [{ type: "text", text: JSON.stringify(compileSleeveById(input.sleeveId, config, import.meta.url), null, 2) }] }; } }, { optional: true });
+        api.registerTool({
+            name: "umg_envoy_explain_sleeve",
+            description: "Explain a bundled public sleeve compilation: block refs, active/skipped blocks, prompt order, tool requests, warnings, and non-executing RuntimeSpec boundary.",
+            parameters: Type.Object({
+                sleeveId: Type.String(),
+                includeRuntimeSpec: Type.Optional(Type.Boolean()),
+                includeMatrixSummary: Type.Optional(Type.Boolean())
+            }, { additionalProperties: false }),
+            async execute(input) {
+                return { content: [{ type: "text", text: JSON.stringify(explainSleeveById({ sleeveId: input.sleeveId, config, metaUrl: import.meta.url, includeRuntimeSpec: input.includeRuntimeSpec, includeMatrixSummary: input.includeMatrixSummary }), null, 2) }] };
+            }
+        }, { optional: true });
         api.registerTool({ name: "umg_envoy_validate_runtime_output", description: "Validate non-executing RuntimeSpec artifact output.", parameters: Type.Object({ runtimeOutput: Type.Any() }, { additionalProperties: false }), async execute(input) { return { content: [{ type: "text", text: JSON.stringify(validateRuntimeOutput(input.runtimeOutput), null, 2) }] }; } }, { optional: true });
         api.registerTool({ name: "umg_envoy_compare_sleeves", description: "Compare two bundled public sleeves.", parameters: Type.Object({ left: Type.String(), right: Type.String() }, { additionalProperties: false }), async execute(input) { return { content: [{ type: "text", text: JSON.stringify(compareSleeves(input.left, input.right, config), null, 2) }] }; } }, { optional: true });
         api.registerTool({ name: "umg_envoy_parse_path", description: "Parse a UMG path string.", parameters: Type.Object({ source: Type.String() }, { additionalProperties: false }), async execute(input) { return { content: [{ type: "text", text: JSON.stringify(parseUMGPath(input.source), null, 2) }] }; } }, { optional: true });

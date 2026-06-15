@@ -42,13 +42,15 @@ This positioning does not claim live OpenClaw host readiness, ClawHub publicatio
 
 For exact current tool-id status, use `openclaw.plugin.json`, `docs/TOOL-SURFACE.md`, and `docs/RELEASE-TRUTH-0.3.0-alpha.15.md` together.
 
-The manifest-declared surface includes bounded inspection, validation, comparison, path, runtime-report, and direct-runner tools. It also includes declared but governed bridge and relation-matrix-related surfaces.
+The manifest-declared surface includes bounded inspection, validation, comparison, path, runtime-report, direct-runner tools, the runtime-reconciled read-only `umg_envoy_load_sleeve` sleeve-loading/inspection surface, and the read-only `umg_envoy_explain_sleeve` sleeve explanation surface. It also includes declared but governed bridge and relation-matrix-related surfaces.
 
-### Source-present but not manifest-declared
+### Runtime-reconciled manifest-declared read-only surface
 
-`umg_envoy_load_sleeve` is source-present and discussed in policy or technical-surface context, but it is not manifest-declared in alpha.15.
+`umg_envoy_load_sleeve` is source-present and, after runtime reconciliation in alpha.15, is now manifest-declared as a read-only public tool surface.
 
-It should not be presented as part of the current public manifest surface or as part of the first low-risk direct runner.
+It is part of the current public manifest surface as a bounded sleeve-loading and inspection workflow surface. It should not be presented as arbitrary execution or as part of the first low-risk direct runner.
+
+`umg_envoy_explain_sleeve` is source-present as a read-only public explanation surface. It compiles one bundled public sleeve through the bundled adapter and reports all block refs, active/skipped/disabled state, authority-ordered prompt parts, tool requests, warnings/errors, and RuntimeSpec boundary metadata without executing requested tools or writing runtime outputs.
 
 ### Staged or historical names
 
@@ -218,12 +220,14 @@ Every successful direct run returns `ToolResult` audit data.
 
 Explicit exclusions from this first direct runner:
 - `umg_envoy_load_sleeve`
+- `umg_envoy_explain_sleeve`
 - `umg_envoy_compile_ir_bridge`
 - `umg_envoy_emit_relation_matrix`
 - `umg_envoy_compile_sleeve`
 - `umg_envoy_build_path`
 
-`umg_envoy_load_sleeve` is also not manifest-declared in alpha.15.
+`umg_envoy_load_sleeve` is now manifest-declared in alpha.15 after runtime reconciliation, but it remains read-only and excluded from the first low-risk direct runner.
+`umg_envoy_explain_sleeve` is manifest-declared as a read-only explanation surface, but it remains excluded from the first low-risk direct runner.
 - unknown tools
 - arbitrary dispatch
 - writes / deletes

@@ -11,8 +11,10 @@ The following tool ids are the current declared public tool surface for this pac
 - `umg_envoy_status`
 - `umg_envoy_compiler_smoke_test`
 - `umg_envoy_list_sleeves`
+- `umg_envoy_load_sleeve`
 - `umg_envoy_list_block_libraries`
 - `umg_envoy_compile_sleeve`
+- `umg_envoy_explain_sleeve`
 - `umg_envoy_validate_runtime_output`
 - `umg_envoy_compare_sleeves`
 - `umg_envoy_parse_path`
@@ -32,7 +34,7 @@ These are the capability-level public surfaces currently represented by the mani
 - runtime-facing status and bundled public surface visibility
 - compiler smoke and runtime output validation surfaces
 - bundled sleeve and bundled block-library listing surfaces
-- bounded sleeve compilation and comparison surfaces
+- bounded sleeve compilation, explanation, and comparison surfaces
 - path parse / validate / render / build utilities
 - matrix status and explicit relation-matrix / IR bridge surfaces
 
@@ -63,10 +65,13 @@ These names appear in prior docs or staged planning language, but they are **not
 - `umg_envoy_sleeve_inspect`
 - `umg_envoy_sleeve_demo`
 
-### Internal-Only / Non-Manifest-Aligned During Current Policy Lane
+### Runtime-Reconciled Read-Only Public Surface
 - `umg_envoy_load_sleeve`
+- `umg_envoy_explain_sleeve`
 
-`umg_envoy_load_sleeve` is currently registered as a conservative read-only/internal inspection surface, but it is not part of the manifest-aligned declared public tool surface and is excluded from the first low-risk direct adapter candidate set until a separate manifest-alignment or public-surface decision lane says otherwise.
+`umg_envoy_load_sleeve` is now part of the manifest-aligned declared public tool surface after runtime reconciliation in alpha.15. It remains a conservative read-only sleeve-loading and inspection surface, not arbitrary execution, and it is still excluded from the first low-risk direct adapter candidate set.
+
+`umg_envoy_explain_sleeve` is a manifest-declared read-only explanation surface added in the alpha16 lane. It explains one bundled sleeve compilation by showing sleeve metadata, all block refs, enabled/disabled state, skipped reasons, active block order, authority-ordered prompt parts, tool requests, warnings/errors, and the non-executing RuntimeSpec boundary. It does not execute tool requests, write outputs, invoke the external compiler bridge, or emit relation matrices.
 
 ## 4. Deprecated or Renamed Tool Names
 
@@ -104,8 +109,9 @@ Envoy is intended to become tool-capable through explicit capability mapping, no
 - The first low-risk direct adapter runs only six static safe tools.
 - `umg_envoy_low_risk_direct_tool_run` is the narrow runtime surface for that adapter.
 - `umg_envoy_load_sleeve` is intentionally excluded from that first direct adapter set.
+- `umg_envoy_explain_sleeve` is intentionally excluded from that first direct adapter set.
 - Every direct run creates `ToolResult` audit output.
-- Writes, deletes, publishing, bridge, relation-matrix, compiler bridge, load-sleeve, and external actions are not part of this adapter.
+- Writes, deletes, publishing, bridge, relation-matrix, compiler bridge, load-sleeve, explain-sleeve, and external actions are not part of this adapter.
 - Executed status only comes from `ToolResult.executionStatus`.
 - The registry itself does not execute tools and does not authorize execution by itself.
 
