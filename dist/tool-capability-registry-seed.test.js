@@ -27,13 +27,15 @@ const expectedToolIds = [
     "umg_envoy_render_path",
     "umg_envoy_build_path",
     "umg_envoy_matrix_status",
+    "umg_envoy_cognitive_registry_query",
+    "umg_envoy_plan_neostack",
     "umg_envoy_compile_ir_bridge",
     "umg_envoy_emit_relation_matrix",
     "umg_envoy_action_gate_runtime_report_view",
     "umg_envoy_load_sleeve",
 ];
 const seedRegistry = createEnvoyToolCapabilityRegistrySeed();
-assert("all 17 seeded tool ids are represented in the seed", ENVOY_TOOL_CAPABILITY_REGISTRY_SEED.length === 17 && expectedToolIds.every((toolId) => Boolean(resolveEnvoySeededToolCapability(toolId))));
+assert("all 19 seeded tool ids are represented in the seed", ENVOY_TOOL_CAPABILITY_REGISTRY_SEED.length === 19 && expectedToolIds.every((toolId) => Boolean(resolveEnvoySeededToolCapability(toolId))));
 assert("read_only tools resolve as read_only", resolveEnvoySeededToolCapability("umg_envoy_status")?.allowedRiskClass === "read_only");
 assert("dry_run_only tools resolve as dry_run_only", resolveEnvoySeededToolCapability("umg_envoy_compile_sleeve")?.allowedRiskClass === "dry_run_only");
 assert("blocked tools resolve as blocked", resolveEnvoySeededToolCapability("umg_envoy_compile_ir_bridge")?.allowedRiskClass === "blocked");
@@ -42,6 +44,8 @@ assert("unknown tool resolves as null through existing unknown policy", resolveE
 assert("blocked tools cannot run direct", canToolRunDirectly(resolveEnvoySeededToolCapability("umg_envoy_emit_relation_matrix") ?? null) === false);
 assert("dry_run_only tools require dry run", requiresDryRunForCapability(resolveEnvoySeededToolCapability("umg_envoy_build_path") ?? null) === true);
 assert("explain sleeve is read-only and not direct-executable by default", resolveEnvoySeededToolCapability("umg_envoy_explain_sleeve")?.allowedRiskClass === "read_only" && canToolRunDirectly(resolveEnvoySeededToolCapability("umg_envoy_explain_sleeve") ?? null) === false);
+assert("cognitive registry query is read-only and not direct-executable by default", resolveEnvoySeededToolCapability("umg_envoy_cognitive_registry_query")?.allowedRiskClass === "read_only" && canToolRunDirectly(resolveEnvoySeededToolCapability("umg_envoy_cognitive_registry_query") ?? null) === false);
+assert("plan neostack is dry-run only", resolveEnvoySeededToolCapability("umg_envoy_plan_neostack")?.allowedRiskClass === "dry_run_only" && requiresDryRunForCapability(resolveEnvoySeededToolCapability("umg_envoy_plan_neostack") ?? null) === true);
 assert("read_only tools do not imply execution permission", canToolRunDirectly(resolveEnvoySeededToolCapability("umg_envoy_validate_runtime_output") ?? null) === true && resolveEnvoySeededToolCapability("umg_envoy_validate_runtime_output")?.allowedRiskClass === "read_only");
 assert("runtime report tool remains report-only/read-only", resolveEnvoySeededToolCapability("umg_envoy_action_gate_runtime_report_view")?.allowedRiskClass === "read_only");
 assert("no seeded entry allows external transmission", ENVOY_TOOL_CAPABILITY_REGISTRY_SEED.every((entry) => entry.externalTransmissionAllowed === false));

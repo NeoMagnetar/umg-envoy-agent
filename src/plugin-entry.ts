@@ -4,6 +4,7 @@ import { compileSleeveById } from "./compiler/compiler-adapter.js";
 import { explainSleeveById } from "./compiler/sleeve-explainer.js";
 import { runCompilerSmoke } from "./compiler/compiler-smoke.js";
 import { getCompilerMatrixStatus } from "./compiler/compiler-matrix.js";
+import { planNeoStack, queryCognitiveRegistry } from "./compiler/cognitive-registry.js";
 import { loadSleeves, publicContentRoot, summarizeBlockLibraries } from "./compiler/content-loader.js";
 import { validateRuntimeOutput } from "./compiler/runtime-validator.js";
 import { loadSleeveFile } from "./compiler/sleeve-loader.js";
@@ -52,6 +53,8 @@ export function statusPayload(config?: PluginConfig) {
       "umg_envoy_list_block_libraries",
       "umg_envoy_compile_sleeve",
       "umg_envoy_explain_sleeve",
+      "umg_envoy_cognitive_registry_query",
+      "umg_envoy_plan_neostack",
       "umg_envoy_validate_runtime_output",
       "umg_envoy_compare_sleeves",
       "umg_envoy_parse_path",
@@ -249,6 +252,18 @@ function registerCliBridge(api: any, config?: PluginConfig) {
       console.log(JSON.stringify(getCompilerMatrixStatus(import.meta.url), null, 2));
     });
 
+    root.command("registry-query")
+      .requiredOption("--kind <kind>")
+      .action(async (opts: { kind: string }) => {
+        console.log(JSON.stringify(queryCognitiveRegistry({ kind: opts.kind, metaUrl: import.meta.url }), null, 2));
+      });
+
+    root.command("plan-neostack")
+      .requiredOption("--intent <intent>")
+      .action(async (opts: { intent: string }) => {
+        console.log(JSON.stringify(planNeoStack({ intent: opts.intent, metaUrl: import.meta.url }), null, 2));
+      });
+
     root.command("load-sleeve")
       .requiredOption("--sleeve-path <path>")
       .requiredOption("--library-root <path>")
@@ -332,6 +347,22 @@ const entry = {
     api.registerTool({ name: "umg_envoy_render_path", description: "Render a parsed UMG path string back to text.", parameters: Type.Object({ source: Type.String() }, { additionalProperties: false }), async execute(input: { source: string }) { return { content: [{ type: "text", text: renderUMGPath(parseUMGPath(input.source)) }] }; } }, { optional: true });
     api.registerTool({ name: "umg_envoy_build_path", description: "Build a public-safe UMG path document.", parameters: Type.Object({ message: Type.String(), sleeveId: Type.Optional(Type.String()) }, { additionalProperties: false }), async execute(input: { message: string; sleeveId?: string }) { return { content: [{ type: "text", text: renderUMGPath(buildPublicPath(input.message, input.sleeveId ?? config?.defaultSleeveId ?? "public-basic-envoy")) }] }; } }, { optional: true });
     api.registerTool({ name: "umg_envoy_matrix_status", description: "Report bundled compiler matrix status.", parameters: Type.Object({}, { additionalProperties: false }), async execute() { return { content: [{ type: "text", text: JSON.stringify(getCompilerMatrixStatus(import.meta.url), null, 2) }] }; } }, { optional: true });
+    api.registerTool({
+      name: "umg_envoy_cognitive_registry_query",
+      description: "Read-only query over bundled public MOLT, NeoBlock, and NeoStack registry examples.",
+      parameters: Type.Object({ kind: Type.String() }, { additionalProperties: false }),
+      async execute(input: { kind: string }) {
+        return { content: [{ type: "text", text: JSON.stringify(queryCognitiveRegistry({ kind: input.kind, metaUrl: import.meta.url }), null, 2) }] };
+      }
+    }, { optional: true });
+    api.registerTool({
+      name: "umg_envoy_plan_neostack",
+      description: "Create a deterministic non-executing dry-run NeoStack selection plan from a public intent string.",
+      parameters: Type.Object({ intent: Type.String() }, { additionalProperties: false }),
+      async execute(input: { intent: string }) {
+        return { content: [{ type: "text", text: JSON.stringify(planNeoStack({ intent: input.intent, metaUrl: import.meta.url }), null, 2) }] };
+      }
+    }, { optional: true });
     api.registerTool({
       name: "umg_envoy_action_gate_runtime_report_view",
       description: "Read-only/report-only ActionGate runtime report surface. Exposes gate/readiness/audit state for inspection only; it does not approve, authorize, or execute actions.",

@@ -60,6 +60,12 @@ assert("umg_envoy_load_sleeve is not in LOW_RISK_DIRECT_TOOL_IDS", LOW_RISK_DIRE
 const explainSleeveResult = executeLowRiskDirectTool({ toolId: "umg_envoy_explain_sleeve", input: { sleeveId: "public-basic-envoy" } });
 assert("umg_envoy_explain_sleeve is blocked and handler is not called", explainSleeveResult.status === "execution_blocked");
 assert("umg_envoy_explain_sleeve is not in LOW_RISK_DIRECT_TOOL_IDS", LOW_RISK_DIRECT_TOOL_IDS.includes("umg_envoy_explain_sleeve") === false);
+const cognitiveRegistryResult = executeLowRiskDirectTool({ toolId: "umg_envoy_cognitive_registry_query", input: { kind: "all" } });
+assert("umg_envoy_cognitive_registry_query is blocked and handler is not called", cognitiveRegistryResult.status === "execution_blocked");
+assert("umg_envoy_cognitive_registry_query is not in LOW_RISK_DIRECT_TOOL_IDS", LOW_RISK_DIRECT_TOOL_IDS.includes("umg_envoy_cognitive_registry_query") === false);
+const planNeoStackResult = executeLowRiskDirectTool({ toolId: "umg_envoy_plan_neostack", input: { intent: "explain a sleeve" } });
+assert("umg_envoy_plan_neostack is blocked and handler is not called", planNeoStackResult.status === "execution_blocked");
+assert("umg_envoy_plan_neostack is not in LOW_RISK_DIRECT_TOOL_IDS", LOW_RISK_DIRECT_TOOL_IDS.includes("umg_envoy_plan_neostack") === false);
 const dryRunOnlyResult = executeLowRiskDirectTool({ toolId: "umg_envoy_compile_sleeve", input: { sleeveId: "public-basic-envoy" } });
 assert("dry_run_only tool is blocked", dryRunOnlyResult.status === "execution_blocked");
 const blockedBridgeResult = executeLowRiskDirectTool({ toolId: "umg_envoy_compile_ir_bridge", input: { sleevePath: "x", libraryRoot: "y" } });

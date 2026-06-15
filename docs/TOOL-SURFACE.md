@@ -22,6 +22,8 @@ The following tool ids are the current declared public tool surface for this pac
 - `umg_envoy_render_path`
 - `umg_envoy_build_path`
 - `umg_envoy_matrix_status`
+- `umg_envoy_cognitive_registry_query`
+- `umg_envoy_plan_neostack`
 - `umg_envoy_compile_ir_bridge`
 - `umg_envoy_emit_relation_matrix`
 - `umg_envoy_action_gate_runtime_report_view`
@@ -37,6 +39,7 @@ These are the capability-level public surfaces currently represented by the mani
 - bounded sleeve compilation, explanation, and comparison surfaces
 - path parse / validate / render / build utilities
 - matrix status and explicit relation-matrix / IR bridge surfaces
+- bundled public cognitive registry query and deterministic dry-run NeoStack planning surfaces
 
 Boundary reminders:
 - RuntimeSpec is not execution.
@@ -68,10 +71,16 @@ These names appear in prior docs or staged planning language, but they are **not
 ### Runtime-Reconciled Read-Only Public Surface
 - `umg_envoy_load_sleeve`
 - `umg_envoy_explain_sleeve`
+- `umg_envoy_cognitive_registry_query`
+- `umg_envoy_plan_neostack`
 
 `umg_envoy_load_sleeve` is now part of the manifest-aligned declared public tool surface after runtime reconciliation in alpha.15. It remains a conservative read-only sleeve-loading and inspection surface, not arbitrary execution, and it is still excluded from the first low-risk direct adapter candidate set.
 
 `umg_envoy_explain_sleeve` is a manifest-declared read-only explanation surface added in the alpha16 lane. It explains one bundled sleeve compilation by showing sleeve metadata, all block refs, enabled/disabled state, skipped reasons, active block order, authority-ordered prompt parts, tool requests, warnings/errors, the non-executing RuntimeSpec boundary, and a lightweight response-only sleeve relation preview. It does not execute tool requests, write outputs, invoke the external compiler bridge, or use the gated relation-matrix emitter.
+
+`umg_envoy_cognitive_registry_query` is a manifest-declared read-only alpha17 registry surface for bundled public MOLT blocks, NeoBlocks, and NeoStacks. It loads only package-bundled public registry data and does not mutate sleeves, block libraries, runtime state, or local files.
+
+`umg_envoy_plan_neostack` is a manifest-declared dry-run-only alpha17 planning surface. It uses deterministic tag scoring against the bundled public cognitive registry to select candidate NeoStacks, NeoBlocks, and MOLT blocks for an intent string. It does not use hidden LLM calls, generate saved sleeves, enable writes, or execute selected tool intents.
 
 ## 4. Deprecated or Renamed Tool Names
 
@@ -110,8 +119,10 @@ Envoy is intended to become tool-capable through explicit capability mapping, no
 - `umg_envoy_low_risk_direct_tool_run` is the narrow runtime surface for that adapter.
 - `umg_envoy_load_sleeve` is intentionally excluded from that first direct adapter set.
 - `umg_envoy_explain_sleeve` is intentionally excluded from that first direct adapter set.
+- `umg_envoy_cognitive_registry_query` is intentionally excluded from that first direct adapter set.
+- `umg_envoy_plan_neostack` is intentionally excluded from that first direct adapter set.
 - Every direct run creates `ToolResult` audit output.
-- Writes, deletes, publishing, bridge, relation-matrix, compiler bridge, load-sleeve, explain-sleeve, and external actions are not part of this adapter.
+- Writes, deletes, publishing, bridge, relation-matrix, compiler bridge, load-sleeve, explain-sleeve, cognitive registry query, NeoStack planning, and external actions are not part of this adapter.
 - Executed status only comes from `ToolResult.executionStatus`.
 - The registry itself does not execute tools and does not authorize execution by itself.
 

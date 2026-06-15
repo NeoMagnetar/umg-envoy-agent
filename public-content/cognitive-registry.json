@@ -1,0 +1,213 @@
+{
+  "registry_version": "alpha17-public-1",
+  "content_mode": "bundled-public",
+  "molt_blocks": [
+    {
+      "id": "MOLT.OBSERVE_INTENT",
+      "kind": "molt",
+      "name": "Observe Intent",
+      "purpose": "Normalize public user intent into stable planning signals.",
+      "inputs": ["user_intent"],
+      "outputs": ["intent_signals"],
+      "tags": ["intent", "observe", "planning", "public"],
+      "authority": 10,
+      "risk_level": "low",
+      "default_enabled": true,
+      "governance": { "read_only": true, "allows_writes": false, "requires_gate": false }
+    },
+    {
+      "id": "MOLT.SELECT_RELEVANT_BLOCKS",
+      "kind": "molt",
+      "name": "Select Relevant Blocks",
+      "purpose": "Select public candidate blocks from explicit registry tags.",
+      "inputs": ["intent_signals", "registry_tags"],
+      "outputs": ["candidate_blocks"],
+      "tags": ["select", "blocks", "registry", "sleeve"],
+      "authority": 20,
+      "risk_level": "low",
+      "default_enabled": true,
+      "governance": { "read_only": true, "allows_writes": false, "requires_gate": false }
+    },
+    {
+      "id": "MOLT.APPLY_GOVERNANCE_FILTER",
+      "kind": "molt",
+      "name": "Apply Governance Filter",
+      "purpose": "Reject candidates that would require writes, private roots, or external execution.",
+      "inputs": ["candidate_blocks", "governance_policy"],
+      "outputs": ["safe_candidates"],
+      "tags": ["governance", "filter", "safe", "read-only"],
+      "authority": 30,
+      "risk_level": "low",
+      "default_enabled": true,
+      "governance": { "read_only": true, "allows_writes": false, "requires_gate": false }
+    },
+    {
+      "id": "MOLT.COMPOSE_PROMPT_PARTS",
+      "kind": "molt",
+      "name": "Compose Prompt Parts",
+      "purpose": "Arrange selected prompt parts by explicit authority and role.",
+      "inputs": ["safe_candidates", "authority_order"],
+      "outputs": ["prompt_parts"],
+      "tags": ["compose", "prompt", "authority", "parts"],
+      "authority": 40,
+      "risk_level": "low",
+      "default_enabled": true,
+      "governance": { "read_only": true, "allows_writes": false, "requires_gate": false }
+    },
+    {
+      "id": "MOLT.TRACE_SELECTION",
+      "kind": "molt",
+      "name": "Trace Selection",
+      "purpose": "Produce a non-executing explanation of candidate scoring and selection.",
+      "inputs": ["safe_candidates", "scores"],
+      "outputs": ["selection_trace"],
+      "tags": ["trace", "selection", "explain", "audit"],
+      "authority": 50,
+      "risk_level": "low",
+      "default_enabled": true,
+      "governance": { "read_only": true, "allows_writes": false, "requires_gate": false }
+    },
+    {
+      "id": "MOLT.EXPLAIN_RUNTIME",
+      "kind": "molt",
+      "name": "Explain Runtime",
+      "purpose": "Explain sleeve, block, prompt, tool request, and boundary visibility.",
+      "inputs": ["runtime_projection"],
+      "outputs": ["runtime_explanation"],
+      "tags": ["explain", "runtime", "sleeve", "visibility", "blocks"],
+      "authority": 60,
+      "risk_level": "low",
+      "default_enabled": true,
+      "governance": { "read_only": true, "allows_writes": false, "requires_gate": false }
+    },
+    {
+      "id": "MOLT.CHECK_TOOL_INTENT",
+      "kind": "molt",
+      "name": "Check Tool Intent",
+      "purpose": "Inspect whether a public intent asks for tool use without executing tools.",
+      "inputs": ["intent_signals", "tool_requests"],
+      "outputs": ["tool_intent_report"],
+      "tags": ["tool", "intent", "inspect", "non-executing"],
+      "authority": 70,
+      "risk_level": "low",
+      "default_enabled": true,
+      "governance": { "read_only": true, "allows_writes": false, "requires_gate": false }
+    },
+    {
+      "id": "MOLT.EMIT_NON_EXECUTING_SPEC",
+      "kind": "molt",
+      "name": "Emit Non-Executing Spec",
+      "purpose": "Emit a public dry-run planning artifact that does not authorize execution.",
+      "inputs": ["selection_trace", "prompt_parts", "governance_state"],
+      "outputs": ["non_executing_spec"],
+      "tags": ["emit", "spec", "dry-run", "non-executing", "generation"],
+      "authority": 80,
+      "risk_level": "low",
+      "default_enabled": true,
+      "governance": { "read_only": true, "allows_writes": false, "requires_gate": false }
+    }
+  ],
+  "neoblocks": [
+    {
+      "id": "NB.RUNTIME_VISIBILITY",
+      "kind": "neoblock",
+      "name": "Runtime Visibility",
+      "purpose": "Bundle runtime explanation, block visibility, and selection tracing.",
+      "molt_refs": [
+        { "id": "MOLT.OBSERVE_INTENT", "enabled": true, "weight": 0.8, "role": "intent" },
+        { "id": "MOLT.EXPLAIN_RUNTIME", "enabled": true, "weight": 1, "role": "explain" },
+        { "id": "MOLT.TRACE_SELECTION", "enabled": true, "weight": 0.9, "role": "trace" }
+      ],
+      "tags": ["runtime", "visibility", "explain", "sleeve", "blocks"],
+      "outputs": ["runtime_explanation", "selection_trace"],
+      "governance": { "read_only": true, "allows_writes": false, "requires_gate": false }
+    },
+    {
+      "id": "NB.GOVERNANCE_GUARD",
+      "kind": "neoblock",
+      "name": "Governance Guard",
+      "purpose": "Bundle read-only governance filtering and non-executing boundary emission.",
+      "molt_refs": [
+        { "id": "MOLT.APPLY_GOVERNANCE_FILTER", "enabled": true, "weight": 1, "role": "filter" },
+        { "id": "MOLT.EMIT_NON_EXECUTING_SPEC", "enabled": true, "weight": 0.9, "role": "boundary" }
+      ],
+      "tags": ["governance", "safe", "read-only", "non-executing"],
+      "outputs": ["safe_candidates", "non_executing_spec"],
+      "governance": { "read_only": true, "allows_writes": false, "requires_gate": false }
+    },
+    {
+      "id": "NB.PROMPT_COMPOSER",
+      "kind": "neoblock",
+      "name": "Prompt Composer",
+      "purpose": "Bundle candidate block selection with authority-ordered prompt part composition.",
+      "molt_refs": [
+        { "id": "MOLT.SELECT_RELEVANT_BLOCKS", "enabled": true, "weight": 1, "role": "select" },
+        { "id": "MOLT.COMPOSE_PROMPT_PARTS", "enabled": true, "weight": 1, "role": "compose" },
+        { "id": "MOLT.TRACE_SELECTION", "enabled": true, "weight": 0.7, "role": "trace" }
+      ],
+      "tags": ["prompt", "compose", "blocks", "generation", "authority"],
+      "outputs": ["candidate_blocks", "prompt_parts", "selection_trace"],
+      "governance": { "read_only": true, "allows_writes": false, "requires_gate": false }
+    },
+    {
+      "id": "NB.TOOL_INTENT_INSPECTOR",
+      "kind": "neoblock",
+      "name": "Tool Intent Inspector",
+      "purpose": "Bundle tool intent inspection without dispatch or execution.",
+      "molt_refs": [
+        { "id": "MOLT.OBSERVE_INTENT", "enabled": true, "weight": 0.8, "role": "intent" },
+        { "id": "MOLT.CHECK_TOOL_INTENT", "enabled": true, "weight": 1, "role": "tool-inspect" },
+        { "id": "MOLT.APPLY_GOVERNANCE_FILTER", "enabled": true, "weight": 0.8, "role": "guard" }
+      ],
+      "tags": ["tool", "intent", "inspect", "coder", "public"],
+      "outputs": ["tool_intent_report", "safe_candidates"],
+      "governance": { "read_only": true, "allows_writes": false, "requires_gate": false }
+    }
+  ],
+  "neostacks": [
+    {
+      "id": "NS.SLEEVE_EXPLAINER",
+      "kind": "neostack",
+      "name": "Sleeve Explainer",
+      "purpose": "Explain a sleeve, block usage, runtime visibility, and non-executing boundary state.",
+      "neoblock_refs": [
+        { "id": "NB.RUNTIME_VISIBILITY", "enabled": true, "order": 1, "role": "explain" },
+        { "id": "NB.GOVERNANCE_GUARD", "enabled": true, "order": 2, "role": "guard" }
+      ],
+      "tags": ["sleeve", "explain", "runtime", "blocks", "visibility", "matrix"],
+      "intended_use": ["Explain sleeve composition", "Show block on/off state", "Trace runtime visibility"],
+      "constraints": ["read-only", "non-executing", "public-safe"],
+      "governance": { "read_only": true, "allows_writes": false, "requires_gate": false }
+    },
+    {
+      "id": "NS.PUBLIC_CODER_RUNTIME",
+      "kind": "neostack",
+      "name": "Public Coder Runtime",
+      "purpose": "Plan safe public code-generation assistance with prompt composition and tool-intent inspection.",
+      "neoblock_refs": [
+        { "id": "NB.PROMPT_COMPOSER", "enabled": true, "order": 1, "role": "compose" },
+        { "id": "NB.TOOL_INTENT_INSPECTOR", "enabled": true, "order": 2, "role": "tool-intent" },
+        { "id": "NB.GOVERNANCE_GUARD", "enabled": true, "order": 3, "role": "guard" }
+      ],
+      "tags": ["coder", "code", "generation", "public", "safe", "tool"],
+      "intended_use": ["Plan public code-generation help", "Inspect tool intent before execution", "Keep generation dry-run"],
+      "constraints": ["read-only", "non-executing", "no external execution"],
+      "governance": { "read_only": true, "allows_writes": false, "requires_gate": false }
+    },
+    {
+      "id": "NS.SAFE_GENERATION_PLANNER",
+      "kind": "neostack",
+      "name": "Safe Generation Planner",
+      "purpose": "Plan public-safe generation or drafting without saving, publishing, or executing.",
+      "neoblock_refs": [
+        { "id": "NB.PROMPT_COMPOSER", "enabled": true, "order": 1, "role": "compose" },
+        { "id": "NB.GOVERNANCE_GUARD", "enabled": true, "order": 2, "role": "guard" },
+        { "id": "NB.RUNTIME_VISIBILITY", "enabled": true, "order": 3, "role": "explain" }
+      ],
+      "tags": ["generation", "planner", "draft", "post", "public", "safe"],
+      "intended_use": ["Draft public-safe content plans", "Explain generation structure", "Avoid writes and publication"],
+      "constraints": ["read-only", "non-executing", "no saved sleeves"],
+      "governance": { "read_only": true, "allows_writes": false, "requires_gate": false }
+    }
+  ]
+}

@@ -37,6 +37,130 @@ export interface PublicSleeve {
   tool_requests?: Array<Record<string, unknown>>;
 }
 
+export interface CognitiveGovernance {
+  read_only: boolean;
+  allows_writes: boolean;
+  requires_gate: boolean;
+}
+
+export interface MoltBlock {
+  id: string;
+  kind: "molt";
+  name: string;
+  purpose: string;
+  inputs: string[];
+  outputs: string[];
+  tags: string[];
+  authority?: number;
+  risk_level: "low" | "medium" | "high";
+  default_enabled: boolean;
+  governance: CognitiveGovernance;
+}
+
+export interface NeoBlockRef {
+  id: string;
+  enabled: boolean;
+  weight?: number;
+  role?: string;
+}
+
+export interface NeoBlock {
+  id: string;
+  kind: "neoblock";
+  name: string;
+  purpose: string;
+  molt_refs: NeoBlockRef[];
+  tags: string[];
+  outputs: string[];
+  governance: CognitiveGovernance;
+}
+
+export interface NeoStackRef {
+  id: string;
+  enabled: boolean;
+  order: number;
+  role?: string;
+}
+
+export interface NeoStack {
+  id: string;
+  kind: "neostack";
+  name: string;
+  purpose: string;
+  neoblock_refs: NeoStackRef[];
+  tags: string[];
+  intended_use: string[];
+  constraints: string[];
+  governance: CognitiveGovernance;
+}
+
+export interface CognitiveRegistry {
+  registry_version: string;
+  content_mode: "bundled-public" | string;
+  molt_blocks: MoltBlock[];
+  neoblocks: NeoBlock[];
+  neostacks: NeoStack[];
+}
+
+export type CognitiveRegistryQueryKind = "all" | "molt" | "neoblock" | "neostack";
+
+export interface CognitiveRegistryQueryResult {
+  ok: boolean;
+  kind: string;
+  error?: string;
+  content_mode: string;
+  counts: {
+    molt_blocks: number;
+    neoblocks: number;
+    neostacks: number;
+  };
+  molt_blocks: MoltBlock[];
+  neoblocks: NeoBlock[];
+  neostacks: NeoStack[];
+  warnings: string[];
+  errors: string[];
+}
+
+export interface NeoStackSelectionTraceEntry {
+  candidate_id: string;
+  score: number;
+  matched_tags: string[];
+  reason: string;
+}
+
+export interface PlannedNeoStackSelection {
+  id: string;
+  reason: string;
+}
+
+export interface PlannedNeoBlockSelection {
+  id: string;
+  role?: string;
+  order: number;
+  enabled: boolean;
+}
+
+export interface PlannedMoltBlockSelection {
+  id: string;
+  role?: string;
+  enabled: boolean;
+  source_neoblock_id: string;
+}
+
+export interface NeoStackPlanResult {
+  ok: boolean;
+  intent: string;
+  selected_neostack: PlannedNeoStackSelection | null;
+  selected_neoblocks: PlannedNeoBlockSelection[];
+  selected_molt_blocks: PlannedMoltBlockSelection[];
+  rejected_candidates: NeoStackSelectionTraceEntry[];
+  selection_trace: NeoStackSelectionTraceEntry[];
+  governance: CognitiveGovernance;
+  non_executing: boolean;
+  warnings: string[];
+  errors: string[];
+}
+
 export interface RuntimeSpec {
   runtimespec_id: string;
   sleeve_id: string;

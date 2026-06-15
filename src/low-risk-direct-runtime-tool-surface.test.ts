@@ -48,6 +48,12 @@ assert("load_sleeve is blocked", loadSleeveResult.status === "execution_blocked"
 const explainSleeveResult = executeLowRiskDirectTool({ toolId: "umg_envoy_explain_sleeve", input: { sleeveId: "public-basic-envoy" } });
 assert("explain_sleeve is blocked", explainSleeveResult.status === "execution_blocked");
 
+const cognitiveRegistryResult = executeLowRiskDirectTool({ toolId: "umg_envoy_cognitive_registry_query", input: { kind: "all" } });
+assert("cognitive_registry_query is blocked", cognitiveRegistryResult.status === "execution_blocked");
+
+const planNeoStackResult = executeLowRiskDirectTool({ toolId: "umg_envoy_plan_neostack", input: { intent: "explain a sleeve" } });
+assert("plan_neostack is blocked", planNeoStackResult.status === "execution_blocked");
+
 const bridgeResult = executeLowRiskDirectTool({ toolId: "umg_envoy_compile_ir_bridge", input: {} });
 assert("bridge tool is blocked", bridgeResult.status === "execution_blocked");
 
