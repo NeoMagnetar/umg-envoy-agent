@@ -1,4 +1,4 @@
-# UMG Envoy Agent v0.3.0-alpha.15
+# UMG Envoy Agent v0.3.0-alpha.20
 
 UMG Envoy Agent is an OpenClaw plugin that exposes a runtime-facing UMG cognition specification and inspection layer. It loads governed UMG sleeves and related artifacts, supports inspection and library navigation, and emits dry-run runtime projections such as RuntimeSpec, Trace, diagnostics, and related runtime-visible views without making UMG itself an execution engine.
 
@@ -12,7 +12,7 @@ In UMG terminology, an Envoy is a carrier surface for moving selected governed a
 
 ## Publication status
 
-- Current package version in this repo is `0.3.0-alpha.15`.
+- Current package version in this repo is `0.3.0-alpha.20`.
 - ClawHub/public release publication remains a separate explicit operation after metadata alignment, validation review, and release-note audit.
 - Raw npm publication is not the primary documented user path for this package at this stage.
 - This repo now contains bounded runtime-facing capability work; that does **not** imply broad arbitrary execution support.
@@ -35,13 +35,13 @@ UMG Envoy Agent is packaged as an OpenClaw plugin, but its product role is broad
 
 This positioning does not claim live OpenClaw host readiness, ClawHub publication status, unrestricted execution, or replacement of model-safety controls. The execution boundary remains governed by [`docs/GOVERNANCE-EXECUTION-CONTRACT-0.3.0-alpha.15.md`](docs/GOVERNANCE-EXECUTION-CONTRACT-0.3.0-alpha.15.md).
 
-## Current surface status at 0.3.0-alpha.15
+## Current surface status at 0.3.0-alpha.20
 
 ### Manifest-declared public tools
 
 `openclaw.plugin.json` is the authoritative manifest-declared public surface for this repo line.
 
-For exact current tool-id status, use `openclaw.plugin.json`, `docs/TOOL-SURFACE.md`, and `docs/RELEASE-TRUTH-0.3.0-alpha.15.md` together.
+For exact current tool-id status, use `openclaw.plugin.json` and `docs/TOOL-SURFACE.md`. The Alpha15 release-truth document remains a historical checkpoint record.
 
 The manifest-declared surface includes bounded inspection, validation, comparison, path, runtime-report, direct-runner tools, the runtime-reconciled read-only `umg_envoy_load_sleeve` sleeve-loading/inspection surface, the read-only `umg_envoy_explain_sleeve` sleeve explanation surface, alpha17 bundled public cognitive registry / dry-run NeoStack planning surfaces, the alpha18 dry-run sleeve composition preview surface, and the alpha19 composed sleeve validation/audit surface. It also includes declared but governed bridge and relation-matrix-related surfaces.
 
@@ -313,12 +313,12 @@ ClawHub publication is the intended first public plugin path for this package li
 Future maintainer reference only, not to run as part of this documentation lane:
 
 ```text
-clawhub package publish <path> --family code-plugin --name umg-envoy-agent --display-name "UMG Envoy Agent" --version 0.3.0-alpha.15 ...
+clawhub package publish <path> --family code-plugin --name umg-envoy-agent --display-name "UMG Envoy Agent" --version 0.3.0-alpha.20 ...
 ```
 
 For exact declared public tool ids, see `openclaw.plugin.json` and `docs/TOOL-SURFACE.md`.
 
-For exact current tool-id status, use `openclaw.plugin.json`, `docs/TOOL-SURFACE.md`, and `docs/RELEASE-TRUTH-0.3.0-alpha.15.md` together.
+For exact current tool-id status, use `openclaw.plugin.json` and `docs/TOOL-SURFACE.md`. The Alpha15 release-truth document remains a historical checkpoint record.
 
 ## Entry point
 

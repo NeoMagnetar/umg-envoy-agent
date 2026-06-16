@@ -41,7 +41,7 @@ export function statusPayload(config?: PluginConfig) {
   return {
     ok: true,
     plugin: "umg-envoy-agent",
-    version: "0.3.0-alpha.15",
+    version: "0.3.0-alpha.20",
     compilerAdapter: "available",
     contentMode: cfg.contentMode,
     compilerMode: cfg.compilerMode,
