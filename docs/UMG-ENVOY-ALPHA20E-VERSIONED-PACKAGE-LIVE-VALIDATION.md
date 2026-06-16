@@ -2,9 +2,13 @@
 
 Date: 2026-06-16
 
-Verdict:
+Validation verdict:
 
 `UMG_ENVOY_ALPHA20E_VERSIONED_PACKAGE_LIVE_VALIDATED_READY_TO_COMMIT`
+
+Final closeout verdict:
+
+`UMG_ENVOY_ALPHA20E_VERSIONED_PACKAGE_LIVE_VALIDATED_COMMITTED_AND_PUSHED`
 
 ## Scope
 
@@ -339,7 +343,15 @@ version changed in source: yes.
 
 installed extension mutated: yes, operator approved.
 
-commit performed at report time: no.
+commit performed at initial report time: no.
+
+commit performed after validation: yes.
+
+commit pushed: yes.
+
+commit:
+
+`861dfffdaed6b3cbdb8a6be951677e67adfee9ba`
 
 ## Warnings Observed
 
@@ -351,6 +363,43 @@ The OpenClaw CLI printed pre-existing unrelated warnings during plugin list/inst
 
 These warnings did not prevent the UMG Envoy plugin from installing, loading, reporting `0.3.0-alpha.20`, exposing 22 tools, or passing live smoke validation.
 
+## Commit Closeout
+
+After live validation passed, only Alpha20D/Alpha20E version-prep and validation-report files were staged. Unrelated diagnostics and older untracked reports were left unstaged.
+
+Commit command:
+
+```text
+git commit -m "chore: prepare Alpha20 release version metadata"
+```
+
+Commit result:
+
+```text
+[main 861dfff] chore: prepare Alpha20 release version metadata
+10 files changed, 730 insertions(+), 14 deletions(-)
+```
+
+Push command:
+
+```text
+git push origin main
+```
+
+Push result:
+
+```text
+2cec26e..861dfff  main -> main
+```
+
+Post-push tracked status:
+
+```text
+main...origin/main
+tracked files clean
+pre-existing untracked diagnostics/reports remain untouched
+```
+
 ## Final Verdict
 
-`UMG_ENVOY_ALPHA20E_VERSIONED_PACKAGE_LIVE_VALIDATED_READY_TO_COMMIT`
+`UMG_ENVOY_ALPHA20E_VERSIONED_PACKAGE_LIVE_VALIDATED_COMMITTED_AND_PUSHED`
