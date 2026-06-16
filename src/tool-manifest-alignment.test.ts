@@ -22,6 +22,7 @@ const loadSleeveSeed = resolveEnvoySeededToolCapability("umg_envoy_load_sleeve")
 const explainSleeveSeed = resolveEnvoySeededToolCapability("umg_envoy_explain_sleeve");
 const cognitiveRegistrySeed = resolveEnvoySeededToolCapability("umg_envoy_cognitive_registry_query");
 const planNeoStackSeed = resolveEnvoySeededToolCapability("umg_envoy_plan_neostack");
+const composeSleeveSeed = resolveEnvoySeededToolCapability("umg_envoy_compose_sleeve_dry_run");
 const candidateLowRiskDirectSet = new Set([
   "umg_envoy_status",
   "umg_envoy_validate_runtime_output",
@@ -35,18 +36,22 @@ assert("manifest advertises umg_envoy_load_sleeve as current public tool", manif
 assert("manifest advertises umg_envoy_explain_sleeve as current public tool", manifestTools.has("umg_envoy_explain_sleeve") === true);
 assert("manifest advertises umg_envoy_cognitive_registry_query as current public tool", manifestTools.has("umg_envoy_cognitive_registry_query") === true);
 assert("manifest advertises umg_envoy_plan_neostack as current public tool", manifestTools.has("umg_envoy_plan_neostack") === true);
+assert("manifest advertises umg_envoy_compose_sleeve_dry_run as current public tool", manifestTools.has("umg_envoy_compose_sleeve_dry_run") === true);
 assert("registry classification for umg_envoy_load_sleeve remains conservative read_only", loadSleeveSeed?.allowedRiskClass === "read_only");
 assert("registry classification for umg_envoy_explain_sleeve remains conservative read_only", explainSleeveSeed?.allowedRiskClass === "read_only");
 assert("registry classification for umg_envoy_cognitive_registry_query remains conservative read_only", cognitiveRegistrySeed?.allowedRiskClass === "read_only");
 assert("registry classification for umg_envoy_plan_neostack remains dry_run_only", planNeoStackSeed?.allowedRiskClass === "dry_run_only");
+assert("registry classification for umg_envoy_compose_sleeve_dry_run remains dry_run_only", composeSleeveSeed?.allowedRiskClass === "dry_run_only");
 assert("umg_envoy_load_sleeve is not direct-executable by default", loadSleeveSeed?.directExecutionAllowed === false);
 assert("umg_envoy_explain_sleeve is not direct-executable by default", explainSleeveSeed?.directExecutionAllowed === false);
 assert("umg_envoy_cognitive_registry_query is not direct-executable by default", cognitiveRegistrySeed?.directExecutionAllowed === false);
 assert("umg_envoy_plan_neostack is not direct-executable by default", planNeoStackSeed?.directExecutionAllowed === false);
+assert("umg_envoy_compose_sleeve_dry_run is not direct-executable by default", composeSleeveSeed?.directExecutionAllowed === false);
 assert("umg_envoy_load_sleeve is not in first low-risk direct adapter candidate set", candidateLowRiskDirectSet.has("umg_envoy_load_sleeve") === false);
 assert("umg_envoy_explain_sleeve is not in first low-risk direct adapter candidate set", candidateLowRiskDirectSet.has("umg_envoy_explain_sleeve") === false);
 assert("umg_envoy_cognitive_registry_query is not in first low-risk direct adapter candidate set", candidateLowRiskDirectSet.has("umg_envoy_cognitive_registry_query") === false);
 assert("umg_envoy_plan_neostack is not in first low-risk direct adapter candidate set", candidateLowRiskDirectSet.has("umg_envoy_plan_neostack") === false);
+assert("umg_envoy_compose_sleeve_dry_run is not in first low-risk direct adapter candidate set", candidateLowRiskDirectSet.has("umg_envoy_compose_sleeve_dry_run") === false);
 assert("unknown tools remain blocked/null through seed resolver", resolveEnvoySeededToolCapability("unknown.tool") === null);
 assert("seed contains manifest-declared load sleeve policy note", (loadSleeveSeed?.notes ?? []).some((note) => note.includes("manifest-declared")));
 assert("all manifest-declared tools except the runtime runner itself are present in the seed", pluginManifest.tools?.filter((toolId) => toolId !== "umg_envoy_low_risk_direct_tool_run").every((toolId) => Boolean(resolveEnvoySeededToolCapability(toolId))) === true);

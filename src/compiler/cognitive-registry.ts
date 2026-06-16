@@ -159,9 +159,9 @@ function selectedMoltBlocks(registry: CognitiveRegistry, neoblocks: Array<{ ref:
   return selections;
 }
 
-export function planNeoStack(input: { intent: string; metaUrl?: string }): NeoStackPlanResult {
+export function planNeoStack(input: { intent: string; metaUrl?: string; registry?: CognitiveRegistry }): NeoStackPlanResult {
   const intent = input.intent.trim();
-  const registry = loadCognitiveRegistry(input.metaUrl ?? import.meta.url);
+  const registry = input.registry ?? loadCognitiveRegistry(input.metaUrl ?? import.meta.url);
   const intentTokens = tokenize(intent);
   const selectionTrace = registry.neostacks
     .map((stack) => scoreStack(intentTokens, stack))

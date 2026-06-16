@@ -134,7 +134,7 @@ function selectedMoltBlocks(registry, neoblocks) {
 }
 export function planNeoStack(input) {
     const intent = input.intent.trim();
-    const registry = loadCognitiveRegistry(input.metaUrl ?? import.meta.url);
+    const registry = input.registry ?? loadCognitiveRegistry(input.metaUrl ?? import.meta.url);
     const intentTokens = tokenize(intent);
     const selectionTrace = registry.neostacks
         .map((stack) => scoreStack(intentTokens, stack))

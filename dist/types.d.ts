@@ -143,6 +143,69 @@ export interface NeoStackPlanResult {
     warnings: string[];
     errors: string[];
 }
+export interface ResolvedNeoBlockForComposition {
+    id: string;
+    name: string;
+    purpose: string;
+    role?: string;
+    order: number;
+    outputs: string[];
+    molt_refs: NeoBlockRef[];
+    governance: CognitiveGovernance;
+}
+export interface ResolvedMoltBlockForComposition {
+    id: string;
+    name: string;
+    purpose: string;
+    role?: string;
+    source_neoblock_id: string;
+    inputs: string[];
+    outputs: string[];
+    tags: string[];
+    authority?: number;
+    risk_level: MoltBlock["risk_level"];
+    governance: CognitiveGovernance;
+}
+export interface DryRunSleeveOutlineStep {
+    order: number;
+    neoblock_id: string;
+    neoblock_role?: string;
+    molt_block_ids: string[];
+    outputs: string[];
+}
+export interface DryRunSleeveOutline {
+    title: string;
+    proposed_sleeve_id: string;
+    selected_neostack_id: string;
+    block_ref_count: number;
+    neoblock_count: number;
+    molt_block_count: number;
+    steps: DryRunSleeveOutlineStep[];
+    constraints: string[];
+    intended_use: string[];
+}
+export interface SleeveCompositionTraceEntry {
+    stage: "plan_neostack" | "resolve_neostack" | "resolve_neoblocks" | "resolve_molt_blocks" | "assemble_outline" | "boundary";
+    ok: boolean;
+    message: string;
+    refs?: string[];
+}
+export interface SleeveComposerDryRunResult {
+    ok: boolean;
+    intent: string;
+    selected_neostack: PlannedNeoStackSelection | null;
+    proposed_sleeve_id: string | null;
+    sleeve_id: string | null;
+    resolved_molt_blocks: ResolvedMoltBlockForComposition[];
+    resolved_neoblocks: ResolvedNeoBlockForComposition[];
+    sleeve_outline: DryRunSleeveOutline | null;
+    selection_trace: NeoStackSelectionTraceEntry[];
+    composition_trace: SleeveCompositionTraceEntry[];
+    non_executing: boolean;
+    writes_enabled: boolean;
+    warnings: string[];
+    errors: string[];
+}
 export interface RuntimeSpec {
     runtimespec_id: string;
     sleeve_id: string;

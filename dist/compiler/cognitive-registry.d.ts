@@ -8,6 +8,7 @@ export declare function queryCognitiveRegistry(input: {
 export declare function planNeoStack(input: {
     intent: string;
     metaUrl?: string;
+    registry?: CognitiveRegistry;
 }): NeoStackPlanResult;
 export declare function validateCognitiveRegistry(registry: CognitiveRegistry): {
     ok: boolean;

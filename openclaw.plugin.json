@@ -149,6 +149,7 @@
     "umg_envoy_matrix_status",
     "umg_envoy_cognitive_registry_query",
     "umg_envoy_plan_neostack",
+    "umg_envoy_compose_sleeve_dry_run",
     "umg_envoy_compile_ir_bridge",
     "umg_envoy_emit_relation_matrix",
     "umg_envoy_action_gate_runtime_report_view",

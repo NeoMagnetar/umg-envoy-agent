@@ -25,7 +25,7 @@ In UMG terminology, an Envoy is a carrier surface for moving selected governed a
 - provides ActionGate runtime report inspection
 - seeds a conservative ToolCapabilityRegistry policy for known Envoy tools
 - emits ToolResult audit records for bounded direct runtime execution
-- provides bundled public MOLT, NeoBlock, and NeoStack registry inspection with deterministic dry-run planning
+- provides bundled public MOLT, NeoBlock, and NeoStack registry inspection with deterministic dry-run planning and sleeve composition preview
 - provides a six-tool low-risk direct runtime runner for static safe read-only tools only
 - keeps write, bridge, destructive, external, and arbitrary execution paths out of the current direct runner
 
@@ -43,7 +43,7 @@ This positioning does not claim live OpenClaw host readiness, ClawHub publicatio
 
 For exact current tool-id status, use `openclaw.plugin.json`, `docs/TOOL-SURFACE.md`, and `docs/RELEASE-TRUTH-0.3.0-alpha.15.md` together.
 
-The manifest-declared surface includes bounded inspection, validation, comparison, path, runtime-report, direct-runner tools, the runtime-reconciled read-only `umg_envoy_load_sleeve` sleeve-loading/inspection surface, the read-only `umg_envoy_explain_sleeve` sleeve explanation surface, and alpha17 bundled public cognitive registry / dry-run NeoStack planning surfaces. It also includes declared but governed bridge and relation-matrix-related surfaces.
+The manifest-declared surface includes bounded inspection, validation, comparison, path, runtime-report, direct-runner tools, the runtime-reconciled read-only `umg_envoy_load_sleeve` sleeve-loading/inspection surface, the read-only `umg_envoy_explain_sleeve` sleeve explanation surface, alpha17 bundled public cognitive registry / dry-run NeoStack planning surfaces, and the alpha18 dry-run sleeve composition preview surface. It also includes declared but governed bridge and relation-matrix-related surfaces.
 
 ### Runtime-reconciled manifest-declared read-only surface
 
@@ -54,6 +54,8 @@ It is part of the current public manifest surface as a bounded sleeve-loading an
 `umg_envoy_explain_sleeve` is source-present as a read-only public explanation surface. It compiles one bundled public sleeve through the bundled adapter and reports all block refs, active/skipped/disabled state, authority-ordered prompt parts, tool requests, warnings/errors, and RuntimeSpec boundary metadata without executing requested tools or writing runtime outputs.
 
 `umg_envoy_cognitive_registry_query` and `umg_envoy_plan_neostack` are source-present alpha17 public-safe cognitive registry surfaces. They expose bundled MOLT block, NeoBlock, and NeoStack metadata and deterministic dry-run planning for an intent string. They do not generate or save sleeves, mutate block libraries, enable writes, call hidden LLM planners, or run external compiler bridge execution.
+
+`umg_envoy_compose_sleeve_dry_run` is source-present as an alpha18 public-safe composition preview surface. It uses the alpha17 planner and bundled public cognitive registry to return a proposed sleeve outline, resolved NeoBlocks, resolved MOLT blocks, selection trace, composition trace, and explicit non-executing/no-write boundary metadata. It does not execute generated sleeves, save sleeves, merge sleeves, mutate the registry, enable writes, or invoke the external compiler bridge.
 
 ### Staged or historical names
 
@@ -226,6 +228,7 @@ Explicit exclusions from this first direct runner:
 - `umg_envoy_explain_sleeve`
 - `umg_envoy_cognitive_registry_query`
 - `umg_envoy_plan_neostack`
+- `umg_envoy_compose_sleeve_dry_run`
 - `umg_envoy_compile_ir_bridge`
 - `umg_envoy_emit_relation_matrix`
 - `umg_envoy_compile_sleeve`
@@ -234,6 +237,7 @@ Explicit exclusions from this first direct runner:
 `umg_envoy_load_sleeve` is now manifest-declared in alpha.15 after runtime reconciliation, but it remains read-only and excluded from the first low-risk direct runner.
 `umg_envoy_explain_sleeve` is manifest-declared as a read-only explanation surface, but it remains excluded from the first low-risk direct runner.
 `umg_envoy_cognitive_registry_query` and `umg_envoy_plan_neostack` are manifest-declared as read-only/dry-run cognitive registry surfaces, but they remain excluded from the first low-risk direct runner.
+`umg_envoy_compose_sleeve_dry_run` is manifest-declared as a dry-run composition preview surface, but it remains excluded from the first low-risk direct runner.
 - unknown tools
 - arbitrary dispatch
 - writes / deletes
