@@ -57,6 +57,9 @@ assert("plan_neostack is blocked", planNeoStackResult.status === "execution_bloc
 const composeSleeveResult = executeLowRiskDirectTool({ toolId: "umg_envoy_compose_sleeve_dry_run", input: { intent: "explain a sleeve" } });
 assert("compose_sleeve_dry_run is blocked", composeSleeveResult.status === "execution_blocked");
 
+const validateComposedSleeveResult = executeLowRiskDirectTool({ toolId: "umg_envoy_validate_composed_sleeve_dry_run", input: { intent: "explain a sleeve" } });
+assert("validate_composed_sleeve_dry_run is blocked", validateComposedSleeveResult.status === "execution_blocked");
+
 const bridgeResult = executeLowRiskDirectTool({ toolId: "umg_envoy_compile_ir_bridge", input: {} });
 assert("bridge tool is blocked", bridgeResult.status === "execution_blocked");
 

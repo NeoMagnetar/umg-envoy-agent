@@ -6,6 +6,7 @@ import { runCompilerSmoke } from "./compiler/compiler-smoke.js";
 import { getCompilerMatrixStatus } from "./compiler/compiler-matrix.js";
 import { planNeoStack, queryCognitiveRegistry } from "./compiler/cognitive-registry.js";
 import { composeSleeveDryRun } from "./compiler/sleeve-composer-dry-run.js";
+import { validateComposedSleeveDryRun } from "./compiler/composed-sleeve-validator-dry-run.js";
 import { loadSleeves, publicContentRoot, summarizeBlockLibraries } from "./compiler/content-loader.js";
 import { validateRuntimeOutput } from "./compiler/runtime-validator.js";
 import { loadSleeveFile } from "./compiler/sleeve-loader.js";
@@ -54,6 +55,7 @@ export function statusPayload(config) {
             "umg_envoy_cognitive_registry_query",
             "umg_envoy_plan_neostack",
             "umg_envoy_compose_sleeve_dry_run",
+            "umg_envoy_validate_composed_sleeve_dry_run",
             "umg_envoy_validate_runtime_output",
             "umg_envoy_compare_sleeves",
             "umg_envoy_parse_path",
@@ -241,6 +243,11 @@ function registerCliBridge(api, config) {
             .action(async (opts) => {
             console.log(JSON.stringify(composeSleeveDryRun({ intent: opts.intent, metaUrl: import.meta.url }), null, 2));
         });
+        root.command("validate-composed-sleeve")
+            .requiredOption("--intent <intent>")
+            .action(async (opts) => {
+            console.log(JSON.stringify(validateComposedSleeveDryRun({ intent: opts.intent, metaUrl: import.meta.url }), null, 2));
+        });
         root.command("load-sleeve")
             .requiredOption("--sleeve-path <path>")
             .requiredOption("--library-root <path>")
@@ -342,6 +349,14 @@ const entry = {
             parameters: Type.Object({ intent: Type.String() }, { additionalProperties: false }),
             async execute(input) {
                 return { content: [{ type: "text", text: JSON.stringify(composeSleeveDryRun({ intent: input.intent, metaUrl: import.meta.url }), null, 2) }] };
+            }
+        }, { optional: true });
+        api.registerTool({
+            name: "umg_envoy_validate_composed_sleeve_dry_run",
+            description: "Validate and audit a deterministic composed sleeve dry-run preview. No writes, execution, mutation, publication, or install.",
+            parameters: Type.Object({ intent: Type.String() }, { additionalProperties: false }),
+            async execute(input) {
+                return { content: [{ type: "text", text: JSON.stringify(validateComposedSleeveDryRun({ intent: input.intent, metaUrl: import.meta.url }), null, 2) }] };
             }
         }, { optional: true });
         api.registerTool({

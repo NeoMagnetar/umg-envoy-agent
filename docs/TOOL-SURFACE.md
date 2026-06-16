@@ -25,6 +25,7 @@ The following tool ids are the current declared public tool surface for this pac
 - `umg_envoy_cognitive_registry_query`
 - `umg_envoy_plan_neostack`
 - `umg_envoy_compose_sleeve_dry_run`
+- `umg_envoy_validate_composed_sleeve_dry_run`
 - `umg_envoy_compile_ir_bridge`
 - `umg_envoy_emit_relation_matrix`
 - `umg_envoy_action_gate_runtime_report_view`
@@ -40,7 +41,7 @@ These are the capability-level public surfaces currently represented by the mani
 - bounded sleeve compilation, explanation, and comparison surfaces
 - path parse / validate / render / build utilities
 - matrix status and explicit relation-matrix / IR bridge surfaces
-- bundled public cognitive registry query, deterministic dry-run NeoStack planning, and dry-run sleeve composition preview surfaces
+- bundled public cognitive registry query, deterministic dry-run NeoStack planning, dry-run sleeve composition preview, and composed sleeve validation/audit surfaces
 
 Boundary reminders:
 - RuntimeSpec is not execution.
@@ -75,6 +76,7 @@ These names appear in prior docs or staged planning language, but they are **not
 - `umg_envoy_cognitive_registry_query`
 - `umg_envoy_plan_neostack`
 - `umg_envoy_compose_sleeve_dry_run`
+- `umg_envoy_validate_composed_sleeve_dry_run`
 
 `umg_envoy_load_sleeve` is now part of the manifest-aligned declared public tool surface after runtime reconciliation in alpha.15. It remains a conservative read-only sleeve-loading and inspection surface, not arbitrary execution, and it is still excluded from the first low-risk direct adapter candidate set.
 
@@ -85,6 +87,8 @@ These names appear in prior docs or staged planning language, but they are **not
 `umg_envoy_plan_neostack` is a manifest-declared dry-run-only alpha17 planning surface. It uses deterministic tag scoring against the bundled public cognitive registry to select candidate NeoStacks, NeoBlocks, and MOLT blocks for an intent string. It does not use hidden LLM calls, generate saved sleeves, enable writes, or execute selected tool intents.
 
 `umg_envoy_compose_sleeve_dry_run` is a manifest-declared dry-run-only alpha18 composition preview surface. It uses the alpha17 planner and bundled public registry to propose a deterministic sleeve outline with resolved NeoBlocks, resolved MOLT blocks, selection trace, composition trace, and non-executing/no-write boundary metadata. It does not execute generated sleeves, save sleeves, merge sleeves, mutate registry data, or write runtime artifacts.
+
+`umg_envoy_validate_composed_sleeve_dry_run` is a manifest-declared dry-run-only alpha19 validation/audit surface. It uses the alpha18 composer output and bundled public registry to verify selected NeoStack resolution, proposed sleeve id, sleeve outline, resolved NeoBlocks, resolved MOLT blocks, selection/composition/validation traces, and explicit non-executing/no-write/no-mutation/no-publication safety boundaries. It does not execute, save, export, install, publish, or mutate composed sleeves.
 
 ## 4. Deprecated or Renamed Tool Names
 
@@ -126,8 +130,9 @@ Envoy is intended to become tool-capable through explicit capability mapping, no
 - `umg_envoy_cognitive_registry_query` is intentionally excluded from that first direct adapter set.
 - `umg_envoy_plan_neostack` is intentionally excluded from that first direct adapter set.
 - `umg_envoy_compose_sleeve_dry_run` is intentionally excluded from that first direct adapter set.
+- `umg_envoy_validate_composed_sleeve_dry_run` is intentionally excluded from that first direct adapter set.
 - Every direct run creates `ToolResult` audit output.
-- Writes, deletes, publishing, bridge, relation-matrix, compiler bridge, load-sleeve, explain-sleeve, cognitive registry query, NeoStack planning, sleeve composition preview, and external actions are not part of this adapter.
+- Writes, deletes, publishing, bridge, relation-matrix, compiler bridge, load-sleeve, explain-sleeve, cognitive registry query, NeoStack planning, sleeve composition preview, composed sleeve validation, and external actions are not part of this adapter.
 - Executed status only comes from `ToolResult.executionStatus`.
 - The registry itself does not execute tools and does not authorize execution by itself.
 

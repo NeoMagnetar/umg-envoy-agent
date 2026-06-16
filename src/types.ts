@@ -230,6 +230,45 @@ export interface SleeveComposerDryRunResult {
   errors: string[];
 }
 
+export type ComposedSleeveValidationStatus = "valid_dry_run" | "invalid_dry_run";
+
+export interface ComposedSleeveValidationTraceEntry {
+  check: string;
+  ok: boolean;
+  message: string;
+  refs?: string[];
+}
+
+export interface ComposedSleeveValidationSafety {
+  non_executing: true;
+  writes_enabled: false;
+  execution_allowed: false;
+  mutation_allowed: false;
+  publish_allowed: false;
+}
+
+export interface ComposedSleeveValidationSource {
+  composer_tool: "umg_envoy_compose_sleeve_dry_run";
+  validator_tool: "umg_envoy_validate_composed_sleeve_dry_run";
+}
+
+export interface ComposedSleeveValidatorDryRunResult {
+  ok: boolean;
+  intent: string;
+  selected_neostack: PlannedNeoStackSelection | null;
+  proposed_sleeve_id: string | null;
+  validation_status: ComposedSleeveValidationStatus;
+  validation_errors: string[];
+  validation_warnings: string[];
+  resolved_molt_blocks: ResolvedMoltBlockForComposition[];
+  resolved_neoblocks: ResolvedNeoBlockForComposition[];
+  selection_trace: NeoStackSelectionTraceEntry[];
+  composition_trace: SleeveCompositionTraceEntry[];
+  validation_trace: ComposedSleeveValidationTraceEntry[];
+  safety: ComposedSleeveValidationSafety;
+  source: ComposedSleeveValidationSource;
+}
+
 export interface RuntimeSpec {
   runtimespec_id: string;
   sleeve_id: string;

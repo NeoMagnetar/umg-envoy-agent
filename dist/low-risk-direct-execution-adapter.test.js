@@ -69,6 +69,9 @@ assert("umg_envoy_plan_neostack is not in LOW_RISK_DIRECT_TOOL_IDS", LOW_RISK_DI
 const composeSleeveResult = executeLowRiskDirectTool({ toolId: "umg_envoy_compose_sleeve_dry_run", input: { intent: "explain a sleeve" } });
 assert("umg_envoy_compose_sleeve_dry_run is blocked and handler is not called", composeSleeveResult.status === "execution_blocked");
 assert("umg_envoy_compose_sleeve_dry_run is not in LOW_RISK_DIRECT_TOOL_IDS", LOW_RISK_DIRECT_TOOL_IDS.includes("umg_envoy_compose_sleeve_dry_run") === false);
+const validateComposedSleeveResult = executeLowRiskDirectTool({ toolId: "umg_envoy_validate_composed_sleeve_dry_run", input: { intent: "explain a sleeve" } });
+assert("umg_envoy_validate_composed_sleeve_dry_run is blocked and handler is not called", validateComposedSleeveResult.status === "execution_blocked");
+assert("umg_envoy_validate_composed_sleeve_dry_run is not in LOW_RISK_DIRECT_TOOL_IDS", LOW_RISK_DIRECT_TOOL_IDS.includes("umg_envoy_validate_composed_sleeve_dry_run") === false);
 const dryRunOnlyResult = executeLowRiskDirectTool({ toolId: "umg_envoy_compile_sleeve", input: { sleeveId: "public-basic-envoy" } });
 assert("dry_run_only tool is blocked", dryRunOnlyResult.status === "execution_blocked");
 const blockedBridgeResult = executeLowRiskDirectTool({ toolId: "umg_envoy_compile_ir_bridge", input: { sleevePath: "x", libraryRoot: "y" } });
