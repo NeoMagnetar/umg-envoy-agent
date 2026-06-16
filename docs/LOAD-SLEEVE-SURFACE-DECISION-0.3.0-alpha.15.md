@@ -14,7 +14,7 @@ This decision record covers only the `umg_envoy_load_sleeve` surface ambiguity.
 | In low-risk direct runner allowlist? | No. | `src/low-risk-direct-execution-adapter.ts` `LOW_RISK_DIRECT_TOOL_IDS` contains exactly six ids and does not include `umg_envoy_load_sleeve`. |
 | Excluded from low-risk direct runner? | Yes. | `src/low-risk-direct-execution-adapter.ts`: explicit branch `if (request.toolId === "umg_envoy_load_sleeve")` returns blocked with `load_sleeve_excluded`; `README.md` and `docs/TOOL-SURFACE.md` also state exclusion from the first low-risk direct adapter set. |
 | Present in capability registry seed? | Yes. | `src/tool-capability-registry-seed.ts` includes a `toolId: "umg_envoy_load_sleeve"` entry with `allowedRiskClass: "read_only"`, `directExecutionAllowed: false`, and notes marking it non-manifest and excluded from first low-risk direct adapter set. |
-| Current docs classification? | Source-present but not manifest-declared; internal/non-manifest-aligned during current lane. | `docs/TOOL-SURFACE.md`: `Internal-Only / Non-Manifest-Aligned During Current Policy Lane`; `README.md`: "source-present ... but it is not manifest-declared in alpha.15"; `PUBLIC-VARIANT-OVERVIEW.md`: same classification; `docs/RELEASE-TRUTH-0.3.0-alpha.15.md`: "load_sleeve is registered in source but absent from the manifest." |
+| Pre-reconciliation docs classification? | Source-present but not manifest-declared; internal/non-manifest-aligned during the earlier static-source lane. | Historical evidence: `docs/TOOL-SURFACE.md`: `Internal-Only / Non-Manifest-Aligned During Current Policy Lane`; `README.md`: "source-present ... but it is not manifest-declared in alpha.15"; `PUBLIC-VARIANT-OVERVIEW.md`: same classification; `docs/RELEASE-TRUTH-0.3.0-alpha.15.md`: "load_sleeve is registered in source but absent from the manifest." This classification is superseded by Alpha15 runtime reconciliation. |
 
 ## 3. Decision Options
 
@@ -66,8 +66,8 @@ Dependency concern:
 
 ### Option C — Keep internal/optional/non-manifest
 
-Meaning:
-Keep the current alpha.15 stance: source-present, optional/internal, not manifest-declared.
+Historical option meaning:
+Keep the pre-reconciliation alpha.15 stance: source-present, optional/internal, not manifest-declared.
 
 Benefits:
 - preserves the existing read-only preview capability in source
@@ -80,7 +80,7 @@ Risks:
 - depends on unproven OpenClaw host semantics: if source registration alone can expose a tool despite manifest absence, docs-only classification may be insufficient
 - may continue to confuse reviewers unless the decision remains actively documented
 
-Docs requirement if retained:
+Historical docs requirement if retained:
 - continue stating that `umg_envoy_load_sleeve` is source-present but not manifest-declared
 - continue stating that it is excluded from the first low-risk direct runner
 - continue avoiding any claim that it is part of the current declared public surface
@@ -93,10 +93,10 @@ Current repo evidence proves source registration, capability-seed presence, and 
 
 ## 5. Recommendation
 
-DEFER_PENDING_OPENCLAW_HOST_SEMANTICS
+RECOMMEND_ADD_LOAD_SLEEVE_TO_MANIFEST_AS_PUBLIC_READONLY_TOOL
 
 Reason:
-Current source evidence clearly shows that `umg_envoy_load_sleeve` is real, optional, read-only, seeded in capability policy, and intentionally excluded from the first low-risk direct runner. However, the reviewed repo evidence does not prove whether manifest absence is sufficient to keep the tool non-host-visible in practice. Until host semantics are confirmed, Option C remains the best descriptive alpha.15 stance, but the implementation decision should remain formally deferred.
+Runtime truth superseded the earlier static assumption. Current source and installed-runtime evidence clearly show that `umg_envoy_load_sleeve` is real, optional, read-only, seeded in capability policy, and intentionally excluded from the first low-risk direct runner, while the installed alpha.15 host still exposes it as host-visible. The safer reconciliation is to make manifest truth match runtime truth by declaring `umg_envoy_load_sleeve` as a public read-only manifest tool.
 
 ## 6. What Not To Change Yet
 
@@ -113,15 +113,17 @@ Specifically, this lane did **not**:
 
 ## Host-Semantics Closeout
 
-Static OpenClaw source evidence now supports `MANIFEST_ALLOWLIST`.
+Historical static-source closeout, superseded by the later Alpha15 runtime reconciliation: static OpenClaw source evidence supported `MANIFEST_ALLOWLIST`.
 
-`umg_envoy_load_sleeve` remains:
+At that static-source checkpoint, `umg_envoy_load_sleeve` was classified as:
 - source-present
 - manifest-absent
 - excluded from the low-risk direct runner
 - not part of the alpha.15 manifest-declared public surface
 
-Because OpenClaw host semantics compare runtime-registered tools against manifest-declared names and skip undeclared tools, the alpha.15 documentation classification is safe to keep.
+This earlier classification is historical. The reconciled Alpha15 decision is that `umg_envoy_load_sleeve` is manifest-declared and read-only.
+
+Because OpenClaw host semantics compare runtime-registered tools against manifest-declared names and skip undeclared tools, the pre-reconciliation alpha.15 documentation classification was safe as a static-source finding, but it is no longer the current release-readiness truth after runtime reconciliation.
 
 Key OpenClaw evidence:
 - `src/plugins/registry.ts:610-636` normalizes manifest `contracts.tools` into `declaredNames`, then rejects undeclared registration names with `plugin must declare contracts.tools for: ...`
@@ -129,8 +131,8 @@ Key OpenClaw evidence:
 - `src/plugins/tools.ts:1293-1307` emits `plugin tool is undeclared (...)` and skips the tool instead of exposing it
 - `src/plugins/tools.ts:252-263` shows `optional` as tool optionality/allowlist behavior, not a bypass for manifest declaration
 
-Final recommendation:
-`SAFE_TO_KEEP_DOC_CLASSIFICATION`
+Final historical recommendation:
+`SAFE_TO_KEEP_AS_HISTORICAL_DOC_CLASSIFICATION_SUPERSEDED_BY_ALPHA15_MANIFEST_DECLARATION`
 
 No source, manifest, package, version, publication, or runtime changes were made.
 

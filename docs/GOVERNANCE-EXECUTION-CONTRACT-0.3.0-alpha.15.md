@@ -244,12 +244,13 @@ OpenClaw host semantics support manifest allowlist behavior.
 
 Source registration alone is not sufficient to make `umg_envoy_load_sleeve` part of the alpha.15 public manifest-declared surface.
 
-Current alpha.15 meaning:
+Current alpha.15 meaning after runtime reconciliation:
 - manifest-declared public surface is defined by `openclaw.plugin.json`
+- at the Alpha15 load-sleeve checkpoint, the manifest-declared tool count was 17. Current post-Alpha19 manifest truth is 22 tools.
 - `umg_envoy_load_sleeve` is source-present
-- `umg_envoy_load_sleeve` is manifest-absent
+- `umg_envoy_load_sleeve` is manifest-declared as a read-only public sleeve-loading and inspection surface
 - `umg_envoy_load_sleeve` is excluded from the first low-risk direct runner
-- `umg_envoy_load_sleeve` is not part of the current alpha.15 public manifest-declared surface
+- `umg_envoy_load_sleeve` is not arbitrary execution
 
 ## 11. Public / Private Boundary
 

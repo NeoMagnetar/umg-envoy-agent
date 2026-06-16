@@ -12,7 +12,7 @@ This report determines whether source registration alone can expose `umg_envoy_l
 | Registered in source? | Yes. | `src/plugin-entry.ts` contains `root.command("load-sleeve")` and registers `name: "umg_envoy_load_sleeve"`. Diagnostic capture: `envoy_load_sleeve_hits.txt` shows `src/plugin-entry.ts:235` and `src/plugin-entry.ts:330`. |
 | Optional/internal/read-only? | Yes. | `src/plugin-entry.ts` registers the tool with an optional registration path and describes it as a read-only sleeve loader without invoking the compiler. `src/tool-capability-registry-seed.ts:277` includes a conservative `read_only` capability entry. |
 | Excluded from low-risk runner? | Yes. | `src/low-risk-direct-execution-adapter.ts:142-143` blocks `umg_envoy_load_sleeve` with `load_sleeve_excluded`. |
-| Current docs classification? | Source-present but not manifest-declared. | `README.md:43`, `PUBLIC-VARIANT-OVERVIEW.md:11`, `docs/TOOL-SURFACE.md:69`, and `docs/RELEASE-TRUTH-0.3.0-alpha.15.md:74` all classify it as source-present / non-manifest / non-public for alpha.15. |
+| Pre-reconciliation docs classification? | Source-present but not manifest-declared. | Historical evidence: `README.md:43`, `PUBLIC-VARIANT-OVERVIEW.md:11`, `docs/TOOL-SURFACE.md:69`, and `docs/RELEASE-TRUTH-0.3.0-alpha.15.md:74` classified it as source-present / non-manifest / non-public for alpha.15. This classification is superseded by Alpha15 runtime reconciliation. |
 
 ## 3. OpenClaw Source Reviewed
 
@@ -118,17 +118,21 @@ This lane did not run runtime validation, but source evidence from the OpenClaw 
 
 ## 6. Meaning For `umg_envoy_load_sleeve`
 
-Based on static OpenClaw source evidence, alpha.15 can safely describe `umg_envoy_load_sleeve` as not part of the current public host-visible tool surface because it is absent from `openclaw.plugin.json`. Envoy source registration alone is not enough: OpenClaw’s plugin tool resolution path compares produced tool names against manifest-declared names and skips undeclared tools with an explicit `plugin tool is undeclared` diagnostic. The reviewed source therefore supports a manifest-allowlist model rather than a runtime-registration-visible model.
+Historical/source-only analysis: based on static OpenClaw source evidence, alpha.15 could safely describe `umg_envoy_load_sleeve` as not part of the public host-visible tool surface because it was absent from `openclaw.plugin.json` at that checkpoint. Envoy source registration alone is not enough: OpenClaw’s plugin tool resolution path compares produced tool names against manifest-declared names and skips undeclared tools with an explicit `plugin tool is undeclared` diagnostic. The reviewed source therefore supported a manifest-allowlist model rather than a runtime-registration-visible model.
+
+Current reconciliation note: that static-source conclusion is now historical. The reconciled Alpha15 status is that `umg_envoy_load_sleeve` is declared as a read-only manifest surface. Current post-Alpha19 manifest tool count is 22.
 
 ## 7. Recommendation
 
-- `SAFE_TO_KEEP_DOC_CLASSIFICATION`
+- `DECLARE_RUNTIME_VISIBLE_LOAD_SLEEVE_AS_MANIFEST_READONLY_TOOL`
 
-The current alpha.15 docs may continue saying:
+The final alpha.15 docs should now say:
 - `umg_envoy_load_sleeve` is source-present
-- it is not manifest-declared
-- it is not part of the current declared public surface
+- it is manifest-declared after runtime reconciliation
+- it is part of the current declared public surface as a read-only sleeve-loading and inspection tool
 - it is excluded from the first low-risk direct runner
+- it is not arbitrary execution
+- current post-Alpha19 manifest tool count is 22
 
 ## 8. What Was Not Changed
 

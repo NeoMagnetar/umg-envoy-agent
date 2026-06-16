@@ -6,9 +6,9 @@ UMG Envoy Agent `0.3.0-alpha.15` is a bounded public package lane for runtime-fa
 
 The current manifest-declared public surface is the tool set listed in `openclaw.plugin.json`. It includes bounded inspection, validation, comparison, path, runtime-report, and low-risk direct-runner surfaces.
 
-## Source-present but not manifest-declared
+## Runtime reconciliation status
 
-`umg_envoy_load_sleeve` is source-present in alpha.15, but it is not manifest-declared and should not be described as part of the current public manifest surface.
+Resolved in this runtime reconciliation: `umg_envoy_load_sleeve` is now manifest-declared because the installed alpha.15 runtime exposed it as host-visible. It is a read-only public sleeve-loading and inspection surface, not arbitrary execution, and it remains excluded from the first low-risk direct runner.
 
 ## Staged / deferred names
 
