@@ -1,5 +1,7 @@
 # UMG Envoy Agent v0.3.0-alpha.20
 
+> **Status — legacy but working; H4 designed/deferred:** This 22-tool public baseline uses the bundled compiler-v0-style boundary and is not a compiler-vNext/H4 implementation. Its H4 migration design is preserved for possible future work, but implementation is deferred. Current public H4 architecture starts with [compiler-vNext](https://github.com/NeoMagnetar/umg-compiler-vnext) and the [UMG Block Library](https://github.com/NeoMagnetar/UMG-Block-Library).
+
 UMG Envoy Agent is an OpenClaw plugin that exposes a runtime-facing UMG cognition specification and inspection layer. It loads governed UMG sleeves and related artifacts, supports inspection and library navigation, and emits dry-run runtime projections such as RuntimeSpec, Trace, diagnostics, and related runtime-visible views without making UMG itself an execution engine.
 
 ## What UMG Envoy Agent is
